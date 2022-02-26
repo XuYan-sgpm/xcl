@@ -1,1 +1,0 @@
-/Library/Developer/CommandLineTools/usr/bin/c++ -Wall -g -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX11.3.sdk -Wl,-search_paths_first -Wl,-headerpad_max_install_names CMakeFiles/test_thread.dir/test/test_thread.cc.o -o test_thread  -Wl,-rpath,/Users/xuyan/repositories/xcl/cmake-build-debug libxcl_shared.dylib 

@@ -1,6 +1,0 @@
-/Users/xuyan/repositories/xcl/cmake-build-debug/CMakeFiles/rebuild_cache.dir
-/Users/xuyan/repositories/xcl/cmake-build-debug/CMakeFiles/xcl_shared.dir
-/Users/xuyan/repositories/xcl/cmake-build-debug/CMakeFiles/edit_cache.dir
-/Users/xuyan/repositories/xcl/cmake-build-debug/CMakeFiles/test_recycler.dir
-/Users/xuyan/repositories/xcl/cmake-build-debug/CMakeFiles/test_thread.dir
-/Users/xuyan/repositories/xcl/cmake-build-debug/CMakeFiles/xcl_static.dir
