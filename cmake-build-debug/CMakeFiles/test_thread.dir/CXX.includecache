@@ -1,0 +1,36 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/xcl/lang/object.h
+
+../include/xcl/lang/runnable.h
+object.h
+../include/xcl/lang/object.h
+
+../include/xcl/lang/thread.h
+object.h
+../include/xcl/lang/object.h
+runnable.h
+../include/xcl/lang/runnable.h
+
+../include/xcl/lang/thread_local.h
+object.h
+../include/xcl/lang/object.h
+
+/Users/xuyan/repositories/xcl/test/test_thread.cc
+iostream
+-
+sys/stat.h
+-
+unistd.h
+-
+xcl/lang/thread.h
+-
+xcl/lang/thread_local.h
+-
+
