@@ -6,16 +6,17 @@
 #define SCL_NULL_H
 
 class Null final {
-private:
+ private:
   Null() = default;
 
-private:
+ private:
   static Null *pInstance;
 
-public:
-  const static Null &get();
+ public:
+  const static Null &
+  get();
 };
 
 #define null Null::get()
 
-#endif // SCL_NULL_H
+#endif// SCL_NULL_H

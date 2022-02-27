@@ -9,23 +9,27 @@
 
 namespace xcl {
 class SimpleObjectHashMap {
-public:
+ public:
   SimpleObjectHashMap();
   ~SimpleObjectHashMap();
 
-public:
-  void Put(void *key, void *value);
-  void *Get(void *key) const;
-  unsigned Size() const;
+ public:
+  void
+  Put(void *key, void *value);
+  void *
+  Get(void *key) const;
+  unsigned
+  Size() const;
 
-private:
-  void Resize();
+ private:
+  void
+  Resize();
 
-private:
+ private:
   void *buckets_;
   unsigned size_ = 0;
   unsigned cap_ = 0;
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_SRC_BUILTIN_SCL_UTIL_CONTAINER_SIMPLE_OBJECT_HASH_MAP_H_
+#endif// SCL_SRC_BUILTIN_SCL_UTIL_CONTAINER_SIMPLE_OBJECT_HASH_MAP_H_

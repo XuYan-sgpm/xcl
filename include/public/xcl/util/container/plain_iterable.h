@@ -8,25 +8,31 @@
 #include <xcl/lang/object.h>
 namespace xcl {
 class BasePlainIterable : public Object {
-public:
+ public:
   enum IterCategory { INPUT, OUTPUT, FORWARD, BIDIRECTIONAL, RANDOM_ACCESS };
 
-public:
-  virtual bool Next() = 0;
-  virtual bool Equal(const BasePlainIterable &iterable) const = 0;
-  virtual unsigned operator-(const BasePlainIterable &iterable) const = 0;
-  virtual IterCategory Category() const = 0;
+ public:
+  virtual bool
+  Next() = 0;
+  virtual bool
+  Equal(const BasePlainIterable &iterable) const = 0;
+  virtual unsigned
+  operator-(const BasePlainIterable &iterable) const = 0;
+  virtual IterCategory
+  Category() const = 0;
 };
 
 class PlainIterable : public BasePlainIterable {
-public:
-  virtual void *Value() const = 0;
+ public:
+  virtual void *
+  Value() const = 0;
 };
 
 class PlainConstIterable : public BasePlainIterable {
-public:
-  virtual const void *Value() const = 0;
+ public:
+  virtual const void *
+  Value() const = 0;
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_SCL_UTIL_CONTAINER_PLAIN_ITERABLE_H_
+#endif// SCL_SCL_UTIL_CONTAINER_PLAIN_ITERABLE_H_

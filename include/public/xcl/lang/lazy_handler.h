@@ -9,24 +9,24 @@
 
 namespace xcl {
 class LazyHandler final {
-public:
+ public:
   typedef void (*func_t)(const Args &);
 
-private:
+ private:
   struct Pair {
-    func_t const func;
-    const Args &args;
+	func_t const func;
+	const Args &args;
 
-  public:
-    Pair(func_t f, const Args &args);
-    ~Pair();
+   public:
+	Pair(func_t f, const Args &args);
+	~Pair();
   };
   Pair pair_;
 
-public:
+ public:
   LazyHandler(func_t f, const Args &args);
   ~LazyHandler();
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_LAZY_HANDLER_H
+#endif// SCL_LAZY_HANDLER_H

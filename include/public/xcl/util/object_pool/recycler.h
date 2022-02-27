@@ -5,30 +5,36 @@
 #ifndef SCL_SCL_UTIL_OBJECT_POOL_RECYCLER_H_
 #define SCL_SCL_UTIL_OBJECT_POOL_RECYCLER_H_
 
-#include "recycled_handle.h"
 #include <xcl/util/factory.h>
+
+#include "recycled_handle.h"
 namespace xcl {
 class Recycler : public Object {
-private:
+ private:
   void *const recycle_impl_;
 
-public:
+ public:
   explicit Recycler(Factory<Object> &factory);
   Recycler(const Recycler &) = delete;
   Recycler(Recycler &&) = delete;
   ~Recycler() override;
 
-public:
-  Recycler &operator=(const Recycler &) = delete;
+ public:
+  Recycler &
+  operator=(const Recycler &) = delete;
 
-public:
-  virtual RecycledHandle *Get();
-  virtual bool Recycle(RecycledHandle *handle);
-  virtual void Clean();
+ public:
+  virtual RecycledHandle *
+  Get();
+  virtual bool
+  Recycle(RecycledHandle *handle);
+  virtual void
+  Clean();
 
-public:
-  Factory<Object> &GetFactory() const;
+ public:
+  Factory<Object> &
+  GetFactory() const;
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_SCL_UTIL_OBJECT_POOL_RECYCLER_H_
+#endif// SCL_SCL_UTIL_OBJECT_POOL_RECYCLER_H_

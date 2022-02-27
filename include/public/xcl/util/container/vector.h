@@ -5,4 +5,4 @@
 #ifndef SCL_VECTOR_H
 #define SCL_VECTOR_H
 
-#endif // SCL_VECTOR_H
+#endif// SCL_VECTOR_H

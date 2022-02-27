@@ -8,10 +8,9 @@ namespace xcl {
 LazyHandler::LazyHandler(func_t f, const Args &args) : pair_(f, args) {}
 LazyHandler::~LazyHandler() = default;
 LazyHandler::Pair::~Pair() {
-  if (func) {
-    func(args);
-  }
+  if (func) { func(args); }
 }
 LazyHandler::Pair::Pair(LazyHandler::func_t f, const Args &args)
-    : func(f), args(args) {}
-} // namespace xcl
+	: func(f),
+	  args(args) {}
+}// namespace xcl

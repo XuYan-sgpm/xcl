@@ -8,9 +8,10 @@
 #include "object.h"
 namespace xcl {
 class Copyable : public Object {
-public:
-  virtual void CopyTo(Object *o) = 0;
+ public:
+  virtual void
+  CopyTo(Object *o) = 0;
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_SCL_LANG_COPYABLE_H_
+#endif// SCL_SCL_LANG_COPYABLE_H_

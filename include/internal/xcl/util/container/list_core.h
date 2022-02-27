@@ -9,11 +9,16 @@
 #include "xcl/util/container/objects_handler.h"
 
 namespace xcl {
-void ListLink(ListNode *node1, ListNode *node2);
-void ListAdd(ListNode *pos, ListNode *node);
-void ListAdd(ListNode *pos, ListNode *first, ListNode *last);
-void ListRemove(ListNode *pos);
-void ListRemove(ListNode *first, ListNode *last);
-} // namespace xcl
+void
+ListLink(ListNode *node1, ListNode *node2);
+void
+ListAdd(ListNode *pos, ListNode *node);
+void
+ListAdd(ListNode *pos, ListNode *first, ListNode *last);
+void
+ListRemove(ListNode *pos);
+void
+ListRemove(ListNode *first, ListNode *last);
+}// namespace xcl
 
-#endif // SCL_SRC_BUILTIN_SCL_UTIL_CONTAINER_LIST_CORE_H_
+#endif// SCL_SRC_BUILTIN_SCL_UTIL_CONTAINER_LIST_CORE_H_

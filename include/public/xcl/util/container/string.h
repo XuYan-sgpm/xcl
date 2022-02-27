@@ -5,8 +5,9 @@
 #ifndef SCL_STRING_H
 #define SCL_STRING_H
 
-template <typename CharType> class CharSequence final {
-public:
+template<typename CharType>
+class CharSequence final {
+ public:
   CharSequence();
 
   CharSequence(int c);
@@ -17,16 +18,16 @@ public:
 
   ~CharSequence();
 
-private:
+ private:
   struct Data {
-    CharType *ptr = nullptr;
+	CharType *ptr = nullptr;
 
-    CharType cache[16];
+	CharType cache[16];
 
-    ~Data();
+	~Data();
   };
 };
 
 class String {};
 
-#endif // SCL_STRING_H
+#endif// SCL_STRING_H

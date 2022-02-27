@@ -11,27 +11,34 @@ class AutoDeletable : public Object {
   Object *data_ = nullptr;
   unsigned *ref_count_ = nullptr;
 
-public:
+ public:
   AutoDeletable(const AutoDeletable &ref);
   AutoDeletable(AutoDeletable &&ref) noexcept;
   ~AutoDeletable() override;
 
-protected:
+ protected:
   explicit AutoDeletable(Object *o);
 
-public:
-  AutoDeletable &operator=(const AutoDeletable &ref);
-  AutoDeletable &operator=(AutoDeletable &&ref) noexcept;
-  AutoDeletable &operator=(Object *o);
+ public:
+  AutoDeletable &
+  operator=(const AutoDeletable &ref);
+  AutoDeletable &
+  operator=(AutoDeletable &&ref) noexcept;
+  AutoDeletable &
+  operator=(Object *o);
 
-public:
-  void Delete();
-  bool IsValid() const;
+ public:
+  void
+  Delete();
+  bool
+  IsValid() const;
 
-protected:
-  Object *data() const;
-  void AddRef(unsigned delta);
+ protected:
+  Object *
+  data() const;
+  void
+  AddRef(unsigned delta);
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_SRC_PUBLIC_SCL_LANG_REFERENCE_H_
+#endif// SCL_SRC_PUBLIC_SCL_LANG_REFERENCE_H_

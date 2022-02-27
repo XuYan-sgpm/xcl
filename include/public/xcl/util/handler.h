@@ -7,12 +7,13 @@
 
 namespace xcl {
 class Handler {
-public:
+ public:
   virtual ~Handler() = default;
 
-public:
-  virtual void handle() = 0;
+ public:
+  virtual void
+  handle() = 0;
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_SCL_UTIL_HANDLE_HANDLER_H_
+#endif// SCL_SCL_UTIL_HANDLE_HANDLER_H_

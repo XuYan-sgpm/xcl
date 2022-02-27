@@ -1,16 +1,13 @@
 //
 // Created by 徐琰 on 2021/12/14.
 //
-
+#include <xcl/util/allocator/size_classes.h>
 #include <cassert>
 #include <iostream>
-#include <xcl/util/allocator/size_classes.h>
-
 namespace xcl {
-
-SizeClasses *SizeClasses::size_obj_ptr_ = nullptr;
-
-unsigned SizeClasses::Log2(int i) {
+SizeClasses SizeClasses::size_classes_(1 << 13, 13, 1 << 24);
+unsigned
+SizeClasses::Log2(unsigned i) {
   if (i == 0) {
     return 0;
   }
@@ -28,12 +25,13 @@ unsigned SizeClasses::Log2(int i) {
   n -= (tmp >> 31);
   return 31 - n;
 }
-
-bool SizeClasses::IsPow2(unsigned int i) { return (i & (i - 1)) == 0; }
-
+bool
+SizeClasses::IsPow2(unsigned int i) {
+  return (i & (i - 1)) == 0;
+}
 SizeClasses::SizeClasses(unsigned int page_size, unsigned int page_shifts,
                          unsigned int chunk_size)
-    : kPageSize(page_size), kPageShifts(page_shifts), kChunkSize(chunk_size) {
+  : kPageSize(page_size), kPageShifts(page_shifts), kChunkSize(chunk_size) {
   if (!IsPow2(page_size) || !IsPow2(chunk_size) ||
       page_size != (1 << page_shifts)) {
     throw;
@@ -50,8 +48,8 @@ SizeClasses::SizeClasses(unsigned int page_size, unsigned int page_shifts,
   size_2_idx_tab_ = new unsigned[kLookupMaxSize >> 4];
   CalSize2IdxTab();
 }
-
-unsigned SizeClasses::CalSizeClasses() {
+unsigned
+SizeClasses::CalSizeClasses() {
   unsigned log_2_group = kLog2GroupInit;
   unsigned log_2_delta = log_2_group;
   unsigned n_delta = 0;
@@ -74,28 +72,29 @@ unsigned SizeClasses::CalSizeClasses() {
   assert(normal_max_size == kChunkSize);
   return idx;
 }
-
-unsigned SizeClasses::CalSizeClass(unsigned int idx, unsigned int log_2_group,
-                                   unsigned int log_2_delta,
-                                   unsigned int n_delta) {
+unsigned
+SizeClasses::CalSizeClass(unsigned int idx, unsigned int log_2_group,
+                          unsigned int log_2_delta, unsigned int n_delta) {
   unsigned size = (1 << log_2_group) + (n_delta << log_2_delta);
-  short is_multi_pages =
-      kPageShifts <= log_2_delta ? (short)1 : (short)(size % kPageSize == 0);
+  short is_multi_pages = kPageShifts <= log_2_delta
+                             ? ( short ) 1
+                             : ( short ) (size % kPageSize == 0);
   short *size_class = size_class_tab_[idx];
-  size_class[0] = (short)idx;
-  size_class[1] = (short)log_2_group;
-  size_class[2] = (short)log_2_delta;
-  size_class[3] = (short)n_delta;
+  size_class[0] = ( short ) idx;
+  size_class[1] = ( short ) log_2_group;
+  size_class[2] = ( short ) log_2_delta;
+  size_class[3] = ( short ) n_delta;
   size_class[4] = is_multi_pages;
-  size_class[5] = (short)(size <= kMaxSubpageSize);
-  size_class[6] = (short)(size <= (1 << kLog2MaxLookupSize) ? log_2_delta : 0);
+  size_class[5] = ( short ) (size <= kMaxSubpageSize);
+  size_class[6] =
+      ( short ) (size <= (1 << kLog2MaxLookupSize) ? log_2_delta : 0);
   if (is_multi_pages) {
     ++n_page_sizes_;
   }
   return size;
 }
-
-void SizeClasses::CalIdx2SizeTab() {
+void
+SizeClasses::CalIdx2SizeTab() {
   unsigned page_idx = 0;
   for (unsigned i = 0; i < n_size_; i++) {
     short *size_class = size_class_tab_[i];
@@ -106,8 +105,8 @@ void SizeClasses::CalIdx2SizeTab() {
     }
   }
 }
-
-void SizeClasses::CalSize2IdxTab() {
+void
+SizeClasses::CalSize2IdxTab() {
   unsigned idx = 0;
   unsigned size = 0;
   for (unsigned i = 0; size <= kLookupMaxSize; ++i) {
@@ -119,16 +118,16 @@ void SizeClasses::CalSize2IdxTab() {
     }
   }
 }
-
-unsigned SizeClasses::SizeIdx2Size(unsigned int size_idx) const {
+unsigned
+SizeClasses::SizeIdx2Size(unsigned int size_idx) const {
   return size_idx_2_size_tab_[size_idx];
 }
-
-unsigned SizeClasses::PageIdx2Size(unsigned int page_idx) const {
+unsigned
+SizeClasses::PageIdx2Size(unsigned int page_idx) const {
   return page_idx_2_size_tab_[page_idx];
 }
-
-unsigned SizeClasses::Size2SizeIdx(unsigned int size) const {
+unsigned
+SizeClasses::Size2SizeIdx(unsigned int size) const {
   if (!size) {
     return 0;
   }
@@ -149,8 +148,8 @@ unsigned SizeClasses::Size2SizeIdx(unsigned int size) const {
   unsigned mod = (size - 1) >> log_2_delta & (1 << kLog2GroupSize) - 1;
   return group + mod;
 }
-
-unsigned SizeClasses::Page2PageIdx(unsigned int pages) const {
+unsigned
+SizeClasses::Page2PageIdx(unsigned int pages) const {
   if (pages == 0) {
     return 0;
   }
@@ -173,8 +172,8 @@ unsigned SizeClasses::Page2PageIdx(unsigned int pages) const {
   }
   return page_idx;
 }
-
-unsigned SizeClasses::Normalize(unsigned int size) const {
+unsigned
+SizeClasses::Normalize(unsigned int size) const {
   if (size == 0) {
     return 0;
   }
@@ -188,17 +187,20 @@ unsigned SizeClasses::Normalize(unsigned int size) const {
   auto delta_mask = (1 << log_2_delta) - 1;
   return (size + delta_mask) & ~delta_mask;
 }
-
-SizeClasses &SizeClasses::Instance() {
-  if (!size_obj_ptr_) {
-    size_obj_ptr_ = new SizeClasses(1 << 13, 13, 1 << 24);
-  }
-  return *size_obj_ptr_;
+SizeClasses &
+SizeClasses::Instance() {
+  return size_classes_;
 }
-
-unsigned SizeClasses::GetSizes() const { return n_size_; }
-
-unsigned SizeClasses::GetChunkSize() const { return kChunkSize; }
-
-unsigned SizeClasses::GetPages() const { return n_page_sizes_; }
-} // namespace xcl
+unsigned
+SizeClasses::GetSizes() const {
+  return n_size_;
+}
+unsigned
+SizeClasses::GetChunkSize() const {
+  return kChunkSize;
+}
+unsigned
+SizeClasses::GetPages() const {
+  return n_page_sizes_;
+}
+}  // namespace xcl

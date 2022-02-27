@@ -8,29 +8,35 @@
 #include <cstdarg>
 
 class Args {
-public:
+ public:
   class Slice final {
-  private:
-    const Args &args;
-    unsigned cur = 0;
+   private:
+	const Args &args;
+	unsigned cur = 0;
 
-  public:
-    Slice(const Args &args, unsigned cur = 0);
-    Slice(const Slice &slice);
+   public:
+	Slice(const Args &args, unsigned cur = 0);
+	Slice(const Slice &slice);
 
-  public:
-    Slice &prev(unsigned n = 1);
-    Slice &next(unsigned n = 1);
-    Slice &get(void *&arg);
-    Slice copy() const;
+   public:
+	Slice &
+	prev(unsigned n = 1);
+	Slice &
+	next(unsigned n = 1);
+	Slice &
+	get(void *&arg);
+	Slice
+	copy() const;
   };
 
-public:
-  virtual unsigned nArgs() const = 0;
-  virtual void *getArg(unsigned idx) const = 0;
+ public:
+  virtual unsigned
+  nArgs() const = 0;
+  virtual void *
+  getArg(unsigned idx) const = 0;
 
-public:
+ public:
   virtual ~Args() = default;
 };
 
-#endif // SCL_ARGS_H
+#endif// SCL_ARGS_H

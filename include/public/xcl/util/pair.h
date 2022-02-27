@@ -10,12 +10,13 @@
 using namespace std;
 
 namespace xcl {
-template <typename First, typename Second> struct Pair {
-public:
+template<typename First, typename Second>
+struct Pair {
+ public:
   const First first;
   const Second second;
 
-public:
+ public:
   Pair();
 
   Pair(const First &f, const Second &s);
@@ -29,32 +30,34 @@ public:
   ~Pair();
 };
 
-template <typename First, typename Second>
-Pair<First, Second>::Pair() : first(), second() {}
+template<typename First, typename Second>
+Pair<First, Second>::Pair() : first(),
+							  second() {}
 
-template <typename First, typename Second>
+template<typename First, typename Second>
 Pair<First, Second>::Pair(const First &f, const Second &s)
-    : first(f), second(s) {}
+	: first(f),
+	  second(s) {}
 
-template <typename First, typename Second>
+template<typename First, typename Second>
 Pair<First, Second>::Pair(First &&f, Second &&s)
-    : first(std::move(f)), second(std::move(s)) {}
+	: first(std::move(f)),
+	  second(std::move(s)) {}
 
-template <typename First, typename Second>
-Pair<First, Second>::Pair(const Pair &p) : first(p.first), second(p.second) {}
+template<typename First, typename Second>
+Pair<First, Second>::Pair(const Pair &p) : first(p.first),
+										   second(p.second) {}
 
-template <typename First, typename Second>
+template<typename First, typename Second>
 Pair<First, Second>::Pair(Pair &&p) noexcept
-    : first(std::move(p.first)), second(std::move(p.second)) {}
+	: first(std::move(p.first)),
+	  second(std::move(p.second)) {}
 
-template <typename First, typename Second> Pair<First, Second>::~Pair() {
-  if (!is_trivially_destructible_v<First>) {
-    first.~First();
-  }
-  if (!is_trivially_destructible_v<Second>) {
-    second.~Second();
-  }
+template<typename First, typename Second>
+Pair<First, Second>::~Pair() {
+  if (!is_trivially_destructible_v<First>) { first.~First(); }
+  if (!is_trivially_destructible_v<Second>) { second.~Second(); }
 }
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_PAIR_H
+#endif// SCL_PAIR_H

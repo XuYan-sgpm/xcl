@@ -7,13 +7,15 @@
 
 namespace xcl {
 class Object {
-public:
+ public:
   virtual ~Object() = default;
 
-public:
-  virtual long HashCode() const;
-  virtual bool Equals(const Object &o) const;
+ public:
+  virtual long
+  HashCode() const;
+  virtual bool
+  Equals(const Object &o) const;
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_SCL_LANG_OBJECT_H_
+#endif// SCL_SCL_LANG_OBJECT_H_

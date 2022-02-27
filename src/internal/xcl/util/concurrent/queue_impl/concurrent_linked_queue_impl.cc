@@ -2,18 +2,20 @@
 // Created by 徐琰 on 2022/2/8.
 //
 
-#include <cstdlib>
 #include <xcl/util/concurrent/queue_impl/concurrent_linked_queue_impl.h>
+
+#include <cstdlib>
 
 namespace xcl {
 ConcurrentLinkedQueueImpl::TaggedNodePtr::TaggedNodePtr(
     ConcurrentLinkedQueueImpl::Node *node, unsigned long tag)
-    : TaggedPtr(node, tag) {}
+  : TaggedPtr(node, tag) {}
 ConcurrentLinkedQueueImpl::Node *
 ConcurrentLinkedQueueImpl::TaggedNodePtr::GetNode() const {
-  return (ConcurrentLinkedQueueImpl::Node *)ptr();
+  return ( ConcurrentLinkedQueueImpl::Node * ) ptr();
 }
-void ConcurrentLinkedQueueImpl::TaggedNodePtr::SetNode(
+void
+ConcurrentLinkedQueueImpl::TaggedNodePtr::SetNode(
     ConcurrentLinkedQueueImpl::Node *node) {
   set_ptr(node);
 }
@@ -30,22 +32,25 @@ ConcurrentLinkedQueueImpl::TaggedNodePtr
 ConcurrentLinkedQueueImpl::Node::GetNext() const {
   return atomic_next_.load(std::memory_order_acquire);
 }
-void ConcurrentLinkedQueueImpl::Node::SetNext(
+void
+ConcurrentLinkedQueueImpl::Node::SetNext(
     const ConcurrentLinkedQueueImpl::TaggedNodePtr &tagged_node_ptr) {
   atomic_next_.store(tagged_node_ptr, std::memory_order_release);
 }
-bool ConcurrentLinkedQueueImpl::Node::CasNext(
+bool
+ConcurrentLinkedQueueImpl::Node::CasNext(
     bool weak, ConcurrentLinkedQueueImpl::TaggedNodePtr &expect,
     const ConcurrentLinkedQueueImpl::TaggedNodePtr &update) {
   auto m = std::memory_order_acq_rel;
   return weak ? atomic_next_.compare_exchange_weak(expect, update, m)
               : atomic_next_.compare_exchange_strong(expect, update, m);
 }
-void *ConcurrentLinkedQueueImpl::NodeStack::MemoryPool::Alloc() {
+void *
+ConcurrentLinkedQueueImpl::NodeStack::MemoryPool::Alloc() {
   auto node_size = sizeof(Node);
   if (cursor_.pos) {
     if (cursor_.pos <
-        (char *)cursor_.block->address + cursor_.block->block_size) {
+        ( char * ) cursor_.block->address + cursor_.block->block_size) {
       void *p = cursor_.pos;
       cursor_.pos += node_size;
       return p;
@@ -68,11 +73,12 @@ void *ConcurrentLinkedQueueImpl::NodeStack::MemoryPool::Alloc() {
     head_block_ = tail_block_ = block;
   }
   cursor_.block = block;
-  cursor_.pos = (char *)block->address + node_size;
+  cursor_.pos = ( char * ) block->address + node_size;
   total_pool_size_ += real_size;
   return block->address;
 }
-void ConcurrentLinkedQueueImpl::NodeStack::MemoryPool::Release() {
+void
+ConcurrentLinkedQueueImpl::NodeStack::MemoryPool::Release() {
   auto cur_block = head_block_;
   while (cur_block) {
     auto next_block = cur_block->next_block;
@@ -84,11 +90,13 @@ void ConcurrentLinkedQueueImpl::NodeStack::MemoryPool::Release() {
   head_block_ = tail_block_ = nullptr;
 }
 ConcurrentLinkedQueueImpl::NodeStack::MemoryPool::~MemoryPool() { Release(); }
-bool ConcurrentLinkedQueueImpl::NodeStack::MemoryPool::Available() const {
+bool
+ConcurrentLinkedQueueImpl::NodeStack::MemoryPool::Available() const {
   return cursor_.pos < reinterpret_cast<char *>(cursor_.block->address) +
                            cursor_.block->block_size;
 }
-ConcurrentLinkedQueueImpl::Node *ConcurrentLinkedQueueImpl::NodeStack::Get() {
+ConcurrentLinkedQueueImpl::Node *
+ConcurrentLinkedQueueImpl::NodeStack::Get() {
   auto pool = reinterpret_cast<MemoryPool *>(local_mem_pool_.Get());
   if (pool) {
     if (pool->Available()) {
@@ -111,7 +119,8 @@ ConcurrentLinkedQueueImpl::Node *ConcurrentLinkedQueueImpl::NodeStack::Get() {
     }
   }
 }
-void ConcurrentLinkedQueueImpl::NodeStack::Put(
+void
+ConcurrentLinkedQueueImpl::NodeStack::Put(
     ConcurrentLinkedQueueImpl::Node *node) {
   auto top = atomic_top_.load(std::memory_order_acquire);
   for (;;) {
@@ -133,4 +142,4 @@ ConcurrentLinkedQueueImpl::ConcurrentLinkedQueueImpl() {
 ConcurrentLinkedQueueImpl::~ConcurrentLinkedQueueImpl() {
   //
 }
-} // namespace xcl
+}  // namespace xcl

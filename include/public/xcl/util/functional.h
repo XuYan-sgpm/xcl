@@ -8,9 +8,10 @@
 #include <xcl/lang/object.h>
 namespace xcl {
 class Functional : public Object {
-public:
-  virtual Object *Invoke(Object *arg) = 0;
+ public:
+  virtual Object *
+  Invoke(Object *arg) = 0;
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_SCL_UTIL_FUNCTIONAL_H_
+#endif// SCL_SCL_UTIL_FUNCTIONAL_H_

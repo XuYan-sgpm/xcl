@@ -8,24 +8,30 @@
 #include "xcl/util/container/plain_iterable.h"
 namespace xcl {
 class NormalPointerIterable : public PlainIterable {
-public:
-  void *Value() const override;
-  bool Next() override;
-  bool Equal(const BasePlainIterable &iterable) const override;
-  unsigned int operator-(const BasePlainIterable &iterable) const override;
-  IterCategory Category() const override;
-  void CopyTo(Object *o) override;
+ public:
+  void *
+  Value() const override;
+  bool
+  Next() override;
+  bool
+  Equal(const BasePlainIterable &iterable) const override;
+  unsigned int
+  operator-(const BasePlainIterable &iterable) const override;
+  IterCategory
+  Category() const override;
+  void
+  CopyTo(Object *o) override;
 
   // protected:
   //   void *GetValuePtr() const override;
 
-private:
+ private:
   void *ptr_;
   const unsigned element_size_;
 
-public:
+ public:
   NormalPointerIterable(void *p, unsigned element_size);
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_SRC_BUILTIN_SCL_UTIL_CONTAINER_NORMAL_POINTER_ITERABLE_H_
+#endif// SCL_SRC_BUILTIN_SCL_UTIL_CONTAINER_NORMAL_POINTER_ITERABLE_H_

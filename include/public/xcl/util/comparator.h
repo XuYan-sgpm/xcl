@@ -6,13 +6,15 @@
 #define SCL_COMPARATOR_H
 
 namespace xcl {
-template <typename E> class Comparator {
-public:
-  virtual int operator()(const E &e1, const E &e2) const = 0;
+template<typename E>
+class Comparator {
+ public:
+  virtual int
+  operator()(const E &e1, const E &e2) const = 0;
 
-public:
+ public:
   virtual ~Comparator() = default;
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_COMPARATOR_H
+#endif// SCL_COMPARATOR_H

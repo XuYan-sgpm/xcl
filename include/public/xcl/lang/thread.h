@@ -10,38 +10,48 @@
 
 namespace xcl {
 class Thread : public Object {
-public:
-  bool IsAlive();
-  bool Join();
-  bool Detach();
-  bool AddCallback(Runnable *runnable);
+ public:
+  bool
+  IsAlive();
+  bool
+  Join();
+  bool
+  Detach();
+  bool
+  AddCallback(Runnable *runnable);
 
-public:
-  bool operator==(const Thread &thread) const;
-  bool operator!=(const Thread &thread) const;
+ public:
+  bool
+  operator==(const Thread &thread) const;
+  bool
+  operator!=(const Thread &thread) const;
 
-public:
-  static Thread CurrentThread();
-  static Thread NewThread(Runnable *runnable);
+ public:
+  static Thread
+  CurrentThread();
+  static Thread
+  NewThread(Runnable *runnable);
 
-protected:
+ protected:
   Thread(void *context);
 
-private:
+ private:
   Thread() = default;
 
-public:
+ public:
   Thread(const Thread &) = delete;
   Thread(Thread &&thread) noexcept;
   ~Thread() override;
 
-public:
-  Thread &operator=(const Thread &) = delete;
-  Thread &operator=(Thread &&thread) noexcept;
+ public:
+  Thread &
+  operator=(const Thread &) = delete;
+  Thread &
+  operator=(Thread &&thread) noexcept;
 
-private:
+ private:
   void *context_ = nullptr;
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_SCL_LANG_THREAD_H_
+#endif// SCL_SCL_LANG_THREAD_H_

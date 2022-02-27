@@ -5,28 +5,33 @@
 #ifndef SCL_SCL_LANG_THREAD_LOCAL_H_
 #define SCL_SCL_LANG_THREAD_LOCAL_H_
 
-#include "object.h"
 #include <cstddef>
+
+#include "object.h"
 namespace xcl {
 class ThreadLocal final : public Object {
-public:
-  void *Get() const;
-  void Set(void *object);
+ public:
+  void *
+  Get() const;
+  void
+  Set(void *object);
 
-public:
+ public:
   ThreadLocal();
   ThreadLocal(const ThreadLocal &) = delete;
 
-public:
-  ThreadLocal &operator=(const ThreadLocal &) = delete;
+ public:
+  ThreadLocal &
+  operator=(const ThreadLocal &) = delete;
 
-private:
+ private:
   const unsigned id_;
 
-protected:
+ protected:
   void *operator new(size_t);
-  void operator delete(void *p);
+  void
+  operator delete(void *p);
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_SCL_LANG_THREAD_LOCAL_H_
+#endif// SCL_SCL_LANG_THREAD_LOCAL_H_

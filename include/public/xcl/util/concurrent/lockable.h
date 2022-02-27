@@ -7,17 +7,21 @@
 
 namespace xcl {
 class Lockable : public Object {
-public:
-  virtual void Lock() = 0;
-  virtual bool TryLock() = 0;
-  virtual void Unlock() = 0;
+ public:
+  virtual void
+  Lock() = 0;
+  virtual bool
+  TryLock() = 0;
+  virtual void
+  Unlock() = 0;
 
-public:
+ public:
   Lockable(const Lockable &) = delete;
 
-public:
-  Lockable &operator=(const Lockable &) = delete;
+ public:
+  Lockable &
+  operator=(const Lockable &) = delete;
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // XCL_INCLUDE_XCL_UTIL_CONCURRENT_LOCKABLE_H_
+#endif// XCL_INCLUDE_XCL_UTIL_CONCURRENT_LOCKABLE_H_

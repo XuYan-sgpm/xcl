@@ -12,6 +12,6 @@ struct RbNode {
   RbNode *left, *right, *par;
   Color color;
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_RB_DEF_H
+#endif// SCL_RB_DEF_H

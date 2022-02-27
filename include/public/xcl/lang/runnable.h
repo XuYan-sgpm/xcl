@@ -8,9 +8,10 @@
 #include "object.h"
 namespace xcl {
 class Runnable : public Object {
-public:
-  virtual void Run() = 0;
+ public:
+  virtual void
+  Run() = 0;
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_SCL_LANG_RUNNABLE_H_
+#endif// SCL_SCL_LANG_RUNNABLE_H_

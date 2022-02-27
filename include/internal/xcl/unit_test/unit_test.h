@@ -7,28 +7,32 @@
 
 class UnitTest {
   struct TestNode {
-    void (*test_func)() = nullptr;
-    TestNode *next = nullptr;
+	void (*test_func)() = nullptr;
+	TestNode *next = nullptr;
   };
   TestNode head_;
   TestNode *tail_ = &head_;
 
-public:
-  void Add(void (*func)());
-  void Test() const;
-  void TestFiles(const char *test_dir, unsigned n, ...);
+ public:
+  void
+  Add(void (*func)());
+  void
+  Test() const;
+  void
+  TestFiles(const char *test_dir, unsigned n, ...);
 
-public:
+ public:
   ~UnitTest();
 
-private:
+ private:
   UnitTest() = default;
 
-private:
+ private:
   static UnitTest *unit_test_;
 
-public:
-  static UnitTest &Instance();
+ public:
+  static UnitTest &
+  Instance();
 };
 
-#endif // SCL_TEST_UNIT_TEST_H_
+#endif// SCL_TEST_UNIT_TEST_H_

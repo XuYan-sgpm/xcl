@@ -8,10 +8,12 @@
 #include <xcl/lang/object.h>
 namespace xcl {
 class RecycledHandle : public Object {
-public:
-  virtual bool Recycle() = 0;
-  virtual Object *GetObj() const = 0;
+ public:
+  virtual bool
+  Recycle() = 0;
+  virtual Object*
+  GetObj() const = 0;
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_HANDLE_H
+#endif// SCL_HANDLE_H

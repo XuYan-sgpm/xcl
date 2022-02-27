@@ -9,27 +9,28 @@
 
 namespace xcl {
 class TimeUnit {
-protected:
-  enum TYPE {
-    TYPE_DAYS,
-    TYPE_HOURS,
-    TYPE_MINUTES,
-    TYPE_SECONDS,
-    TYPE_MILLISECONDS,
-    TYPE_MICROS,
-    TYPE_NANOS
+ protected:
+  enum TimeType : char {
+	TYPE_DAYS,
+	TYPE_HOURS,
+	TYPE_MINUTES,
+	TYPE_SECONDS,
+	TYPE_MILLISECONDS,
+	TYPE_MICROS,
+	TYPE_NANOS
   };
 
-protected:
+ protected:
   TimeUnit() = default;
 
-protected:
-  virtual TYPE Type() const = 0;
+ protected:
+  virtual TimeType
+  Type() const = 0;
 
-public:
+ public:
   virtual ~TimeUnit() = default;
 
-private:
+ private:
   static TimeUnit &days_;
   static TimeUnit &hours_;
   static TimeUnit &minutes_;
@@ -38,25 +39,40 @@ private:
   static TimeUnit &micros_;
   static TimeUnit &nanos_;
 
-public:
-  virtual uint64_t ToDays(uint64_t d) const = 0;
-  virtual uint64_t ToHours(uint64_t d) const = 0;
-  virtual uint64_t ToMicros(uint64_t d) const = 0;
-  virtual uint64_t ToMillis(uint64_t d) const = 0;
-  virtual uint64_t ToNanos(uint64_t d) const = 0;
-  virtual uint64_t ToSeconds(uint64_t d) const = 0;
-  virtual uint64_t ToMinutes(uint64_t d) const = 0;
-  virtual uint64_t Convert(uint64_t d, const TimeUnit &timeUnit) const final;
+ public:
+  virtual uint64_t
+  ToDays(uint64_t d) const = 0;
+  virtual uint64_t
+  ToHours(uint64_t d) const = 0;
+  virtual uint64_t
+  ToMicros(uint64_t d) const = 0;
+  virtual uint64_t
+  ToMillis(uint64_t d) const = 0;
+  virtual uint64_t
+  ToNanos(uint64_t d) const = 0;
+  virtual uint64_t
+  ToSeconds(uint64_t d) const = 0;
+  virtual uint64_t
+  ToMinutes(uint64_t d) const = 0;
+  virtual uint64_t
+  Convert(uint64_t d, const TimeUnit &timeUnit) const final;
 
-public:
-  static TimeUnit &days();
-  static TimeUnit &hours();
-  static TimeUnit &micros();
-  static TimeUnit &millis();
-  static TimeUnit &nanos();
-  static TimeUnit &seconds();
-  static TimeUnit &minutes();
+ public:
+  static TimeUnit &
+  days();
+  static TimeUnit &
+  hours();
+  static TimeUnit &
+  micros();
+  static TimeUnit &
+  millis();
+  static TimeUnit &
+  nanos();
+  static TimeUnit &
+  seconds();
+  static TimeUnit &
+  minutes();
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_TIMEUNIT_H
+#endif// SCL_TIMEUNIT_H

@@ -29,4 +29,4 @@
 #define LINUX 0
 #endif
 
-#endif // SCL_PLATFORM_H
+#endif// SCL_PLATFORM_H

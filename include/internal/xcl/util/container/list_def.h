@@ -10,4 +10,4 @@ struct ListNode {
   ListNode *prev, *next;
 };
 
-#endif // SCL_SRC_BUILTIN_SCL_UTIL_CONTAINER_LIST_DEF_H_
+#endif// SCL_SRC_BUILTIN_SCL_UTIL_CONTAINER_LIST_DEF_H_

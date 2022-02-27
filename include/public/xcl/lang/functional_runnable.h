@@ -8,20 +8,22 @@
 #include "runnable.h"
 namespace xcl {
 class FunctionalRunnable : public Runnable {
-public:
-  void Run() override;
+ public:
+  void
+  Run() override;
 
-public:
+ public:
   FunctionalRunnable(void *(*func)(void *), void *arg);
 
-public:
-  void *result() const;
+ public:
+  void *
+  result() const;
 
-private:
+ private:
   void *(*func_)(void *) = nullptr;
   void *arg_ = nullptr;
   void *result_ = nullptr;
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // XCL_SRC_XCL_PUBLIC_LANG_FUNCTIONAL_RUNNABLE_H_
+#endif// XCL_SRC_XCL_PUBLIC_LANG_FUNCTIONAL_RUNNABLE_H_

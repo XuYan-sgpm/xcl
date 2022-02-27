@@ -7,51 +7,61 @@
 
 #include "args.h"
 class HeapArgs : public Args {
-public:
-  unsigned int nArgs() const override;
+ public:
+  unsigned int
+  nArgs() const override;
 
-  void *getArg(unsigned int idx) const override;
+  void *
+  getArg(unsigned int idx) const override;
 
-private:
+ private:
   void **ptrValues = nullptr;
 
   unsigned cap = 0;
 
   unsigned count = 0;
 
-public:
+ public:
   class Slice final {
-  private:
-    HeapArgs &heapArgs;
+   private:
+	HeapArgs &heapArgs;
 
-    unsigned cur = 0;
+	unsigned cur = 0;
 
-  public:
-    Slice(HeapArgs &heapArgs);
+   public:
+	Slice(HeapArgs &heapArgs);
 
-    Slice(HeapArgs &heapArgs, unsigned cur);
+	Slice(HeapArgs &heapArgs, unsigned cur);
 
-    Slice(const Slice &slice);
+	Slice(const Slice &slice);
 
-  public:
-    Slice &push(void *arg);
+   public:
+	Slice &
+	push(void *arg);
 
-    Slice &pop(void *&arg);
+	Slice &
+	pop(void *&arg);
 
-    Slice &prev();
+	Slice &
+	prev();
 
-    Slice &next();
+	Slice &
+	next();
 
-    Slice &prev(unsigned n);
+	Slice &
+	prev(unsigned n);
 
-    Slice &next(unsigned n);
+	Slice &
+	next(unsigned n);
 
-    Slice &set(void *arg);
+	Slice &
+	set(void *arg);
 
-    Slice &get(void *&arg);
+	Slice &
+	get(void *&arg);
   };
 
-public:
+ public:
   HeapArgs() = default;
 
   HeapArgs(unsigned n, ...);
@@ -62,15 +72,19 @@ public:
 
   ~HeapArgs() override;
 
-protected:
-  bool pushArg(void *arg);
+ protected:
+  bool
+  pushArg(void *arg);
 
-  void *popArg(unsigned idx) const;
+  void *
+  popArg(unsigned idx) const;
 
-public:
-  Slice push(void *arg);
+ public:
+  Slice
+  push(void *arg);
 
-  Slice pop(void *&arg);
+  Slice
+  pop(void *&arg);
 };
 
-#endif // SCL_HEAPARGS_H
+#endif// SCL_HEAPARGS_H

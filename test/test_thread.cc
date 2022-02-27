@@ -1,30 +1,37 @@
 //
 // Created by 徐琰 on 2022/2/9.
 //
-
-#include <iostream>
-#include <sys/stat.h>
 #include <unistd.h>
 #include <xcl/lang/thread.h>
 #include <xcl/lang/thread_local.h>
+#include <iostream>
 extern "C" {
 class Wrapper : public xcl::Runnable {
   void (*func_)(void) = nullptr;
 
-public:
+ public:
   Wrapper(void (*func)()) : func_(func) {}
 
-public:
-  void Run() override { func_(); }
+ public:
+  void
+  Run() override {
+    func_();
+  }
 };
-void *TestCurrentThread(void *arg) {
+#include <xcl/lang/copy_handle.h>
+#include <xcl/util/time_unit.h>
+void *
+TestCurrentThread(void *arg) {
   auto h = pthread_self();
   std::cout << "handle: " << h << std::endl;
   //    pthread_detach(pair_);
   auto thread = xcl::Thread::CurrentThread();
   class B : public xcl::Runnable {
-  public:
-    void Run() override { std::cout << "B run" << std::endl; }
+   public:
+    void
+    Run() override {
+      std::cout << "B run" << std::endl;
+    }
   };
   std::cout << std::boolalpha << thread.AddCallback(new B()) << std::endl;
   //  thread->DetachThread();
@@ -34,7 +41,8 @@ void *TestCurrentThread(void *arg) {
   //  return thread;
   return nullptr;
 }
-void TestThread() {
+void
+TestThread() {
   auto thread1 = xcl::Thread::NewThread(new Wrapper([]() {
     sleep(3);
     std::cout << "thread finished" << std::endl;
@@ -46,19 +54,22 @@ void TestThread() {
   thread1.Detach();
   sleep(5);
 }
-void TestThreadLocal() {
+void
+TestThreadLocal() {
   class Integer : public xcl::Object {
-  private:
+   private:
     int value_ = 0;
 
-  public:
+   public:
     Integer(int value) : value_(value) {}
 
-  public:
+   public:
     operator int &() noexcept { return value_; }
-    int value() const { return value_; }
+    int
+    value() const {
+      return value_;
+    }
   };
-
   Integer integer(12);
   std::cout << &integer << std::endl;
   xcl::ThreadLocal local;
@@ -77,8 +88,8 @@ void TestThreadLocal() {
   std::cout << local2.Get() << std::endl;
 }
 }
-
-int main() {
+int
+main() {
   TestThread();
   return 0;
 }

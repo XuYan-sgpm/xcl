@@ -6,31 +6,31 @@
 
 Args::Slice::Slice(const Args &args, unsigned int cur) : args(args), cur(cur) {}
 
-Args::Slice &Args::Slice::prev(unsigned int n) {
-  if (n > cur) {
-    throw;
-  }
+Args::Slice &
+Args::Slice::prev(unsigned int n) {
+  if (n > cur) { throw; }
   cur -= n;
   return *this;
 }
 
-Args::Slice &Args::Slice::next(unsigned int n) {
-  if (n > args.nArgs() - cur) {
-    throw;
-  }
+Args::Slice &
+Args::Slice::next(unsigned int n) {
+  if (n > args.nArgs() - cur) { throw; }
   cur += n;
   return *this;
 }
 
-Args::Slice &Args::Slice::get(void *&arg) {
-  if (cur >= args.nArgs()) {
-    throw;
-  }
+Args::Slice &
+Args::Slice::get(void *&arg) {
+  if (cur >= args.nArgs()) { throw; }
   arg = args.getArg(cur++);
   return *this;
 }
 
-Args::Slice Args::Slice::copy() const { return {args, cur}; }
+Args::Slice
+Args::Slice::copy() const {
+  return {args, cur};
+}
 
 Args::Slice::Slice(const Args::Slice &slice) = default;
 

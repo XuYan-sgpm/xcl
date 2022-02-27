@@ -1,46 +1,76 @@
 //
 // Created by 徐琰 on 2022/2/19.
 //
-
 #include <xcl/lang/thread_impl.h>
 namespace xcl::thread_impl {
 ThreadImpl::ThreadState::ThreadState(char v) { state_value_ = v; }
-void ThreadImpl::ThreadState::SetStarted() { state_value_ |= 1; }
-bool ThreadImpl::ThreadState::IsStarted() const { return state_value_ & 1; }
-void ThreadImpl::ThreadState::SetError() { state_value_ |= 2; }
-bool ThreadImpl::ThreadState::IsError() const { return state_value_ & 2; }
-void ThreadImpl::ThreadState::SetTerminated() { state_value_ |= 4; }
-bool ThreadImpl::ThreadState::IsTerminated() const { return state_value_ & 4; }
-void ThreadImpl::ThreadState::SetDetached() { state_value_ |= 8; }
-bool ThreadImpl::ThreadState::IsDetached() const { return state_value_ & 8; }
-bool ThreadImpl::ThreadState::IsAlive() const { return state_value_ == 1; }
-unsigned ThreadImpl::ThreadState::GetValue() const { return state_value_; }
-
+void
+ThreadImpl::ThreadState::SetStarted() {
+  state_value_ |= 1;
+}
+bool
+ThreadImpl::ThreadState::IsStarted() const {
+  return state_value_ & 1;
+}
+void
+ThreadImpl::ThreadState::SetError() {
+  state_value_ |= 2;
+}
+bool
+ThreadImpl::ThreadState::IsError() const {
+  return state_value_ & 2;
+}
+void
+ThreadImpl::ThreadState::SetTerminated() {
+  state_value_ |= 4;
+}
+bool
+ThreadImpl::ThreadState::IsTerminated() const {
+  return state_value_ & 4;
+}
+void
+ThreadImpl::ThreadState::SetDetached() {
+  state_value_ |= 8;
+}
+bool
+ThreadImpl::ThreadState::IsDetached() const {
+  return state_value_ & 8;
+}
+bool
+ThreadImpl::ThreadState::IsAlive() const {
+  return state_value_ == 1;
+}
+unsigned
+ThreadImpl::ThreadState::GetValue() const {
+  return state_value_;
+}
 pthread_key_t ThreadImpl::local_thread_key_ = -1;
 bool ThreadImpl::initialized_ = CreateLocalKey();
-
 ThreadImpl::CallStack::CallStack(ThreadImpl *thread_impl)
-    : thread_impl_(thread_impl) {}
+  : thread_impl_(thread_impl) {}
 ThreadImpl::CallStack::~CallStack() {
   if (!thread_impl_->is_native_thread()) {
     thread_impl_->JoinThread();
   }
   Destroy();
 }
-void ThreadImpl::CallStack::Add(ThreadImpl::CallPair call_pair) {
+void
+ThreadImpl::CallStack::Add(ThreadImpl::CallPair call_pair) {
   auto node = new Node();
   node->call_pair = call_pair;
   node->next = top_;
   top_ = node;
 }
-void ThreadImpl::CallStack::Invoke() {
+void
+ThreadImpl::CallStack::Invoke() {
   auto node = top_;
   while (node) {
     node->call_pair.thread_func(node->call_pair.thread_arg);
     node = node->next;
   }
 }
-void ThreadImpl::CallStack::Destroy() {
+void
+ThreadImpl::CallStack::Destroy() {
   auto cur_node = top_;
   while (cur_node) {
     auto next_node = cur_node->next;
@@ -48,10 +78,10 @@ void ThreadImpl::CallStack::Destroy() {
     cur_node = next_node;
   }
 }
-
 ThreadImpl::ThreadImpl(bool is_native_thread)
-    : is_native_thread_(is_native_thread), call_stack_(this) {}
-void *ThreadImpl::ThreadRun(void *arg) {
+  : is_native_thread_(is_native_thread), call_stack_(this) {}
+void *
+ThreadImpl::ThreadRun(void *arg) {
   auto thread_impl = reinterpret_cast<ThreadImpl *>(arg);
   SetLocalThread(thread_impl);
   auto &call_pair = thread_impl->thread_running_call_pair_;
@@ -60,7 +90,8 @@ void *ThreadImpl::ThreadRun(void *arg) {
   thread_impl->state_.SetTerminated();
   return nullptr;
 }
-bool ThreadImpl::InitHandle() {
+bool
+ThreadImpl::InitHandle() {
   if (state_.GetValue() == 0) {
     auto ret = pthread_create(&handle_, nullptr, &ThreadRun, this);
     if (ret != 0) {
@@ -73,7 +104,8 @@ bool ThreadImpl::InitHandle() {
   }
   return false;
 }
-bool ThreadImpl::PushRunnable(ThreadImpl::CallPair call_pair) {
+bool
+ThreadImpl::PushRunnable(ThreadImpl::CallPair call_pair) {
   Locker locker(state_mutex_);
   if (state_.GetValue() > 1 && !is_native_thread()) {
     return false;
@@ -81,7 +113,8 @@ bool ThreadImpl::PushRunnable(ThreadImpl::CallPair call_pair) {
   call_stack_.Add(call_pair);
   return true;
 }
-bool ThreadImpl::IsThreadRunning() {
+bool
+ThreadImpl::IsThreadRunning() {
   Locker locker(state_mutex_);
   bool alive = state_.IsAlive();
   if (alive) {
@@ -96,7 +129,8 @@ bool ThreadImpl::IsThreadRunning() {
   }
   return alive;
 }
-bool ThreadImpl::CreateLocalKey() {
+bool
+ThreadImpl::CreateLocalKey() {
 #if MACOSX || LINUX
   auto key_ret = pthread_key_create(&local_thread_key_, [](void *arg) {
     auto thread_impl = reinterpret_cast<ThreadImpl *>(arg);
@@ -113,7 +147,8 @@ bool ThreadImpl::CreateLocalKey() {
 #else
 #endif
 }
-void ThreadImpl::SetLocalThread(ThreadImpl *thread_impl) {
+void
+ThreadImpl::SetLocalThread(ThreadImpl *thread_impl) {
   if (initialized_) {
 #if MACOSX || LINUX
     pthread_setspecific(ThreadImpl::local_thread_key_, thread_impl);
@@ -121,7 +156,8 @@ void ThreadImpl::SetLocalThread(ThreadImpl *thread_impl) {
 #endif
   }
 }
-ThreadImpl *ThreadImpl::GetLocalThread() {
+ThreadImpl *
+ThreadImpl::GetLocalThread() {
   if (initialized_) {
 #if MACOSX || LINUX
     auto thread_impl = reinterpret_cast<ThreadImpl *>(
@@ -143,7 +179,8 @@ ThreadImpl::ThreadImpl(ThreadImpl::CallPair call_pair) : ThreadImpl(false) {
   thread_running_call_pair_ = call_pair;
   InitHandle();
 }
-bool ThreadImpl::JoinThread() {
+bool
+ThreadImpl::JoinThread() {
   Locker locker(state_mutex_);
   if (state_.IsAlive()) {
     state_mutex_.unlock();
@@ -161,7 +198,8 @@ bool ThreadImpl::JoinThread() {
     return false;
   }
 }
-bool ThreadImpl::DetachThread() {
+bool
+ThreadImpl::DetachThread() {
   Locker locker(state_mutex_);
   if (state_.IsAlive()) {
 #if MACOSX || LINUX
@@ -174,16 +212,28 @@ bool ThreadImpl::DetachThread() {
     return false;
   }
 }
-pthread_key_t ThreadImpl::local_thread_key() { return local_thread_key_; }
-bool ThreadImpl::operator==(const ThreadImpl &thread_impl) const {
+pthread_key_t
+ThreadImpl::local_thread_key() {
+  return local_thread_key_;
+}
+bool
+ThreadImpl::operator==(const ThreadImpl &thread_impl) const {
   return handle_ == thread_impl.handle_;
 }
-bool ThreadImpl::is_native_thread() const { return is_native_thread_; }
-pthread_t ThreadImpl::handle() const { return handle_; }
-local_storage::LocalStorage &ThreadImpl::local_storage() {
+bool
+ThreadImpl::is_native_thread() const {
+  return is_native_thread_;
+}
+pthread_t
+ThreadImpl::handle() const {
+  return handle_;
+}
+local_storage::LocalStorage &
+ThreadImpl::local_storage() {
   return local_storage_;
 }
-__attribute__((destructor)) void DeleteLocalThreadKey() {
+__attribute__((destructor)) void
+DeleteLocalThreadKey() {
 #if MACOSX || LINUX
   if (ThreadImpl::local_thread_key() != -1)
     pthread_key_delete(ThreadImpl::local_thread_key());
@@ -194,4 +244,4 @@ ThreadImpl::CallPair::CallPair(void (*func)(void *), void *arg) {
   thread_func = func;
   thread_arg = arg;
 }
-} // namespace xcl::thread_impl
+}  // namespace xcl::thread_impl

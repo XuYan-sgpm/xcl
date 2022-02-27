@@ -5,23 +5,26 @@
 #ifndef SCL_ALLOCATOR_H
 #define SCL_ALLOCATOR_H
 
+#include <xcl/lang/object.h>
 namespace xcl {
-class Allocator {
-public:
-  virtual void *Allocate(unsigned bytes) = 0;
+class Allocator : public Object {
+ public:
+  virtual void *
+  Allocate(unsigned bytes) = 0;
 
-  virtual void Deallocate(void *p, unsigned bytes) = 0;
+  virtual void
+  Deallocate(void *p, unsigned bytes) = 0;
 
-  virtual void *Reallocate(void *p, unsigned old_bytes, unsigned new_bytes) = 0;
+  virtual void *
+  Reallocate(void *p, unsigned old_bytes, unsigned new_bytes) = 0;
 
-protected:
-  static unsigned CheckAlignment(unsigned a);
+ protected:
+  static unsigned
+  CheckAlignment(unsigned a);
 
-  static unsigned Align(unsigned bytes, unsigned a);
-
-public:
-  virtual ~Allocator() = default;
+  static unsigned
+  Align(unsigned bytes, unsigned a);
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_ALLOCATOR_H
+#endif// SCL_ALLOCATOR_H

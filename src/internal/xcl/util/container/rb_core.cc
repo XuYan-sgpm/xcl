@@ -1,11 +1,10 @@
 //
 // Created by 徐琰 on 2021/12/25.
 //
-
 #include <xcl/util/container/rb_core.h>
-
 namespace xcl {
-RbNode *RbMinimum(RbNode *node) {
+RbNode*
+RbMinimum(RbNode* node) {
   if (node) {
     while (node->left) {
       node = node->left;
@@ -13,8 +12,8 @@ RbNode *RbMinimum(RbNode *node) {
   }
   return node;
 }
-
-RbNode *RbMaximum(RbNode *node) {
+RbNode*
+RbMaximum(RbNode* node) {
   if (node) {
     while (node->right) {
       node = node->right;
@@ -22,15 +21,15 @@ RbNode *RbMaximum(RbNode *node) {
   }
   return node;
 }
-
-RbNode *RbPrev(RbNode *node, RbNode *header) {
+RbNode*
+RbPrev(RbNode* node, RbNode* header) {
   if (node == header) {
     return header->right;
   }
   if (node->left) {
     return RbMaximum(node->left);
   }
-  RbNode *par;
+  RbNode* par;
   while ((par = node->par) != header) {
     if (node == par->right) {
       break;
@@ -39,15 +38,15 @@ RbNode *RbPrev(RbNode *node, RbNode *header) {
   }
   return par;
 }
-
-RbNode *RbNext(RbNode *node, RbNode *header) {
+RbNode*
+RbNext(RbNode* node, RbNode* header) {
   if (node == header) {
     return node->left;
   }
   if (node->right) {
     return RbMinimum(node->right);
   }
-  RbNode *par;
+  RbNode* par;
   while ((par = node->par) != header) {
     if (node == par->left) {
       break;
@@ -56,11 +55,11 @@ RbNode *RbNext(RbNode *node, RbNode *header) {
   }
   return par;
 }
-
-void RbLeftRotate(RbNode *node, RbNode *&root) {
-  auto *r = node->right;
-  auto *rl = r->left;
-  auto *par = node->par;
+void
+RbLeftRotate(RbNode* node, RbNode*& root) {
+  auto* r = node->right;
+  auto* rl = r->left;
+  auto* par = node->par;
   node->right = rl;
   if (rl) {
     rl->par = node;
@@ -76,11 +75,11 @@ void RbLeftRotate(RbNode *node, RbNode *&root) {
   r->left = node;
   node->par = r;
 }
-
-void RbRightRotate(RbNode *node, RbNode *&root) {
-  auto *l = node->left;
-  auto *lr = l->right;
-  auto *par = node->par;
+void
+RbRightRotate(RbNode* node, RbNode*& root) {
+  auto* l = node->left;
+  auto* lr = l->right;
+  auto* par = node->par;
   node->left = lr;
   if (lr) {
     lr->par = node;
@@ -96,14 +95,14 @@ void RbRightRotate(RbNode *node, RbNode *&root) {
   l->right = node;
   node->par = l;
 }
-
-void RbAddFixup(RbNode *node, RbNode *&root) {
+void
+RbAddFixup(RbNode* node, RbNode*& root) {
   node->color = RED;
   RbNode *par, *grand;
   while (root != node && (par = node->par)->color == RED) {
     grand = par->par;
     bool is_par_left = grand->left == par;
-    RbNode *uncle = is_par_left ? grand->right : grand->left;
+    RbNode* uncle = is_par_left ? grand->right : grand->left;
     if (uncle && uncle->color == RED) {
       par->color = BLACK;
       uncle->color = BLACK;
@@ -124,11 +123,11 @@ void RbAddFixup(RbNode *node, RbNode *&root) {
   }
   root->color = BLACK;
 }
-
-void RbRemoveFixup(RbNode *node, RbNode *par, RbNode *&root) {
+void
+RbRemoveFixup(RbNode* node, RbNode* par, RbNode*& root) {
   while ((!node || node->color == BLACK) && root != node) {
     bool is_node_left = node == par->left;
-    RbNode *cousin = is_node_left ? par->right : par->left;
+    RbNode* cousin = is_node_left ? par->right : par->left;
     if (is_node_left) {
       if (cousin->color == RED) {
         par->color = RED;
@@ -185,8 +184,8 @@ void RbRemoveFixup(RbNode *node, RbNode *par, RbNode *&root) {
     node->color = BLACK;
   }
 }
-
-void RbAddNode(RbNode *&child, RbNode *par, RbNode *node, RbNode *header) {
+void
+RbAddNode(RbNode*& child, RbNode* par, RbNode* node, RbNode* header) {
   node->par = par;
   child = node;
   node->left = node->right = nullptr;
@@ -208,12 +207,12 @@ void RbAddNode(RbNode *&child, RbNode *par, RbNode *node, RbNode *header) {
     RbAddFixup(node, header->par);
   }
 }
-
-RbNode *RbRemoveNode(RbNode *node, RbNode *header) {
-  RbNode *rep = node;
+RbNode*
+RbRemoveNode(RbNode* node, RbNode* header) {
+  RbNode* rep = node;
   RbNode *child, *child_par;
-  RbNode *par = node->par;
-  auto *&root = header->par;
+  RbNode* par = node->par;
+  auto*& root = header->par;
   if (!rep->left) {
     child = rep->right;
   } else if (!rep->right) {
@@ -271,8 +270,8 @@ RbNode *RbRemoveNode(RbNode *node, RbNode *header) {
   }
   return node;
 }
-
-unsigned RbBlackCount(RbNode *node, RbNode *header) {
+unsigned
+RbBlackCount(RbNode* node, RbNode* header) {
   unsigned c = 0;
   if (node) {
     while (node != header) {
@@ -284,9 +283,9 @@ unsigned RbBlackCount(RbNode *node, RbNode *header) {
   }
   return c;
 }
-
-bool RbVerify(RbNode *header,
-              const rb_pair::Pair<rb_pair::NodeCompareFunc> &node_cmp_pair) {
+bool
+RbVerify(RbNode* header,
+         const rb_pair::Pair<rb_pair::NodeCompareFunc>& node_cmp_pair) {
   if (!header->par) {
     if (header->left != header || header->right != header) {
       return false;
@@ -294,20 +293,20 @@ bool RbVerify(RbNode *header,
       return true;
     }
   }
-  auto *&root = header->par;
+  auto*& root = header->par;
   if (root->color == RED) {
     return false;
   }
-  auto *min = header->left;
-  auto *max = header->right;
+  auto* min = header->left;
+  auto* max = header->right;
   const unsigned kBlackCount = RbBlackCount(min, header);
   if (RbBlackCount(max, header) != kBlackCount) {
     return false;
   }
-  auto *cur = min;
+  auto* cur = min;
   do {
-    auto *cur_left = cur->left;
-    auto *cur_right = cur->right;
+    auto* cur_left = cur->left;
+    auto* cur_right = cur->right;
     if (!cur_left && !cur_right) {
       if (RbBlackCount(cur, header) != kBlackCount) {
         return false;
@@ -336,16 +335,15 @@ bool RbVerify(RbNode *header,
   }
   return true;
 }
-
-RbNode *&
-RbFind(const void *src, RbNode *&par, RbNode *header,
-       const rb_pair::Pair<rb_pair::ValueCompareFunc> &value_cmp_pair) {
-  auto *&root = header->par;
+RbNode*&
+RbFind(const void* src, RbNode*& par, RbNode* header,
+       const rb_pair::Pair<rb_pair::ValueCompareFunc>& value_cmp_pair) {
+  auto*& root = header->par;
   if (!root) {
     par = header;
     return par->left;
   }
-  auto *cur = root;
+  auto* cur = root;
   while (true) {
     int cmp_ret = value_cmp_pair.func(value_cmp_pair.args, cur, src);
     if (cmp_ret > 0) {
@@ -365,11 +363,10 @@ RbFind(const void *src, RbNode *&par, RbNode *header,
     }
   }
 }
-
-int RbFindFirst(
-    const void *src, RbNode *&par_or_target, RbNode *header,
-    const rb_pair::Pair<rb_pair::ValueCompareFunc> &value_cmp_pair) {
-  auto *cur = header->par;
+int
+RbFindFirst(const void* src, RbNode*& par_or_target, RbNode* header,
+            const rb_pair::Pair<rb_pair::ValueCompareFunc>& value_cmp_pair) {
+  auto* cur = header->par;
   if (!cur) {
     par_or_target = header;
     return -1;
@@ -397,11 +394,10 @@ int RbFindFirst(
     }
   }
 }
-
-RbNode *&
-RbFindHint(const void *src, RbNode *&par, RbNode *hint, RbNode *header,
-           const rb_pair::Pair<rb_pair::ValueCompareFunc> &value_cmp_pair) {
-  auto *&root = header->par;
+RbNode*&
+RbFindHint(const void* src, RbNode*& par, RbNode* hint, RbNode* header,
+           const rb_pair::Pair<rb_pair::ValueCompareFunc>& value_cmp_pair) {
+  auto*& root = header->par;
   if (!root) {
     par = header;
     return par->left;
@@ -412,7 +408,7 @@ RbFindHint(const void *src, RbNode *&par, RbNode *hint, RbNode *header,
   if (hint != root &&
       (hint == header ||
        value_cmp_pair.func(value_cmp_pair.args, hint, src) >= 0)) {
-    RbNode *prev;
+    RbNode* prev;
     if (hint == header->left ||
         value_cmp_pair.func(value_cmp_pair.args, (prev = RbPrev(hint, header)),
                             src) <= 0) {
@@ -427,11 +423,11 @@ RbFindHint(const void *src, RbNode *&par, RbNode *hint, RbNode *header,
   }
   return RbFind(src, par, header, value_cmp_pair);
 }
-
-int RbFindFirstHint(
-    const void *src, RbNode *&par_or_target, RbNode *hint, RbNode *header,
-    const rb_pair::Pair<rb_pair::ValueCompareFunc> &value_cmp_pair) {
-  auto *&root = header->par;
+int
+RbFindFirstHint(
+    const void* src, RbNode*& par_or_target, RbNode* hint, RbNode* header,
+    const rb_pair::Pair<rb_pair::ValueCompareFunc>& value_cmp_pair) {
+  auto*& root = header->par;
   if (!root) {
     par_or_target = header;
     return -1;
@@ -447,7 +443,7 @@ int RbFindFirstHint(
       par_or_target = hint;
       return -1;
     }
-    auto *prev = RbPrev(hint, header);
+    auto* prev = RbPrev(hint, header);
     if ((cmp_ret = value_cmp_pair.func(value_cmp_pair.args, prev, src)) < 0) {
       if (!hint->left) {
         par_or_target = hint;
@@ -467,19 +463,19 @@ int RbFindFirstHint(
   }
   return RbFindFirst(src, par_or_target, header, value_cmp_pair);
 }
-
-RbNode *RbFindUpperBound(
-    const void *src, RbNode *header,
-    const rb_pair::Pair<rb_pair::ValueCompareFunc> &value_cmp_pair) {
-  auto *&root = header->par;
+RbNode*
+RbFindUpperBound(
+    const void* src, RbNode* header,
+    const rb_pair::Pair<rb_pair::ValueCompareFunc>& value_cmp_pair) {
+  auto*& root = header->par;
   if (!root) {
     return nullptr;
   }
   if (value_cmp_pair.func(value_cmp_pair.args, header->right, src) <= 0) {
     return nullptr;
   }
-  auto *cur = root;
-  RbNode *upper = nullptr;
+  auto* cur = root;
+  RbNode* upper = nullptr;
   while (true) {
     int cmp_ret = (value_cmp_pair.func(value_cmp_pair.args, cur, src));
     if (cmp_ret > 0) {
@@ -497,19 +493,19 @@ RbNode *RbFindUpperBound(
   }
   return upper;
 }
-
-RbNode *RbFindLowerBound(
-    const void *src, RbNode *header,
-    const rb_pair::Pair<rb_pair::ValueCompareFunc> &value_cmp_pair) {
-  auto *&root = header->par;
+RbNode*
+RbFindLowerBound(
+    const void* src, RbNode* header,
+    const rb_pair::Pair<rb_pair::ValueCompareFunc>& value_cmp_pair) {
+  auto*& root = header->par;
   if (!root) {
     return nullptr;
   }
   if (value_cmp_pair.func(value_cmp_pair.args, header->right, src) < 0) {
     return nullptr;
   }
-  auto *cur = root;
-  RbNode *lower = nullptr;
+  auto* cur = root;
+  RbNode* lower = nullptr;
   int cmp_ret;
   while (true) {
     cmp_ret = value_cmp_pair.func(value_cmp_pair.args, cur, src);
@@ -528,54 +524,53 @@ RbNode *RbFindLowerBound(
   }
   return lower;
 }
-
-RbNode *RbAdd(const void *src, RbNode *header,
-              const rb_pair::Pair<rb_pair::ValueCompareFunc> &value_cmp_pair,
-              const rb_pair::Pair<rb_pair::NodeAllocFunc> &node_alloc_pair) {
-  auto *node = node_alloc_pair.func(node_alloc_pair.args, src);
+RbNode*
+RbAdd(const void* src, RbNode* header,
+      const rb_pair::Pair<rb_pair::ValueCompareFunc>& value_cmp_pair,
+      const rb_pair::Pair<rb_pair::NodeAllocFunc>& node_alloc_pair) {
+  auto* node = node_alloc_pair.func(node_alloc_pair.args, src);
   if (!node) {
     return nullptr;
   }
-  auto *&root = header->par;
+  auto*& root = header->par;
   do {
     if (!root) {
       RbAddNode(header->left, header, node, header);
       return node;
     }
-    auto *&min = header->left;
+    auto*& min = header->left;
     if (value_cmp_pair.func(value_cmp_pair.args, min, src) >= 0) {
       RbAddNode(min->left, min, node, header);
       return node;
     }
-    auto *&max = header->right;
+    auto*& max = header->right;
     if (value_cmp_pair.func(value_cmp_pair.args, max, src) <= 0) {
       RbAddNode(max->right, max, node, header);
       return node;
     }
-    RbNode *par;
+    RbNode* par;
     RbAddNode(RbFind(src, par, header, value_cmp_pair), par, node, header);
   } while (false);
   return node;
 }
-
-RbNode *RbAdd(RbNode *hint, const void *src, RbNode *header,
-              const rb_pair::Pair<rb_pair::ValueCompareFunc> &value_cmp_pair,
-              const rb_pair::Pair<rb_pair::NodeAllocFunc> &node_alloc_pair) {
-  auto *node = node_alloc_pair.func(node_alloc_pair.args, src);
+RbNode*
+RbAdd(RbNode* hint, const void* src, RbNode* header,
+      const rb_pair::Pair<rb_pair::ValueCompareFunc>& value_cmp_pair,
+      const rb_pair::Pair<rb_pair::NodeAllocFunc>& node_alloc_pair) {
+  auto* node = node_alloc_pair.func(node_alloc_pair.args, src);
   if (node) {
-    RbNode *par;
+    RbNode* par;
     RbAddNode(RbFindHint(src, par, hint, header, value_cmp_pair), par, node,
               header);
   }
   return node;
 }
-
-RbNode *
-RbUniqueAdd(const void *src, RbNode *header,
-            const rb_pair::Pair<rb_pair::ValueCompareFunc> &value_cmp_pair,
-            const rb_pair::Pair<rb_pair::NodeAllocFunc> &node_alloc_pair) {
-  auto *&root = header->par;
-  RbNode *node = nullptr;
+RbNode*
+RbUniqueAdd(const void* src, RbNode* header,
+            const rb_pair::Pair<rb_pair::ValueCompareFunc>& value_cmp_pair,
+            const rb_pair::Pair<rb_pair::NodeAllocFunc>& node_alloc_pair) {
+  auto*& root = header->par;
+  RbNode* node = nullptr;
   if (!root) {
     node = node_alloc_pair.func(node_alloc_pair.args, src);
     if (node) {
@@ -583,7 +578,7 @@ RbUniqueAdd(const void *src, RbNode *header,
     }
     return node;
   }
-  auto *&min = header->left;
+  auto*& min = header->left;
   int cmp_ret = value_cmp_pair.func(value_cmp_pair.args, min, src);
   if (cmp_ret > 0) {
     node = node_alloc_pair.func(node_alloc_pair.args, src);
@@ -595,7 +590,7 @@ RbUniqueAdd(const void *src, RbNode *header,
   if (cmp_ret == 0) {
     return nullptr;
   }
-  auto *&max = header->right;
+  auto*& max = header->right;
   if ((cmp_ret = value_cmp_pair.func(value_cmp_pair.args, max, src)) < 0) {
     node = node_alloc_pair.func(node_alloc_pair.args, src);
     if (node) {
@@ -606,39 +601,38 @@ RbUniqueAdd(const void *src, RbNode *header,
   if (cmp_ret == 0) {
     return nullptr;
   }
-  RbNode *par_or_target;
+  RbNode* par_or_target;
   auto ret = RbFindFirst(src, par_or_target, header, value_cmp_pair);
   if (ret != 0) {
     node = node_alloc_pair.func(node_alloc_pair.args, src);
     if (node) {
-      auto *&child = ret == -1 ? par_or_target->left : par_or_target->right;
+      auto*& child = ret == -1 ? par_or_target->left : par_or_target->right;
       RbAddNode(child, par_or_target, node, header);
     }
   }
   return node;
 }
-
-RbNode *
-RbUniqueAdd(RbNode *hint, const void *src, RbNode *header,
-            const rb_pair::Pair<rb_pair::ValueCompareFunc> &value_cmp_pair,
-            const rb_pair::Pair<rb_pair::NodeAllocFunc> &node_alloc_pair) {
-  RbNode *par_or_target;
+RbNode*
+RbUniqueAdd(RbNode* hint, const void* src, RbNode* header,
+            const rb_pair::Pair<rb_pair::ValueCompareFunc>& value_cmp_pair,
+            const rb_pair::Pair<rb_pair::NodeAllocFunc>& node_alloc_pair) {
+  RbNode* par_or_target;
   auto ret = RbFindFirstHint(src, par_or_target, hint, header, value_cmp_pair);
-  RbNode *node = nullptr;
+  RbNode* node = nullptr;
   if (ret != 0) {
     node = node_alloc_pair.func(node_alloc_pair.args, src);
     if (node) {
-      auto *&child = ret == -1 ? par_or_target->left : par_or_target->right;
+      auto*& child = ret == -1 ? par_or_target->left : par_or_target->right;
       RbAddNode(child, par_or_target, node, header);
     }
   }
   return node;
 }
-
-bool RbRemove(const void *src, RbNode *header,
-              const rb_pair::Pair<rb_pair::ValueCompareFunc> &value_cmp_pair,
-              const rb_pair::Pair<rb_pair::NodeDropFunc> &node_drop_pair) {
-  RbNode *target = nullptr;
+bool
+RbRemove(const void* src, RbNode* header,
+         const rb_pair::Pair<rb_pair::ValueCompareFunc>& value_cmp_pair,
+         const rb_pair::Pair<rb_pair::NodeDropFunc>& node_drop_pair) {
+  RbNode* target = nullptr;
   do {
     if (!header->par) {
       break;
@@ -666,16 +660,16 @@ bool RbRemove(const void *src, RbNode *header,
     }
   } while (false);
   if (target) {
-    auto *del_node = RbRemoveNode(target, header);
+    auto* del_node = RbRemoveNode(target, header);
     node_drop_pair.func(node_drop_pair.args, del_node);
     return true;
   } else {
     return false;
   }
 }
-
-void RbClear(RbNode *node,
-             const rb_pair::Pair<rb_pair::NodeDropFunc> &node_drop_pair) {
+void
+RbClear(RbNode* node,
+        const rb_pair::Pair<rb_pair::NodeDropFunc>& node_drop_pair) {
   if (node) {
     if (node->left) {
       RbClear(node->left, node_drop_pair);
@@ -686,11 +680,11 @@ void RbClear(RbNode *node,
     node_drop_pair.func(node_drop_pair.args, node);
   }
 }
-
-RbNode *RbCopy(RbNode *top, RbNode *par,
-               const rb_pair::Pair<rb_pair::NodeCloneFunc> &node_clone_pair,
-               const rb_pair::Pair<rb_pair::NodeDropFunc> &node_drop_pair) {
-  RbNode *node = nullptr;
+RbNode*
+RbCopy(RbNode* top, RbNode* par,
+       const rb_pair::Pair<rb_pair::NodeCloneFunc>& node_clone_pair,
+       const rb_pair::Pair<rb_pair::NodeDropFunc>& node_drop_pair) {
+  RbNode* node = nullptr;
   if (top) {
     node = node_clone_pair.func(node_clone_pair.args, top);
     bool success = true;
@@ -714,4 +708,4 @@ RbNode *RbCopy(RbNode *top, RbNode *par,
   }
   return node;
 }
-} // namespace xcl
+}  // namespace xcl

@@ -8,29 +8,32 @@
 #include <xcl/util/allocator/allocator.h>
 namespace xcl {
 class FixedMemoryStack : public Allocator {
-public:
-  void *Allocate(unsigned int bytes) override;
-  void Deallocate(void *p, unsigned int bytes) override;
-  void *Reallocate(void *p, unsigned int old_bytes,
-                   unsigned int new_bytes) override;
+ public:
+  void *
+  Allocate(unsigned int bytes) override;
+  void
+  Deallocate(void *p, unsigned int bytes) override;
+  void *
+  Reallocate(void *p, unsigned int old_bytes, unsigned int new_bytes) override;
   ~FixedMemoryStack() override;
 
-private:
+ private:
   struct Node {
-    Node *next;
+	Node *next;
   };
 
-private:
+ private:
   Node *top_ = nullptr;
   const unsigned kBlockSize;
   unsigned alloc_count_ = 0;
 
-public:
+ public:
   explicit FixedMemoryStack(unsigned bs);
 
-public:
-  unsigned alloc_count() const;
+ public:
+  unsigned
+  alloc_count() const;
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_FIXED_MEMORY_STACK_H
+#endif// SCL_FIXED_MEMORY_STACK_H

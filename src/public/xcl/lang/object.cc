@@ -4,6 +4,12 @@
 
 #include <xcl/lang/object.h>
 namespace xcl {
-long Object::HashCode() const { return (long)this; }
-bool Object::Equals(const Object &o) const { return &o == this; }
-} // namespace xcl
+long
+Object::HashCode() const {
+  return (long)this;
+}
+bool
+Object::Equals(const Object &o) const {
+  return &o == this;
+}
+}// namespace xcl

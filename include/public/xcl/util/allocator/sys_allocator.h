@@ -9,28 +9,32 @@
 
 namespace xcl {
 class SysAllocator final : public Allocator {
-public:
-  void *Allocate(unsigned int bytes) override;
+ public:
+  void *
+  Allocate(unsigned int bytes) override;
 
-  void Deallocate(void *p, unsigned bytes) override;
+  void
+  Deallocate(void *p, unsigned bytes) override;
 
-  void *Reallocate(void *p, unsigned int oldBytes,
-                   unsigned int newBytes) override;
+  void *
+  Reallocate(void *p, unsigned int oldBytes, unsigned int newBytes) override;
 
-private:
+ private:
   static SysAllocator *globalInstance;
 
-private:
+ private:
   SysAllocator() = default;
 
-public:
-  static SysAllocator &instance();
+ public:
+  static SysAllocator &
+  instance();
 
-public:
+ public:
   SysAllocator(const SysAllocator &) = delete;
 
-  SysAllocator &operator=(const SysAllocator &) = delete;
+  SysAllocator &
+  operator=(const SysAllocator &) = delete;
 };
-} // namespace xcl
+}// namespace xcl
 
-#endif // SCL_SYSALLOCATOR_H
+#endif// SCL_SYSALLOCATOR_H
