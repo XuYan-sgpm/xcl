@@ -110,246 +110,135 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named xcl2
+# Target rules for targets named main
 
 # Build rule for target.
-xcl2: cmake_check_build_system
-	$(MAKE) -f CMakeFiles\Makefile2 xcl2
-.PHONY : xcl2
+main: cmake_check_build_system
+	$(MAKE) -f CMakeFiles\Makefile2 main
+.PHONY : main
 
 # fast build rule for target.
-xcl2/fast:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/build
-.PHONY : xcl2/fast
+main/fast:
+	$(MAKE) -f CMakeFiles\main.dir\build.make CMakeFiles/main.dir/build
+.PHONY : main/fast
 
 #=============================================================================
-# Target rules for targets named tests
+# Target rules for targets named xcl
 
 # Build rule for target.
-tests: cmake_check_build_system
-	$(MAKE) -f CMakeFiles\Makefile2 tests
-.PHONY : tests
+xcl: cmake_check_build_system
+	$(MAKE) -f CMakeFiles\Makefile2 xcl
+.PHONY : xcl
 
 # fast build rule for target.
-tests/fast:
-	$(MAKE) -f CMakeFiles\tests.dir\build.make CMakeFiles/tests.dir/build
-.PHONY : tests/fast
-
-library.obj: library.cpp.obj
-
-.PHONY : library.obj
+xcl/fast:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/build
+.PHONY : xcl/fast
 
 # target to build an object file
-library.cpp.obj:
-	$(MAKE) -f CMakeFiles\tests.dir\build.make CMakeFiles/tests.dir/library.cpp.obj
-.PHONY : library.cpp.obj
-
-library.i: library.cpp.i
-
-.PHONY : library.i
+main.obj:
+	$(MAKE) -f CMakeFiles\main.dir\build.make CMakeFiles/main.dir/main.obj
+.PHONY : main.obj
 
 # target to preprocess a source file
-library.cpp.i:
-	$(MAKE) -f CMakeFiles\tests.dir\build.make CMakeFiles/tests.dir/library.cpp.i
-.PHONY : library.cpp.i
-
-library.s: library.cpp.s
-
-.PHONY : library.s
+main.i:
+	$(MAKE) -f CMakeFiles\main.dir\build.make CMakeFiles/main.dir/main.i
+.PHONY : main.i
 
 # target to generate assembly for a file
-library.cpp.s:
-	$(MAKE) -f CMakeFiles\tests.dir\build.make CMakeFiles/tests.dir/library.cpp.s
-.PHONY : library.cpp.s
-
-src/concurrent/util/CThreadLocal.obj: src/concurrent/util/CThreadLocal.c.obj
-
-.PHONY : src/concurrent/util/CThreadLocal.obj
+main.s:
+	$(MAKE) -f CMakeFiles\main.dir\build.make CMakeFiles/main.dir/main.s
+.PHONY : main.s
 
 # target to build an object file
-src/concurrent/util/CThreadLocal.c.obj:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/concurrent/util/CThreadLocal.c.obj
-.PHONY : src/concurrent/util/CThreadLocal.c.obj
-
-src/concurrent/util/CThreadLocal.i: src/concurrent/util/CThreadLocal.c.i
-
-.PHONY : src/concurrent/util/CThreadLocal.i
-
-# target to preprocess a source file
-src/concurrent/util/CThreadLocal.c.i:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/concurrent/util/CThreadLocal.c.i
-.PHONY : src/concurrent/util/CThreadLocal.c.i
-
-src/concurrent/util/CThreadLocal.s: src/concurrent/util/CThreadLocal.c.s
-
-.PHONY : src/concurrent/util/CThreadLocal.s
-
-# target to generate assembly for a file
-src/concurrent/util/CThreadLocal.c.s:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/concurrent/util/CThreadLocal.c.s
-.PHONY : src/concurrent/util/CThreadLocal.c.s
-
-src/ini/IniParse.obj: src/ini/IniParse.c.obj
-
+src/ini/IniParse.obj:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/ini/IniParse.obj
 .PHONY : src/ini/IniParse.obj
 
-# target to build an object file
-src/ini/IniParse.c.obj:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/ini/IniParse.c.obj
-.PHONY : src/ini/IniParse.c.obj
-
-src/ini/IniParse.i: src/ini/IniParse.c.i
-
+# target to preprocess a source file
+src/ini/IniParse.i:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/ini/IniParse.i
 .PHONY : src/ini/IniParse.i
 
-# target to preprocess a source file
-src/ini/IniParse.c.i:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/ini/IniParse.c.i
-.PHONY : src/ini/IniParse.c.i
-
-src/ini/IniParse.s: src/ini/IniParse.c.s
-
+# target to generate assembly for a file
+src/ini/IniParse.s:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/ini/IniParse.s
 .PHONY : src/ini/IniParse.s
 
-# target to generate assembly for a file
-src/ini/IniParse.c.s:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/ini/IniParse.c.s
-.PHONY : src/ini/IniParse.c.s
-
-src/ini/cfg.obj: src/ini/cfg.c.obj
-
+# target to build an object file
+src/ini/cfg.obj:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/ini/cfg.obj
 .PHONY : src/ini/cfg.obj
 
-# target to build an object file
-src/ini/cfg.c.obj:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/ini/cfg.c.obj
-.PHONY : src/ini/cfg.c.obj
-
-src/ini/cfg.i: src/ini/cfg.c.i
-
+# target to preprocess a source file
+src/ini/cfg.i:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/ini/cfg.i
 .PHONY : src/ini/cfg.i
 
-# target to preprocess a source file
-src/ini/cfg.c.i:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/ini/cfg.c.i
-.PHONY : src/ini/cfg.c.i
-
-src/ini/cfg.s: src/ini/cfg.c.s
-
+# target to generate assembly for a file
+src/ini/cfg.s:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/ini/cfg.s
 .PHONY : src/ini/cfg.s
 
-# target to generate assembly for a file
-src/ini/cfg.c.s:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/ini/cfg.c.s
-.PHONY : src/ini/cfg.c.s
-
-src/pool/pool.obj: src/pool/pool.cc.obj
-
+# target to build an object file
+src/pool/pool.obj:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/pool/pool.obj
 .PHONY : src/pool/pool.obj
 
-# target to build an object file
-src/pool/pool.cc.obj:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/pool/pool.cc.obj
-.PHONY : src/pool/pool.cc.obj
-
-src/pool/pool.i: src/pool/pool.cc.i
-
+# target to preprocess a source file
+src/pool/pool.i:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/pool/pool.i
 .PHONY : src/pool/pool.i
 
-# target to preprocess a source file
-src/pool/pool.cc.i:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/pool/pool.cc.i
-.PHONY : src/pool/pool.cc.i
-
-src/pool/pool.s: src/pool/pool.cc.s
-
+# target to generate assembly for a file
+src/pool/pool.s:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/pool/pool.s
 .PHONY : src/pool/pool.s
 
-# target to generate assembly for a file
-src/pool/pool.cc.s:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/pool/pool.cc.s
-.PHONY : src/pool/pool.cc.s
-
-src/util/CBuffer.obj: src/util/CBuffer.c.obj
-
+# target to build an object file
+src/util/CBuffer.obj:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/util/CBuffer.obj
 .PHONY : src/util/CBuffer.obj
 
-# target to build an object file
-src/util/CBuffer.c.obj:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/util/CBuffer.c.obj
-.PHONY : src/util/CBuffer.c.obj
-
-src/util/CBuffer.i: src/util/CBuffer.c.i
-
+# target to preprocess a source file
+src/util/CBuffer.i:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/util/CBuffer.i
 .PHONY : src/util/CBuffer.i
 
-# target to preprocess a source file
-src/util/CBuffer.c.i:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/util/CBuffer.c.i
-.PHONY : src/util/CBuffer.c.i
-
-src/util/CBuffer.s: src/util/CBuffer.c.s
-
+# target to generate assembly for a file
+src/util/CBuffer.s:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/util/CBuffer.s
 .PHONY : src/util/CBuffer.s
 
-# target to generate assembly for a file
-src/util/CBuffer.c.s:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/util/CBuffer.c.s
-.PHONY : src/util/CBuffer.c.s
-
-src/util/CList.obj: src/util/CList.c.obj
-
+# target to build an object file
+src/util/CList.obj:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/util/CList.obj
 .PHONY : src/util/CList.obj
 
-# target to build an object file
-src/util/CList.c.obj:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/util/CList.c.obj
-.PHONY : src/util/CList.c.obj
-
-src/util/CList.i: src/util/CList.c.i
-
+# target to preprocess a source file
+src/util/CList.i:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/util/CList.i
 .PHONY : src/util/CList.i
 
-# target to preprocess a source file
-src/util/CList.c.i:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/util/CList.c.i
-.PHONY : src/util/CList.c.i
-
-src/util/CList.s: src/util/CList.c.s
-
+# target to generate assembly for a file
+src/util/CList.s:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/util/CList.s
 .PHONY : src/util/CList.s
 
-# target to generate assembly for a file
-src/util/CList.c.s:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/util/CList.c.s
-.PHONY : src/util/CList.c.s
-
-src/util/CString.obj: src/util/CString.c.obj
-
+# target to build an object file
+src/util/CString.obj:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/util/CString.obj
 .PHONY : src/util/CString.obj
 
-# target to build an object file
-src/util/CString.c.obj:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/util/CString.c.obj
-.PHONY : src/util/CString.c.obj
-
-src/util/CString.i: src/util/CString.c.i
-
+# target to preprocess a source file
+src/util/CString.i:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/util/CString.i
 .PHONY : src/util/CString.i
 
-# target to preprocess a source file
-src/util/CString.c.i:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/util/CString.c.i
-.PHONY : src/util/CString.c.i
-
-src/util/CString.s: src/util/CString.c.s
-
-.PHONY : src/util/CString.s
-
 # target to generate assembly for a file
-src/util/CString.c.s:
-	$(MAKE) -f CMakeFiles\xcl2.dir\build.make CMakeFiles/xcl2.dir/src/util/CString.c.s
-.PHONY : src/util/CString.c.s
+src/util/CString.s:
+	$(MAKE) -f CMakeFiles\xcl.dir\build.make CMakeFiles/xcl.dir/src/util/CString.s
+.PHONY : src/util/CString.s
 
 # Help Target
 help:
@@ -357,16 +246,13 @@ help:
 	@echo ... all (the default if no target is provided)
 	@echo ... clean
 	@echo ... depend
-	@echo ... xcl2
-	@echo ... tests
 	@echo ... edit_cache
+	@echo ... main
+	@echo ... xcl
 	@echo ... rebuild_cache
-	@echo ... library.obj
-	@echo ... library.i
-	@echo ... library.s
-	@echo ... src/concurrent/util/CThreadLocal.obj
-	@echo ... src/concurrent/util/CThreadLocal.i
-	@echo ... src/concurrent/util/CThreadLocal.s
+	@echo ... main.obj
+	@echo ... main.i
+	@echo ... main.s
 	@echo ... src/ini/IniParse.obj
 	@echo ... src/ini/IniParse.i
 	@echo ... src/ini/IniParse.s

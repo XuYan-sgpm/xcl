@@ -2,8 +2,8 @@
 <project version="4">
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
     <generated>
-      <config projectName="xcl2" targetName="xcl2" />
-      <config projectName="xcl2" targetName="tests" />
+      <config projectName="xcl" targetName="main" />
+      <config projectName="xcl" targetName="xcl" />
     </generated>
   </component>
   <component name="CMakeSettings" AUTO_RELOAD="true">
@@ -12,15 +12,20 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="4dfaf0c9-f392-430d-8330-72ccb702f324" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-    </list>
+    <list default="true" id="4dfaf0c9-f392-430d-8330-72ccb702f324" name="Default Changelist" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
   <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="CMakeLists.txt" />
+      </list>
+    </option>
+  </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
   </component>
@@ -51,20 +56,20 @@
       <recent name="D:\ClionProjects\xcl2\src\concurrent\util" />
     </key>
   </component>
-  <component name="RunManager" selected="CMake Application.xcl2">
-    <configuration name="tests" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="xcl2" TARGET_NAME="tests" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="xcl2" RUN_TARGET_NAME="tests">
+  <component name="RunManager" selected="CMake Application.xcl">
+    <configuration name="main" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="xcl" TARGET_NAME="main" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="xcl" RUN_TARGET_NAME="main">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
-    <configuration name="xcl2" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="xcl2" TARGET_NAME="xcl2" CONFIG_NAME="Debug">
+    <configuration name="xcl" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="xcl" TARGET_NAME="xcl" CONFIG_NAME="Debug">
       <method v="2">
         <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
       </method>
     </configuration>
     <list>
-      <item itemvalue="CMake Application.tests" />
-      <item itemvalue="CMake Application.xcl2" />
+      <item itemvalue="CMake Application.main" />
+      <item itemvalue="CMake Application.xcl" />
     </list>
   </component>
   <component name="SvnConfiguration">
@@ -77,7 +82,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1655710168960</updated>
-      <workItem from="1655710170636" duration="4944000" />
+      <workItem from="1655710170636" duration="6095000" />
     </task>
     <servers />
   </component>
@@ -97,10 +102,10 @@
       <screen x="0" y="0" width="2048" height="1152" />
     </state>
     <state x="819" y="138" key="SettingsEditor/0.0.2048.1152@0.0.2048.1152" timestamp="1655714104682" />
-    <state x="683" y="172" width="839" height="807" key="find.popup" timestamp="1655712357776">
+    <state x="683" y="172" width="839" height="807" key="find.popup" timestamp="1655716047045">
       <screen x="0" y="0" width="2048" height="1152" />
     </state>
-    <state x="683" y="172" width="839" height="807" key="find.popup/0.0.2048.1152@0.0.2048.1152" timestamp="1655712357776" />
+    <state x="683" y="172" width="839" height="807" key="find.popup/0.0.2048.1152@0.0.2048.1152" timestamp="1655716047045" />
     <state x="686" y="253" key="search.everywhere.popup" timestamp="1655714426494">
       <screen x="0" y="0" width="2048" height="1152" />
     </state>

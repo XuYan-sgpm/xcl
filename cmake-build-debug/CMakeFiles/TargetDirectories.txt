@@ -1,4 +1,4 @@
-D:/ClionProjects/xcl2/cmake-build-debug/CMakeFiles/xcl2.dir
-D:/ClionProjects/xcl2/cmake-build-debug/CMakeFiles/tests.dir
 D:/ClionProjects/xcl2/cmake-build-debug/CMakeFiles/edit_cache.dir
+D:/ClionProjects/xcl2/cmake-build-debug/CMakeFiles/main.dir
+D:/ClionProjects/xcl2/cmake-build-debug/CMakeFiles/xcl.dir
 D:/ClionProjects/xcl2/cmake-build-debug/CMakeFiles/rebuild_cache.dir
