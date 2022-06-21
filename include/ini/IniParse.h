@@ -10,7 +10,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-typedef struct _Region {
+typedef struct {
   const char *str;
   int len;
 } Region;
@@ -35,7 +35,7 @@ typedef void (*IniCallback)(void *, Region, Region, Region);
  */
 typedef int32_t (*IniReadFunc)(void *, char *, int);
 
-typedef struct _Ini {
+typedef struct {
   /*
    * when error occurred, continue parse or interrupt
    */
