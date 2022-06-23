@@ -8,8 +8,9 @@
 #include <pthread.h>
 #include <cstdlib>
 #include <cstring>
+#include <cassert>
 
-static pthread_key_t __threadLocalStorageKey = -1;
+static pthread_key_t __threadLocalStorageKey = -1u;
 
 static void __destroyLocalStorage(void *args) {
   LS_Free(static_cast<CLocalStorage *>(args));
@@ -25,6 +26,7 @@ __LocalStorageInitImpl::__LocalStorageInitImpl() {
   auto ret =
       ::pthread_key_create(&__threadLocalStorageKey, __destroyLocalStorage);
   if (ret == 0) {
+    assert(__threadLocalStorageKey != -1u);
     auto *localStorage = (CLocalStorage *)malloc(sizeof(CLocalStorage));
     if (localStorage) {
       memset(localStorage, 0, sizeof(CLocalStorage));
@@ -34,15 +36,15 @@ __LocalStorageInitImpl::__LocalStorageInitImpl() {
       free(localStorage);
     }
     ::pthread_key_delete(__threadLocalStorageKey);
-    __threadLocalStorageKey = -1;
+    __threadLocalStorageKey = -1u;
   } else {
-    __threadLocalStorageKey = -1;
+    __threadLocalStorageKey = -1u;
   }
 }
 __LocalStorageInitImpl::~__LocalStorageInitImpl() {
-  if (__threadLocalStorageKey != -1) {
+  if (__threadLocalStorageKey != -1u) {
     ::pthread_key_delete(__threadLocalStorageKey);
-    __threadLocalStorageKey = -1;
+    __threadLocalStorageKey = -1u;
   }
 }
 
@@ -54,7 +56,7 @@ extern "C" {
 #endif
 
 CLocalStorage *__getLocalStorage() {
-  if (__threadLocalStorageKey == -1) {
+  if (__threadLocalStorageKey == -1u) {
     return nullptr;
   }
   return static_cast<CLocalStorage *>(
@@ -62,7 +64,7 @@ CLocalStorage *__getLocalStorage() {
 }
 
 void __setLocalStorage(CLocalStorage *localStorage) {
-  if (__threadLocalStorageKey != -1) {
+  if (__threadLocalStorageKey != -1u) {
     ::pthread_setspecific(__threadLocalStorageKey, localStorage);
   }
 }

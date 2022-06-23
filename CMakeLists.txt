@@ -6,7 +6,7 @@ set(CMAKE_CXX_FLAGS "-g -Wall")
 set(CMAKE_DEBUG_POSTFIX "_d")
 #set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-set(COMPILE_STATIC FALSE)
+set(COMPILE_STATIC TRUE)
 
 include_directories(include internal/inc "C:/Program Files (x86)/googletest-distribution/include")
 link_directories("C:/Program Files (x86)/googletest-distribution/lib")
