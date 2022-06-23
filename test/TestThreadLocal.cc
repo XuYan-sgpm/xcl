@@ -7,32 +7,55 @@
 #include <lang/CLocalStorage.h>
 
 #include <iostream>
-using namespace std;
-#include <mutex>
 #include <zconf.h>
+using namespace std;
 
-static mutex m;
-
-static void safePrint(){
-  lock_guard<mutex> guard(m);
-  debug();
+static void __testThreadLocal(CThreadLocal *local) {
+  const char *p = "hello world";
+  assert(setLocal(local, (void *)p));
+  void *ptr;
+  assert(getLocal(local, &ptr));
+  assert(ptr == p);
+  assert(setLocalInt32(local, 89));
+  int32_t val;
+  assert(getLocalInt32(local, &val));
+  assert(val == 89);
+  float val2;
+  assert(setLocalFloat(local, 3.1415926f));
+  assert(getLocalFloat(local, &val2));
+  assert(val2 == 3.1415926f);
 }
 
 void *threadProc(void *args) {
-  safePrint();
-  sleep(100000);
-  return NULL;
+  CThreadLocal locals[10];
+  for (int i = 0; i < 10; i++) {
+    locals[i] = makeLocal();
+  }
+  for (;;) {
+    for (int i = 0; i < 10; i++) {
+      __testThreadLocal(locals + i);
+    }
+    cout << "test local successfully" << endl;
+    sleep(1);
+  }
+  *(int *)args = 0;
+  return args;
 }
 
 TEST(ThreadLocal, func1) {
-  int integer = 89;
-  setLocal(&integer);
-  ASSERT_EQ(*(int *)getLocal(), 89);
-  pthread_t threads[5];
-  for (int i = 0; i < 5; i++) {
-    pthread_create(&threads[i], NULL, threadProc, NULL);
+  int n = 4;
+  pthread_t threads[n];
+  int code[n];
+  for (int i = 0; i < n; i++) {
+    code[i] = -1;
   }
-  for (int i = 0; i < 5; i++) {
-    pthread_join(threads[i], NULL);
+  for (int i = 0; i < n; i++) {
+    ASSERT_EQ(pthread_create(&threads[i], nullptr, threadProc, code + i), 0);
+  }
+  for (int i = 0; i < n; i++) {
+    pthread_join(threads[i], nullptr);
+  }
+  for (int i = 0; i < n; i++) {
+    ASSERT_EQ(code[0], 0);
   }
 }

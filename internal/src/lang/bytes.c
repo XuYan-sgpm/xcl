@@ -2,7 +2,7 @@
 // Created by xuyan on 2022/6/21.
 //
 
-#include "lang/Bytes.h"
+#include "lang/bytes.h"
 #include <string.h>
 
 static bool __isCPUBigEndian() {
@@ -24,22 +24,26 @@ static void __translate(const void *src, void *dst, int size, bool big) {
   }
 }
 
-void int2Bytes(int val, void *dst, bool big) {
+void int32ToBytes(int val, void *dst, bool big) {
   __translate(&val, dst, sizeof(int), big);
 }
 
-int bytes2Int(const void *src, bool big) {
+int bytesToInt32(const void *src, bool big) {
   int result;
   __translate(src, &result, sizeof(int), big);
   return result;
 }
 
-void LongLong2Bytes(int64_t val, void *dst, bool big) {
+void int64ToBytes(int64_t val, void *dst, bool big) {
   __translate(&val, dst, 8, big);
 }
 
-int64_t bytes2LongLong(const void *src, bool big) {
+int64_t bytesToInt64(const void *src, bool big) {
   int64_t result;
   __translate(src, &result, 8, big);
   return result;
+}
+
+void bytesCopy(const void *src, void *dst, int len, bool big) {
+  __translate(src, dst, len, big);
 }

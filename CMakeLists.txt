@@ -1,9 +1,12 @@
 project(xcl)
 
+set(CMAKE_BUILD_TYPE "Debug")
+set(CMAKE_C_FLAGS "-g -Wall")
+set(CMAKE_CXX_FLAGS "-g -Wall")
 set(CMAKE_DEBUG_POSTFIX "_d")
-set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
+#set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-option(COMPILE_STATIC "compile static library" ON)
+set(COMPILE_STATIC FALSE)
 
 include_directories(include internal/inc "C:/Program Files (x86)/googletest-distribution/include")
 link_directories("C:/Program Files (x86)/googletest-distribution/lib")
@@ -14,6 +17,7 @@ if (COMPILE_STATIC)
     add_definitions(-DSTATIC_LIB)
     add_library(xcl STATIC ${src_files})
 else ()
+    message(STATUS "DYNAMIC")
     add_definitions(-DDYNAMIC_LIB)
     add_library(xcl SHARED ${src_files})
 endif ()
