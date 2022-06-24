@@ -369,7 +369,7 @@ __strDirectSearch(const CString *string, const char *pattern, const int len) {
   return NULL;
 }
 
-const static const int STR_QUERY_THRESHOLD = 32;
+const static int STR_QUERY_THRESHOLD = 32;
 
 static void __strGenNext(const char *pattern, int *next, const int len) {
   next[0] = -1;

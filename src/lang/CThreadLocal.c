@@ -7,31 +7,8 @@
 #include <stdatomic.h>
 #include <stdlib.h>
 #include <string.h>
-#include <lang/bytes.h>
 
-#ifdef STATIC_LIB
-
-#if GNUC || CLANG
-#define THREAD_LOCAL __thread
-#elif MSVC
-#define THREAD_LOCAL __declspec(thread)
-#else
-#error "unsupported compiler"
-#endif
-
-static THREAD_LOCAL CLocalStorage *__threadLocalStorage = NULL;
-static inline CLocalStorage *__getLocalStorage() {
-  return __threadLocalStorage;
-}
-static inline void __setLocalStorage(CLocalStorage *localStorage) {
-  __threadLocalStorage = localStorage;
-}
-#else
-CLocalStorage *__getLocalStorage();
-void __setLocalStorage(CLocalStorage *localStorage);
-#endif
-
-static atomic_long __localId = 0;
+static volatile long __localId = 0;
 
 bool offerFreeId(long id);
 bool hasFreeId();
@@ -61,11 +38,13 @@ static CLocalStorage *__newLocalStorage() {
 }
 
 static CLocalStorage *__checkoutLocalStorage() {
-  CLocalStorage *localStorage = __getLocalStorage();
+  CLocalStorage *localStorage = __TL_getLocalStorage();
   if (!localStorage) {
     localStorage = __newLocalStorage();
-    __setLocalStorage(localStorage);
-    return localStorage;
+    if (localStorage && !__TL_setLocalStorage(localStorage)) {
+      free(localStorage);
+      localStorage = NULL;
+    }
   }
   return localStorage;
 }
@@ -85,7 +64,7 @@ static void *__getLocalData(CThreadLocal *local) {
   if (local->id < 0) {
     return NULL;
   }
-  CLocalStorage *localStorage = __getLocalStorage();
+  CLocalStorage *localStorage = __TL_getLocalStorage();
   if (!localStorage) {
     return NULL;
   }

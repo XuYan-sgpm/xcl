@@ -41,6 +41,10 @@ bool getLocalU64(CThreadLocal *local, uint64_t *result);
 bool getLocalDouble(CThreadLocal *local, double *result);
 void freeLocal(CThreadLocal *local);
 
+#ifdef STATIC
+void recycleUnusedThreadLocals();
+#endif
+
 #ifdef __cplusplus
 }
 #endif
