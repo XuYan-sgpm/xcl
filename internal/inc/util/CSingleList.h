@@ -101,25 +101,6 @@ CSingleNode *SingleList_popBack(CSingleList *list);
 CSingleListIter SingleList_next(CSingleList *list, CSingleListIter iter);
 
 /**
- * prev iter of passing iter
- * @param list single list object
- * @param iter current list iter
- * @return prev iter
- */
-CSingleListIter SingleList_prev(CSingleList *list, CSingleListIter iter);
-
-/**
- * release single list resource if single list is empty
- * note that list node contains data we dont know how
- * to delete, so we can only release single list when
- * list is empty, if not, all list node data must be freed
- * by manual
- * @param list single list object
- * @return true if list is empty, otherwise false
- */
-bool SingleList_delete(CSingleList *list);
-
-/**
  * sort single list
  * @param list single list object
  * @param cmp compare function pointer

@@ -31,12 +31,12 @@ void *threadProc(void *args) {
   for (int i = 0; i < 10; i++) {
     locals[i] = makeLocal();
   }
-  for (;;) {
+  for (int loop = 0; loop < 10; loop++) {
     for (int i = 0; i < 10; i++) {
       __testThreadLocal(locals + i);
     }
     cout << "test local successfully" << endl;
-    sleep(1);
+    sleep(0.2);
   }
   *(int *)args = 0;
   return args;

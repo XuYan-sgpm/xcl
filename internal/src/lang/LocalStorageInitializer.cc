@@ -2,15 +2,13 @@
 // Created by xuyan on 2022/6/22.
 //
 
-namespace xcl {
-#include <lang/CLocalStorage.h>
-
-#ifdef DYNAMIC
-
-#include <pthread.h>
 #include <cstdlib>
 #include <cstring>
 #include <cassert>
+#include <pthread.h>
+#include <lang/CLocalStorage.h>
+
+#ifdef DYNAMIC
 
 static pthread_key_t __threadLocalStorageKey = -1u;
 
@@ -19,32 +17,21 @@ static void __destroyLocalStorage(void *args) {
 }
 
 namespace {
-class __LocalStorageInitImpl {
+class __LocalStorageKeyInitImpl {
  public:
-  __LocalStorageInitImpl();
-  ~__LocalStorageInitImpl();
+  __LocalStorageKeyInitImpl();
+  ~__LocalStorageKeyInitImpl();
 };
-__LocalStorageInitImpl::__LocalStorageInitImpl() {
+__LocalStorageKeyInitImpl::__LocalStorageKeyInitImpl() {
   auto ret =
       ::pthread_key_create(&__threadLocalStorageKey, __destroyLocalStorage);
   if (ret == 0) {
     assert(__threadLocalStorageKey != -1u);
-    //    auto *localStorage = (CLocalStorage *)malloc(sizeof(CLocalStorage));
-    //    if (localStorage) {
-    //      memset(localStorage, 0, sizeof(CLocalStorage));
-    //      if (::pthread_setspecific(__threadLocalStorageKey, localStorage) ==
-    //      0) {
-    //        return;
-    //      }
-    //      free(localStorage);
-    //    }
-    //    ::pthread_key_delete(__threadLocalStorageKey);
-    //    __threadLocalStorageKey = -1u;
   } else {
     __threadLocalStorageKey = -1u;
   }
 }
-__LocalStorageInitImpl::~__LocalStorageInitImpl() {
+__LocalStorageKeyInitImpl::~__LocalStorageKeyInitImpl() {
   if (__threadLocalStorageKey != -1u) {
     ::pthread_key_delete(__threadLocalStorageKey);
     __threadLocalStorageKey = -1u;
@@ -52,11 +39,12 @@ __LocalStorageInitImpl::~__LocalStorageInitImpl() {
 }
 } // namespace
 
-static __LocalStorageInitImpl __impl;
+static __LocalStorageKeyInitImpl __impl;
 
 #elif STATIC
 
 #include <lang/platform.h>
+#include <mutex>
 
 #if GNUC || CLANG
 #define THREAD_LOCAL __thread
@@ -68,9 +56,9 @@ static __LocalStorageInitImpl __impl;
 
 static THREAD_LOCAL CLocalStorage *__threadLocalStorage = nullptr;
 
-class __LocalStorageRegImpl {
-
-};
+namespace {
+class __LocalStorageRegImpl {};
+} // namespace
 
 #endif
 
@@ -110,4 +98,3 @@ bool __TL_setLocalStorage(CLocalStorage *localStorage) {
 #ifdef __cplusplus
 }
 #endif
-}
