@@ -46,6 +46,6 @@ class TimedLock : public Lock {
    */
   virtual bool tryLock(int32_t millis) = 0;
 
-  static Lock *NewLock();
+  static TimedLock *NewLock();
 };
 } // namespace xcl
