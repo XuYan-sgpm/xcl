@@ -25,7 +25,9 @@ class __InternalUnixMutex : public xcl::Lock {
 };
 void __InternalUnixMutex::lock() { ::pthread_mutex_lock(&mutex_); }
 void __InternalUnixMutex::unlock() { ::pthread_mutex_unlock(&mutex_); }
-bool __InternalUnixMutex::tryLock() { return pthread_mutex_trylock(&mutex_); }
+bool __InternalUnixMutex::tryLock() {
+  return pthread_mutex_trylock(&mutex_) == 0;
+}
 __InternalUnixMutex::__InternalUnixMutex(bool recursive) : mutex_(nullptr) {
   if (recursive) {
     pthread_mutexattr_t attr;
@@ -36,12 +38,7 @@ __InternalUnixMutex::__InternalUnixMutex(bool recursive) : mutex_(nullptr) {
     pthread_mutex_init(&mutex_, nullptr);
   }
 }
-__InternalUnixMutex::~__InternalUnixMutex() {
-  if (mutex_) {
-    pthread_mutex_destroy(&mutex_);
-    mutex_ = nullptr;
-  }
-}
+__InternalUnixMutex::~__InternalUnixMutex() { pthread_mutex_destroy(&mutex_); }
 
 class __InternalUnixTimedMutex : public xcl::TimedLock,
                                  public __InternalUnixMutex {
@@ -57,7 +54,7 @@ class __InternalUnixTimedMutex : public xcl::TimedLock,
 bool __InternalUnixTimedMutex::tryLock(int32_t millis) {
   struct timespec ts;
   ts.tv_nsec = millis * 1000000;
-  return ::pthread_mutex_timedlock(&mutex_, &ts);
+  return ::pthread_mutex_timedlock(&mutex_, &ts) == 0;
 }
 __InternalUnixTimedMutex::__InternalUnixTimedMutex(bool recursive)
     : __InternalUnixMutex(recursive) {}

@@ -8,7 +8,11 @@
 #include <stdlib.h>
 #include <string.h>
 
+#if WINDOWS
 static volatile long __localId = 0;
+#else
+static atomic_long __localId = 0;
+#endif
 
 bool offerFreeId(long id);
 bool hasFreeId();

@@ -54,7 +54,7 @@ static __LocalStorageKeyInitImpl __impl;
 #error "unsupported compiler"
 #endif
 
-static THREAD_LOCAL CLocalStorage *__threadLocalStorage = nullptr;
+static THREAD_LOCAL CLocalStorage *__threadLocalStorage = NULL;
 
 namespace {
 class __LocalStorageRegImpl {};

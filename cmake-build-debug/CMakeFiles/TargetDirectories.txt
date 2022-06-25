@@ -1,0 +1,4 @@
+/Users/xuyan/repositories/xcl/cmake-build-debug/CMakeFiles/xcl.dir
+/Users/xuyan/repositories/xcl/cmake-build-debug/CMakeFiles/main.dir
+/Users/xuyan/repositories/xcl/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/xuyan/repositories/xcl/cmake-build-debug/CMakeFiles/rebuild_cache.dir
