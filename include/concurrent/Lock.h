@@ -48,4 +48,16 @@ class TimedLock : public Lock {
 
   static TimedLock *NewLock();
 };
+
+class Locker final {
+ public:
+  explicit Locker(Lock *lock);
+  ~Locker();
+
+ public:
+  Locker &operator=(const Locker &) = delete;
+
+ private:
+  Lock *lock_;
+};
 } // namespace xcl

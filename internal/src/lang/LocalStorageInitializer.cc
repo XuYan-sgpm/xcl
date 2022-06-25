@@ -37,14 +37,15 @@ __LocalStorageKeyInitImpl::~__LocalStorageKeyInitImpl() {
     __threadLocalStorageKey = -1u;
   }
 }
-} // namespace
-
 static __LocalStorageKeyInitImpl __impl;
+} // namespace
 
 #elif STATIC
 
 #include <lang/platform.h>
-#include <mutex>
+//#include <mutex>
+#include <concurrent/Lock.h>
+#include <util/CSingleList.h>
 
 #if GNUC || CLANG
 #define THREAD_LOCAL __thread
@@ -57,7 +58,48 @@ static __LocalStorageKeyInitImpl __impl;
 static THREAD_LOCAL CLocalStorage *__threadLocalStorage = NULL;
 
 namespace {
-class __LocalStorageRegImpl {};
+class __LocalStorageRegImpl {
+ public:
+  void regLocalStorage(CLocalStorage *localStorage);
+
+ public:
+  __LocalStorageRegImpl();
+  ~__LocalStorageRegImpl();
+
+ private:
+  xcl::Lock *listLock_;
+  CSingleList storageList_;
+};
+__LocalStorageRegImpl::__LocalStorageRegImpl()
+    : listLock_(xcl::Lock::NewLock()) {
+  storageList_ = SingleList_new();
+}
+__LocalStorageRegImpl::~__LocalStorageRegImpl() {
+  delete listLock_;
+  listLock_ = NULL;
+  CSingleNode *node = NULL;
+  for (;;) {
+    node = SingList_popFront(&storageList_);
+    if (!node) {
+      break;
+    }
+    CLocalStorage *localStorage = (CLocalStorage *)*(intptr_t *)node->data;
+    LS_Free(localStorage);
+    free(node);
+  }
+}
+void __LocalStorageRegImpl::regLocalStorage(CLocalStorage *localStorage) {
+  CSingleNode *node =
+      (CSingleNode *)malloc(sizeof(CSingleNode) + sizeof(void *));
+  assert(node);
+  memset(node, 0, sizeof(*node) + sizeof(void *));
+  *(intptr_t *)(node->data) = (intptr_t)localStorage;
+  listLock_->lock();
+  SingleList_pushFront(&storageList_, node);
+  listLock_->unlock();
+}
+
+static __LocalStorageRegImpl __localStorageRegImpl;
 } // namespace
 
 #endif
@@ -90,6 +132,7 @@ bool __TL_setLocalStorage(CLocalStorage *localStorage) {
 CLocalStorage *__TL_getLocalStorage() { return __threadLocalStorage; }
 bool __TL_setLocalStorage(CLocalStorage *localStorage) {
   __threadLocalStorage = localStorage;
+  __localStorageRegImpl.regLocalStorage(localStorage);
   return true;
 }
 

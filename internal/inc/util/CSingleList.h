@@ -7,6 +7,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 typedef struct _CSingleNode {
   struct _CSingleNode *next;
   char data[0];
@@ -24,10 +28,6 @@ typedef struct {
   void *const tag;
   CSingleNode *cur;
 } CSingleListIter;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * create a single list object

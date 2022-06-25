@@ -2,13 +2,14 @@
 // Created by xuyan on 2022/6/22.
 //
 
-#include <mutex>
+//#include <mutex>
+#include <concurrent/Lock.h>
 #include <cstring>
 using namespace std;
 
 class FreeIdQueue {
  private:
-  mutable mutex lock_;
+  mutable xcl::Lock *lock_;
   long *buf_;
   uint32_t cap_;
   uint32_t size_;
@@ -22,7 +23,8 @@ class FreeIdQueue {
   bool isEmpty() const;
   bool poll(long *id);
 };
-FreeIdQueue::FreeIdQueue() : lock_(), buf_(nullptr), cap_(0), size_(0) {}
+FreeIdQueue::FreeIdQueue()
+    : lock_(xcl::Lock::NewLock()), buf_(nullptr), cap_(0), size_(0) {}
 FreeIdQueue::~FreeIdQueue() {
   if (buf_) {
     delete[] buf_;
@@ -31,7 +33,7 @@ FreeIdQueue::~FreeIdQueue() {
   }
 }
 bool FreeIdQueue::offer(long id) {
-  lock_guard<mutex> guard(lock_);
+  xcl::Locker locker(lock_);
   if (size_ == cap_) {
     if (cap_ == 0) {
       cap_ = 8;
@@ -47,11 +49,11 @@ bool FreeIdQueue::offer(long id) {
   return true;
 }
 bool FreeIdQueue::isEmpty() const {
-  lock_guard<mutex> guard(lock_);
+  xcl::Locker locker(lock_);
   return size_ == 0;
 }
 bool FreeIdQueue::poll(long *id) {
-  lock_guard<mutex> guard(lock_);
+  xcl::Locker locker(lock_);
   if (size_ == 0) {
     return false;
   }

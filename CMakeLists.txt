@@ -9,9 +9,10 @@ set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_CXX_STANDARD 17)
 #set(LIBRARY_OUTPUT_PATH ${PROJECT_SOURCE_DIR}/lib)
 
-set(COMPILE_STATIC true)
+set(COMPILE_STATIC false)
 
 if (WIN32)
+    message(STATUS "win32")
     include_directories(include internal/inc "C:/Program Files (x86)/googletest-distribution/include")
     link_directories("C:/Program Files (x86)/googletest-distribution/lib")
 else ()

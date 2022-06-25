@@ -55,7 +55,7 @@ class __InternalMacTimedMutex : public xcl::TimedLock,
 const int64_t __InternalMacTimedMutex::MAX_DELAY = 1000000L;
 
 bool __InternalMacTimedMutex::tryLock(int32_t millis) {
-  const int threshold = 10;
+  const int threshold = 3;
   timespec ts{0, 0};
   timeval st{0, 0};
   gettimeofday(&st, NULL);
