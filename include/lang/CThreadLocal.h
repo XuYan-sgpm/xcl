@@ -13,7 +13,7 @@ extern "C" {
 #endif
 
 typedef struct {
-  int id;
+  int64_t id;
 } CThreadLocal;
 
 CThreadLocal makeLocal();

@@ -186,7 +186,7 @@ static bool __processIniLine(
 /*
  * process ini data buf
  * return last progress start pos
- * or NULL if error can not ignored
+ * or NULL if error can not be ignored
  */
 static const char *__processIniRegion(
     Ini ini, Region region, IniCallback cb, void *usr, bool *hasSection) {

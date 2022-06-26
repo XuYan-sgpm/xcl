@@ -54,6 +54,10 @@ typedef struct {
   char *const buf;
 } Ini;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * parse ini data
  * usr can be a specified object to invoke when cb is called
@@ -70,3 +74,7 @@ bool iniParse(Ini ini, const char *filePath, IniCallback cb, void *usr);
  * parse ini data from str
  */
 bool iniParseString(Ini ini, const char *str, IniCallback cb, void *usr);
+
+#ifdef __cplusplus
+}
+#endif

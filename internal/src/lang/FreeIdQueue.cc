@@ -2,7 +2,6 @@
 // Created by xuyan on 2022/6/22.
 //
 
-//#include <mutex>
 #include <concurrent/Lock.h>
 #include <cstring>
 using namespace std;
@@ -10,7 +9,7 @@ using namespace std;
 class FreeIdQueue {
  private:
   mutable xcl::Lock *lock_;
-  long *buf_;
+  int64_t *buf_;
   uint32_t cap_;
   uint32_t size_;
 
@@ -19,9 +18,9 @@ class FreeIdQueue {
   ~FreeIdQueue();
 
  public:
-  bool offer(long id);
+  bool offer(int64_t id);
   bool isEmpty() const;
-  bool poll(long *id);
+  bool poll(int64_t *id);
 };
 FreeIdQueue::FreeIdQueue()
     : lock_(xcl::Lock::NewLock()), buf_(nullptr), cap_(0), size_(0) {}
@@ -32,7 +31,7 @@ FreeIdQueue::~FreeIdQueue() {
     cap_ = size_ = 0;
   }
 }
-bool FreeIdQueue::offer(long id) {
+bool FreeIdQueue::offer(int64_t id) {
   xcl::Locker locker(lock_);
   if (size_ == cap_) {
     if (cap_ == 0) {
@@ -40,8 +39,8 @@ bool FreeIdQueue::offer(long id) {
     } else {
       cap_ <<= 1u;
     }
-    long *newBuf = new long[cap_];
-    memcpy(newBuf, buf_, size_ * sizeof(long));
+    int64_t *newBuf = new int64_t[cap_];
+    memcpy(newBuf, buf_, size_ * sizeof(int64_t));
     delete[] buf_;
     buf_ = newBuf;
   }
@@ -52,7 +51,7 @@ bool FreeIdQueue::isEmpty() const {
   xcl::Locker locker(lock_);
   return size_ == 0;
 }
-bool FreeIdQueue::poll(long *id) {
+bool FreeIdQueue::poll(int64_t *id) {
   xcl::Locker locker(lock_);
   if (size_ == 0) {
     return false;
@@ -67,9 +66,9 @@ static FreeIdQueue __idQueue;
 extern "C" {
 #endif
 
-bool offerFreeId(long id) { return __idQueue.offer(id); }
+bool offerFreeId(int64_t id) { return __idQueue.offer(id); }
 bool hasFreeId() { return __idQueue.isEmpty(); }
-bool pollFreeId(long *id) { return __idQueue.poll(id); }
+bool pollFreeId(int64_t *id) { return __idQueue.poll(id); }
 
 #ifdef __cplusplus
 }

@@ -4,6 +4,10 @@
 
 typedef struct _Config Config;
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * create config from specified ini path
  */
@@ -57,3 +61,7 @@ void freeConfig(Config *config);
  * print config data in console, only for debug test
  */
 void debug(Config *config);
+
+#ifdef __cplusplus
+}
+#endif

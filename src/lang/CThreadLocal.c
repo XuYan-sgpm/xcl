@@ -9,21 +9,21 @@
 #include <string.h>
 
 #if WINDOWS
-static volatile long __localId = 0;
+static volatile int64_t __localId = 0;
 #else
-static atomic_long __localId = 0;
+static _Atomic(int64_t) __localId = 0;
 #endif
 
-bool offerFreeId(long id);
+bool offerFreeId(int64_t id);
 bool hasFreeId();
-bool pollFreeId(long *id);
+bool pollFreeId(int64_t *id);
 
-static long __newId() {
+static int64_t __newId() {
   return atomic_fetch_add_explicit(&__localId, 1, memory_order_seq_cst);
 }
 
-static long __getId() {
-  long id;
+static int64_t __getId() {
+  int64_t id;
   if (!pollFreeId(&id)) {
     id = __newId();
   }
