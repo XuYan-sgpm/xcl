@@ -29,23 +29,23 @@ static int32_t __log2(int32_t i) {
     return 32;
   }
   int n = 1;
-  if (i >> 16 == 0) {
+  if ((i >> 16) == 0) {
     n += 16;
     i <<= 16;
   }
-  if (i >> 24 == 0) {
+  if ((i >> 24) == 0) {
     n += 8;
     i <<= 8;
   }
-  if (i >> 28 == 0) {
+  if ((i >> 28) == 0) {
     n += 4;
     i <<= 4;
   }
-  if (i >> 30 == 0) {
+  if ((i >> 30) == 0) {
     n += 2;
     i <<= 2;
   }
-  n -= i >> 31;
+  n -= (i >> 31);
   return 31 - n;
 }
 
@@ -106,6 +106,7 @@ bool SizeClass_initialize() {
   }
   return success;
 }
+void SizeClass_finalize() {}
 
 static int32_t __initSizeClassTabs() {
   int32_t idx = 0;

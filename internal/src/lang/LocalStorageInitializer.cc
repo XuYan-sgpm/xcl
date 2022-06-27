@@ -17,12 +17,12 @@ static void __destroyLocalStorage(void *args) {
 }
 
 namespace {
-class __LocalStorageKeyInitImpl {
+class LocalStorageKeyInitImpl {
  public:
-  __LocalStorageKeyInitImpl();
-  ~__LocalStorageKeyInitImpl();
+  LocalStorageKeyInitImpl();
+  ~LocalStorageKeyInitImpl();
 };
-__LocalStorageKeyInitImpl::__LocalStorageKeyInitImpl() {
+LocalStorageKeyInitImpl::LocalStorageKeyInitImpl() {
   auto ret =
       ::pthread_key_create(&__threadLocalStorageKey, __destroyLocalStorage);
   if (ret == 0) {
@@ -31,13 +31,13 @@ __LocalStorageKeyInitImpl::__LocalStorageKeyInitImpl() {
     __threadLocalStorageKey = -1u;
   }
 }
-__LocalStorageKeyInitImpl::~__LocalStorageKeyInitImpl() {
+LocalStorageKeyInitImpl::~LocalStorageKeyInitImpl() {
   if (__threadLocalStorageKey != -1u) {
     ::pthread_key_delete(__threadLocalStorageKey);
     __threadLocalStorageKey = -1u;
   }
 }
-static __LocalStorageKeyInitImpl __impl;
+static LocalStorageKeyInitImpl __impl;
 } // namespace
 
 #elif STATIC

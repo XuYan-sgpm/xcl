@@ -8,7 +8,7 @@ set(CMAKE_CXX_FLAGS "-g -Wall")
 set(CMAKE_DEBUG_POSTFIX "d")
 set(CMAKE_CXX_STANDARD 17)
 
-set(COMPILE_STATIC true)
+set(COMPILE_STATIC false)
 
 set(lib_src_files)
 
