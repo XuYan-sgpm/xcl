@@ -58,23 +58,23 @@ static __LocalStorageKeyInitImpl __impl;
 static THREAD_LOCAL CLocalStorage *__threadLocalStorage = NULL;
 
 namespace {
-class __LocalStorageRegImpl {
+class LocalStorageRegImpl {
  public:
   void regLocalStorage(CLocalStorage *localStorage);
 
  public:
-  __LocalStorageRegImpl();
-  ~__LocalStorageRegImpl();
+  LocalStorageRegImpl();
+  ~LocalStorageRegImpl();
 
  private:
   xcl::Lock *listLock_;
   CSingleList storageList_;
 };
-__LocalStorageRegImpl::__LocalStorageRegImpl()
+LocalStorageRegImpl::LocalStorageRegImpl()
     : listLock_(xcl::Lock::NewLock()) {
   storageList_ = SingleList_new();
 }
-__LocalStorageRegImpl::~__LocalStorageRegImpl() {
+LocalStorageRegImpl::~LocalStorageRegImpl() {
   delete listLock_;
   listLock_ = NULL;
   CSingleNode *node = NULL;
@@ -88,7 +88,7 @@ __LocalStorageRegImpl::~__LocalStorageRegImpl() {
     free(node);
   }
 }
-void __LocalStorageRegImpl::regLocalStorage(CLocalStorage *localStorage) {
+void LocalStorageRegImpl::regLocalStorage(CLocalStorage *localStorage) {
   CSingleNode *node =
       (CSingleNode *)malloc(sizeof(CSingleNode) + sizeof(void *));
   assert(node);
@@ -99,7 +99,7 @@ void __LocalStorageRegImpl::regLocalStorage(CLocalStorage *localStorage) {
   listLock_->unlock();
 }
 
-static __LocalStorageRegImpl __localStorageRegImpl;
+static LocalStorageRegImpl __localStorageRegImpl;
 } // namespace
 
 #endif
