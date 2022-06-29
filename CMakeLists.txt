@@ -2,14 +2,21 @@ cmake_minimum_required(VERSION 3.10)
 
 project(xcl)
 
-set(CMAKE_BUILD_TYPE "Debug")
-set(CMAKE_C_FLAGS "-g -Wall")
-set(CMAKE_CXX_FLAGS "-g -Wall")
-set(CMAKE_DEBUG_POSTFIX "d")
+option(DEBUG "enable debug compile" ON)
+
+if (DEBUG)
+    message(STATUS "debug")
+    set(CMAKE_BUILD_TYPE "Debug")
+    set(CMAKE_C_FLAGS "-g -Wall")
+    set(CMAKE_CXX_FLAGS "-g -Wall")
+    set(CMAKE_DEBUG_POSTFIX "d")
+else ()
+    message(STATUS "release")
+    set(CMAKE_BUILD_TYPE "Release")
+endif ()
+
 set(CMAKE_CXX_STANDARD 17)
-
-set(COMPILE_STATIC false)
-
+set(COMPILE_STATIC true)
 set(lib_src_files)
 
 function(filter_files)
