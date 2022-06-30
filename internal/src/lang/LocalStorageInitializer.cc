@@ -70,8 +70,7 @@ class LocalStorageRegImpl {
   xcl::Lock *listLock_;
   CSingleList storageList_;
 };
-LocalStorageRegImpl::LocalStorageRegImpl()
-    : listLock_(xcl::Lock::NewLock()) {
+LocalStorageRegImpl::LocalStorageRegImpl() : listLock_(xcl::Lock::NewLock()) {
   storageList_ = SingleList_new();
 }
 LocalStorageRegImpl::~LocalStorageRegImpl() {

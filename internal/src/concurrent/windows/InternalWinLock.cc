@@ -72,6 +72,8 @@ __InternalWinTimedMutex::~__InternalWinTimedMutex() {
 } // namespace
 
 xcl::Lock *xcl::Lock::NewLock() { return new __InternalWinMutex(); }
-xcl::TimedLock *xcl::TimedLock::NewLock() { return new __InternalWinTimedMutex(); }
+xcl::TimedLock *xcl::TimedLock::NewLock() {
+  return new __InternalWinTimedMutex();
+}
 
 #endif
