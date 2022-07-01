@@ -42,10 +42,10 @@ static CLocalStorage *__newLocalStorage() {
 }
 
 static CLocalStorage *__checkoutLocalStorage() {
-  CLocalStorage *localStorage = __TL_getLocalStorage();
+  CLocalStorage *localStorage = __ThreadLocal_getLocalStorage();
   if (!localStorage) {
     localStorage = __newLocalStorage();
-    if (localStorage && !__TL_setLocalStorage(localStorage)) {
+    if (localStorage && !__ThreadLocal_setLocalStorage(localStorage)) {
       free(localStorage);
       localStorage = NULL;
     }
@@ -61,18 +61,18 @@ static bool __setLocalData(CThreadLocal *local, const void *src, int len) {
   if (!localStorage) {
     return false;
   }
-  return LS_SetTiny(localStorage, local->id, src, len);
+  return LocalStorage_SetTiny(localStorage, local->id, src, len);
 }
 
 static void *__getLocalData(CThreadLocal *local) {
   if (local->id < 0) {
     return NULL;
   }
-  CLocalStorage *localStorage = __TL_getLocalStorage();
+  CLocalStorage *localStorage = __ThreadLocal_getLocalStorage();
   if (!localStorage) {
     return NULL;
   }
-  return LS_Get(localStorage, local->id);
+  return LocalStorage_Get(localStorage, local->id);
 }
 
 CThreadLocal makeLocal() {

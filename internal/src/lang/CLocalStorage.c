@@ -45,28 +45,28 @@ static CLocalStorage *__checkoutLocalStorageMem(CLocalStorage *localStorage,
   }
   return localStorage;
 }
-void *LS_Get(CLocalStorage *localStorage, int idx) {
+void *LocalStorage_Get(CLocalStorage *localStorage, int idx) {
   if (!__checkoutLocalStorageMem(localStorage, idx)) {
     return NULL;
   }
   return localStorage->blocks[idx].data;
 }
-void LS_Free(CLocalStorage *localStorage) {
+void LocalStorage_Free(CLocalStorage *localStorage) {
   if (localStorage->blocks) {
     free(localStorage->blocks);
     memset(localStorage, 0, sizeof(CLocalStorage));
   }
 }
-bool LS_SetPtr(CLocalStorage *localStorage, int idx, intptr_t ptr) {
+bool LocalStorage_SetPtr(CLocalStorage *localStorage, int idx, intptr_t ptr) {
   localStorage = __checkoutLocalStorageMem(localStorage, idx);
   if (!localStorage) {
     return false;
   }
-  void *data = LS_Get(localStorage, idx);
+  void *data = LocalStorage_Get(localStorage, idx);
   *(intptr_t *)data = ptr;
   return true;
 }
-bool LS_SetTiny(CLocalStorage *localStorage,
+bool LocalStorage_SetTiny(CLocalStorage *localStorage,
                 int idx,
                 const void *src,
                 int len) {

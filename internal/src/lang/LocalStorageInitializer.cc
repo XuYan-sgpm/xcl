@@ -83,7 +83,7 @@ LocalStorageRegImpl::~LocalStorageRegImpl() {
       break;
     }
     CLocalStorage *localStorage = (CLocalStorage *)*(intptr_t *)node->data;
-    LS_Free(localStorage);
+    LocalStorage_Free(localStorage);
     free(node);
   }
 }
@@ -128,8 +128,8 @@ bool __TL_setLocalStorage(CLocalStorage *localStorage) {
 
 #elif STATIC
 
-CLocalStorage *__TL_getLocalStorage() { return __threadLocalStorage; }
-bool __TL_setLocalStorage(CLocalStorage *localStorage) {
+CLocalStorage *__ThreadLocal_getLocalStorage() { return __threadLocalStorage; }
+bool __ThreadLocal_setLocalStorage(CLocalStorage *localStorage) {
   __threadLocalStorage = localStorage;
   __localStorageRegImpl.regLocalStorage(localStorage);
   return true;

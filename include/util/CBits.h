@@ -34,7 +34,7 @@ typedef struct {
 typedef struct {
   CBits base;
   char ctx[0];
-} CBitsUsr;
+} CBitsSet;
 
 #ifdef __cplusplus
 extern "C" {
@@ -45,6 +45,7 @@ void Bits_delete(CBits *bits);
 int32_t Bits_len(CBits *bits);
 void Bits_set(CBits *bits, int32_t idx, bool on);
 bool Bits_get(CBits *bits, int32_t idx);
+unsigned char Bits_getByte(CBits *bits, int32_t idx);
 
 CBits64 bits64();
 CBits8 bits8();

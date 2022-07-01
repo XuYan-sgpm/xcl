@@ -2,7 +2,7 @@
 // Created by xuyan on 2022/6/21.
 //
 
-#include "lang/bytes.h"
+#include "lang/CBytes.h"
 #include <string.h>
 
 static bool __isCPUBigEndian() {

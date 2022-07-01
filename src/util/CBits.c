@@ -12,7 +12,7 @@ static inline void __CBits_setBitsLen(CBits *bits, const int32_t category) {
 }
 
 static inline char *__CBits_getValPtr(CBits *bits) {
-  return ((CBitsUsr *)bits)->ctx;
+  return ((CBitsSet *)bits)->ctx;
 }
 
 CBits *Bits_new(int32_t size) {
@@ -51,3 +51,7 @@ CBits64 bits64() { return (CBits64){{64}, 0}; }
 CBits8 bits8() { return (CBits8){{8}, 0}; }
 CBits16 bits16() { return (CBits16){{16}, 0}; }
 CBits32 bits32() { return (CBits32){{32}, 0}; }
+
+unsigned char Bits_getByte(CBits *bits, int32_t idx) {
+  return *(unsigned char *)(__CBits_getValPtr(bits) + idx);
+}

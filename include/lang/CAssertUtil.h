@@ -4,12 +4,14 @@
 
 #pragma once
 
+#include <stdbool.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void assertMsg(bool cond, const char *msg);
-void assertFmt(bool cond, const char *fmt, ...);
+void assertInfo(bool cond, const char *msg);
+void assertMessage(bool cond, const char *fmt, ...);
 
 #ifdef __cplusplus
 }

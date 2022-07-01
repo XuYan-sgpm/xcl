@@ -21,7 +21,6 @@ void int64ToBytes(int64_t val, void *dst, bool big);
 int64_t bytesToInt64(const void *src, bool big);
 void doubleToBytes(double val, void *dst, bool big);
 double bytesToDouble(const void *src, bool big);
-
 void bytesCopy(const void *src, void *dst, int len, bool big);
 
 #ifdef __cplusplus
