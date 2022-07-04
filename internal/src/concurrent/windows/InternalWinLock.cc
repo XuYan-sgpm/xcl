@@ -31,7 +31,9 @@ void __InternalWinMutex::unlock() { LeaveCriticalSection(&criticalSection_); }
 bool __InternalWinMutex::tryLock() {
   return TryEnterCriticalSection(&criticalSection_);
 }
-__InternalWinMutex::~__InternalWinMutex() = default;
+__InternalWinMutex::~__InternalWinMutex() {
+  DeleteCriticalSection(&criticalSection_);
+}
 __InternalWinMutex::__InternalWinMutex() {
   InitializeCriticalSection(&criticalSection_);
 }
