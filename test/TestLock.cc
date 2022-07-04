@@ -9,6 +9,7 @@
 #include <unistd.h>
 #include <profileapi.h>
 #include <util/system.h>
+#include <synchapi.h>
 using namespace std;
 
 static void *__testLock(void *args) {
@@ -33,10 +34,10 @@ static void *__testLock(void *args) {
 
 static void *__testCMutex(void *args) {
   for (;;) {
-    auto st = nanos();
-    if (!Mutex_tryLock2(args, 2000)) {
-      auto et = nanos();
-      auto duration = (et - st) / 1000000;
+    auto st = chrono::steady_clock::now();
+    if (!Mutex_tryLock2(args, 20)) {
+      auto et = chrono::steady_clock::now();
+      auto duration = chrono::duration<double, milli>(et - st).count();
       cout << "acquire lock failed:" << duration << endl;
     } else {
       break;
@@ -44,18 +45,19 @@ static void *__testCMutex(void *args) {
   }
   //  lock->lock();
   cout << "lock successfully" << endl;
-  sleep(3);
+  Sleep(40);
   Mutex_unlock(args);
   cout << "unlock successfully" << endl;
   return nullptr;
 }
 
 static void __runLockThreads(void *(*threadProc)(void *), void *args) {
-  pthread_t threads[4];
-  for (int i = 0; i < 4; i++) {
+  int32_t nThreads = 8;
+  pthread_t threads[nThreads];
+  for (int i = 0; i < nThreads; i++) {
     ASSERT_EQ(pthread_create(&threads[i], nullptr, threadProc, args), 0);
   }
-  for (int i = 0; i < 4; i++) {
+  for (int i = 0; i < nThreads; i++) {
     pthread_join(threads[i], nullptr);
   }
 }

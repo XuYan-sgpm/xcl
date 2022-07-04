@@ -11,8 +11,7 @@
 #include <sysinfoapi.h>
 #include <mmsystem.h>
 #include "concurrent/CMutex.h"
-
-#include <stdio.h>
+#include "util/system.h"
 
 typedef struct {
   CRITICAL_SECTION criticalSection;
@@ -53,30 +52,23 @@ bool Mutex_tryLock2(void *mutex, int32_t millis) {
   if (!mutex) {
     return false;
   }
-  DWORD st = GetTickCount();
+  int64_t st = nanos();
   timeBeginPeriod(1);
-  DWORD accuracy = 1;
-  DWORD totalWait = 0;
+  int64_t totalWait = 0;
+  int64_t nanoTimeout = millis * 1000000;
   bool acquired = false;
-  int32_t call = 0, threshold = 3;
-  while (totalWait < millis) {
+  while ((nanoTimeout - totalWait) > 500000) {
     if (TryEnterCriticalSection(&((WinMutex *)mutex)->criticalSection)) {
       acquired = true;
       break;
     }
-    ++call;
-    if (call >= threshold) {
-      totalWait = GetTickCount() - st;
-      call = 0;
-    }
-    if (totalWait >= millis) {
-      break;
-    }
-    DWORD beginSleep = GetTickCount();
-    Sleep(accuracy);
-    totalWait += GetTickCount() - beginSleep;
+    Sleep(1);
+    totalWait = nanos() - st;
   }
   timeEndPeriod(1);
+  if (!acquired) {
+    acquired = TryEnterCriticalSection(&((WinMutex *)mutex)->criticalSection);
+  }
   return acquired;
 }
 
