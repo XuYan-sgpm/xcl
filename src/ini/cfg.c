@@ -22,14 +22,14 @@ static char *__newStr(const char *str, size_t size) {
   return result;
 }
 
-typedef struct _Paramter {
+typedef struct {
   char *key;
   char *value;
-} Paramter;
+} Parameter;
 
-typedef struct _SectionData {
+typedef struct {
   char *name;
-  CList *paramters;
+  CList *parameters;
 } SectionData;
 
 struct _Config {
@@ -56,14 +56,14 @@ static int __cmpSectionWithRegion(const void *arg1, const void *arg2) {
 }
 
 static int __cmpParamWithRegion(const void *arg1, const void *arg2) {
-  const Paramter *paramter = (const Paramter *)arg1;
-  return __cmpStrWithRegion(paramter->key, arg2);
+  const Parameter *parameter = (const Parameter *)arg1;
+  return __cmpStrWithRegion(parameter->key, arg2);
 }
 
 /*
  * get section data if section exists
  */
-static SectionData *__ConfigGetSection(Config *config, Region secRegion) {
+static SectionData *__Config_getSection(Config *config, Region secRegion) {
   CListIter it =
       List_query(config->sections, &secRegion, __cmpSectionWithRegion);
   return List_iterEquals(it, List_end(config->sections))
@@ -75,7 +75,7 @@ static SectionData *__ConfigGetSection(Config *config, Region secRegion) {
  * if section exists, return section data
  * otherwise, create section and put into config->sections
  */
-static SectionData *__ConfigCheckoutSection(Config *config, Region secRegion) {
+static SectionData *__Config_checkoutSection(Config *config, Region secRegion) {
   CListIter secIt =
       List_query(config->sections, &secRegion, __cmpSectionWithRegion);
   if (List_iterEquals(secIt, List_end(config->sections))) {
@@ -89,11 +89,11 @@ static SectionData *__ConfigCheckoutSection(Config *config, Region secRegion) {
     }
     char *name = __newStr(secRegion.str, secRegion.len);
     if (name) {
-      CList *params = makeList();
+      CList *params = List_new();
       if (params) {
         SectionData *secData = (SectionData *)secNode->data;
         secData->name = name;
-        secData->paramters = params;
+        secData->parameters = params;
         List_push(config->sections, secNode);
         return secData;
       }
@@ -111,22 +111,23 @@ static SectionData *__ConfigCheckoutSection(Config *config, Region secRegion) {
 }
 
 /*
- * get paramter from section paramter list
+ * get parameter from section parameter list
  */
-static Paramter *__ConfigGetParamter(CList *params, Region keyRegion) {
+static Parameter *__Config_getParameter(CList *params, Region keyRegion) {
   CListIter paramIt = List_query(params, &keyRegion, __cmpParamWithRegion);
   if (!List_iterEquals(paramIt, List_end(params))) {
-    return (Paramter *)paramIt.cur->data;
+    return (Parameter *)paramIt.cur->data;
   }
   return NULL;
 }
 
 /*
- * get paramter from section paramters if exists
- * otherwise, create paramter and put into paramter list
+ * get parameter from section parameters if exists
+ * otherwise, create parameter and put into parameter list
  */
-static Paramter *
-__ConfigCheckoutParamter(CList *params, Region keyRegion, Region valueRegion) {
+static Parameter *__Config_checkoutParameter(CList *params,
+                                             Region keyRegion,
+                                             Region valueRegion) {
   CListIter paramIt = List_query(params, &keyRegion, __cmpParamWithRegion);
   if (!List_iterEquals(paramIt, List_end(params))) {
     /*
@@ -134,7 +135,7 @@ __ConfigCheckoutParamter(CList *params, Region keyRegion, Region valueRegion) {
      * if value not equals, update value
      */
     CListNode *paramNode = paramIt.cur;
-    Paramter *param = (Paramter *)paramNode->data;
+    Parameter *param = (Parameter *)paramNode->data;
     if (__cmpStrWithRegion(param->value, &valueRegion) != 0) {
       char *newValue = __newStr(valueRegion.str, valueRegion.len);
       if (newValue || !valueRegion.len) {
@@ -145,11 +146,11 @@ __ConfigCheckoutParamter(CList *params, Region keyRegion, Region valueRegion) {
     return param;
   } else {
     CListNode *paramNode =
-        (CListNode *)malloc(sizeof(CListNode) + sizeof(Paramter));
+        (CListNode *)malloc(sizeof(CListNode) + sizeof(Parameter));
     if (!paramNode) {
       return NULL;
     }
-    Paramter *param = (Paramter *)paramNode->data;
+    Parameter *param = (Parameter *)paramNode->data;
     param->key = __newStr(keyRegion.str, keyRegion.len);
     if (param->key || !keyRegion.len) {
       param->value = __newStr(valueRegion.str, valueRegion.len);
@@ -165,22 +166,22 @@ __ConfigCheckoutParamter(CList *params, Region keyRegion, Region valueRegion) {
 }
 
 /*
- * use struct to store section name in read callback (__CONFIG_iniReadCb)
+ * use struct to store section name in read callback (__Config_iniReadCb)
  * after section found, section region will be empty
- * in callback if paramter found. we need to figure out
- * which section the current key-value paramter belongs to
+ * in callback if parameter found. we need to figure out
+ * which section the current key-value parameter belongs to
  */
-typedef struct _IniReadCbArgs {
+typedef struct {
   Config *const config;
   char *sec;  // current section name
   int secLen; // current section length
 } IniReadCbArgs;
 
 /*
- * invoked when section or key-value paramter found
+ * invoked when section or key-value parameter found
  * in ini parse
  */
-static void __CONFIG_iniReadCb(void *usr,
+static void __Config_iniReadCb(void *usr,
                                Region secRegion,
                                Region keyRegion,
                                Region valueRegion) {
@@ -190,7 +191,7 @@ static void __CONFIG_iniReadCb(void *usr,
     /*
      * section found, record section name in read cb args
      */
-    SectionData *secData = __ConfigCheckoutSection(config, secRegion);
+    SectionData *secData = __Config_checkoutSection(config, secRegion);
     if (secData) {
       if (args->secLen) {
         if (args->secLen == secRegion.len &&
@@ -206,73 +207,74 @@ static void __CONFIG_iniReadCb(void *usr,
   } else {
     /*
      * no section or parse section failed
-     * all key-value paramters ignored util
+     * all key-value parameters ignored util
      * next section found
      */
     if (!args->secLen) {
       return;
     }
-    Region secRegion = {args->sec, args->secLen};
-    SectionData *secData = __ConfigGetSection(config, secRegion);
+    SectionData *secData =
+        __Config_getSection(config, (Region){args->sec, args->secLen});
     if (!secData) {
       /*
        * should not happen
        */
       return;
     }
-    __ConfigCheckoutParamter(secData->paramters, keyRegion, valueRegion);
+    __Config_checkoutParameter(secData->parameters, keyRegion, valueRegion);
   }
 }
 
-static int32_t __CONFIG_ReadFile(void *stream, char *buf, int32_t len) {
+static int32_t __Config_readFile(void *stream, char *buf, int32_t len) {
   return fread(buf, 1, len, (FILE *)stream);
 }
 
-static int32_t __CONFIG_WriteFile(void *stream, const char *buf, int32_t len) {
+static int32_t __Config_writeFile(void *stream, const char *buf, int32_t len) {
   return fwrite(buf, 1, len, (FILE *)stream);
 }
 
-Config *makeConfig(const char *storePath) {
+Config *Config_new(const char *storePath) {
   FILE *fp = fopen(storePath, "r");
   if (!fp) {
     return NULL;
   }
-  Config *config = makeConfig2(fp, __CONFIG_ReadFile);
+  Config *config = Config_newFromStream(fp, __Config_readFile);
   fclose(fp);
   return config;
 }
 
-Config *makeConfig2(void *stream, int32_t (*reader)(void *, char *, int32_t)) {
+Config *Config_newFromStream(void *stream,
+                             int32_t (*reader)(void *, char *, int32_t)) {
   char buf[1024];
   Ini ini = {true, true, sizeof(buf), buf};
   Config *config = (Config *)malloc(sizeof(Config));
   if (!config) {
     return NULL;
   }
-  config->sections = makeList();
+  config->sections = List_new();
   if (!config->sections) {
     free(config);
     return NULL;
   }
   char sec[128];
   IniReadCbArgs args = {config, sec, 0};
-  iniParseStream(ini, stream, reader, __CONFIG_iniReadCb, &args);
+  iniParseStream(ini, stream, reader, __Config_iniReadCb, &args);
   return config;
 }
 
-int32_t readConfig(Config *config,
-                   const char *section,
-                   const char *key,
-                   char *value,
-                   int *valueLen) {
+int32_t Config_read(Config *config,
+                    const char *section,
+                    const char *key,
+                    char *value,
+                    int *valueLen) {
   if (!config) {
     return -1;
   }
   Region secRegion = {section, strlen(section)};
-  SectionData *secData = __ConfigGetSection(config, secRegion);
+  SectionData *secData = __Config_getSection(config, secRegion);
   if (secData) {
     Region keyRegion = {key, strlen(key)};
-    Paramter *param = __ConfigGetParamter(secData->paramters, keyRegion);
+    Parameter *param = __Config_getParameter(secData->parameters, keyRegion);
     if (param) {
       int vl = strlen(param->value);
       if (!value) {
@@ -287,36 +289,37 @@ int32_t readConfig(Config *config,
   return -1;
 }
 
-int32_t writeConfig(Config *config,
-                    const char *section,
-                    const char *key,
-                    const char *value) {
+int32_t Config_write(Config *config,
+                     const char *section,
+                     const char *key,
+                     const char *value) {
   Region secRegion = {section, strlen(section)};
-  SectionData *secData = __ConfigCheckoutSection(config, secRegion);
+  SectionData *secData = __Config_checkoutSection(config, secRegion);
   if (!secData) {
     return -1;
   }
   Region keyRegion = {key, strlen(key)};
   Region valueRegion = {value, strlen(value)};
-  return __ConfigCheckoutParamter(secData->paramters, keyRegion, valueRegion)
+  return __Config_checkoutParameter(secData->parameters, keyRegion, valueRegion)
              ? 0
              : -1;
 }
 
-int32_t flushToFile(Config *config, const char *storePath) {
+int32_t Config_flushToPath(Config *config, const char *storePath) {
   FILE *fp = fopen(storePath, "w");
   if (!fp) {
     return -1;
   }
-  int ret = flushConfig(config, fp, __CONFIG_WriteFile);
+  int ret = Config_flush(config, fp, __Config_writeFile);
   fclose(fp);
   return ret;
 }
 
-static int32_t __streamFlush(void *stream,
-                             int32_t (*writer)(void *, const char *, int32_t),
-                             const char *buf,
-                             int32_t len) {
+static int32_t
+__Config_streamFlush(void *stream,
+                     int32_t (*writer)(void *, const char *, int32_t),
+                     const char *buf,
+                     int32_t len) {
   int write, total = 0;
   while (total < len) {
     write = writer(stream, buf + total, len - total);
@@ -328,23 +331,23 @@ static int32_t __streamFlush(void *stream,
   return total;
 }
 
-int32_t flushConfig(Config *config,
-                    void *stream,
-                    int32_t (*writer)(void *, const char *, int32_t)) {
+int32_t Config_flush(Config *config,
+                     void *stream,
+                     int32_t (*writer)(void *, const char *, int32_t)) {
   char line[1024];
   CListIter secIt = List_begin(config->sections);
   int total = 0;
   while (!List_iterEquals(secIt, List_end(config->sections))) {
     SectionData *secData = (SectionData *)secIt.cur->data;
     total = snprintf(line, sizeof(line), "[%s]\n", secData->name);
-    if (__streamFlush(stream, writer, line, total) != total) {
+    if (__Config_streamFlush(stream, writer, line, total) != total) {
       return -1;
     }
-    CListIter paramIt = List_begin(secData->paramters);
-    while (!List_iterEquals(paramIt, List_end(secData->paramters))) {
-      Paramter *param = (Paramter *)paramIt.cur->data;
+    CListIter paramIt = List_begin(secData->parameters);
+    while (!List_iterEquals(paramIt, List_end(secData->parameters))) {
+      Parameter *param = (Parameter *)paramIt.cur->data;
       total = snprintf(line, sizeof(line), "%s=%s\n", param->key, param->value);
-      if (__streamFlush(stream, writer, line, total) != total) {
+      if (__Config_streamFlush(stream, writer, line, total) != total) {
         return -1;
       }
       paramIt = List_next(paramIt);
@@ -354,16 +357,16 @@ int32_t flushConfig(Config *config,
   return 0;
 }
 
-void debug(Config *config) {
+void Config_debug(Config *config) {
   CList *sections = config->sections;
   CListIter sectionIt = List_begin(sections);
   while (!List_iterEquals(sectionIt, List_end(sections))) {
     SectionData *sectionData = (SectionData *)sectionIt.cur->data;
     printf("[%s]\n", sectionData->name);
-    CList *paramters = (CList *)(sectionData->paramters);
-    CListIter configIt = List_begin(paramters);
-    while (!List_iterEquals(configIt, List_end(paramters))) {
-      Paramter *configData = (Paramter *)configIt.cur->data;
+    CList *parameters = (CList *)(sectionData->parameters);
+    CListIter configIt = List_begin(parameters);
+    while (!List_iterEquals(configIt, List_end(parameters))) {
+      Parameter *configData = (Parameter *)configIt.cur->data;
       printf("%s=%s\n", configData->key, configData->value);
       configIt = List_next(configIt);
     }
@@ -371,22 +374,22 @@ void debug(Config *config) {
   }
 }
 
-void freeConfig(Config *config) {
+void Config_delete(Config *config) {
   CListNode *secNode = NULL;
   while ((secNode = List_pop(config->sections))) {
     SectionData *secData = (SectionData *)secNode->data;
     free(secData->name);
-    CList *params = secData->paramters;
+    CList *params = secData->parameters;
     CListNode *paramNode = NULL;
     while ((paramNode = List_pop(params))) {
-      Paramter *param = (Paramter *)paramNode->data;
+      Parameter *param = (Parameter *)paramNode->data;
       free(param->key);
       free(param->value);
       free(paramNode);
     }
-    freeList(params);
+    List_delete(params);
     free(secNode);
   }
-  freeList(config->sections);
+  List_delete(config->sections);
   free(config);
 }

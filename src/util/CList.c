@@ -38,7 +38,7 @@ static void __List_init(CList *list) {
   __List_link(&list->header, &list->header);
 }
 
-CList *makeList() {
+CList *List_new() {
   CList *list = (CList *)malloc(sizeof(CList));
   if (list) {
     __List_init(list);
@@ -46,7 +46,7 @@ CList *makeList() {
   return list;
 }
 
-bool freeList(CList *list) {
+bool List_delete(CList *list) {
   if (!List_empty(list)) {
     return false;
   }

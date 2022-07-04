@@ -28,13 +28,13 @@ typedef struct {
 /*
  * create a list object
  */
-CList *makeList();
+CList *List_new();
 
 /*
  * free list if list is empty
  * otherwise return false
  */
-bool freeList(CList *list);
+bool List_delete(CList *list);
 
 /*
  * return begin iter of list

@@ -11,17 +11,17 @@ extern "C" {
 /*
  * create config from specified ini path
  */
-Config *makeConfig(const char *storePath);
+Config *Config_new(const char *storePath);
 
 /*
  * create config from usr specified stream
  */
-Config *makeConfig2(void *stream, int32_t (*reader)(void *, char *, int32_t));
+Config *Config_newFromStream(void *stream, int32_t (*reader)(void *, char *, int32_t));
 
 /*
  * read value from key under section
  */
-int32_t readConfig(Config *config,
+int32_t Config_read(Config *config,
                    const char *section,
                    const char *key,
                    char *value,
@@ -31,7 +31,7 @@ int32_t readConfig(Config *config,
  * write key-value paramter under section
  * write to memory and no disk flush
  */
-int32_t writeConfig(Config *config,
+int32_t Config_write(Config *config,
                     const char *section,
                     const char *key,
                     const char *value);
@@ -41,26 +41,26 @@ int32_t writeConfig(Config *config,
  * write data not includes comment, so it may be different
  * from config content before
  */
-int32_t flushToFile(Config *config, const char *storePath);
+int32_t Config_flushToPath(Config *config, const char *storePath);
 
 /*
  * flush config data to usr specified stream
  * write data only contains available data without
  * comment string and useless blank lines
  */
-int32_t flushConfig(Config *config,
+int32_t Config_flush(Config *config,
                     void *stream,
                     int32_t (*writer)(void *, const char *, int32_t));
 
 /*
  * free config resources
  */
-void freeConfig(Config *config);
+void Config_delete(Config *config);
 
 /*
- * print config data in console, only for debug test
+ * print config data in console, only for Config_debug test
  */
-void debug(Config *config);
+void Config_debug(Config *config);
 
 #ifdef __cplusplus
 }
