@@ -10,7 +10,7 @@
 extern "C" {
 #endif
 
-void assertInfo(bool cond, const char *msg);
+void assertIf(bool cond, const char *msg);
 void assertMessage(bool cond, const char *fmt, ...);
 
 #ifdef __cplusplus

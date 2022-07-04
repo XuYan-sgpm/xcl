@@ -2,6 +2,7 @@
 // #include <util/CBuffer.h>
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #pragma once
 
@@ -19,78 +20,78 @@ typedef struct {
       int cap;
     } heap;
   } mem;
-  int state;
+  int32_t state;
 } CString;
 
-CString makeString(const char *str);
+CString String_new(const char *str);
 
-CString makeString2(const char *str, const int len);
+CString String_newRegion(const char *str, const int len);
 
-CString strAlloc(const int cap);
+CString String_alloc(const int cap);
 
-void strRelease(CString *string);
+void String_release(CString *string);
 
-void strClear(CString *string);
+void String_clear(CString *string);
 
-int strSize(const CString *string);
+int String_size(const CString *string);
 
-int strCap(const CString *string);
+int String_cap(const CString *string);
 
-bool strEmpty(const CString *string);
+bool String_empty(const CString *string);
 
-bool strAssign(CString *string, const char *str);
+bool String_assign(CString *string, const char *str);
 
-bool strAssignRegion(CString *string, const char *str, const int len);
+bool String_assignRegion(CString *string, const char *str, const int len);
 
-bool strAssignStr(CString *string, const CString *src);
+bool String_assignStr(CString *string, const CString *src);
 
-bool strPushChar(CString *string, char ch);
+bool String_pushChar(CString *string, char ch);
 
-bool strPushChars(CString *string, const int n, char ch);
+bool String_pushChars(CString *string, const int n, char ch);
 
-bool strPushRegion(CString *string, const char *str, const int len);
+bool String_pushRegion(CString *string, const char *str, const int len);
 
-bool strPush(CString *string, const char *str);
+bool String_push(CString *string, const char *str);
 
-bool strPushStr(CString *string, const CString *src);
+bool String_pushStr(CString *string, const CString *src);
 
-bool strWriteChar(CString *string, const int pos, char ch);
+bool String_writeChar(CString *string, const int pos, char ch);
 
-bool strWriteChars(CString *string, const int pos, const int n, char ch);
+bool String_writeChars(CString *string, const int pos, const int n, char ch);
 
-bool strWriteRegion(CString *string,
-                    const int pos,
-                    const char *str,
-                    const int len);
+bool String_writeRegion(CString *string,
+                        const int pos,
+                        const char *str,
+                        const int len);
 
-bool strWrite(CString *string, const int pos, const char *str);
+bool String_write(CString *string, const int pos, const char *str);
 
-bool strWriteStr(CString *string, const int pos, const CString *src);
+bool String_writeStr(CString *string, const int pos, const CString *src);
 
-bool strPop(CString *string, char *dst);
+bool String_pop(CString *string, char *dst);
 
-bool strPopBack(CString *string, char *dst);
+bool String_popBack(CString *string, char *dst);
 
-bool strGet(const CString *string, const int pos, char *dst);
+bool String_get(const CString *string, const int pos, char *dst);
 
-int strGets(const CString *string, const int pos, const int len, char *dst);
+int String_gets(const CString *string, const int pos, const int len, char *dst);
 
-void strDelete(CString *string, const int pos);
+void String_delete(CString *string, const int pos);
 
-void strDeleteRegion(CString *string, const int pos, const int len);
+void String_deleteRegion(CString *string, const int pos, const int len);
 
-const char *strQueryChar(const CString *string, const bool left, char ch);
+const char *String_queryChar(const CString *string, const bool left, char ch);
 
-const char *strQuery(const CString *string, const char *str);
+const char *String_query(const CString *string, const char *str);
 
 const char *
-strQueryRegion(const CString *string, const char *str, const int len);
+String_queryRegion(const CString *string, const char *str, const int len);
 
-char strAt(const CString *string, const int pos);
+char String_at(const CString *string, const int pos);
 
-CString strDup(const CString *string);
+CString String_dup(const CString *string);
 
-CString strDupRegion(const CString *string, const int pos, const int len);
+CString String_dupRegion(const CString *string, const int pos, const int len);
 
 #ifdef __cplusplus
 }

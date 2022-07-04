@@ -12,53 +12,53 @@ typedef struct {
   int size;
 } CBuffer;
 
-CBuffer makeBuf(int cap);
+CBuffer Buffer_new(int cap);
 
-CBuffer makeBuf2(char *src, int len);
+CBuffer Buffer_newRegion(char *src, int len);
 
-int bufCap(const CBuffer *buffer);
+int Buffer_cap(const CBuffer *buffer);
 
 CBuffer wrapBuf(char *src, int len);
 
 CBuffer wrapBuf2(const CBuffer *buffer, int pos, int len);
 
-bool bufFree(CBuffer *buffer);
+bool Buffer_free(CBuffer *buffer);
 
-bool bufPush(CBuffer *buffer, char ch);
+bool Buffer_push(CBuffer *buffer, char ch);
 
-int bufAppendRegion(CBuffer *buffer, const char *src, int len);
+int Buffer_appendRegion(CBuffer *buffer, const char *src, int len);
 
-int bufAppend(CBuffer *buffer, const char *src);
+int Buffer_append(CBuffer *buffer, const char *src);
 
-int bufAppendChars(CBuffer *buffer, int n, char ch);
+int Buffer_appendChars(CBuffer *buffer, int n, char ch);
 
-bool bufPop(CBuffer *buffer, char *dst);
+bool Buffer_pop(CBuffer *buffer, char *dst);
 
-bool bufGet(const CBuffer *buffer, int pos, char *dst);
+bool Buffer_get(const CBuffer *buffer, int pos, char *dst);
 
-bool bufWriteChar(CBuffer *buffer, int pos, char ch);
+bool Buffer_writeChar(CBuffer *buffer, int pos, char ch);
 
-bool bufWriteChars(CBuffer *buffer, int pos, int n, char ch);
+bool Buffer_writeChars(CBuffer *buffer, int pos, int n, char ch);
 
-int bufWriteRegion(CBuffer *buffer, int pos, const char *src, int len);
+int Buffer_writeRegion(CBuffer *buffer, int pos, const char *src, int len);
 
-int bufWrite(CBuffer *buffer, int pos, const char *src);
+int Buffer_write(CBuffer *buffer, int pos, const char *src);
 
-int bufRead2(const CBuffer *buffer, int pos, char *dst, int len);
+int Buffer_readRegion(const CBuffer *buffer, int pos, char *dst, int len);
 
-int bufRead(const CBuffer *buffer, int pos, char *dst);
+int Buffer_read(const CBuffer *buffer, int pos, char *dst);
 
-bool bufExpand(CBuffer *buffer, int cap);
+bool Buffer_expand(CBuffer *buffer, int cap);
 
-void bufRemoveRegion(CBuffer *buffer, int pos, int len);
+void Buffer_removeRegion(CBuffer *buffer, int pos, int len);
 
-void bufRemovePos(CBuffer *buffer, int pos);
+void Buffer_removePos(CBuffer *buffer, int pos);
 
-void bufClear(CBuffer *buffer);
+void Buffer_clear(CBuffer *buffer);
 
-bool bufRealloc(CBuffer *buffer, int cap);
+bool Buffer_realloc(CBuffer *buffer, int cap);
 
-char *bufAt(const CBuffer *buffer, int pos);
+char *Buffer_at(const CBuffer *buffer, int pos);
 
 #ifdef __cplusplus
 }

@@ -16,7 +16,7 @@ else ()
 endif ()
 
 set(CMAKE_CXX_STANDARD 17)
-set(COMPILE_STATIC true)
+set(COMPILE_STATIC false)
 set(lib_src_files)
 
 function(filter_files)
@@ -70,7 +70,7 @@ else ()
     add_library(xcl SHARED ${lib_src_files})
 endif ()
 
-#file(GLOB_RECURSE test_files test/*.c test/*.cc)
-set(test_files test/TestBits.cc)
+file(GLOB_RECURSE test_files test/*.c test/*.cc)
+#set(test_files test/TestBits.cc)
 add_executable(main main.cc ${test_files})
 target_link_libraries(main xcl gtest gtest_main)

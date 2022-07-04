@@ -45,31 +45,31 @@ static CLocalStorage *__checkoutLocalStorageMem(CLocalStorage *localStorage,
   }
   return localStorage;
 }
-void *LocalStorage_Get(CLocalStorage *localStorage, int idx) {
+void *LocalStorage_get(CLocalStorage *localStorage, int idx) {
   if (!__checkoutLocalStorageMem(localStorage, idx)) {
     return NULL;
   }
   return localStorage->blocks[idx].data;
 }
-void LocalStorage_Free(CLocalStorage *localStorage) {
+void LocalStorage_free(CLocalStorage *localStorage) {
   if (localStorage->blocks) {
     free(localStorage->blocks);
     memset(localStorage, 0, sizeof(CLocalStorage));
   }
 }
-bool LocalStorage_SetPtr(CLocalStorage *localStorage, int idx, intptr_t ptr) {
+bool LocalStorage_setPtr(CLocalStorage *localStorage, int idx, intptr_t ptr) {
   localStorage = __checkoutLocalStorageMem(localStorage, idx);
   if (!localStorage) {
     return false;
   }
-  void *data = LocalStorage_Get(localStorage, idx);
+  void *data = LocalStorage_get(localStorage, idx);
   *(intptr_t *)data = ptr;
   return true;
 }
-bool LocalStorage_SetTiny(CLocalStorage *localStorage,
-                int idx,
-                const void *src,
-                int len) {
+bool LocalStorage_setTiny(CLocalStorage *localStorage,
+                          int idx,
+                          const void *src,
+                          int len) {
   localStorage = __checkoutLocalStorageMem(localStorage, idx);
   if (!localStorage) {
     return false;

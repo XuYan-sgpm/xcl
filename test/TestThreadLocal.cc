@@ -12,24 +12,24 @@ using namespace std;
 
 static void __testThreadLocal(CThreadLocal *local) {
   const char *p = "hello world";
-  assert(setLocal(local, (void *)p));
+  assert(Local_set(local, (void *)p));
   void *ptr;
-  assert(getLocal(local, &ptr));
+  assert(Local_get(local, &ptr));
   assert(ptr == p);
-  assert(setLocalInt32(local, 89));
+  assert(Local_setInt32(local, 89));
   int32_t val;
-  assert(getLocalInt32(local, &val));
+  assert(Local_getInt32(local, &val));
   assert(val == 89);
   float val2;
-  assert(setLocalFloat(local, 3.1415926f));
-  assert(getLocalFloat(local, &val2));
+  assert(Local_setFloat(local, 3.1415926f));
+  assert(Local_getFloat(local, &val2));
   assert(val2 == 3.1415926f);
 }
 
 void *threadProc(void *args) {
   CThreadLocal locals[10];
   for (int i = 0; i < 10; i++) {
-    locals[i] = makeLocal();
+    locals[i] = Local_make();
   }
   for (int loop = 0; loop < 10; loop++) {
     for (int i = 0; i < 10; i++) {

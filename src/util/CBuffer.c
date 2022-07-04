@@ -15,7 +15,7 @@ static void __setBufState(CBuffer *buffer, int cap, const bool flag) {
   buffer->state = (cap & __BUF_MASK__) | (val << 31);
 }
 
-CBuffer makeBuf(int cap) {
+CBuffer Buffer_new(int cap) {
   CBuffer buffer = {NULL, 0, 0};
   if (cap > 0) {
     char *p = (char *)malloc(cap);
@@ -27,7 +27,7 @@ CBuffer makeBuf(int cap) {
   return buffer;
 }
 
-CBuffer makeBuf2(char *src, int len) {
+CBuffer Buffer_newRegion(char *src, int len) {
   CBuffer buffer = {NULL, 0, 0};
   if (src && len > 0) {
     buffer.data = src;
@@ -36,7 +36,7 @@ CBuffer makeBuf2(char *src, int len) {
   return buffer;
 }
 
-int bufCap(const CBuffer *buffer) { return buffer->state & __BUF_MASK__; }
+int Buffer_cap(const CBuffer *buffer) { return buffer->state & __BUF_MASK__; }
 
 CBuffer wrapBuf(char *src, int len) {
   CBuffer buffer = {src, 0, len};
@@ -54,7 +54,7 @@ CBuffer wrapBuf2(const CBuffer *origin, int pos, int len) {
   return buffer;
 }
 
-bool bufFree(CBuffer *buffer) {
+bool Buffer_free(CBuffer *buffer) {
   if (buffer->data && __isBufReleasable(buffer)) {
     free(buffer->data);
     memset(buffer, 0, sizeof(*buffer));
@@ -63,19 +63,19 @@ bool bufFree(CBuffer *buffer) {
   return false;
 }
 
-bool bufPush(CBuffer *buffer, char ch) {
-  if (buffer->size < bufCap(buffer)) {
+bool Buffer_push(CBuffer *buffer, char ch) {
+  if (buffer->size < Buffer_cap(buffer)) {
     buffer->data[buffer->size++] = ch;
     return true;
   }
   return false;
 }
 
-int bufAppendRegion(CBuffer *buffer, const char *src, int len) {
+int Buffer_appendRegion(CBuffer *buffer, const char *src, int len) {
   if (len <= 0 || !src) {
     return 0;
   }
-  int write = bufCap(buffer) - buffer->size;
+  int write = Buffer_cap(buffer) - buffer->size;
   if (write > len) {
     write = len;
   }
@@ -84,15 +84,15 @@ int bufAppendRegion(CBuffer *buffer, const char *src, int len) {
   return write;
 }
 
-int bufAppend(CBuffer *buffer, const char *src) {
-  return src ? bufAppendRegion(buffer, src, strlen(src)) : 0;
+int Buffer_append(CBuffer *buffer, const char *src) {
+  return src ? Buffer_appendRegion(buffer, src, strlen(src)) : 0;
 }
 
-int bufAppendChars(CBuffer *buffer, int n, char ch) {
+int Buffer_appendChars(CBuffer *buffer, int n, char ch) {
   if (n <= 0) {
     return 0;
   }
-  int count = bufCap(buffer) - buffer->size;
+  int count = Buffer_cap(buffer) - buffer->size;
   if (count > n) {
     count = n;
   }
@@ -101,7 +101,7 @@ int bufAppendChars(CBuffer *buffer, int n, char ch) {
   return count;
 }
 
-bool bufPop(CBuffer *buffer, char *dst) {
+bool Buffer_pop(CBuffer *buffer, char *dst) {
   if (buffer->size) {
     if (dst) {
       *dst = buffer->data[0];
@@ -115,7 +115,7 @@ bool bufPop(CBuffer *buffer, char *dst) {
   return false;
 }
 
-bool bufGet(const CBuffer *buffer, int pos, char *dst) {
+bool Buffer_get(const CBuffer *buffer, int pos, char *dst) {
   if (pos < 0 || pos >= buffer->size) {
     return false;
   }
@@ -125,8 +125,8 @@ bool bufGet(const CBuffer *buffer, int pos, char *dst) {
   return true;
 }
 
-bool bufWriteChar(CBuffer *buffer, int pos, char ch) {
-  if (pos >= 0 && pos <= buffer->size && buffer->size < bufCap(buffer)) {
+bool Buffer_writeChar(CBuffer *buffer, int pos, char ch) {
+  if (pos >= 0 && pos <= buffer->size && buffer->size < Buffer_cap(buffer)) {
     if (pos < buffer->size) {
       memmove(buffer->data + pos + 1, buffer->data + pos, buffer->size - pos);
     }
@@ -137,8 +137,8 @@ bool bufWriteChar(CBuffer *buffer, int pos, char ch) {
   return false;
 }
 
-bool bufWriteChars(CBuffer *buffer, int pos, int n, char ch) {
-  if (pos >= 0 && n >= 0 && buffer->size + n <= bufCap(buffer)) {
+bool Buffer_writeChars(CBuffer *buffer, int pos, int n, char ch) {
+  if (pos >= 0 && n >= 0 && buffer->size + n <= Buffer_cap(buffer)) {
     if (pos < buffer->size) {
       memmove(buffer->data + pos + n, buffer->data + pos, buffer->size - pos);
     }
@@ -149,11 +149,11 @@ bool bufWriteChars(CBuffer *buffer, int pos, int n, char ch) {
   return false;
 }
 
-int bufWriteRegion(CBuffer *buffer, int pos, const char *src, int len) {
+int Buffer_writeRegion(CBuffer *buffer, int pos, const char *src, int len) {
   if (pos > buffer->size || len <= 0 || !src) {
     return 0;
   }
-  int remaining = bufCap(buffer) - buffer->size;
+  int remaining = Buffer_cap(buffer) - buffer->size;
   int write = remaining > len ? len : remaining;
   if (pos < buffer->size)
     memmove(&buffer->data[pos + write], &buffer->data[pos], buffer->size - pos);
@@ -162,11 +162,11 @@ int bufWriteRegion(CBuffer *buffer, int pos, const char *src, int len) {
   return write;
 }
 
-int bufWrite(CBuffer *buffer, int pos, const char *src) {
-  return src ? bufWriteRegion(buffer, pos, src, strlen(src)) : 0;
+int Buffer_write(CBuffer *buffer, int pos, const char *src) {
+  return src ? Buffer_writeRegion(buffer, pos, src, strlen(src)) : 0;
 }
 
-int bufRead2(const CBuffer *buffer, int pos, char *dst, int len) {
+int Buffer_readRegion(const CBuffer *buffer, int pos, char *dst, int len) {
   if (pos >= buffer->size || len <= 0) {
     return 0;
   }
@@ -180,17 +180,17 @@ int bufRead2(const CBuffer *buffer, int pos, char *dst, int len) {
   return read;
 }
 
-int bufRead(const CBuffer *buffer, int pos, char *dst) {
+int Buffer_read(const CBuffer *buffer, int pos, char *dst) {
   if (buffer->size - pos > 0)
-    return bufRead2(buffer, pos, dst, buffer->size - pos);
+    return Buffer_readRegion(buffer, pos, dst, buffer->size - pos);
   return 0;
 }
 
-bool bufExpand(CBuffer *buffer, int cap) {
-  if (cap <= bufCap(buffer)) {
+bool Buffer_expand(CBuffer *buffer, int cap) {
+  if (cap <= Buffer_cap(buffer)) {
     //
   } else if (!buffer->data || !__isBufReleasable(buffer)) {
-    CBuffer newBuf = makeBuf(cap);
+    CBuffer newBuf = Buffer_new(cap);
     if (!newBuf.data) {
       return false;
     }
@@ -198,7 +198,7 @@ bool bufExpand(CBuffer *buffer, int cap) {
   } else {
     char *p = realloc(buffer->data, cap);
     if (!p) {
-      CBuffer newBuf = makeBuf(cap);
+      CBuffer newBuf = Buffer_new(cap);
       if (newBuf.data) {
         memcpy(newBuf.data, buffer->data, buffer->size);
         newBuf.size = buffer->size;
@@ -215,7 +215,7 @@ bool bufExpand(CBuffer *buffer, int cap) {
   return true;
 }
 
-void bufRemoveRegion(CBuffer *buffer, int pos, int len) {
+void Buffer_removeRegion(CBuffer *buffer, int pos, int len) {
   if (pos >= 0 && len >= 0 && pos + len <= buffer->size) {
     if (pos + len < buffer->size) {
       memcpy(buffer->data + pos,
@@ -226,22 +226,24 @@ void bufRemoveRegion(CBuffer *buffer, int pos, int len) {
   }
 }
 
-void bufRemovePos(CBuffer *buffer, int pos) { bufRemoveRegion(buffer, pos, 1); }
+void Buffer_removePos(CBuffer *buffer, int pos) {
+  Buffer_removeRegion(buffer, pos, 1);
+}
 
-void bufClear(CBuffer *buffer) {
+void Buffer_clear(CBuffer *buffer) {
   if (buffer->size > 0) {
     buffer->size = 0;
   }
 }
 
-bool bufRealloc(CBuffer *buffer, int cap) {
+bool Buffer_realloc(CBuffer *buffer, int cap) {
   if (cap < 0) {
     return false;
   }
   if (cap == 0) {
-    return bufFree(buffer);
+    return Buffer_free(buffer);
   } else if (!__isBufReleasable(buffer)) {
-    CBuffer newBuf = makeBuf(cap);
+    CBuffer newBuf = Buffer_new(cap);
     if (!newBuf.data) {
       return false;
     }
@@ -249,7 +251,7 @@ bool bufRealloc(CBuffer *buffer, int cap) {
     memcpy(newBuf.data, buffer->data, size);
     newBuf.size = size;
     *buffer = newBuf;
-  } else if (cap > bufCap(buffer)) {
+  } else if (cap > Buffer_cap(buffer)) {
     char *p = (char *)realloc(buffer->data, cap);
     if (!p) {
       return false;
@@ -260,7 +262,7 @@ bool bufRealloc(CBuffer *buffer, int cap) {
   return true;
 }
 
-char *bufAt(const CBuffer *buffer, int pos) {
+char *Buffer_at(const CBuffer *buffer, int pos) {
   if (pos >= 0 && pos <= buffer->size) {
     return buffer->data + pos;
   }

@@ -7,7 +7,7 @@
 #include <stdarg.h>
 #include <assert.h>
 
-void assertInfo(bool cond, const char *msg) {
+void assertIf(bool cond, const char *msg) {
   if (!cond) {
     fprintf(stderr, "%s\n", msg);
     assert(cond);

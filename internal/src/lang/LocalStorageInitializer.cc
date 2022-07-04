@@ -13,7 +13,7 @@
 static pthread_key_t __threadLocalStorageKey = -1u;
 
 static void __destroyLocalStorage(void *args) {
-  LS_Free(static_cast<CLocalStorage *>(args));
+  LocalStorage_free(static_cast<CLocalStorage *>(args));
 }
 
 namespace {
@@ -83,7 +83,7 @@ LocalStorageRegImpl::~LocalStorageRegImpl() {
       break;
     }
     CLocalStorage *localStorage = (CLocalStorage *)*(intptr_t *)node->data;
-    LocalStorage_Free(localStorage);
+    LocalStorage_free(localStorage);
     free(node);
   }
 }
@@ -109,7 +109,7 @@ extern "C" {
 
 #ifdef DYNAMIC
 
-CLocalStorage *__TL_getLocalStorage() {
+CLocalStorage *__ThreadLocal_getLocalStorage() {
   if (__threadLocalStorageKey == -1u) {
     return nullptr;
   }
@@ -117,7 +117,7 @@ CLocalStorage *__TL_getLocalStorage() {
       ::pthread_getspecific(__threadLocalStorageKey));
 }
 
-bool __TL_setLocalStorage(CLocalStorage *localStorage) {
+bool __ThreadLocal_setLocalStorage(CLocalStorage *localStorage) {
   if (__threadLocalStorageKey == -1u) {
     return false;
   } else {

@@ -65,8 +65,8 @@ static int __cmpParamWithRegion(const void *arg1, const void *arg2) {
  */
 static SectionData *__ConfigGetSection(Config *config, Region secRegion) {
   CListIter it =
-      listQuery(config->sections, &secRegion, __cmpSectionWithRegion);
-  return listIterEquals(it, listEnd(config->sections))
+      List_query(config->sections, &secRegion, __cmpSectionWithRegion);
+  return List_iterEquals(it, List_end(config->sections))
              ? NULL
              : (SectionData *)it.cur->data;
 }
@@ -77,8 +77,8 @@ static SectionData *__ConfigGetSection(Config *config, Region secRegion) {
  */
 static SectionData *__ConfigCheckoutSection(Config *config, Region secRegion) {
   CListIter secIt =
-      listQuery(config->sections, &secRegion, __cmpSectionWithRegion);
-  if (listIterEquals(secIt, listEnd(config->sections))) {
+      List_query(config->sections, &secRegion, __cmpSectionWithRegion);
+  if (List_iterEquals(secIt, List_end(config->sections))) {
     /*
      * section not exists
      */
@@ -94,7 +94,7 @@ static SectionData *__ConfigCheckoutSection(Config *config, Region secRegion) {
         SectionData *secData = (SectionData *)secNode->data;
         secData->name = name;
         secData->paramters = params;
-        listPush(config->sections, secNode);
+        List_push(config->sections, secNode);
         return secData;
       }
       free(name);
@@ -114,8 +114,8 @@ static SectionData *__ConfigCheckoutSection(Config *config, Region secRegion) {
  * get paramter from section paramter list
  */
 static Paramter *__ConfigGetParamter(CList *params, Region keyRegion) {
-  CListIter paramIt = listQuery(params, &keyRegion, __cmpParamWithRegion);
-  if (!listIterEquals(paramIt, listEnd(params))) {
+  CListIter paramIt = List_query(params, &keyRegion, __cmpParamWithRegion);
+  if (!List_iterEquals(paramIt, List_end(params))) {
     return (Paramter *)paramIt.cur->data;
   }
   return NULL;
@@ -127,8 +127,8 @@ static Paramter *__ConfigGetParamter(CList *params, Region keyRegion) {
  */
 static Paramter *
 __ConfigCheckoutParamter(CList *params, Region keyRegion, Region valueRegion) {
-  CListIter paramIt = listQuery(params, &keyRegion, __cmpParamWithRegion);
-  if (!listIterEquals(paramIt, listEnd(params))) {
+  CListIter paramIt = List_query(params, &keyRegion, __cmpParamWithRegion);
+  if (!List_iterEquals(paramIt, List_end(params))) {
     /*
      * key exists, check value
      * if value not equals, update value
@@ -154,7 +154,7 @@ __ConfigCheckoutParamter(CList *params, Region keyRegion, Region valueRegion) {
     if (param->key || !keyRegion.len) {
       param->value = __newStr(valueRegion.str, valueRegion.len);
       if (param->value || !valueRegion.len) {
-        listPush(params, paramNode);
+        List_push(params, paramNode);
         return param;
       }
       free(param->key);
@@ -332,53 +332,53 @@ int32_t flushConfig(Config *config,
                     void *stream,
                     int32_t (*writer)(void *, const char *, int32_t)) {
   char line[1024];
-  CListIter secIt = listBegin(config->sections);
+  CListIter secIt = List_begin(config->sections);
   int total = 0;
-  while (!listIterEquals(secIt, listEnd(config->sections))) {
+  while (!List_iterEquals(secIt, List_end(config->sections))) {
     SectionData *secData = (SectionData *)secIt.cur->data;
     total = snprintf(line, sizeof(line), "[%s]\n", secData->name);
     if (__streamFlush(stream, writer, line, total) != total) {
       return -1;
     }
-    CListIter paramIt = listBegin(secData->paramters);
-    while (!listIterEquals(paramIt, listEnd(secData->paramters))) {
+    CListIter paramIt = List_begin(secData->paramters);
+    while (!List_iterEquals(paramIt, List_end(secData->paramters))) {
       Paramter *param = (Paramter *)paramIt.cur->data;
       total = snprintf(line, sizeof(line), "%s=%s\n", param->key, param->value);
       if (__streamFlush(stream, writer, line, total) != total) {
         return -1;
       }
-      paramIt = listNext(paramIt);
+      paramIt = List_next(paramIt);
     }
-    secIt = listNext(secIt);
+    secIt = List_next(secIt);
   }
   return 0;
 }
 
 void debug(Config *config) {
   CList *sections = config->sections;
-  CListIter sectionIt = listBegin(sections);
-  while (!listIterEquals(sectionIt, listEnd(sections))) {
+  CListIter sectionIt = List_begin(sections);
+  while (!List_iterEquals(sectionIt, List_end(sections))) {
     SectionData *sectionData = (SectionData *)sectionIt.cur->data;
     printf("[%s]\n", sectionData->name);
     CList *paramters = (CList *)(sectionData->paramters);
-    CListIter configIt = listBegin(paramters);
-    while (!listIterEquals(configIt, listEnd(paramters))) {
+    CListIter configIt = List_begin(paramters);
+    while (!List_iterEquals(configIt, List_end(paramters))) {
       Paramter *configData = (Paramter *)configIt.cur->data;
       printf("%s=%s\n", configData->key, configData->value);
-      configIt = listNext(configIt);
+      configIt = List_next(configIt);
     }
-    sectionIt = listNext(sectionIt);
+    sectionIt = List_next(sectionIt);
   }
 }
 
 void freeConfig(Config *config) {
   CListNode *secNode = NULL;
-  while ((secNode = listPop(config->sections))) {
+  while ((secNode = List_pop(config->sections))) {
     SectionData *secData = (SectionData *)secNode->data;
     free(secData->name);
     CList *params = secData->paramters;
     CListNode *paramNode = NULL;
-    while ((paramNode = listPop(params))) {
+    while ((paramNode = List_pop(params))) {
       Paramter *param = (Paramter *)paramNode->data;
       free(param->key);
       free(param->value);
