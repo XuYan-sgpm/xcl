@@ -1,0 +1,218 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="xcl"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="D:/ClionProjects/xcl2/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="xcl">
+				<Option output="D:/ClionProjects/xcl2/cmake-build-release/libxcl.dll" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/ClionProjects/xcl2/cmake-build-release"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DDYNAMIC"/>
+					<Add option="-D_WIN32_WINNT=0x0A00"/>
+					<Add directory="D:/ClionProjects/xcl2/include"/>
+					<Add directory="D:/ClionProjects/xcl2/internal/inc"/>
+					<Add directory="C:/Program Files (x86)/googletest-distribution/include"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/x86_64-w64-mingw32"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/backward"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 xcl"/>
+					<CompileFile command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="xcl/fast">
+				<Option output="D:/ClionProjects/xcl2/cmake-build-release/libxcl.dll" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/ClionProjects/xcl2/cmake-build-release"/>
+				<Option object_output="./"/>
+				<Option type="3"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DDYNAMIC"/>
+					<Add option="-D_WIN32_WINNT=0x0A00"/>
+					<Add directory="D:/ClionProjects/xcl2/include"/>
+					<Add directory="D:/ClionProjects/xcl2/internal/inc"/>
+					<Add directory="C:/Program Files (x86)/googletest-distribution/include"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/x86_64-w64-mingw32"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/backward"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 xcl/fast"/>
+					<CompileFile command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="main">
+				<Option output="D:/ClionProjects/xcl2/cmake-build-release/main.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/ClionProjects/xcl2/cmake-build-release"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DDYNAMIC"/>
+					<Add option="-D_WIN32_WINNT=0x0A00"/>
+					<Add directory="D:/ClionProjects/xcl2/include"/>
+					<Add directory="D:/ClionProjects/xcl2/internal/inc"/>
+					<Add directory="C:/Program Files (x86)/googletest-distribution/include"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/x86_64-w64-mingw32"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/backward"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 main"/>
+					<CompileFile command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="main/fast">
+				<Option output="D:/ClionProjects/xcl2/cmake-build-release/main.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="D:/ClionProjects/xcl2/cmake-build-release"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DDYNAMIC"/>
+					<Add option="-D_WIN32_WINNT=0x0A00"/>
+					<Add directory="D:/ClionProjects/xcl2/include"/>
+					<Add directory="D:/ClionProjects/xcl2/internal/inc"/>
+					<Add directory="C:/Program Files (x86)/googletest-distribution/include"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/x86_64-w64-mingw32"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include/c++/backward"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/include-fixed"/>
+					<Add directory="D:/mingw64/bin/../lib/gcc/x86_64-w64-mingw32/8.1.0/../../../../x86_64-w64-mingw32/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 main/fast"/>
+					<CompileFile command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="D:/ClionProjects/xcl2/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="D:/ClionProjects/xcl2/cmake-build-release"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="D:/mingw64/bin/mingw32-make.exe -f &quot;D:/ClionProjects/xcl2/cmake-build-release/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="D:/ClionProjects/xcl2/internal/src/concurrent/windows/InternalWinLock.cc">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/internal/src/lang/CBytes.c">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/internal/src/lang/CLocalStorage.c">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/internal/src/lang/FreeIdQueue.cc">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/internal/src/lang/LocalStorageInitializer.cc">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/internal/src/pool/SizeClass.c">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/internal/src/util/CSingleList.c">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/main.cc">
+			<Option target="main"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/src/concurrent/Lock.cc">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/src/concurrent/util/CLinkedBlockQueue.c">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/src/concurrent/windows/CWinCond.c">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/src/concurrent/windows/CWinMutex.c">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/src/ini/IniParse.c">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/src/ini/cfg.c">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/src/lang/CAssertUtil.c">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/src/lang/CThreadLocal.c">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/src/pool/pool.cc">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/src/util/CBits.c">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/src/util/CBuffer.c">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/src/util/CList.c">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/src/util/CString.c">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/src/util/windows/SysWin.c">
+			<Option target="xcl"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/test/TestLock.cc">
+			<Option target="main"/>
+		</Unit>
+		<Unit filename="D:/ClionProjects/xcl2/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

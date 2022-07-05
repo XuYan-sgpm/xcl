@@ -2,7 +2,6 @@
 // Created by xuyan on 2022/7/4.
 //
 
-
 #include <windef.h>
 #include <synchapi.h>
 #include <mmsystem.h>
@@ -11,10 +10,10 @@
 
 typedef struct {
   CRITICAL_SECTION criticalSection;
-} WinMutex;
+} CWinMutex;
 
 void *Mutex_new() {
-  WinMutex *mutex = (WinMutex *)malloc(sizeof(WinMutex));
+  CWinMutex *mutex = (CWinMutex *)malloc(sizeof(CWinMutex));
   if (mutex) {
     InitializeCriticalSection(&mutex->criticalSection);
   }
@@ -22,12 +21,12 @@ void *Mutex_new() {
 }
 void Mutex_delete(void *mutex) {
   if (mutex) {
-    DeleteCriticalSection(&((WinMutex *)mutex)->criticalSection);
+    DeleteCriticalSection(&((CWinMutex *)mutex)->criticalSection);
   }
 }
 bool Mutex_lock(void *mutex) {
   if (mutex) {
-    EnterCriticalSection(&((WinMutex *)mutex)->criticalSection);
+    EnterCriticalSection(&((CWinMutex *)mutex)->criticalSection);
     return true;
   } else {
     return false;
@@ -35,14 +34,14 @@ bool Mutex_lock(void *mutex) {
 }
 void Mutex_unlock(void *mutex) {
   if (mutex) {
-    LeaveCriticalSection(&((WinMutex *)mutex)->criticalSection);
+    LeaveCriticalSection(&((CWinMutex *)mutex)->criticalSection);
   }
 }
 bool Mutex_tryLock(void *mutex) {
   if (!mutex) {
     return false;
   }
-  return TryEnterCriticalSection(&((WinMutex *)mutex)->criticalSection);
+  return TryEnterCriticalSection(&((CWinMutex *)mutex)->criticalSection);
 }
 bool Mutex_tryLock2(void *mutex, int32_t millis) {
   if (!mutex) {
@@ -54,7 +53,7 @@ bool Mutex_tryLock2(void *mutex, int32_t millis) {
   int64_t nanoTimeout = millis * 1000000;
   bool acquired = false;
   while ((nanoTimeout - totalWait) > 500000) {
-    if (TryEnterCriticalSection(&((WinMutex *)mutex)->criticalSection)) {
+    if (TryEnterCriticalSection(&((CWinMutex *)mutex)->criticalSection)) {
       acquired = true;
       break;
     }
@@ -63,7 +62,10 @@ bool Mutex_tryLock2(void *mutex, int32_t millis) {
   }
   timeEndPeriod(1);
   if (!acquired) {
-    acquired = TryEnterCriticalSection(&((WinMutex *)mutex)->criticalSection);
+    acquired = TryEnterCriticalSection(&((CWinMutex *)mutex)->criticalSection);
   }
   return acquired;
+}
+void *Mutex_ctx(void *mutex) {
+  return (void *)&((CWinMutex *)mutex)->criticalSection;
 }

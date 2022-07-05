@@ -7,12 +7,21 @@
 #include <stdatomic.h>
 #include <stdlib.h>
 #include <string.h>
+#include <concurrent/CMutex.h>
 
 #if WINDOWS
 static volatile int64_t __localId = 0;
 #else
 static _Atomic(int64_t) __localId = 0;
 #endif
+
+static void *__TL_freeIdMutex = NULL;
+
+static void __TL_initMutex(){
+  if(!__TL_freeIdMutex){
+    __TL_freeIdMutex=Mutex_new();
+  }
+}
 
 bool offerFreeId(int64_t id);
 bool hasFreeId();

@@ -53,6 +53,13 @@ bool Mutex_tryLock(void *mutex);
  */
 bool Mutex_tryLock2(void *mutex, int32_t millis);
 
+/**
+ * get mutex context data
+ * @param mutex mutex object
+ * @return mutex context data if available, otherwise false
+ */
+void *Mutex_ctx(void *mutex);
+
 #ifdef __cplusplus
 }
 #endif

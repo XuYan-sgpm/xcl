@@ -12,6 +12,8 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #define WINDOWS 1
+#define WINVER 0x0A00
+#define _WIN32_WINNT 0x0A00
 #else
 #define WINDOWS 0
 #endif

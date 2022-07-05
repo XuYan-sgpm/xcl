@@ -1,0 +1,7 @@
+"D:\CLion 2022.1.3\bin\cmake\win\bin\cmake.exe" -DCMAKE_BUILD_TYPE=Release -G "CodeBlocks - MinGW Makefiles" -S D:\ClionProjects\xcl2 -B D:\ClionProjects\xcl2\cmake-build-release
+-- Release
+-- DYNAMIC
+-- win32
+-- Configuring done
+-- Generating done
+-- Build files have been written to: D:/ClionProjects/xcl2/cmake-build-release
