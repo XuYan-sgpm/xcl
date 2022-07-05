@@ -2,10 +2,6 @@
 // Created by xuyan on 2022/6/25.
 //
 
-#include <lang/platform.h>
-
-#if LINUX
-
 #include <concurrent/Lock.h>
 #include <pthread.h>
 
@@ -70,5 +66,3 @@ xcl::Lock *xcl::Lock::NewLock() { return new __InternalUnixMutex(); }
 xcl::TimedLock *xcl::TimedLock::NewLock() {
   return new __InternalUnixTimedMutex();
 }
-
-#endif

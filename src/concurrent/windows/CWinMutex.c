@@ -2,13 +2,9 @@
 // Created by xuyan on 2022/7/4.
 //
 
-#include "lang/platform.h"
-
-#if WINDOWS
 
 #include <windef.h>
 #include <synchapi.h>
-#include <sysinfoapi.h>
 #include <mmsystem.h>
 #include "concurrent/CMutex.h"
 #include "util/system.h"
@@ -71,5 +67,3 @@ bool Mutex_tryLock2(void *mutex, int32_t millis) {
   }
   return acquired;
 }
-
-#endif

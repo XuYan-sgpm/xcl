@@ -2,13 +2,8 @@
 // Created by 徐琰 on 2022/6/25.
 //
 
-#include <lang/platform.h>
-
-#if MACOSX
-
 #include <pthread.h>
 #include <concurrent/Lock.h>
-#include <cstdlib>
 #include <sys/time.h>
 
 namespace {
@@ -98,5 +93,3 @@ xcl::Lock *xcl::Lock::NewLock() { return new __InternalMacMutex(); }
 xcl::TimedLock *xcl::TimedLock::NewLock() {
   return new __InternalMacTimedMutex();
 }
-
-#endif

@@ -2,9 +2,6 @@
 // Created by xuyan on 2022/6/24.
 //
 
-#include <lang/platform.h>
-
-#if WINDOWS
 
 #include <synchapi.h>
 #include <handleapi.h>
@@ -77,5 +74,3 @@ xcl::Lock *xcl::Lock::NewLock() { return new __InternalWinMutex(); }
 xcl::TimedLock *xcl::TimedLock::NewLock() {
   return new __InternalWinTimedMutex();
 }
-
-#endif

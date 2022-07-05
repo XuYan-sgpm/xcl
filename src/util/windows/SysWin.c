@@ -2,17 +2,11 @@
 // Created by xuyan on 2022/7/4.
 //
 
-#include "lang/platform.h"
-#include <pthread_time.h>
-#include <pthread.h>
-
-#if WINDOWS
 
 #include "util/system.h"
 #include <windef.h>
 #include <sysinfoapi.h>
 #include <profileapi.h>
-#include <winbase.h>
 
 static int64_t __NANO_FREQ_PER_SEC = -1;
 
@@ -37,5 +31,3 @@ int64_t nanos() {
     return -1;
   }
 }
-
-#endif
