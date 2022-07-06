@@ -4,7 +4,7 @@
 
 
 #include "util/system.h"
-#include <windef.h>
+#include <windows.h>
 #include <sysinfoapi.h>
 #include <profileapi.h>
 

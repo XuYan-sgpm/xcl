@@ -12,8 +12,6 @@
 
 #if defined(_WIN32) || defined(_WIN64)
 #define WINDOWS 1
-#define WINVER 0x0A00
-#define _WIN32_WINNT 0x0A00
 #else
 #define WINDOWS 0
 #endif
@@ -36,7 +34,13 @@
 #define GNUC 0
 #endif
 
-#ifdef _MSC_VER
+#ifdef __clang__
+#define CLANG 1
+#else
+#define CLANG 0
+#endif
+
+#if defined(_MSC_VER) && !CLANG && !GNUC
 #define MSVC 1
 #else
 #define MSVC 0
@@ -48,8 +52,15 @@
 #define X86
 #endif
 
-#ifdef __clang__
-#define CLANG 1
+#if !WINDOWS
+#define XCL_PUBLIC __attribute__((visibility("default")))
+#define XCL_HIDDEN __attribute__((visibility("hidden")))
+#elif MSVC && defined(DYNAMIC)
+#define XCL_PUBLIC __dllspec(dllexport)
+#define XCL_HIDDEN
 #else
-#define CLANG 0
+#define XCL_PUBLIC
+#define XCL_HIDDEN
 #endif
+
+#define XCL_API __stdcall

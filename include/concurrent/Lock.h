@@ -5,8 +5,10 @@
 #pragma once
 
 #include <cstdint>
+#include "lang/platform.h"
+
 namespace xcl {
-class Lock {
+class XCL_PUBLIC Lock {
  public:
   virtual ~Lock() = default;
   Lock(const Lock &) = delete;
@@ -34,7 +36,7 @@ class Lock {
   static Lock *NewLock();
 };
 
-class TimedLock : public Lock {
+class XCL_PUBLIC TimedLock : public Lock {
  public:
   using Lock::tryLock;
 
@@ -49,7 +51,7 @@ class TimedLock : public Lock {
   static TimedLock *NewLock();
 };
 
-class Locker final {
+class XCL_PUBLIC Locker final {
  public:
   explicit Locker(Lock *lock);
   ~Locker();

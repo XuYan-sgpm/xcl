@@ -1,4 +1,4 @@
-XCL OPEN LIBRARY
+XCL_PUBLIC OPEN LIBRARY
 
 开源的组件库，包含常用的一些组件。
 

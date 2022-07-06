@@ -5,10 +5,10 @@
 #include <cstdlib>
 #include <cstring>
 #include <cassert>
-#include <pthread.h>
 #include <lang/CLocalStorage.h>
 
 #ifdef DYNAMIC
+#include <pthread.h>
 
 static pthread_key_t __threadLocalStorageKey = -1u;
 

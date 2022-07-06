@@ -5,13 +5,14 @@
 #pragma once
 
 #include <stdbool.h>
+#include <lang/platform.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-void assertIf(bool cond, const char *msg);
-void assertMessage(bool cond, const char *fmt, ...);
+XCL_PUBLIC void XCL_API assertIf(bool cond, const char *msg);
+XCL_PUBLIC void assertMessage(bool cond, const char *fmt, ...);
 
 #ifdef __cplusplus
 }

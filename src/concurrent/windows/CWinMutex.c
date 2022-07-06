@@ -2,9 +2,7 @@
 // Created by xuyan on 2022/7/4.
 //
 
-#include <windef.h>
-#include <synchapi.h>
-#include <mmsystem.h>
+#include <windows.h>
 #include "concurrent/CMutex.h"
 #include "util/system.h"
 
@@ -12,19 +10,19 @@ typedef struct {
   CRITICAL_SECTION criticalSection;
 } CWinMutex;
 
-void *Mutex_new() {
+XCL_PUBLIC void *XCL_API Mutex_new() {
   CWinMutex *mutex = (CWinMutex *)malloc(sizeof(CWinMutex));
   if (mutex) {
     InitializeCriticalSection(&mutex->criticalSection);
   }
   return mutex;
 }
-void Mutex_delete(void *mutex) {
+XCL_PUBLIC void XCL_API Mutex_delete(void *mutex) {
   if (mutex) {
     DeleteCriticalSection(&((CWinMutex *)mutex)->criticalSection);
   }
 }
-bool Mutex_lock(void *mutex) {
+XCL_PUBLIC bool XCL_API Mutex_lock(void *mutex) {
   if (mutex) {
     EnterCriticalSection(&((CWinMutex *)mutex)->criticalSection);
     return true;
@@ -32,18 +30,18 @@ bool Mutex_lock(void *mutex) {
     return false;
   }
 }
-void Mutex_unlock(void *mutex) {
+XCL_PUBLIC void XCL_API Mutex_unlock(void *mutex) {
   if (mutex) {
     LeaveCriticalSection(&((CWinMutex *)mutex)->criticalSection);
   }
 }
-bool Mutex_tryLock(void *mutex) {
+XCL_PUBLIC bool XCL_API Mutex_tryLock(void *mutex) {
   if (!mutex) {
     return false;
   }
   return TryEnterCriticalSection(&((CWinMutex *)mutex)->criticalSection);
 }
-bool Mutex_tryLock2(void *mutex, int32_t millis) {
+XCL_PUBLIC bool XCL_API Mutex_tryLock2(void *mutex, int32_t millis) {
   if (!mutex) {
     return false;
   }
@@ -65,7 +63,4 @@ bool Mutex_tryLock2(void *mutex, int32_t millis) {
     acquired = TryEnterCriticalSection(&((CWinMutex *)mutex)->criticalSection);
   }
   return acquired;
-}
-void *Mutex_ctx(void *mutex) {
-  return (void *)&((CWinMutex *)mutex)->criticalSection;
 }

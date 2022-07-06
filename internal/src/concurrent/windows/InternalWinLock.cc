@@ -2,7 +2,9 @@
 // Created by xuyan on 2022/6/24.
 //
 
+#define _AMD64_
 
+#include <lang/platform.h>
 #include <synchapi.h>
 #include <handleapi.h>
 #include <windef.h>
@@ -10,7 +12,7 @@
 #include "concurrent/Lock.h"
 
 namespace {
-class __InternalWinMutex : public xcl::Lock {
+class XCL_HIDDEN __InternalWinMutex : public xcl::Lock {
  public:
   ~__InternalWinMutex() override;
   __InternalWinMutex();

@@ -6,10 +6,8 @@
 #include "concurrent/Lock.h"
 #include "concurrent/CMutex.h"
 #include <iostream>
-#include <unistd.h>
-#include <profileapi.h>
+#include <windows.h>
 #include <util/system.h>
-#include <synchapi.h>
 using namespace std;
 
 static void *__testLock(void *args) {
@@ -26,7 +24,7 @@ static void *__testLock(void *args) {
   }
   //  lock->lock();
   cout << "lock successfully" << endl;
-  sleep(3);
+  Sleep(3000);
   lock->unlock();
   cout << "unlock successfully" << endl;
   return nullptr;
@@ -52,14 +50,14 @@ static void *__testCMutex(void *args) {
 }
 
 static void __runLockThreads(void *(*threadProc)(void *), void *args) {
-  int32_t nThreads = 8;
-  pthread_t threads[nThreads];
-  for (int i = 0; i < nThreads; i++) {
-    ASSERT_EQ(pthread_create(&threads[i], nullptr, threadProc, args), 0);
-  }
-  for (int i = 0; i < nThreads; i++) {
-    pthread_join(threads[i], nullptr);
-  }
+//  int32_t nThreads = 8;
+//  pthread_t threads[nThreads];
+//  for (int i = 0; i < nThreads; i++) {
+//    ASSERT_EQ(pthread_create(&threads[i], nullptr, threadProc, args), 0);
+//  }
+//  for (int i = 0; i < nThreads; i++) {
+//    pthread_join(threads[i], nullptr);
+//  }
 }
 
 TEST(TestLock, func1) {

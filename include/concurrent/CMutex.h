@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <lang/platform.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -16,33 +18,33 @@ extern "C" {
  * default is a recursive mutex
  * @return mutex object if succeed, otherwise return NULL
  */
-void *Mutex_new();
+XCL_PUBLIC void *XCL_API Mutex_new();
 
 /**
  * delete a mutex object
  * @param mutex mutex object
  */
-void Mutex_delete(void *mutex);
+XCL_PUBLIC void XCL_API Mutex_delete(void *mutex);
 
 /**
  * lock a mutex
  * @param mutex mutex object
  * @return true if lock successfully
  */
-bool Mutex_lock(void *mutex);
+XCL_PUBLIC bool XCL_API Mutex_lock(void *mutex);
 
 /**
  * release the mutex object
  * @param mutex mutex object
  */
-void Mutex_unlock(void *mutex);
+XCL_PUBLIC void XCL_API Mutex_unlock(void *mutex);
 
 /**
  * try lock mutex
  * @param mutex mutex object
  * @return true if acquire mutex object successfully, otherwise false
  */
-bool Mutex_tryLock(void *mutex);
+XCL_PUBLIC bool XCL_API Mutex_tryLock(void *mutex);
 
 /**
  * try lock mutex during millis, return if acquire mutex successfully
@@ -51,14 +53,7 @@ bool Mutex_tryLock(void *mutex);
  * @param millis timeout milliseconds
  * @return true if lock mutex object during millis, otherwise false
  */
-bool Mutex_tryLock2(void *mutex, int32_t millis);
-
-/**
- * get mutex context data
- * @param mutex mutex object
- * @return mutex context data if available, otherwise false
- */
-void *Mutex_ctx(void *mutex);
+XCL_PUBLIC bool XCL_API Mutex_tryLock2(void *mutex, int32_t millis);
 
 #ifdef __cplusplus
 }
