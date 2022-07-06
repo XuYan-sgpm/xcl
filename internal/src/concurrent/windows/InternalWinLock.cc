@@ -4,7 +4,7 @@
 
 #define _AMD64_
 
-#include <lang/platform.h>
+#include <lang/XclDef.h>
 #include <synchapi.h>
 #include <handleapi.h>
 #include <windef.h>
@@ -72,7 +72,7 @@ __InternalWinTimedMutex::~__InternalWinTimedMutex() {
 }
 } // namespace
 
-xcl::Lock *xcl::Lock::NewLock() { return new __InternalWinMutex(); }
-xcl::TimedLock *xcl::TimedLock::NewLock() {
+xcl::Lock* xcl::Lock::NewLock() { return new __InternalWinMutex(); }
+xcl::TimedLock* xcl::TimedLock::NewLock() {
   return new __InternalWinTimedMutex();
 }

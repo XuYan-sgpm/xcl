@@ -9,35 +9,34 @@
 
 #ifdef DYNAMIC
 
-
 #elif STATIC
 
-#include <lang/platform.h>
+#  include <lang/platform.h>
 //#include <mutex>
-#include <concurrent/Lock.h>
-#include <util/CSingleList.h>
+#  include <concurrent/Lock.h>
+#  include <util/CSingleList.h>
 
-#if GNUC || CLANG
-#define THREAD_LOCAL __thread
-#elif MSVC
-#define THREAD_LOCAL __declspec(thread)
-#else
-#error "unsupported compiler"
-#endif
+#  if GNUC || CLANG
+#    define THREAD_LOCAL __thread
+#  elif MSVC
+#    define THREAD_LOCAL __declspec(thread)
+#  else
+#    error "unsupported compiler"
+#  endif
 
-static THREAD_LOCAL CLocalStorage *__threadLocalStorage = NULL;
+static THREAD_LOCAL CLocalStorage* __threadLocalStorage = NULL;
 
 namespace {
 class LocalStorageRegImpl {
  public:
-  void regLocalStorage(CLocalStorage *localStorage);
+  void regLocalStorage(CLocalStorage* localStorage);
 
  public:
   LocalStorageRegImpl();
   ~LocalStorageRegImpl();
 
  private:
-  xcl::Lock *listLock_;
+  xcl::Lock* listLock_;
   CSingleList storageList_;
 };
 LocalStorageRegImpl::LocalStorageRegImpl() : listLock_(xcl::Lock::NewLock()) {
@@ -46,23 +45,22 @@ LocalStorageRegImpl::LocalStorageRegImpl() : listLock_(xcl::Lock::NewLock()) {
 LocalStorageRegImpl::~LocalStorageRegImpl() {
   delete listLock_;
   listLock_ = NULL;
-  CSingleNode *node = NULL;
+  CSingleNode* node = NULL;
   for (;;) {
     node = SingList_popFront(&storageList_);
     if (!node) {
       break;
     }
-    CLocalStorage *localStorage = (CLocalStorage *)*(intptr_t *)node->data;
+    CLocalStorage* localStorage = (CLocalStorage*)*(intptr_t*)node->data;
     LocalStorage_free(localStorage);
     free(node);
   }
 }
-void LocalStorageRegImpl::regLocalStorage(CLocalStorage *localStorage) {
-  CSingleNode *node =
-      (CSingleNode *)malloc(sizeof(CSingleNode) + sizeof(void *));
+void LocalStorageRegImpl::regLocalStorage(CLocalStorage* localStorage) {
+  CSingleNode* node = (CSingleNode*)malloc(sizeof(CSingleNode) + sizeof(void*));
   assert(node);
-  memset(node, 0, sizeof(*node) + sizeof(void *));
-  *(intptr_t *)(node->data) = (intptr_t)localStorage;
+  memset(node, 0, sizeof(*node) + sizeof(void*));
+  *(intptr_t*)(node->data) = (intptr_t)localStorage;
   listLock_->lock();
   SingleList_pushFront(&storageList_, node);
   listLock_->unlock();
@@ -79,18 +77,16 @@ extern "C" {
 
 #ifdef DYNAMIC
 
-CLocalStorage *__ThreadLocal_getLocalStorage() {
-  return NULL;
-}
+CLocalStorage* __ThreadLocal_getLocalStorage() { return NULL; }
 
-bool __ThreadLocal_setLocalStorage(CLocalStorage *localStorage) {
+bool __ThreadLocal_setLocalStorage(CLocalStorage* localStorage) {
   return false;
 }
 
 #elif STATIC
 
-CLocalStorage *__ThreadLocal_getLocalStorage() { return __threadLocalStorage; }
-bool __ThreadLocal_setLocalStorage(CLocalStorage *localStorage) {
+CLocalStorage* __ThreadLocal_getLocalStorage() { return __threadLocalStorage; }
+bool __ThreadLocal_setLocalStorage(CLocalStorage* localStorage) {
   __threadLocalStorage = localStorage;
   __localStorageRegImpl.regLocalStorage(localStorage);
   return true;

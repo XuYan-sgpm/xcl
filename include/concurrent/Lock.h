@@ -5,14 +5,14 @@
 #pragma once
 
 #include <cstdint>
-#include "lang/platform.h"
+#include "lang/XclDef.h"
 
 namespace xcl {
 class XCL_PUBLIC Lock {
  public:
   virtual ~Lock() = default;
-  Lock(const Lock &) = delete;
-  Lock &operator=(const Lock &) = delete;
+  Lock(const Lock&) = delete;
+  Lock& operator=(const Lock&) = delete;
   explicit Lock() = default;
 
  public:
@@ -33,7 +33,7 @@ class XCL_PUBLIC Lock {
   virtual bool tryLock() = 0;
 
  public:
-  static Lock *NewLock();
+  static Lock* NewLock();
 };
 
 class XCL_PUBLIC TimedLock : public Lock {
@@ -48,18 +48,18 @@ class XCL_PUBLIC TimedLock : public Lock {
    */
   virtual bool tryLock(int32_t millis) = 0;
 
-  static TimedLock *NewLock();
+  static TimedLock* NewLock();
 };
 
 class XCL_PUBLIC Locker final {
  public:
-  explicit Locker(Lock *lock);
+  explicit Locker(Lock* lock);
   ~Locker();
 
  public:
-  Locker &operator=(const Locker &) = delete;
+  Locker& operator=(const Locker&) = delete;
 
  private:
-  Lock *lock_;
+  Lock* lock_;
 };
 } // namespace xcl

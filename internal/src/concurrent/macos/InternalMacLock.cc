@@ -89,7 +89,7 @@ bool __InternalMacTimedMutex::tryLock() {
 }
 } // namespace
 
-xcl::Lock *xcl::Lock::NewLock() { return new __InternalMacMutex(); }
-xcl::TimedLock *xcl::TimedLock::NewLock() {
+xcl::Lock* xcl::Lock::NewLock() { return new __InternalMacMutex(); }
+xcl::TimedLock* xcl::TimedLock::NewLock() {
   return new __InternalMacTimedMutex();
 }

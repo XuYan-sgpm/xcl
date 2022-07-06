@@ -44,7 +44,7 @@ static uint32_t __log2(uint32_t i) {
   return 31u - n;
 }
 
-static SizeTab *sizeClasses = NULL;
+static SizeTab* sizeClasses = NULL;
 static int32_t tabs = 0;
 
 /**
@@ -83,7 +83,7 @@ bool SizeClass_initialize() {
   do {
     int32_t groups = __log2(CHUNK_SIZE) + 1 - LOG2_QUANTUM;
     sizeClasses =
-        (SizeTab *)malloc(sizeof(SizeTab) * (groups << LOG2_GROUP_SIZE));
+        (SizeTab*)malloc(sizeof(SizeTab) * (groups << LOG2_GROUP_SIZE));
     if (!sizeClasses) {
       break;
     }
@@ -118,7 +118,7 @@ void SizeClass_finalize() {
 
 int32_t SizeClass_size() { return tabs; }
 
-bool SizeClass_get(int32_t idx, int32_t *out) {
+bool SizeClass_get(int32_t idx, int32_t* out) {
   if (idx >= tabs) {
     return false;
   }
@@ -133,7 +133,7 @@ bool SizeClass_get(int32_t idx, int32_t *out) {
 }
 
 static void
-__SC_getGroupAndDelta(uint32_t size, uint32_t *log2Group, uint32_t *log2Delta) {
+__SC_getGroupAndDelta(uint32_t size, uint32_t* log2Group, uint32_t* log2Delta) {
   uint32_t log2Size = __log2(size);
   if (size <= (1 << (LOG2_QUANTUM + LOG2_GROUP_SIZE))) {
     *log2Group = LOG2_QUANTUM;

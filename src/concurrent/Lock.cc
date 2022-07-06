@@ -5,7 +5,7 @@
 #include <concurrent/Lock.h>
 
 namespace xcl {
-xcl::Locker::Locker(xcl::Lock *lock) : lock_(lock) {
+xcl::Locker::Locker(xcl::Lock* lock) : lock_(lock) {
   if (lock_)
     lock_->lock();
 }

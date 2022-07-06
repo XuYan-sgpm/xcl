@@ -61,8 +61,8 @@ bool __InternalUnixTimedMutex::tryLock() {
 }
 } // namespace
 
-xcl::Lock *xcl::Lock::NewLock() { return new __InternalUnixMutex(); }
+xcl::Lock* xcl::Lock::NewLock() { return new __InternalUnixMutex(); }
 
-xcl::TimedLock *xcl::TimedLock::NewLock() {
+xcl::TimedLock* xcl::TimedLock::NewLock() {
   return new __InternalUnixTimedMutex();
 }

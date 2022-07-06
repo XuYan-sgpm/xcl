@@ -9,19 +9,19 @@ extern "C" {
 #endif
 
 #include <stdbool.h>
-#include <lang/platform.h>
+#include <lang/XclDef.h>
 #include <stdio.h>
 #include <assert.h>
 #include <stdarg.h>
 
-XCL_PUBLIC void XCL_API assertIf(bool cond, const char *msg) {
+XCL_PUBLIC void XCL_API assertIf(bool cond, const char* msg) {
   if (!cond) {
     fprintf(stderr, "%s\n", msg);
     assert(cond);
   }
 }
 
-XCL_PUBLIC void assertMessage(bool cond, const char *fmt, ...) {
+XCL_PUBLIC void assertMessage(bool cond, const char* fmt, ...) {
   if (!cond) {
     va_list args;
     va_start(args, fmt);

@@ -11,7 +11,7 @@
 #include <stdint.h>
 
 typedef struct {
-  const char *str;
+  const char* str;
   int len;
 } Region;
 
@@ -24,7 +24,7 @@ typedef struct {
  * when find section, key and value is empty
  * if section has found, next invoke will pass empty
  */
-typedef void (*IniCallback)(void *, Region, Region, Region);
+typedef void (*IniCallback)(void*, Region, Region, Region);
 
 /*
  * usr specified reader to read ini data
@@ -33,7 +33,7 @@ typedef void (*IniCallback)(void *, Region, Region, Region);
  * third param is buf length
  * last param is
  */
-typedef int32_t (*IniReadFunc)(void *, char *, int);
+typedef int32_t (*IniReadFunc)(void*, char*, int);
 
 typedef struct {
   /*
@@ -51,7 +51,7 @@ typedef struct {
   /*
    * buf to store ini characters
    */
-  char *const buf;
+  char* const buf;
 } Ini;
 
 #ifdef __cplusplus
@@ -63,17 +63,17 @@ extern "C" {
  * usr can be a specified object to invoke when cb is called
  */
 bool iniParseStream(
-    Ini ini, void *stream, IniReadFunc reader, IniCallback cb, void *usr);
+    Ini ini, void* stream, IniReadFunc reader, IniCallback cb, void* usr);
 
 /*
  * parse ini data from file
  */
-bool iniParse(Ini ini, const char *filePath, IniCallback cb, void *usr);
+bool iniParse(Ini ini, const char* filePath, IniCallback cb, void* usr);
 
 /*
  * parse ini data from str
  */
-bool iniParseString(Ini ini, const char *str, IniCallback cb, void *usr);
+bool iniParseString(Ini ini, const char* str, IniCallback cb, void* usr);
 
 #ifdef __cplusplus
 }

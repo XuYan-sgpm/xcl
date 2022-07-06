@@ -8,8 +8,8 @@ using namespace std;
 
 class FreeIdQueue {
  private:
-  mutable xcl::Lock *lock_;
-  int64_t *buf_;
+  mutable xcl::Lock* lock_;
+  int64_t* buf_;
   uint32_t cap_;
   uint32_t size_;
 
@@ -20,7 +20,7 @@ class FreeIdQueue {
  public:
   bool offer(int64_t id);
   bool isEmpty() const;
-  bool poll(int64_t *id);
+  bool poll(int64_t* id);
 };
 FreeIdQueue::FreeIdQueue()
     : lock_(xcl::Lock::NewLock()), buf_(nullptr), cap_(0), size_(0) {}
@@ -39,7 +39,7 @@ bool FreeIdQueue::offer(int64_t id) {
     } else {
       cap_ <<= 1u;
     }
-    int64_t *newBuf = new int64_t[cap_];
+    int64_t* newBuf = new int64_t[cap_];
     memcpy(newBuf, buf_, size_ * sizeof(int64_t));
     delete[] buf_;
     buf_ = newBuf;
@@ -51,7 +51,7 @@ bool FreeIdQueue::isEmpty() const {
   xcl::Locker locker(lock_);
   return size_ == 0;
 }
-bool FreeIdQueue::poll(int64_t *id) {
+bool FreeIdQueue::poll(int64_t* id) {
   xcl::Locker locker(lock_);
   if (size_ == 0) {
     return false;
@@ -68,7 +68,7 @@ extern "C" {
 
 bool offerFreeId(int64_t id) { return __idQueue.offer(id); }
 bool hasFreeId() { return __idQueue.isEmpty(); }
-bool pollFreeId(int64_t *id) { return __idQueue.poll(id); }
+bool pollFreeId(int64_t* id) { return __idQueue.poll(id); }
 
 #ifdef __cplusplus
 }

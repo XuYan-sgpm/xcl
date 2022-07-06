@@ -10,10 +10,10 @@
 #include <zconf.h>
 using namespace std;
 
-static void __testThreadLocal(CThreadLocal *local) {
-  const char *p = "hello world";
-  assert(Local_set(local, (void *)p));
-  void *ptr;
+static void __testThreadLocal(CThreadLocal* local) {
+  const char* p = "hello world";
+  assert(Local_set(local, (void*)p));
+  void* ptr;
   assert(Local_get(local, &ptr));
   assert(ptr == p);
   assert(Local_setInt32(local, 89));
@@ -26,7 +26,7 @@ static void __testThreadLocal(CThreadLocal *local) {
   assert(val2 == 3.1415926f);
 }
 
-void *threadProc(void *args) {
+void* threadProc(void* args) {
   CThreadLocal locals[10];
   for (int i = 0; i < 10; i++) {
     locals[i] = Local_make();
@@ -38,7 +38,7 @@ void *threadProc(void *args) {
     cout << "test local successfully" << endl;
     sleep(0.2);
   }
-  *(int *)args = 0;
+  *(int*)args = 0;
   return args;
 }
 

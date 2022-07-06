@@ -20,20 +20,20 @@ extern "C" {
 
 #include <stdint.h>
 #include <stdbool.h>
-#include "lang/platform.h"
+#include "lang/XclDef.h"
 
 /**
  * new a linked blocking queue object
  * @return queue object if successfully, otherwise NULL
  */
-XCL_PUBLIC CLinkedBlockingQueue *XCL_API
+XCL_PUBLIC CLinkedBlockingQueue* XCL_API
 LinkedBlockingQueue_new(uint32_t blockSize);
 
 /**
  * delete a linked blocking queue object
  * @param queue queue object
  */
-XCL_PUBLIC void XCL_API LinkedBlockingQueue_delete(CLinkedBlockingQueue *queue);
+XCL_PUBLIC void XCL_API LinkedBlockingQueue_delete(CLinkedBlockingQueue* queue);
 
 /**
  * offer a byte block to queue
@@ -42,8 +42,8 @@ XCL_PUBLIC void XCL_API LinkedBlockingQueue_delete(CLinkedBlockingQueue *queue);
  * @param len data length
  * @return true if offer successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API LinkedBlockingQueue_offer(CLinkedBlockingQueue *queue,
-                                                  const void *src,
+XCL_PUBLIC bool XCL_API LinkedBlockingQueue_offer(CLinkedBlockingQueue* queue,
+                                                  const void* src,
                                                   uint32_t len);
 
 /**
@@ -54,9 +54,9 @@ XCL_PUBLIC bool XCL_API LinkedBlockingQueue_offer(CLinkedBlockingQueue *queue,
  * data size in dst
  * @return true if peek successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API LinkedBlockingQueue_peek(CLinkedBlockingQueue *queue,
-                                                 void *dst,
-                                                 uint32_t *len);
+XCL_PUBLIC bool XCL_API LinkedBlockingQueue_peek(CLinkedBlockingQueue* queue,
+                                                 void* dst,
+                                                 uint32_t* len);
 
 /**
  * poll first byte data block from queue
@@ -66,9 +66,9 @@ XCL_PUBLIC bool XCL_API LinkedBlockingQueue_peek(CLinkedBlockingQueue *queue,
  * data size in dst
  * @return true if poll successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API LinkedBlockingQueue_poll(CLinkedBlockingQueue *queue,
-                                                 void *dst,
-                                                 uint32_t *len);
+XCL_PUBLIC bool XCL_API LinkedBlockingQueue_poll(CLinkedBlockingQueue* queue,
+                                                 void* dst,
+                                                 uint32_t* len);
 
 /**
  * handle if queue is empty
@@ -76,7 +76,7 @@ XCL_PUBLIC bool XCL_API LinkedBlockingQueue_poll(CLinkedBlockingQueue *queue,
  * @return true if queue is empty, otherwise false
  */
 XCL_PUBLIC bool XCL_API
-LinkedBlockingQueue_isEmpty(const CLinkedBlockingQueue *queue);
+LinkedBlockingQueue_isEmpty(const CLinkedBlockingQueue* queue);
 
 /**
  * get queue block count
@@ -84,7 +84,7 @@ LinkedBlockingQueue_isEmpty(const CLinkedBlockingQueue *queue);
  * @return available byte data block count in queue
  */
 XCL_PUBLIC int32_t XCL_API
-LinkedBlockingQueue_size(const CLinkedBlockingQueue *queue);
+LinkedBlockingQueue_size(const CLinkedBlockingQueue* queue);
 
 #ifdef __cplusplus
 }

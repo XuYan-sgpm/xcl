@@ -40,12 +40,12 @@ typedef struct {
 extern "C" {
 #endif
 
-CBits *Bits_new(int32_t size);
-void Bits_delete(CBits *bits);
-int32_t Bits_len(CBits *bits);
-void Bits_set(CBits *bits, int32_t idx, bool on);
-bool Bits_get(CBits *bits, int32_t idx);
-unsigned char Bits_getByte(CBits *bits, int32_t idx);
+CBits* Bits_new(int32_t size);
+void Bits_delete(CBits* bits);
+int32_t Bits_len(CBits* bits);
+void Bits_set(CBits* bits, int32_t idx, bool on);
+bool Bits_get(CBits* bits, int32_t idx);
+unsigned char Bits_getByte(CBits* bits, int32_t idx);
 
 CBits64 bits64();
 CBits8 bits8();
