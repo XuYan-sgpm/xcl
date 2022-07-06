@@ -30,7 +30,7 @@ static void *__testLock(void *args) {
   return nullptr;
 }
 
-static void *__testCMutex(void *args) {
+static void *__stdcall __testCMutex(void *args) {
   for (;;) {
     auto st = chrono::steady_clock::now();
     if (!Mutex_tryLock2(args, 20)) {
@@ -49,7 +49,7 @@ static void *__testCMutex(void *args) {
   return nullptr;
 }
 
-static void __runLockThreads(void *(*threadProc)(void *), void *args) {
+static void __stdcall __runLockThreads(void *(*threadProc)(void *), void *args) {
 //  int32_t nThreads = 8;
 //  pthread_t threads[nThreads];
 //  for (int i = 0; i < nThreads; i++) {

@@ -8,37 +8,7 @@
 #include <lang/CLocalStorage.h>
 
 #ifdef DYNAMIC
-#include <pthread.h>
 
-static pthread_key_t __threadLocalStorageKey = -1u;
-
-static void __destroyLocalStorage(void *args) {
-  LocalStorage_free(static_cast<CLocalStorage *>(args));
-}
-
-namespace {
-class LocalStorageKeyInitImpl {
- public:
-  LocalStorageKeyInitImpl();
-  ~LocalStorageKeyInitImpl();
-};
-LocalStorageKeyInitImpl::LocalStorageKeyInitImpl() {
-  auto ret =
-      ::pthread_key_create(&__threadLocalStorageKey, __destroyLocalStorage);
-  if (ret == 0) {
-    assert(__threadLocalStorageKey != -1u);
-  } else {
-    __threadLocalStorageKey = -1u;
-  }
-}
-LocalStorageKeyInitImpl::~LocalStorageKeyInitImpl() {
-  if (__threadLocalStorageKey != -1u) {
-    ::pthread_key_delete(__threadLocalStorageKey);
-    __threadLocalStorageKey = -1u;
-  }
-}
-static LocalStorageKeyInitImpl __impl;
-} // namespace
 
 #elif STATIC
 
@@ -110,20 +80,11 @@ extern "C" {
 #ifdef DYNAMIC
 
 CLocalStorage *__ThreadLocal_getLocalStorage() {
-  if (__threadLocalStorageKey == -1u) {
-    return nullptr;
-  }
-  return static_cast<CLocalStorage *>(
-      ::pthread_getspecific(__threadLocalStorageKey));
+  return NULL;
 }
 
 bool __ThreadLocal_setLocalStorage(CLocalStorage *localStorage) {
-  if (__threadLocalStorageKey == -1u) {
-    return false;
-  } else {
-    auto ret = ::pthread_setspecific(__threadLocalStorageKey, localStorage);
-    return ret == 0;
-  }
+  return false;
 }
 
 #elif STATIC

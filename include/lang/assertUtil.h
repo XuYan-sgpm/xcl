@@ -2,10 +2,17 @@
 // Created by xuyan on 2022/6/30.
 //
 
-#include "lang/CAssertUtil.h"
+#pragma once
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
+#include <stdbool.h>
+#include <lang/platform.h>
 #include <stdio.h>
-#include <stdarg.h>
 #include <assert.h>
+#include <stdarg.h>
 
 XCL_PUBLIC void XCL_API assertIf(bool cond, const char *msg) {
   if (!cond) {
@@ -24,3 +31,7 @@ XCL_PUBLIC void assertMessage(bool cond, const char *fmt, ...) {
     assert(false);
   }
 }
+
+#ifdef __cplusplus
+}
+#endif

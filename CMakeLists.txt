@@ -24,9 +24,6 @@ elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     set(CMAKE_CXX_FLAGS "-O2 ${CMAKE_CXX_FLAGS}")
 endif ()
 
-message(STATUS ${CMAKE_C_COMPILER_ID})
-message(STATUS ${CMAKE_CXX_COMPILER_ID})
-
 if (${CMAKE_C_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
     set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fvisibility=hidden")
 endif ()
@@ -37,7 +34,7 @@ endif ()
 message(STATUS "C FLAGS:${CMAKE_C_FLAGS}")
 message(STATUS "CXX FLAGS:${CMAKE_CXX_FLAGS}")
 
-set(COMPILE_STATIC true)
+set(COMPILE_STATIC false)
 set(lib_src_files)
 
 function(filter_files)

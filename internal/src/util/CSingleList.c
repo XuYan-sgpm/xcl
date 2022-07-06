@@ -5,17 +5,17 @@
 #include <string.h>
 #include "util/CSingleList.h"
 
-CSingleList SingleList_new() {
+CSingleList XCL_API SingleList_new() {
   CSingleList list;
   memset(&list.header, 0, sizeof(CSingleNode));
   return list;
 }
 
-bool SingleList_empty(const CSingleList *list) {
+bool XCL_API SingleList_empty(const CSingleList *list) {
   return list->header.next == NULL;
 }
 
-int32_t SingleList_size(const CSingleList *list) {
+int32_t XCL_API SingleList_size(const CSingleList *list) {
   int32_t count = 0;
   CSingleNode *cur = list->header.next;
   while (cur) {
@@ -24,19 +24,19 @@ int32_t SingleList_size(const CSingleList *list) {
   }
   return count;
 }
-CSingleListIter SingleList_begin(CSingleList *list) {
+CSingleListIter XCL_API SingleList_begin(CSingleList *list) {
   CSingleListIter iter = {.tag = &list->header, .cur = list->header.next};
   return iter;
 }
-CSingleListIter SingleList_end(CSingleList *list) {
+CSingleListIter XCL_API SingleList_end(CSingleList *list) {
   CSingleListIter iter = {.tag = &list->header, .cur = &list->header};
   return iter;
 }
-void SingleList_pushFront(CSingleList *list, CSingleNode *node) {
+void XCL_API SingleList_pushFront(CSingleList *list, CSingleNode *node) {
   node->next = list->header.next;
   list->header.next = node;
 }
-void SingleList_pushBack(CSingleList *list, CSingleNode *node) {
+void XCL_API SingleList_pushBack(CSingleList *list, CSingleNode *node) {
   CSingleNode *cur = &list->header;
   while (cur->next) {
     cur = cur->next;
@@ -44,14 +44,14 @@ void SingleList_pushBack(CSingleList *list, CSingleNode *node) {
   cur->next = node;
   node->next = NULL;
 }
-CSingleNode *SingList_popFront(CSingleList *list) {
+CSingleNode *XCL_API SingList_popFront(CSingleList *list) {
   CSingleNode *node = list->header.next;
   if (node) {
     list->header.next = node->next;
   }
   return node;
 }
-CSingleNode *SingleList_popBack(CSingleList *list) {
+CSingleNode *XCL_API SingleList_popBack(CSingleList *list) {
   CSingleNode *prev = &list->header;
   CSingleNode *node = prev->next;
   if (!node) {
@@ -64,7 +64,7 @@ CSingleNode *SingleList_popBack(CSingleList *list) {
   prev->next = NULL;
   return node;
 }
-CSingleListIter SingleList_next(CSingleList *list, CSingleListIter iter) {
+CSingleListIter XCL_API SingleList_next(CSingleList *list, CSingleListIter iter) {
   if (!iter.cur || iter.cur == iter.tag) {
     return iter;
   }
@@ -77,7 +77,7 @@ CSingleListIter SingleList_next(CSingleList *list, CSingleListIter iter) {
   return next;
 }
 
-void SingleList_sort(CSingleList *list,
+void XCL_API SingleList_sort(CSingleList *list,
                      int (*cmp)(const void *, const void *)) {
   //
 }

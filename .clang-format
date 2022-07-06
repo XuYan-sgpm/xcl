@@ -1,9 +1,8 @@
 ---
-Language:        Cpp
-# BasedOnStyle:  Google
+Language: Cpp
 AccessModifierOffset: -1
 AlignAfterOpenBracket: Align
-#AlignConsecutiveMacros: false
+AlignConsecutiveMacros: AcrossEmptyLinesAndComments
 #AlignConsecutiveAssignments: false
 #AlignConsecutiveBitFields: false
 #AlignConsecutiveDeclarations: false
@@ -54,8 +53,8 @@ BinPackParameters: false
 #BreakConstructorInitializers: BeforeColon
 #BreakAfterJavaFieldAnnotations: false
 #BreakStringLiterals: true
-ColumnLimit:     80
-CommentPragmas:  '^ IWYU pragma:'
+ColumnLimit: 80
+CommentPragmas: '^ IWYU pragma:'
 CompactNamespaces: false
 ConstructorInitializerAllOnOneLineOrOnePerLine: true
 ConstructorInitializerIndentWidth: 4
@@ -89,9 +88,9 @@ Cpp11BracedListStyle: true
 #IndentCaseLabels: true
 #IndentCaseBlocks: false
 #IndentGotoLabels: true
-#IndentPPDirectives: None
+IndentPPDirectives: AfterHash
 #IndentExternBlock: AfterExternBlock
-IndentWidth:     2
+IndentWidth: 2
 IndentWrappedFunctionNames: false
 #InsertTrailingCommas: None
 #JavaScriptQuotes: Leave
@@ -99,7 +98,7 @@ IndentWrappedFunctionNames: false
 #KeepEmptyLinesAtTheStartOfBlocks: false
 #MacroBlockBegin: ''
 #MacroBlockEnd:   ''
-#MaxEmptyLinesToKeep: 1
+MaxEmptyLinesToKeep: 1
 #NamespaceIndentation: None
 #ObjCBinPackProtocolList: Never
 #ObjCBlockIndentWidth: 2
@@ -114,7 +113,7 @@ IndentWrappedFunctionNames: false
 #PenaltyBreakTemplateDeclaration: 10
 #PenaltyExcessCharacter: 1000000
 #PenaltyReturnTypeOnItsOwnLine: 200
-#PointerAlignment: Left
+PointerAlignment: Left
 #RawStringFormats:
 #  - Language:        Cpp
 #    Delimiters:
@@ -145,8 +144,8 @@ IndentWrappedFunctionNames: false
 #      - ParsePartialTestProto
 #    CanonicalDelimiter: ''
 #    BasedOnStyle:    google
-#ReflowComments:  true
-SortIncludes:    false
+ReflowComments: true
+SortIncludes: Never
 #SortUsingDeclarations: true
 #SpaceAfterCStyleCast: false
 #SpaceAfterLogicalNot: false
