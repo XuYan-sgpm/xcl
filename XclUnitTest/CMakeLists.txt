@@ -4,10 +4,13 @@ project(XclUnitTest)
 
 set(CMAKE_CXX_STANDARD 11)
 
+message(STATUS ${xcl_inc_dir})
+message(STATUS ${xcl_lib_dir})
+
 if (WIN32)
     message(STATUS "win32")
-    include_directories(${xcl_inc_dir} "D:\\third_party\\googletest\\include")
-    link_directories("D:\\third_party\\googletest\\lib")
+    include_directories(${xcl_inc_dir} D:\\third_party\\googletest\\include)
+    link_directories(${xcl_lib_dir} D:\\third_party\\googletest\\lib)
 else ()
     if (APPLE)
         message(STATUS "macos")
@@ -15,10 +18,16 @@ else ()
         message(STATUS "unix")
     endif ()
     include_directories(${xcl_inc_dir} /usr/local/googletest/include)
-    link_directories(/usr/local/googletest/lib)
+    link_directories(${xcl_lib_dir} /usr/local/googletest/lib)
 endif ()
 
-#file(GLOB_RECURSE test_files test/*.c test/*.cc)
 set(test_files src/TestLock.cc)
 add_executable(main src/main.cc ${test_files})
 target_link_libraries(main xcl gtest gtest_main)
+
+if (NOT COMPILE_STATIC)
+    add_custom_command(TARGET main POST_BUILD
+            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${xcl_lib_name}> ${EXECUTABLE_OUTPUT_PATH}
+            COMMAND ${CMAKE_COMMAND} -E echo "copy $<TARGET_FILE:${xcl_lib_name}> to ${EXECUTABLE_OUTPUT_PATH}"
+            VERBATIM)
+endif ()

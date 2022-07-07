@@ -11,7 +11,7 @@
 
 #elif STATIC
 
-#  include <lang/platform.h>
+#  include <lang/XclDef.h>
 //#include <mutex>
 #  include <concurrent/Lock.h>
 #  include <util/CSingleList.h>
