@@ -5,7 +5,8 @@
 /*
  * link prev and next
  */
-static inline void __List_link(CListNode* prev, CListNode* next) {
+static inline void
+__List_link(CListNode* prev, CListNode* next) {
   if (prev) {
     prev->next = next;
   }
@@ -18,7 +19,8 @@ static inline void __List_link(CListNode* prev, CListNode* next) {
  * unlink node from node's prev and its next
  * but not free
  */
-static inline void __List_unlink(CListNode* node) {
+static inline void
+__List_unlink(CListNode* node) {
   if (node) {
     if (node->prev) {
       node->prev->next = node->next;
@@ -34,11 +36,13 @@ struct _CList {
   CListNode header;
 };
 
-static void __List_init(CList* list) {
+static void
+__List_init(CList* list) {
   __List_link(&list->header, &list->header);
 }
 
-CList* List_new() {
+CList*
+List_new() {
   CList* list = (CList*)malloc(sizeof(CList));
   if (list) {
     __List_init(list);
@@ -46,7 +50,8 @@ CList* List_new() {
   return list;
 }
 
-bool List_delete(CList* list) {
+bool
+List_delete(CList* list) {
   if (!List_empty(list)) {
     return false;
   }
@@ -54,36 +59,43 @@ bool List_delete(CList* list) {
   return true;
 }
 
-CListIter List_begin(CList* list) {
+CListIter
+List_begin(CList* list) {
   CListIter it = {&list->header, list->header.next};
   return it;
 }
 
-CListIter List_end(CList* list) {
+CListIter
+List_end(CList* list) {
   CListIter it = {&list->header, &list->header};
   return it;
 }
 
-CListIter List_prev(CListIter it) {
+CListIter
+List_prev(CListIter it) {
   CListIter prevIt = {it.terminator, it.cur->prev};
   return prevIt;
 }
 
-CListIter List_next(CListIter it) {
+CListIter
+List_next(CListIter it) {
   CListIter nextIt = {it.terminator, it.cur->next};
   return nextIt;
 }
 
-void List_push(CList* list, CListNode* node) {
+void
+List_push(CList* list, CListNode* node) {
   __List_link(list->header.prev, node);
   __List_link(node, &list->header);
 }
 
-bool List_iterEquals(CListIter it1, CListIter it2) {
+bool
+List_iterEquals(CListIter it1, CListIter it2) {
   return it1.cur == it2.cur;
 }
 
-bool List_add(CList* list, CListIter pos, CListNode* node) {
+bool
+List_add(CList* list, CListIter pos, CListNode* node) {
   if (!node || pos.terminator != &list->header) {
     return false;
   }
@@ -92,7 +104,8 @@ bool List_add(CList* list, CListIter pos, CListNode* node) {
   return true;
 }
 
-void List_pushFront(CList* list, CListNode* node) {
+void
+List_pushFront(CList* list, CListNode* node) {
   if (!node) {
     return;
   }
@@ -100,7 +113,8 @@ void List_pushFront(CList* list, CListNode* node) {
   __List_link(&list->header, node);
 }
 
-CListNode* List_pop(CList* list) {
+CListNode*
+List_pop(CList* list) {
   CListNode* node = list->header.next;
   if (node == &list->header) {
     return NULL;
@@ -109,7 +123,8 @@ CListNode* List_pop(CList* list) {
   return node;
 }
 
-CListNode* List_popBack(CList* list) {
+CListNode*
+List_popBack(CList* list) {
   CListNode* node = list->header.prev;
   if (node != &list->header) {
     __List_unlink(node);
@@ -118,7 +133,8 @@ CListNode* List_popBack(CList* list) {
   return NULL;
 }
 
-CListIter List_peekFirst(CList* list) {
+CListIter
+List_peekFirst(CList* list) {
   CListIter it = {&list->header, &list->header};
   CListNode* node = list->header.next;
   if (node != it.terminator) {
@@ -127,7 +143,8 @@ CListIter List_peekFirst(CList* list) {
   return it;
 }
 
-CListIter List_peekLast(CList* list) {
+CListIter
+List_peekLast(CList* list) {
   CListIter it = {&list->header, &list->header};
   CListNode* node = list->header.prev;
   if (node != it.terminator) {
@@ -136,9 +153,10 @@ CListIter List_peekLast(CList* list) {
   return it;
 }
 
-bool List_remove(CList* list,
-                 const void* value,
-                 int (*cmp)(const void*, const void*)) {
+bool
+List_remove(CList* list,
+            const void* value,
+            int (*cmp)(const void*, const void*)) {
   CListNode* cur = list->header.next;
   while (cur != &list->header) {
     int ret = cmp(cur->data, value);
@@ -151,9 +169,10 @@ bool List_remove(CList* list,
   return false;
 }
 
-CListIter List_query(CList* list,
-                     const void* value,
-                     int (*cmp)(const void*, const void*)) {
+CListIter
+List_query(CList* list,
+           const void* value,
+           int (*cmp)(const void*, const void*)) {
   CListNode* cur = list->header.next;
   CListIter it = {&list->header, &list->header};
   while (cur != &list->header) {
@@ -166,10 +185,11 @@ CListIter List_query(CList* list,
   return it;
 }
 
-CListIter List_query2(CList* list,
-                      CListIter pos,
-                      const void* value,
-                      int (*cmp)(const void*, const void*)) {
+CListIter
+List_query2(CList* list,
+            CListIter pos,
+            const void* value,
+            int (*cmp)(const void*, const void*)) {
   CListIter it = List_end(list);
   if (pos.terminator != &list->header) {
     return it;
@@ -185,9 +205,10 @@ CListIter List_query2(CList* list,
   return it;
 }
 
-int32_t List_removeAll(CList* list,
-                       const void* value,
-                       int (*cmp)(const void*, const void*)) {
+int32_t
+List_removeAll(CList* list,
+               const void* value,
+               int (*cmp)(const void*, const void*)) {
   CListNode* cur = list->header.next;
   CListNode* next;
   int count = 0;
@@ -204,7 +225,8 @@ int32_t List_removeAll(CList* list,
   return count;
 }
 
-uint32_t List_size(CList* list) {
+uint32_t
+List_size(CList* list) {
   int size = 0;
   CListNode* cur = list->header.next;
   while (cur != &list->header) {
@@ -213,9 +235,13 @@ uint32_t List_size(CList* list) {
   return size;
 }
 
-bool List_empty(CList* list) { return list->header.next == &list->header; }
+bool
+List_empty(CList* list) {
+  return list->header.next == &list->header;
+}
 
-bool List_spliceRange(
+bool
+List_spliceRange(
     CList* list, CListIter pos, CList* other, CListIter first, CListIter last) {
   if (pos.terminator != &list->header || first.terminator != &other->header ||
       last.terminator != &other->header) {
@@ -234,7 +260,8 @@ bool List_spliceRange(
   return true;
 }
 
-bool List_splice(CList* list, CListIter pos, CList* other, CListIter it) {
+bool
+List_splice(CList* list, CListIter pos, CList* other, CListIter it) {
   if (it.terminator != &other->header || pos.terminator != &list->header ||
       it.cur == it.terminator) {
     return false;
@@ -245,7 +272,8 @@ bool List_splice(CList* list, CListIter pos, CList* other, CListIter it) {
   return true;
 }
 
-bool List_spliceAll(CList* list, CListIter pos, CList* other) {
+bool
+List_spliceAll(CList* list, CListIter pos, CList* other) {
   if (pos.terminator != &list->header) {
     return false;
   }
@@ -288,7 +316,8 @@ __List_merge(CList* list1, CList* list2, int (*cmp)(const void*, const void*)) {
   }
 }
 
-void List_sort(CList* list, int (*cmp)(const void*, const void*)) {
+void
+List_sort(CList* list, int (*cmp)(const void*, const void*)) {
   if (List_empty(list) || list->header.next->next == &list->header) {
     return;
   }

@@ -6,12 +6,16 @@ namespace xcl {
 namespace {
 class SysPool : public Pool {
  public:
-  void* alloc(uint64_t size) override;
-  void dealloc(void* ptr, uint64_t size) override;
-  void* redistribute(void* ptr, uint64_t oldSize, uint64_t newSize) override;
+  void*
+  alloc(uint64_t size) override;
+  void
+  dealloc(void* ptr, uint64_t size) override;
+  void*
+  redistribute(void* ptr, uint64_t oldSize, uint64_t newSize) override;
 
  public:
-  static SysPool* instance();
+  static SysPool*
+  instance();
 
  private:
   SysPool() = default;
@@ -22,13 +26,26 @@ class SysPool : public Pool {
 
 SysPool SysPool::sysPool_ = SysPool();
 
-void* SysPool::alloc(uint64_t size) { return malloc(size); }
-void SysPool::dealloc(void* ptr, uint64_t size) { free(ptr); }
-void* SysPool::redistribute(void* ptr, uint64_t oldSize, uint64_t newSize) {
+void*
+SysPool::alloc(uint64_t size) {
+  return malloc(size);
+}
+void
+SysPool::dealloc(void* ptr, uint64_t size) {
+  free(ptr);
+}
+void*
+SysPool::redistribute(void* ptr, uint64_t oldSize, uint64_t newSize) {
   return redistribute(ptr, oldSize, newSize);
 }
-SysPool* SysPool::instance() { return &SysPool::sysPool_; }
+SysPool*
+SysPool::instance() {
+  return &SysPool::sysPool_;
+}
 } // namespace
 
-Pool* Pool::sys() { return SysPool::instance(); }
+Pool*
+Pool::sys() {
+  return SysPool::instance();
+}
 } // namespace xcl

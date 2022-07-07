@@ -9,15 +9,20 @@
 
 static int64_t __NANO_FREQ_PER_SEC = -1;
 
-static void __SYS_initNanoFreq() {
+static void
+__SYS_initNanoFreq() {
   LARGE_INTEGER freq;
   if (QueryPerformanceFrequency(&freq)) {
     __NANO_FREQ_PER_SEC = freq.QuadPart;
   }
 }
 
-int64_t currentMillis() { return GetTickCount(); }
-int64_t nanos() {
+int64_t
+currentMillis() {
+  return GetTickCount();
+}
+int64_t
+nanos() {
   if (__NANO_FREQ_PER_SEC == -1) {
     __SYS_initNanoFreq();
   }

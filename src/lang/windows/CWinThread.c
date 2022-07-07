@@ -9,18 +9,18 @@
 #include "util/CSingleList.h"
 #include <stdlib.h>
 
-const static int32_t __THREAD_SUSPEND = 0x10;
-const static int32_t __THREAD_RUNNING = 0X11;
-const static int32_t __THREAD_DEAD = 0X12;
+typedef enum { SUSPEND, ALIVE, DEAD } CThreadState;
 
-struct _CThread_st {
+struct XCL_PUBLIC _CThread_st {
   const uintptr_t handle;
   void* const threadLock;
-  int32_t status;
+  CThreadState status;
+  unsigned threadId;
   CSingleList callStack;
 };
 
-XCL_PUBLIC CThread* XCL_API Thread_new(bool suspend) {
+XCL_PUBLIC CThread* XCL_API
+Thread_new(bool suspend) {
   CThread* thread = malloc(sizeof(CThread));
   if (thread) {
   }

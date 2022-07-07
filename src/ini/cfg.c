@@ -9,7 +9,8 @@
 #include "ini/IniParse.h"
 #include "util/CList.h"
 
-static char* __newStr(const char* str, size_t size) {
+static char*
+__newStr(const char* str, size_t size) {
   if (size == 0) {
     return NULL;
   }
@@ -36,7 +37,8 @@ struct _Config {
   CList* sections;
 };
 
-static int __cmpStrWithRegion(const void* str, const void* arg) {
+static int
+__cmpStrWithRegion(const void* str, const void* arg) {
   if (!str && !((const Region*)arg)->str) {
     return 0;
   }
@@ -50,12 +52,14 @@ static int __cmpStrWithRegion(const void* str, const void* arg) {
   return strncmp(str, region->str, region->len);
 }
 
-static int __cmpSectionWithRegion(const void* arg1, const void* arg2) {
+static int
+__cmpSectionWithRegion(const void* arg1, const void* arg2) {
   const SectionData* sectionData = (const SectionData*)arg1;
   return __cmpStrWithRegion(sectionData->name, arg2);
 }
 
-static int __cmpParamWithRegion(const void* arg1, const void* arg2) {
+static int
+__cmpParamWithRegion(const void* arg1, const void* arg2) {
   const Parameter* parameter = (const Parameter*)arg1;
   return __cmpStrWithRegion(parameter->key, arg2);
 }
@@ -63,7 +67,8 @@ static int __cmpParamWithRegion(const void* arg1, const void* arg2) {
 /*
  * get section data if section exists
  */
-static SectionData* __Config_getSection(Config* config, Region secRegion) {
+static SectionData*
+__Config_getSection(Config* config, Region secRegion) {
   CListIter it =
       List_query(config->sections, &secRegion, __cmpSectionWithRegion);
   return List_iterEquals(it, List_end(config->sections))
@@ -75,7 +80,8 @@ static SectionData* __Config_getSection(Config* config, Region secRegion) {
  * if section exists, return section data
  * otherwise, create section and put into config->sections
  */
-static SectionData* __Config_checkoutSection(Config* config, Region secRegion) {
+static SectionData*
+__Config_checkoutSection(Config* config, Region secRegion) {
   CListIter secIt =
       List_query(config->sections, &secRegion, __cmpSectionWithRegion);
   if (List_iterEquals(secIt, List_end(config->sections))) {
@@ -113,7 +119,8 @@ static SectionData* __Config_checkoutSection(Config* config, Region secRegion) {
 /*
  * get parameter from section parameter list
  */
-static Parameter* __Config_getParameter(CList* params, Region keyRegion) {
+static Parameter*
+__Config_getParameter(CList* params, Region keyRegion) {
   CListIter paramIt = List_query(params, &keyRegion, __cmpParamWithRegion);
   if (!List_iterEquals(paramIt, List_end(params))) {
     return (Parameter*)paramIt.cur->data;
@@ -125,9 +132,10 @@ static Parameter* __Config_getParameter(CList* params, Region keyRegion) {
  * get parameter from section parameters if exists
  * otherwise, create parameter and put into parameter list
  */
-static Parameter* __Config_checkoutParameter(CList* params,
-                                             Region keyRegion,
-                                             Region valueRegion) {
+static Parameter*
+__Config_checkoutParameter(CList* params,
+                           Region keyRegion,
+                           Region valueRegion) {
   CListIter paramIt = List_query(params, &keyRegion, __cmpParamWithRegion);
   if (!List_iterEquals(paramIt, List_end(params))) {
     /*
@@ -181,10 +189,11 @@ typedef struct {
  * invoked when section or key-value parameter found
  * in ini parse
  */
-static void __Config_iniReadCb(void* usr,
-                               Region secRegion,
-                               Region keyRegion,
-                               Region valueRegion) {
+static void
+__Config_iniReadCb(void* usr,
+                   Region secRegion,
+                   Region keyRegion,
+                   Region valueRegion) {
   IniReadCbArgs* args = (IniReadCbArgs*)usr;
   Config* config = args->config;
   if (secRegion.str) {
@@ -225,15 +234,18 @@ static void __Config_iniReadCb(void* usr,
   }
 }
 
-static int32_t __Config_readFile(void* stream, char* buf, int32_t len) {
+static int32_t
+__Config_readFile(void* stream, char* buf, int32_t len) {
   return fread(buf, 1, len, (FILE*)stream);
 }
 
-static int32_t __Config_writeFile(void* stream, const char* buf, int32_t len) {
+static int32_t
+__Config_writeFile(void* stream, const char* buf, int32_t len) {
   return fwrite(buf, 1, len, (FILE*)stream);
 }
 
-Config* Config_new(const char* storePath) {
+Config*
+Config_new(const char* storePath) {
   FILE* fp = fopen(storePath, "r");
   if (!fp) {
     return NULL;
@@ -243,8 +255,8 @@ Config* Config_new(const char* storePath) {
   return config;
 }
 
-Config* Config_newFromStream(void* stream,
-                             int32_t (*reader)(void*, char*, int32_t)) {
+Config*
+Config_newFromStream(void* stream, int32_t (*reader)(void*, char*, int32_t)) {
   char buf[1024];
   Ini ini = {true, true, sizeof(buf), buf};
   Config* config = (Config*)malloc(sizeof(Config));
@@ -262,11 +274,12 @@ Config* Config_newFromStream(void* stream,
   return config;
 }
 
-int32_t Config_read(Config* config,
-                    const char* section,
-                    const char* key,
-                    char* value,
-                    int* valueLen) {
+int32_t
+Config_read(Config* config,
+            const char* section,
+            const char* key,
+            char* value,
+            int* valueLen) {
   if (!config) {
     return -1;
   }
@@ -289,10 +302,11 @@ int32_t Config_read(Config* config,
   return -1;
 }
 
-int32_t Config_write(Config* config,
-                     const char* section,
-                     const char* key,
-                     const char* value) {
+int32_t
+Config_write(Config* config,
+             const char* section,
+             const char* key,
+             const char* value) {
   Region secRegion = {section, strlen(section)};
   SectionData* secData = __Config_checkoutSection(config, secRegion);
   if (!secData) {
@@ -305,7 +319,8 @@ int32_t Config_write(Config* config,
              : -1;
 }
 
-int32_t Config_flushToPath(Config* config, const char* storePath) {
+int32_t
+Config_flushToPath(Config* config, const char* storePath) {
   FILE* fp = fopen(storePath, "w");
   if (!fp) {
     return -1;
@@ -331,9 +346,10 @@ __Config_streamFlush(void* stream,
   return total;
 }
 
-int32_t Config_flush(Config* config,
-                     void* stream,
-                     int32_t (*writer)(void*, const char*, int32_t)) {
+int32_t
+Config_flush(Config* config,
+             void* stream,
+             int32_t (*writer)(void*, const char*, int32_t)) {
   char line[1024];
   CListIter secIt = List_begin(config->sections);
   int total = 0;
@@ -357,7 +373,8 @@ int32_t Config_flush(Config* config,
   return 0;
 }
 
-void Config_debug(Config* config) {
+void
+Config_debug(Config* config) {
   CList* sections = config->sections;
   CListIter sectionIt = List_begin(sections);
   while (!List_iterEquals(sectionIt, List_end(sections))) {
@@ -374,7 +391,8 @@ void Config_debug(Config* config) {
   }
 }
 
-void Config_delete(Config* config) {
+void
+Config_delete(Config* config) {
   CListNode* secNode = NULL;
   while ((secNode = List_pop(config->sections))) {
     SectionData* secData = (SectionData*)secNode->data;

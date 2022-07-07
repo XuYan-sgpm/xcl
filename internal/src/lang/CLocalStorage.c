@@ -8,7 +8,8 @@
 
 const static int __initialLocalStorageSize = 8;
 
-static inline int __grow(CLocalStorage* localStorage, int n) {
+static inline int
+__grow(CLocalStorage* localStorage, int n) {
   int32_t cap = localStorage->cap;
   return cap + (cap > n - cap ? cap : n - cap);
 }
@@ -16,7 +17,8 @@ static inline int __grow(CLocalStorage* localStorage, int n) {
 /*
  * reserve n blocks for passing local storage
  */
-static bool __reserveLocalStorage(CLocalStorage* localStorage, int n) {
+static bool
+__reserveLocalStorage(CLocalStorage* localStorage, int n) {
   if (n > localStorage->cap) {
     int32_t newCap = __grow(localStorage, n);
     Block* newBlocks =
@@ -30,8 +32,8 @@ static bool __reserveLocalStorage(CLocalStorage* localStorage, int n) {
   return true;
 }
 
-static CLocalStorage* __checkoutLocalStorageMem(CLocalStorage* localStorage,
-                                                int idx) {
+static CLocalStorage*
+__checkoutLocalStorageMem(CLocalStorage* localStorage, int idx) {
   if (!localStorage->cap) {
     int cap =
         __initialLocalStorageSize > idx ? __initialLocalStorageSize : idx + 1;
@@ -45,19 +47,22 @@ static CLocalStorage* __checkoutLocalStorageMem(CLocalStorage* localStorage,
   }
   return localStorage;
 }
-void* LocalStorage_get(CLocalStorage* localStorage, int idx) {
+void*
+LocalStorage_get(CLocalStorage* localStorage, int idx) {
   if (!__checkoutLocalStorageMem(localStorage, idx)) {
     return NULL;
   }
   return localStorage->blocks[idx].data;
 }
-void LocalStorage_free(CLocalStorage* localStorage) {
+void
+LocalStorage_free(CLocalStorage* localStorage) {
   if (localStorage->blocks) {
     free(localStorage->blocks);
     memset(localStorage, 0, sizeof(CLocalStorage));
   }
 }
-bool LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr) {
+bool
+LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr) {
   localStorage = __checkoutLocalStorageMem(localStorage, idx);
   if (!localStorage) {
     return false;
@@ -66,10 +71,11 @@ bool LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr) {
   *(intptr_t*)data = ptr;
   return true;
 }
-bool LocalStorage_setTiny(CLocalStorage* localStorage,
-                          int idx,
-                          const void* src,
-                          int len) {
+bool
+LocalStorage_setTiny(CLocalStorage* localStorage,
+                     int idx,
+                     const void* src,
+                     int len) {
   localStorage = __checkoutLocalStorageMem(localStorage, idx);
   if (!localStorage) {
     return false;

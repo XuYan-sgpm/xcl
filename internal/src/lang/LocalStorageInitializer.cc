@@ -29,7 +29,8 @@ static THREAD_LOCAL CLocalStorage* __threadLocalStorage = NULL;
 namespace {
 class LocalStorageRegImpl {
  public:
-  void regLocalStorage(CLocalStorage* localStorage);
+  void
+  regLocalStorage(CLocalStorage* localStorage);
 
  public:
   LocalStorageRegImpl();
@@ -56,7 +57,8 @@ LocalStorageRegImpl::~LocalStorageRegImpl() {
     free(node);
   }
 }
-void LocalStorageRegImpl::regLocalStorage(CLocalStorage* localStorage) {
+void
+LocalStorageRegImpl::regLocalStorage(CLocalStorage* localStorage) {
   CSingleNode* node = (CSingleNode*)malloc(sizeof(CSingleNode) + sizeof(void*));
   assert(node);
   memset(node, 0, sizeof(*node) + sizeof(void*));
@@ -77,16 +79,24 @@ extern "C" {
 
 #ifdef DYNAMIC
 
-CLocalStorage* __ThreadLocal_getLocalStorage() { return NULL; }
+CLocalStorage*
+__ThreadLocal_getLocalStorage() {
+  return NULL;
+}
 
-bool __ThreadLocal_setLocalStorage(CLocalStorage* localStorage) {
+bool
+__ThreadLocal_setLocalStorage(CLocalStorage* localStorage) {
   return false;
 }
 
 #elif STATIC
 
-CLocalStorage* __ThreadLocal_getLocalStorage() { return __threadLocalStorage; }
-bool __ThreadLocal_setLocalStorage(CLocalStorage* localStorage) {
+CLocalStorage*
+__ThreadLocal_getLocalStorage() {
+  return __threadLocalStorage;
+}
+bool
+__ThreadLocal_setLocalStorage(CLocalStorage* localStorage) {
   __threadLocalStorage = localStorage;
   __localStorageRegImpl.regLocalStorage(localStorage);
   return true;

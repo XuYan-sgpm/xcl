@@ -12,28 +12,33 @@ class XCL_PUBLIC Lock {
  public:
   virtual ~Lock() = default;
   Lock(const Lock&) = delete;
-  Lock& operator=(const Lock&) = delete;
+  Lock&
+  operator=(const Lock&) = delete;
   explicit Lock() = default;
 
  public:
   /**
    * acquire a lock for current thread
    */
-  virtual void lock() = 0;
+  virtual void
+  lock() = 0;
 
   /**
    * release a lock for current thread
    */
-  virtual void unlock() = 0;
+  virtual void
+  unlock() = 0;
 
   /**
    * try acquire lock for current thread
    * @return true if acquire successfully, otherwise false
    */
-  virtual bool tryLock() = 0;
+  virtual bool
+  tryLock() = 0;
 
  public:
-  static Lock* NewLock();
+  static Lock*
+  NewLock();
 };
 
 class XCL_PUBLIC TimedLock : public Lock {
@@ -46,9 +51,11 @@ class XCL_PUBLIC TimedLock : public Lock {
    * @return true if acquire during timeout millis successfully
    * otherwise false
    */
-  virtual bool tryLock(int32_t millis) = 0;
+  virtual bool
+  tryLock(int32_t millis) = 0;
 
-  static TimedLock* NewLock();
+  static TimedLock*
+  NewLock();
 };
 
 class XCL_PUBLIC Locker final {
@@ -57,7 +64,8 @@ class XCL_PUBLIC Locker final {
   ~Locker();
 
  public:
-  Locker& operator=(const Locker&) = delete;
+  Locker&
+  operator=(const Locker&) = delete;
 
  private:
   Lock* lock_;

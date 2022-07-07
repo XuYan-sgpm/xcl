@@ -6,11 +6,13 @@
 
 const static unsigned __STATE_MASK__ = 0x7fffffff;
 
-static inline bool __String_useStack(const CString* string) {
+static inline bool
+__String_useStack(const CString* string) {
   return string->state >> 31;
 }
 
-static inline int __String_getSize(const CString* string) {
+static inline int
+__String_getSize(const CString* string) {
   return string->state & __STATE_MASK__;
 }
 
@@ -19,21 +21,25 @@ __String_setState(CString* string, const int useStack, const int size) {
   string->state = (useStack << 31) | (size & __STATE_MASK__);
 }
 
-static inline void __String_setSize(CString* string, const int size) {
+static inline void
+__String_setSize(CString* string, const int size) {
   __String_setState(string, __String_useStack(string), size);
 }
 
-static inline char* __String_ptr(CString* string, const int pos) {
+static inline char*
+__String_ptr(CString* string, const int pos) {
   return __String_useStack(string) ? string->mem.stack.data + pos
                                    : string->mem.heap.ptr + pos;
 }
 
-static inline const char* __String_cPtr(const CString* string, const int pos) {
+static inline const char*
+__String_cPtr(const CString* string, const int pos) {
   return __String_useStack(string) ? string->mem.stack.data + pos
                                    : string->mem.heap.ptr + pos;
 }
 
-static inline int __String_cap(const CString* string) {
+static inline int
+__String_cap(const CString* string) {
   return __String_useStack(string) ? sizeof(string->mem.stack)
                                    : string->mem.heap.cap;
 }
@@ -50,11 +56,13 @@ __String_removeCheck(const CString* string, const int pos, const int len) {
          len <= __String_getSize(string) - pos;
 }
 
-static inline int __String_grow(const int cap, const int add) {
+static inline int
+__String_grow(const int cap, const int add) {
   return cap + (cap > add ? cap : add);
 }
 
-static void __String_init(CString* string, const int cap) {
+static void
+__String_init(CString* string, const int cap) {
   memset(&string->mem, 0, sizeof(string->mem));
   if (cap <= sizeof(string->mem.stack.data)) {
     __String_setState(string, true, 0);
@@ -123,10 +131,11 @@ __String_beforeAssign(CString* string, const int pos, const int len) {
   return assignCursor;
 }
 
-static bool __String_insert(CString* string,
-                            const int pos,
-                            const char* src,
-                            const int len) {
+static bool
+__String_insert(CString* string,
+                const int pos,
+                const char* src,
+                const int len) {
   char* insertCursor = __String_beforeInsert(string, pos, len);
   if (insertCursor) {
     memcpy(insertCursor, src, len);
@@ -134,10 +143,11 @@ static bool __String_insert(CString* string,
   return insertCursor;
 }
 
-static bool __String_assign(CString* string,
-                            const int pos,
-                            const char* src,
-                            const int len) {
+static bool
+__String_assign(CString* string,
+                const int pos,
+                const char* src,
+                const int len) {
   char* assignCursor = __String_beforeAssign(string, pos, len);
   if (assignCursor) {
     memcpy(assignCursor, src, len);
@@ -145,11 +155,13 @@ static bool __String_assign(CString* string,
   return assignCursor;
 }
 
-CString String_new(const char* str) {
+CString
+String_new(const char* str) {
   return String_newRegion(str, strlen(str));
 }
 
-CString String_newRegion(const char* str, const int len) {
+CString
+String_newRegion(const char* str, const int len) {
   CString string;
   __String_init(&string, len);
   memcpy(__String_ptr(&string, 0), str, len);
@@ -157,43 +169,59 @@ CString String_newRegion(const char* str, const int len) {
   return string;
 }
 
-CString String_alloc(const int cap) {
+CString
+String_alloc(const int cap) {
   assert(cap > 0);
   CString string;
   __String_init(&string, cap);
   return string;
 }
 
-void String_release(CString* string) {
+void
+String_release(CString* string) {
   if (!__String_useStack(string)) {
     free(string->mem.heap.ptr);
   }
   __String_setState(string, true, 0);
 }
 
-void String_clear(CString* string) { __String_setSize(string, 0); }
+void
+String_clear(CString* string) {
+  __String_setSize(string, 0);
+}
 
-int String_size(const CString* string) { return __String_getSize(string); }
+int
+String_size(const CString* string) {
+  return __String_getSize(string);
+}
 
-int String_cap(const CString* string) { return __String_cap(string); }
+int
+String_cap(const CString* string) {
+  return __String_cap(string);
+}
 
-bool String_empty(const CString* string) {
+bool
+String_empty(const CString* string) {
   return __String_getSize(string) == 0;
 }
 
-bool String_assign(CString* string, const char* str) {
+bool
+String_assign(CString* string, const char* str) {
   return __String_assign(string, 0, str, strlen(str));
 }
 
-bool String_assignRegion(CString* string, const char* str, const int len) {
+bool
+String_assignRegion(CString* string, const char* str, const int len) {
   return __String_assign(string, 0, str, len);
 }
 
-bool String_assignStr(CString* string, const CString* src) {
+bool
+String_assignStr(CString* string, const CString* src) {
   return __String_assign(string, 0, __String_cPtr(src, 0), String_size(src));
 }
 
-bool String_pushChar(CString* string, char ch) {
+bool
+String_pushChar(CString* string, char ch) {
   char* cursor = __String_beforeInsert(string, String_size(string), 1);
   if (cursor) {
     *cursor = ch;
@@ -201,7 +229,8 @@ bool String_pushChar(CString* string, char ch) {
   return cursor;
 }
 
-bool String_pushChars(CString* string, const int n, char ch) {
+bool
+String_pushChars(CString* string, const int n, char ch) {
   char* cursor = __String_beforeInsert(string, String_size(string), n);
   if (cursor) {
     memset(cursor, ch, n);
@@ -209,7 +238,8 @@ bool String_pushChars(CString* string, const int n, char ch) {
   return cursor;
 }
 
-bool String_pushRegion(CString* string, const char* str, const int len) {
+bool
+String_pushRegion(CString* string, const char* str, const int len) {
   char* cursor = __String_beforeInsert(string, String_size(string), len);
   if (cursor) {
     memcpy(cursor, str, len);
@@ -217,15 +247,18 @@ bool String_pushRegion(CString* string, const char* str, const int len) {
   return cursor;
 }
 
-bool String_push(CString* string, const char* str) {
+bool
+String_push(CString* string, const char* str) {
   return String_pushRegion(string, str, strlen(str));
 }
 
-bool String_pushStr(CString* string, const CString* src) {
+bool
+String_pushStr(CString* string, const CString* src) {
   return String_pushRegion(string, __String_cPtr(src, 0), String_size(src));
 }
 
-bool String_writeChar(CString* string, const int pos, char ch) {
+bool
+String_writeChar(CString* string, const int pos, char ch) {
   char* cursor = __String_beforeInsert(string, pos, 1);
   if (cursor) {
     *cursor = ch;
@@ -233,7 +266,8 @@ bool String_writeChar(CString* string, const int pos, char ch) {
   return cursor;
 }
 
-bool String_writeChars(CString* string, const int pos, const int n, char ch) {
+bool
+String_writeChars(CString* string, const int pos, const int n, char ch) {
   char* cursor = __String_beforeInsert(string, pos, n);
   if (cursor) {
     memset(cursor, ch, n);
@@ -241,10 +275,11 @@ bool String_writeChars(CString* string, const int pos, const int n, char ch) {
   return cursor;
 }
 
-bool String_writeRegion(CString* string,
-                        const int pos,
-                        const char* str,
-                        const int len) {
+bool
+String_writeRegion(CString* string,
+                   const int pos,
+                   const char* str,
+                   const int len) {
   char* cursor = __String_beforeInsert(string, pos, len);
   if (cursor) {
     memcpy(cursor, str, len);
@@ -252,7 +287,8 @@ bool String_writeRegion(CString* string,
   return cursor;
 }
 
-bool String_write(CString* string, const int pos, const char* str) {
+bool
+String_write(CString* string, const int pos, const char* str) {
   const int len = strlen(str);
   char* cursor = __String_beforeInsert(string, pos, len);
   if (cursor) {
@@ -261,12 +297,14 @@ bool String_write(CString* string, const int pos, const char* str) {
   return cursor;
 }
 
-bool String_writeStr(CString* string, const int pos, const CString* src) {
+bool
+String_writeStr(CString* string, const int pos, const CString* src) {
   return String_writeRegion(
       string, pos, __String_cPtr(src, 0), String_size(src));
 }
 
-bool String_pop(CString* string, char* dst) {
+bool
+String_pop(CString* string, char* dst) {
   if (String_empty(string)) {
     return false;
   }
@@ -278,7 +316,8 @@ bool String_pop(CString* string, char* dst) {
   return true;
 }
 
-bool String_popBack(CString* string, char* dst) {
+bool
+String_popBack(CString* string, char* dst) {
   if (String_empty(string)) {
     return false;
   }
@@ -289,7 +328,8 @@ bool String_popBack(CString* string, char* dst) {
   return true;
 }
 
-bool String_get(const CString* string, const int pos, char* dst) {
+bool
+String_get(const CString* string, const int pos, char* dst) {
   if (pos >= 0 && pos < String_size(string)) {
     *dst = *__String_cPtr(string, pos);
     return true;
@@ -297,10 +337,8 @@ bool String_get(const CString* string, const int pos, char* dst) {
   return false;
 }
 
-int String_gets(const CString* string,
-                const int pos,
-                const int len,
-                char* dst) {
+int
+String_gets(const CString* string, const int pos, const int len, char* dst) {
   if (!__String_removeCheck(string, pos, len)) {
     return -1;
   }
@@ -308,7 +346,8 @@ int String_gets(const CString* string,
   return len;
 }
 
-void String_delete(CString* string, const int pos) {
+void
+String_delete(CString* string, const int pos) {
   const int size = String_size(string);
   if (pos < 0 || pos >= size) {
     return;
@@ -318,7 +357,8 @@ void String_delete(CString* string, const int pos) {
   __String_setSize(string, size - 1);
 }
 
-void String_deleteRegion(CString* string, const int pos, const int len) {
+void
+String_deleteRegion(CString* string, const int pos, const int len) {
   if (__String_removeCheck(string, pos, len)) {
     char* p = __String_ptr(string, pos);
     const int size = String_size(string);
@@ -327,7 +367,8 @@ void String_deleteRegion(CString* string, const int pos, const int len) {
   }
 }
 
-const char* String_queryChar(const CString* string, const bool left, char ch) {
+const char*
+String_queryChar(const CString* string, const bool left, char ch) {
   const char* p = __String_cPtr(string, 0);
   const int size = String_size(string);
   if (left) {
@@ -371,9 +412,10 @@ __String_cmpRegion(const char* src, const char* pattern, const int len) {
   return src + i;
 }
 
-static const char* __String_directSearch(const CString* string,
-                                         const char* pattern,
-                                         const int len) {
+static const char*
+__String_directSearch(const CString* string,
+                      const char* pattern,
+                      const int len) {
   for (int i = 0; i < String_size(string) - len; i++) {
     const char* start = __String_cPtr(string, i);
     const char* cursor = __String_cmpRegion(start, pattern, len);
@@ -386,7 +428,8 @@ static const char* __String_directSearch(const CString* string,
 
 const static int STR_QUERY_THRESHOLD = 32;
 
-static void __String_genNext(const char* pattern, int* next, const int len) {
+static void
+__String_genNext(const char* pattern, int* next, const int len) {
   next[0] = -1;
   int idx = 0;
   int val = -1;
@@ -423,7 +466,8 @@ __String_kmpSearch(const CString* string, const char* pattern, const int len) {
   return NULL;
 }
 
-const char* String_query(const CString* string, const char* str) {
+const char*
+String_query(const CString* string, const char* str) {
   return String_queryRegion(string, str, str ? strlen(str) : 0);
 }
 
@@ -436,15 +480,18 @@ String_queryRegion(const CString* string, const char* str, const int len) {
                                     : __String_kmpSearch(string, str, len);
 }
 
-char String_at(const CString* string, const int pos) {
+char
+String_at(const CString* string, const int pos) {
   return *__String_cPtr(string, pos);
 }
 
-CString String_dup(const CString* string) {
+CString
+String_dup(const CString* string) {
   return String_dupRegion(string, 0, String_size(string));
 }
 
-CString String_dupRegion(const CString* string, const int pos, const int len) {
+CString
+String_dupRegion(const CString* string, const int pos, const int len) {
   CString copy;
   __String_init(&copy, len);
   memcpy(__String_ptr(&copy, 0), __String_cPtr(string, pos), len);

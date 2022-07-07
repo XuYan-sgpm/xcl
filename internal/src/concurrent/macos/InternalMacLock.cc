@@ -13,16 +13,28 @@ class __InternalMacMutex : public xcl::Lock {
   explicit __InternalMacMutex(bool recursive = true);
 
  public:
-  void lock() override;
-  void unlock() override;
-  bool tryLock() override;
+  void
+  lock() override;
+  void
+  unlock() override;
+  bool
+  tryLock() override;
 
  protected:
   pthread_mutex_t mutex_;
 };
-void __InternalMacMutex::lock() { ::pthread_mutex_lock(&mutex_); }
-void __InternalMacMutex::unlock() { ::pthread_mutex_unlock(&mutex_); }
-bool __InternalMacMutex::tryLock() { return ::pthread_mutex_trylock(&mutex_); }
+void
+__InternalMacMutex::lock() {
+  ::pthread_mutex_lock(&mutex_);
+}
+void
+__InternalMacMutex::unlock() {
+  ::pthread_mutex_unlock(&mutex_);
+}
+bool
+__InternalMacMutex::tryLock() {
+  return ::pthread_mutex_trylock(&mutex_);
+}
 __InternalMacMutex::__InternalMacMutex(bool recursive) : mutex_() {
   if (recursive) {
     pthread_mutexattr_t attr;
@@ -38,10 +50,14 @@ __InternalMacMutex::~__InternalMacMutex() { ::pthread_mutex_destroy(&mutex_); }
 class __InternalMacTimedMutex : public xcl::TimedLock,
                                 public __InternalMacMutex {
  public:
-  bool tryLock(int32_t millis) override;
-  void lock() override;
-  void unlock() override;
-  bool tryLock() override;
+  bool
+  tryLock(int32_t millis) override;
+  void
+  lock() override;
+  void
+  unlock() override;
+  bool
+  tryLock() override;
 
  private:
   const static int64_t MAX_DELAY;
@@ -49,7 +65,8 @@ class __InternalMacTimedMutex : public xcl::TimedLock,
 
 const int64_t __InternalMacTimedMutex::MAX_DELAY = 1000000L;
 
-bool __InternalMacTimedMutex::tryLock(int32_t millis) {
+bool
+__InternalMacTimedMutex::tryLock(int32_t millis) {
   const int threshold = 3;
   timespec ts{0, 0};
   timeval st{0, 0};
@@ -82,14 +99,25 @@ bool __InternalMacTimedMutex::tryLock(int32_t millis) {
   }
   return ::pthread_mutex_trylock(&mutex_) == 0;
 }
-void __InternalMacTimedMutex::lock() { __InternalMacMutex::lock(); }
-void __InternalMacTimedMutex::unlock() { __InternalMacMutex::unlock(); }
-bool __InternalMacTimedMutex::tryLock() {
+void
+__InternalMacTimedMutex::lock() {
+  __InternalMacMutex::lock();
+}
+void
+__InternalMacTimedMutex::unlock() {
+  __InternalMacMutex::unlock();
+}
+bool
+__InternalMacTimedMutex::tryLock() {
   return __InternalMacMutex::tryLock();
 }
 } // namespace
 
-xcl::Lock* xcl::Lock::NewLock() { return new __InternalMacMutex(); }
-xcl::TimedLock* xcl::TimedLock::NewLock() {
+xcl::Lock*
+xcl::Lock::NewLock() {
+  return new __InternalMacMutex();
+}
+xcl::TimedLock*
+xcl::TimedLock::NewLock() {
   return new __InternalMacTimedMutex();
 }

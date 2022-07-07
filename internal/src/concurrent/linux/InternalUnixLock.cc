@@ -12,16 +12,26 @@ class __InternalUnixMutex : public xcl::Lock {
   ~__InternalUnixMutex() override;
 
  public:
-  void lock() override;
-  void unlock() override;
-  bool tryLock() override;
+  void
+  lock() override;
+  void
+  unlock() override;
+  bool
+  tryLock() override;
 
  protected:
   pthread_mutex_t mutex_;
 };
-void __InternalUnixMutex::lock() { ::pthread_mutex_lock(&mutex_); }
-void __InternalUnixMutex::unlock() { ::pthread_mutex_unlock(&mutex_); }
-bool __InternalUnixMutex::tryLock() {
+void
+__InternalUnixMutex::lock() {
+  ::pthread_mutex_lock(&mutex_);
+}
+void
+__InternalUnixMutex::unlock() {
+  ::pthread_mutex_unlock(&mutex_);
+}
+bool
+__InternalUnixMutex::tryLock() {
   return pthread_mutex_trylock(&mutex_) == 0;
 }
 __InternalUnixMutex::__InternalUnixMutex(bool recursive) : mutex_(nullptr) {
@@ -42,27 +52,43 @@ class __InternalUnixTimedMutex : public xcl::TimedLock,
   explicit __InternalUnixTimedMutex(bool recursive = true);
 
  public:
-  bool tryLock(int32_t millis) override;
-  void lock() override;
-  void unlock() override;
-  bool tryLock() override;
+  bool
+  tryLock(int32_t millis) override;
+  void
+  lock() override;
+  void
+  unlock() override;
+  bool
+  tryLock() override;
 };
-bool __InternalUnixTimedMutex::tryLock(int32_t millis) {
+bool
+__InternalUnixTimedMutex::tryLock(int32_t millis) {
   timespec ts{0, 0};
   ts.tv_nsec = millis * 1000000L;
   return ::pthread_mutex_timedlock(&mutex_, &ts) == 0;
 }
 __InternalUnixTimedMutex::__InternalUnixTimedMutex(bool recursive)
     : __InternalUnixMutex(recursive) {}
-void __InternalUnixTimedMutex::lock() { __InternalUnixMutex::lock(); }
-void __InternalUnixTimedMutex::unlock() { __InternalUnixMutex::unlock(); }
-bool __InternalUnixTimedMutex::tryLock() {
+void
+__InternalUnixTimedMutex::lock() {
+  __InternalUnixMutex::lock();
+}
+void
+__InternalUnixTimedMutex::unlock() {
+  __InternalUnixMutex::unlock();
+}
+bool
+__InternalUnixTimedMutex::tryLock() {
   return __InternalUnixMutex::tryLock();
 }
 } // namespace
 
-xcl::Lock* xcl::Lock::NewLock() { return new __InternalUnixMutex(); }
+xcl::Lock*
+xcl::Lock::NewLock() {
+  return new __InternalUnixMutex();
+}
 
-xcl::TimedLock* xcl::TimedLock::NewLock() {
+xcl::TimedLock*
+xcl::TimedLock::NewLock() {
   return new __InternalUnixTimedMutex();
 }

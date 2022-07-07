@@ -21,13 +21,23 @@ class XCL_HIDDEN __InternalWinMutex : public xcl::Lock {
   CRITICAL_SECTION criticalSection_;
 
  public:
-  void lock() override;
-  void unlock() override;
-  bool tryLock() override;
+  void
+  lock() override;
+  void
+  unlock() override;
+  bool
+  tryLock() override;
 };
-void __InternalWinMutex::lock() { EnterCriticalSection(&criticalSection_); }
-void __InternalWinMutex::unlock() { LeaveCriticalSection(&criticalSection_); }
-bool __InternalWinMutex::tryLock() {
+void
+__InternalWinMutex::lock() {
+  EnterCriticalSection(&criticalSection_);
+}
+void
+__InternalWinMutex::unlock() {
+  LeaveCriticalSection(&criticalSection_);
+}
+bool
+__InternalWinMutex::tryLock() {
   return TryEnterCriticalSection(&criticalSection_);
 }
 __InternalWinMutex::~__InternalWinMutex() {
@@ -43,22 +53,32 @@ class __InternalWinTimedMutex : public xcl::TimedLock {
   __InternalWinTimedMutex();
 
  public:
-  void lock() override;
-  void unlock() override;
-  bool tryLock() override;
-  bool tryLock(int32_t millis) override;
+  void
+  lock() override;
+  void
+  unlock() override;
+  bool
+  tryLock() override;
+  bool
+  tryLock(int32_t millis) override;
 
  private:
   HANDLE handle_;
 };
-void __InternalWinTimedMutex::lock() {
+void
+__InternalWinTimedMutex::lock() {
   ::WaitForSingleObject(handle_, INFINITE);
 }
-void __InternalWinTimedMutex::unlock() { ::ReleaseMutex(handle_); }
-bool __InternalWinTimedMutex::tryLock() {
+void
+__InternalWinTimedMutex::unlock() {
+  ::ReleaseMutex(handle_);
+}
+bool
+__InternalWinTimedMutex::tryLock() {
   return ::WaitForSingleObject(handle_, 0) == WAIT_OBJECT_0;
 }
-bool __InternalWinTimedMutex::tryLock(int32_t millis) {
+bool
+__InternalWinTimedMutex::tryLock(int32_t millis) {
   return ::WaitForSingleObject(handle_, millis) == WAIT_OBJECT_0;
 }
 __InternalWinTimedMutex::__InternalWinTimedMutex() : handle_(nullptr) {
@@ -72,7 +92,11 @@ __InternalWinTimedMutex::~__InternalWinTimedMutex() {
 }
 } // namespace
 
-xcl::Lock* xcl::Lock::NewLock() { return new __InternalWinMutex(); }
-xcl::TimedLock* xcl::TimedLock::NewLock() {
+xcl::Lock*
+xcl::Lock::NewLock() {
+  return new __InternalWinMutex();
+}
+xcl::TimedLock*
+xcl::TimedLock::NewLock() {
   return new __InternalWinTimedMutex();
 }

@@ -12,8 +12,10 @@ extern "C" {
 
 const static int64_t NANOS_PER_SEC = 1000000000;
 
-int64_t currentMillis();
-int64_t nanos();
+int64_t
+currentMillis();
+int64_t
+nanos();
 
 #ifdef __cplusplus
 }

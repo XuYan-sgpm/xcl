@@ -3,8 +3,8 @@
 //
 
 #include <gtest/gtest.h>
-#include <lang/CThreadLocal.h>
-#include <lang/CLocalStorage.h>
+#include "lang/CThreadLocal.h"
+#include "lang/CLocalStorage.h"
 
 #include <iostream>
 #include <zconf.h>

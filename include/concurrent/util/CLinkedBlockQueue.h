@@ -33,7 +33,8 @@ LinkedBlockingQueue_new(uint32_t blockSize);
  * delete a linked blocking queue object
  * @param queue queue object
  */
-XCL_PUBLIC void XCL_API LinkedBlockingQueue_delete(CLinkedBlockingQueue* queue);
+XCL_PUBLIC void XCL_API
+LinkedBlockingQueue_delete(CLinkedBlockingQueue* queue);
 
 /**
  * offer a byte block to queue
@@ -42,9 +43,10 @@ XCL_PUBLIC void XCL_API LinkedBlockingQueue_delete(CLinkedBlockingQueue* queue);
  * @param len data length
  * @return true if offer successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API LinkedBlockingQueue_offer(CLinkedBlockingQueue* queue,
-                                                  const void* src,
-                                                  uint32_t len);
+XCL_PUBLIC bool XCL_API
+LinkedBlockingQueue_offer(CLinkedBlockingQueue* queue,
+                          const void* src,
+                          uint32_t len);
 
 /**
  * get first byte data block from queue
@@ -54,9 +56,8 @@ XCL_PUBLIC bool XCL_API LinkedBlockingQueue_offer(CLinkedBlockingQueue* queue,
  * data size in dst
  * @return true if peek successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API LinkedBlockingQueue_peek(CLinkedBlockingQueue* queue,
-                                                 void* dst,
-                                                 uint32_t* len);
+XCL_PUBLIC bool XCL_API
+LinkedBlockingQueue_peek(CLinkedBlockingQueue* queue, void* dst, uint32_t* len);
 
 /**
  * poll first byte data block from queue
@@ -66,9 +67,8 @@ XCL_PUBLIC bool XCL_API LinkedBlockingQueue_peek(CLinkedBlockingQueue* queue,
  * data size in dst
  * @return true if poll successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API LinkedBlockingQueue_poll(CLinkedBlockingQueue* queue,
-                                                 void* dst,
-                                                 uint32_t* len);
+XCL_PUBLIC bool XCL_API
+LinkedBlockingQueue_poll(CLinkedBlockingQueue* queue, void* dst, uint32_t* len);
 
 /**
  * handle if queue is empty

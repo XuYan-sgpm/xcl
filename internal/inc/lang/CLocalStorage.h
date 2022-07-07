@@ -37,7 +37,8 @@ typedef struct {
  * @param ptr pushed pointer
  * @return true if set successfully, false otherwise
  */
-bool LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr);
+bool
+LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr);
 
 /**
  * copy buffer to local storage if buffer size less than 8
@@ -47,10 +48,11 @@ bool LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr);
  * @param len buffer size
  * @return true if push buffer successfully, false otherwise
  */
-bool LocalStorage_setTiny(CLocalStorage* localStorage,
-                          int idx,
-                          const void* src,
-                          int len);
+bool
+LocalStorage_setTiny(CLocalStorage* localStorage,
+                     int idx,
+                     const void* src,
+                     int len);
 
 /**
  * get data address at position idx of local storage
@@ -58,14 +60,16 @@ bool LocalStorage_setTiny(CLocalStorage* localStorage,
  * @param idx data position
  * @return local data address if successfully, otherwise false
  */
-void* LocalStorage_get(CLocalStorage* localStorage, int idx);
+void*
+LocalStorage_get(CLocalStorage* localStorage, int idx);
 
 /**
  * release local storage memory, not include
  * memory pointer to ptr which stored in local storage
  * @param localStorage local storage object
  */
-void LocalStorage_free(CLocalStorage* localStorage);
+void
+LocalStorage_free(CLocalStorage* localStorage);
 
 /**
  * get thread local storage
@@ -73,7 +77,8 @@ void LocalStorage_free(CLocalStorage* localStorage);
  * if local storage of current thread initialization
  * failed, return NULL
  */
-CLocalStorage* __ThreadLocal_getLocalStorage();
+CLocalStorage*
+__ThreadLocal_getLocalStorage();
 
 /**
  * bind local storage with current thread
@@ -81,7 +86,8 @@ CLocalStorage* __ThreadLocal_getLocalStorage();
  * @return if bind local storage with current thread
  * successfully, return true; otherwise return false
  */
-bool __ThreadLocal_setLocalStorage(CLocalStorage* localStorage);
+bool
+__ThreadLocal_setLocalStorage(CLocalStorage* localStorage);
 
 #ifdef __cplusplus
 }

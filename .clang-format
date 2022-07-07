@@ -19,8 +19,8 @@ AlignConsecutiveMacros: AcrossEmptyLinesAndComments
 #AllowShortLambdasOnASingleLine: All
 #AllowShortIfStatementsOnASingleLine: WithoutElse
 #AllowShortLoopsOnASingleLine: true
-#AlwaysBreakAfterDefinitionReturnType: None
-#AlwaysBreakAfterReturnType: None
+AlwaysBreakAfterDefinitionReturnType: All
+AlwaysBreakAfterReturnType: All
 #AlwaysBreakBeforeMultilineStrings: true
 #AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false

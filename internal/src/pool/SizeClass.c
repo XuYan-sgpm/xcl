@@ -19,7 +19,8 @@ typedef struct {
   int32_t size;
 } SizeTab;
 
-static uint32_t __log2(uint32_t i) {
+static uint32_t
+__log2(uint32_t i) {
   if (i == 0) {
     return 32;
   }
@@ -51,16 +52,18 @@ static int32_t tabs = 0;
  * initialize all size class tabs
  * @return available tabs count
  */
-static int32_t __initSizeClassTabs();
+static int32_t
+__initSizeClassTabs();
 
 /**
  * initialize single size class tab
  * @return current tab's memory size
  */
-static int32_t __initSizeClassTab(int32_t idx,
-                                  int32_t log2Group,
-                                  int32_t log2Delta,
-                                  int32_t nDelta);
+static int32_t
+__initSizeClassTab(int32_t idx,
+                   int32_t log2Group,
+                   int32_t log2Delta,
+                   int32_t nDelta);
 
 ///**
 // * initialize idx to size tabs
@@ -75,7 +78,8 @@ static int32_t __initSizeClassTab(int32_t idx,
 // */
 // static void __size2idxTab(int32_t *size2idx);
 
-bool SizeClass_initialize() {
+bool
+SizeClass_initialize() {
   if (sizeClasses) {
     return true;
   }
@@ -104,7 +108,8 @@ bool SizeClass_initialize() {
   return success;
 }
 
-void SizeClass_finalize() {
+void
+SizeClass_finalize() {
   free(sizeClasses);
   sizeClasses = NULL;
   //  free(sizeIdx2size);
@@ -116,9 +121,13 @@ void SizeClass_finalize() {
   tabs = 0;
 }
 
-int32_t SizeClass_size() { return tabs; }
+int32_t
+SizeClass_size() {
+  return tabs;
+}
 
-bool SizeClass_get(int32_t idx, int32_t* out) {
+bool
+SizeClass_get(int32_t idx, int32_t* out) {
   if (idx >= tabs) {
     return false;
   }
@@ -144,7 +153,8 @@ __SC_getGroupAndDelta(uint32_t size, uint32_t* log2Group, uint32_t* log2Delta) {
   }
 }
 
-uint32_t SizeClass_normalize(uint32_t size) {
+uint32_t
+SizeClass_normalize(uint32_t size) {
   if (size <= 16) {
     return 16;
   }
@@ -176,7 +186,8 @@ uint32_t SizeClass_normalize(uint32_t size) {
   return (1u << log2Group) + (nDelta << log2Delta);
 }
 
-uint32_t SizeClass_size2pages(uint32_t size) {
+uint32_t
+SizeClass_size2pages(uint32_t size) {
   if (size <= PAGE_SIZE) {
     return 1;
   }
@@ -187,7 +198,8 @@ uint32_t SizeClass_size2pages(uint32_t size) {
   return pages + 1;
 }
 
-static int32_t __initSizeClassTabs() {
+static int32_t
+__initSizeClassTabs() {
   int32_t idx = 0;
   int32_t size = 0;
 
@@ -212,10 +224,11 @@ static int32_t __initSizeClassTabs() {
   return idx;
 }
 
-static int32_t __initSizeClassTab(int32_t idx,
-                                  int32_t log2Group,
-                                  int32_t log2Delta,
-                                  int32_t nDelta) {
+static int32_t
+__initSizeClassTab(int32_t idx,
+                   int32_t log2Group,
+                   int32_t log2Delta,
+                   int32_t nDelta) {
   bool isMultiPage = false;
   int32_t size = (1 << log2Group) + (nDelta << log2Delta);
   if (log2Delta >= PAGE_SHIFTS) {

@@ -6,8 +6,8 @@
 #include "concurrent/Lock.h"
 #include "concurrent/CMutex.h"
 #include <iostream>
-#include <windows.h>
-#include <util/system.h>
+#include <Windows.h>
+#include "util/system.h"
 using namespace std;
 
 static void* __testLock(void* args) {
