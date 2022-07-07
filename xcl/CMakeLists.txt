@@ -61,12 +61,12 @@ endfunction()
 
 filter_files()
 
-if (COMPILE_STATIC)
-    message(STATUS "STATIC")
+if (compile_static_lib)
+    message(STATUS "static")
     add_definitions(-DSTATIC)
     add_library(${xcl_lib_name} STATIC ${lib_src_files})
 else ()
-    message(STATUS "DYNAMIC")
+    message(STATUS "dynamic")
     add_definitions(-DDYNAMIC)
     add_library(${xcl_lib_name} SHARED ${lib_src_files})
 endif ()
@@ -80,5 +80,15 @@ else ()
         message(STATUS "macos")
     elseif (UNIX)
         message(STATUS "unix")
+    endif ()
+endif ()
+
+if (copy_xcl_dynamic_lib)
+    message(STATUS "enable copy dynamic library to executable path")
+    if (NOT compile_static_lib)
+        add_custom_command(TARGET ${xcl_lib_name} POST_BUILD
+                COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${xcl_lib_name}> ${EXECUTABLE_OUTPUT_PATH}
+                COMMAND ${CMAKE_COMMAND} -E echo "copy $<TARGET_FILE:${xcl_lib_name}> to ${EXECUTABLE_OUTPUT_PATH}"
+                VERBATIM)
     endif ()
 endif ()

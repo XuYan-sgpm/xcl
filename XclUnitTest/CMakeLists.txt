@@ -24,10 +24,3 @@ endif ()
 set(test_files src/TestLock.cc)
 add_executable(main src/main.cc ${test_files})
 target_link_libraries(main xcl gtest gtest_main)
-
-if (NOT COMPILE_STATIC)
-    add_custom_command(TARGET main POST_BUILD
-            COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${xcl_lib_name}> ${EXECUTABLE_OUTPUT_PATH}
-            COMMAND ${CMAKE_COMMAND} -E echo "copy $<TARGET_FILE:${xcl_lib_name}> to ${EXECUTABLE_OUTPUT_PATH}"
-            VERBATIM)
-endif ()

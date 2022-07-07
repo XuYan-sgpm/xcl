@@ -11,7 +11,7 @@
 
 typedef enum { SUSPEND, ALIVE, DEAD } CThreadState;
 
-struct XCL_PUBLIC _CThread_st {
+struct _CThread_st {
   const uintptr_t handle;
   void* const threadLock;
   CThreadState status;
@@ -20,9 +20,11 @@ struct XCL_PUBLIC _CThread_st {
 };
 
 XCL_PUBLIC CThread* XCL_API
-Thread_new(bool suspend) {
+Thread_new(bool suspend, unsigned (*threadProc)(void*), void* usr) {
   CThread* thread = malloc(sizeof(CThread));
   if (thread) {
+    unsigned tid;
+    uintptr_t h = _beginthreadex(NULL, 0, threadProc, usr, suspend, &tid);
   }
   return thread;
 }

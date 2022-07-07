@@ -35,7 +35,7 @@ typedef struct _CThread_st CThread;
  * @return thread object if successfully, otherwise false
  */
 XCL_PUBLIC CThread* XCL_API
-Thread_new(bool suspend);
+Thread_new(bool suspend,unsigned (*threadProc)(void*),void*usr);
 
 /**
  * get current thread object
