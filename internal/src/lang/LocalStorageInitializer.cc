@@ -80,23 +80,23 @@ extern "C" {
 #ifdef DYNAMIC
 
 CLocalStorage*
-__ThreadLocal_getLocalStorage() {
+__Local_getLocalStorage() {
   return NULL;
 }
 
 bool
-__ThreadLocal_setLocalStorage(CLocalStorage* localStorage) {
+__Local_setLocalStorage(CLocalStorage* localStorage) {
   return false;
 }
 
 #elif STATIC
 
 CLocalStorage*
-__ThreadLocal_getLocalStorage() {
+__Local_getLocalStorage() {
   return __threadLocalStorage;
 }
 bool
-__ThreadLocal_setLocalStorage(CLocalStorage* localStorage) {
+__Local_setLocalStorage(CLocalStorage* localStorage) {
   __threadLocalStorage = localStorage;
   __localStorageRegImpl.regLocalStorage(localStorage);
   return true;

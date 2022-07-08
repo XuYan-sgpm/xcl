@@ -78,7 +78,7 @@ LocalStorage_free(CLocalStorage* localStorage);
  * failed, return NULL
  */
 CLocalStorage*
-__ThreadLocal_getLocalStorage();
+__Local_getLocalStorage();
 
 /**
  * bind local storage with current thread
@@ -87,7 +87,7 @@ __ThreadLocal_getLocalStorage();
  * successfully, return true; otherwise return false
  */
 bool
-__ThreadLocal_setLocalStorage(CLocalStorage* localStorage);
+__Local_setLocalStorage(CLocalStorage* localStorage);
 
 #ifdef __cplusplus
 }

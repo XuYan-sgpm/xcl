@@ -2,6 +2,14 @@
 // Created by xuyan on 2022/6/20.
 //
 
+/**
+ * note that thread local is not manage thread
+ * local object data. for example, if you alloc memory,
+ * and put address into thread local, you must free memory
+ * manually, no any memory release operation when thread local
+ * is not available or thread local data changed.
+ */
+
 #pragma once
 
 #include <lang/XclDef.h>
@@ -16,57 +24,62 @@ typedef struct {
   int64_t id;
 } CThreadLocal;
 
-CThreadLocal
+XCL_PUBLIC CThreadLocal XCL_API
 Local_make();
-bool
+XCL_PUBLIC bool XCL_API
 Local_set(CThreadLocal* local, void* ptr);
-bool
+XCL_PUBLIC bool XCL_API
 Local_setChar(CThreadLocal* local, char val);
-bool
+XCL_PUBLIC bool XCL_API
 Local_setU8(CThreadLocal* local, unsigned char val);
-bool
+XCL_PUBLIC bool XCL_API
 Local_setInt32(CThreadLocal* local, int32_t val);
-bool
+XCL_PUBLIC bool XCL_API
 Local_setU32(CThreadLocal* local, uint32_t val);
-bool
+XCL_PUBLIC bool XCL_API
 Local_setInt16(CThreadLocal* local, int16_t val);
-bool
+XCL_PUBLIC bool XCL_API
 Local_setU16(CThreadLocal* local, uint16_t val);
-bool
+XCL_PUBLIC bool XCL_API
 Local_setFloat(CThreadLocal* local, float val);
-bool
+XCL_PUBLIC bool XCL_API
 Local_setInt64(CThreadLocal* local, int64_t val);
-bool
+XCL_PUBLIC bool XCL_API
 Local_setU64(CThreadLocal* local, uint64_t val);
-bool
+XCL_PUBLIC bool XCL_API
 Local_setDouble(CThreadLocal* local, double val);
-bool
+XCL_PUBLIC bool XCL_API
 Local_get(CThreadLocal* local, void** result);
-bool
+XCL_PUBLIC bool XCL_API
 Local_getChar(CThreadLocal* local, char* result);
-bool
+XCL_PUBLIC bool XCL_API
 Local_getU8(CThreadLocal* local, unsigned char* result);
-bool
+XCL_PUBLIC bool XCL_API
 Local_getInt16(CThreadLocal* local, int16_t* result);
-bool
+XCL_PUBLIC bool XCL_API
 Local_getU16(CThreadLocal* local, uint16_t* result);
-bool
+XCL_PUBLIC bool XCL_API
 Local_getInt32(CThreadLocal* local, int32_t* result);
-bool
+XCL_PUBLIC bool XCL_API
 Local_getU32(CThreadLocal* local, uint32_t* result);
-bool
+XCL_PUBLIC bool XCL_API
 Local_getFloat(CThreadLocal* local, float* result);
-bool
+XCL_PUBLIC bool XCL_API
 Local_getInt64(CThreadLocal* local, int64_t* result);
-bool
+XCL_PUBLIC bool XCL_API
 Local_getU64(CThreadLocal* local, uint64_t* result);
-bool
+XCL_PUBLIC bool XCL_API
 Local_getDouble(CThreadLocal* local, double* result);
-void
+
+/**
+ * discard a thread local, thread local object is not available
+ * @param local thread local object
+ */
+XCL_PUBLIC void XCL_API
 Local_discard(CThreadLocal* local);
 
 #ifdef STATIC
-void
+XCL_PUBLIC void XCL_API
 recycleUnusedThreadLocals();
 #endif
 

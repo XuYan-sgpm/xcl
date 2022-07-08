@@ -9,6 +9,7 @@ CSingleList XCL_API
 SingleList_new() {
   CSingleList list;
   memset(&list.header, 0, sizeof(CSingleNode));
+  list.tail = &list.header;
   return list;
 }
 
@@ -41,14 +42,13 @@ void XCL_API
 SingleList_pushFront(CSingleList* list, CSingleNode* node) {
   node->next = list->header.next;
   list->header.next = node;
+  if (list->tail == &list->header)
+    list->tail = node;
 }
 void XCL_API
 SingleList_pushBack(CSingleList* list, CSingleNode* node) {
-  CSingleNode* cur = &list->header;
-  while (cur->next) {
-    cur = cur->next;
-  }
-  cur->next = node;
+  list->tail->next = node;
+  list->tail = node;
   node->next = NULL;
 }
 CSingleNode* XCL_API
@@ -56,6 +56,8 @@ SingList_popFront(CSingleList* list) {
   CSingleNode* node = list->header.next;
   if (node) {
     list->header.next = node->next;
+    if (!list->header.next)
+      list->tail = &list->header;
   }
   return node;
 }
@@ -71,6 +73,7 @@ SingleList_popBack(CSingleList* list) {
     node = node->next;
   }
   prev->next = NULL;
+  list->tail = prev;
   return node;
 }
 CSingleListIter XCL_API

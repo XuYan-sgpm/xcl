@@ -10,7 +10,8 @@
 #include "util/system.h"
 using namespace std;
 
-static void* __testLock(void* args) {
+static void*
+__testLock(void* args) {
   auto* lock = (xcl::TimedLock*)args;
   for (;;) {
     auto st = chrono::steady_clock::now();

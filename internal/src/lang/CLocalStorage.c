@@ -9,7 +9,7 @@
 const static int __initialLocalStorageSize = 8;
 
 static inline int
-__grow(CLocalStorage* localStorage, int n) {
+__LocalStorage_grow(CLocalStorage* localStorage, int n) {
   int32_t cap = localStorage->cap;
   return cap + (cap > n - cap ? cap : n - cap);
 }
@@ -18,9 +18,9 @@ __grow(CLocalStorage* localStorage, int n) {
  * reserve n blocks for passing local storage
  */
 static bool
-__reserveLocalStorage(CLocalStorage* localStorage, int n) {
+__LocalStorage_reserve(CLocalStorage* localStorage, int n) {
   if (n > localStorage->cap) {
-    int32_t newCap = __grow(localStorage, n);
+    int32_t newCap = __LocalStorage_grow(localStorage, n);
     Block* newBlocks =
         (Block*)realloc(localStorage->blocks, newCap * sizeof(Block));
     if (!newBlocks) {
@@ -33,15 +33,15 @@ __reserveLocalStorage(CLocalStorage* localStorage, int n) {
 }
 
 static CLocalStorage*
-__checkoutLocalStorageMem(CLocalStorage* localStorage, int idx) {
+__LocalStorage_checkMemory(CLocalStorage* localStorage, int idx) {
   if (!localStorage->cap) {
     int cap =
         __initialLocalStorageSize > idx ? __initialLocalStorageSize : idx + 1;
-    if (!__reserveLocalStorage(localStorage, cap)) {
+    if (!__LocalStorage_reserve(localStorage, cap)) {
       return NULL;
     }
   } else {
-    if (!__reserveLocalStorage(localStorage, idx + 1)) {
+    if (!__LocalStorage_reserve(localStorage, idx + 1)) {
       return NULL;
     }
   }
@@ -49,7 +49,7 @@ __checkoutLocalStorageMem(CLocalStorage* localStorage, int idx) {
 }
 void*
 LocalStorage_get(CLocalStorage* localStorage, int idx) {
-  if (!__checkoutLocalStorageMem(localStorage, idx)) {
+  if (!__LocalStorage_checkMemory(localStorage, idx)) {
     return NULL;
   }
   return localStorage->blocks[idx].data;
@@ -63,7 +63,7 @@ LocalStorage_free(CLocalStorage* localStorage) {
 }
 bool
 LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr) {
-  localStorage = __checkoutLocalStorageMem(localStorage, idx);
+  localStorage = __LocalStorage_checkMemory(localStorage, idx);
   if (!localStorage) {
     return false;
   }
@@ -76,7 +76,7 @@ LocalStorage_setTiny(CLocalStorage* localStorage,
                      int idx,
                      const void* src,
                      int len) {
-  localStorage = __checkoutLocalStorageMem(localStorage, idx);
+  localStorage = __LocalStorage_checkMemory(localStorage, idx);
   if (!localStorage) {
     return false;
   }

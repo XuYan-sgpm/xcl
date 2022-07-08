@@ -16,7 +16,7 @@ typedef struct {
 } Region;
 
 /*
- * cb when ini parser find result
+ * proc when ini parser find result
  * first param is usr data
  * second param is section region
  * third param is key region
@@ -60,7 +60,7 @@ extern "C" {
 
 /*
  * parse ini data
- * usr can be a specified object to invoke when cb is called
+ * usr can be a specified object to invoke when proc is called
  */
 bool
 iniParseStream(

@@ -7,51 +7,36 @@
 #include <stdatomic.h>
 #include <stdlib.h>
 #include <string.h>
-#include <concurrent/CMutex.h>
 
-//#if WINDOWS
-// static volatile int64_t __localId = 0;
-//#else
-static _Atomic(int64_t) __localId = 0;
-//#endif
-
-static void* __TL_freeIdMutex = NULL;
-
-static void
-__TL_initMutex() {
-  if (!__TL_freeIdMutex) {
-    __TL_freeIdMutex = Mutex_new();
-  }
-}
+static atomic_int_fast64_t __localIdGenerator = 0;
 
 bool
-offerFreeId(int64_t id);
+__Local_offerId(int64_t id);
 bool
-hasFreeId();
-bool
-pollFreeId(int64_t* id);
+__Local_pollId(int64_t* id);
 
 static int64_t
-__newId() {
-  return atomic_fetch_add_explicit(&__localId, 1, memory_order_seq_cst);
+__Local_newId() {
+  return atomic_fetch_add_explicit(
+      &__localIdGenerator, 1, memory_order_seq_cst);
 }
 
 static int64_t
-__getId() {
+__Local_getId() {
   int64_t id;
-  if (!pollFreeId(&id)) {
-    id = __newId();
+  if (!__Local_pollId(&id)) {
+    id = __Local_newId();
   }
   return id;
 }
 
 static void
-__recycleId(long id) {
-  offerFreeId(id);
+__Local_recycleId(long id) {
+  __Local_offerId(id);
 }
 
 static CLocalStorage*
-__newLocalStorage() {
+__Local_newLocalStorage() {
   CLocalStorage* localStorage = (CLocalStorage*)malloc(sizeof(CLocalStorage));
   if (!localStorage) {
     return NULL;
@@ -61,11 +46,11 @@ __newLocalStorage() {
 }
 
 static CLocalStorage*
-__checkoutLocalStorage() {
-  CLocalStorage* localStorage = __ThreadLocal_getLocalStorage();
+__Local_checkoutLocalStorage() {
+  CLocalStorage* localStorage = __Local_getLocalStorage();
   if (!localStorage) {
-    localStorage = __newLocalStorage();
-    if (localStorage && !__ThreadLocal_setLocalStorage(localStorage)) {
+    localStorage = __Local_newLocalStorage();
+    if (localStorage && !__Local_setLocalStorage(localStorage)) {
       free(localStorage);
       localStorage = NULL;
     }
@@ -78,7 +63,7 @@ __Local_setData(CThreadLocal* local, const void* src, int len) {
   if (local->id < 0) {
     return false;
   }
-  CLocalStorage* localStorage = __checkoutLocalStorage();
+  CLocalStorage* localStorage = __Local_checkoutLocalStorage();
   if (!localStorage) {
     return false;
   }
@@ -90,71 +75,71 @@ __Local_getData(CThreadLocal* local) {
   if (local->id < 0) {
     return NULL;
   }
-  CLocalStorage* localStorage = __ThreadLocal_getLocalStorage();
+  CLocalStorage* localStorage = __Local_getLocalStorage();
   if (!localStorage) {
     return NULL;
   }
   return LocalStorage_get(localStorage, local->id);
 }
 
-CThreadLocal
+XCL_PUBLIC CThreadLocal XCL_API
 Local_make() {
   CThreadLocal result;
-  result.id = __getId();
+  result.id = __Local_getId();
   return result;
 }
-void
+XCL_PUBLIC void XCL_API
 Local_discard(CThreadLocal* local) {
   if (local->id != -1) {
-    __recycleId(local->id);
+    __Local_recycleId(local->id);
     local->id = -1;
   }
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_set(CThreadLocal* local, void* ptr) {
   return __Local_setData(local, &ptr, sizeof(void*));
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_setChar(CThreadLocal* local, char val) {
   return __Local_setData(local, &val, sizeof(char));
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_setU8(CThreadLocal* local, unsigned char val) {
   return __Local_setData(local, &val, sizeof(unsigned char));
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_setInt32(CThreadLocal* local, int32_t val) {
   return __Local_setData(local, &val, 4);
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_setU32(CThreadLocal* local, uint32_t val) {
   return __Local_setData(local, &val, 4);
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_setInt16(CThreadLocal* local, int16_t val) {
   return __Local_setData(local, &val, 2);
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_setU16(CThreadLocal* local, uint16_t val) {
   return __Local_setData(local, &val, 2);
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_setFloat(CThreadLocal* local, float val) {
   return __Local_setData(local, &val, 4);
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_setInt64(CThreadLocal* local, int64_t val) {
   return __Local_setData(local, &val, 8);
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_setU64(CThreadLocal* local, uint64_t val) {
   return __Local_setData(local, &val, 8);
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_setDouble(CThreadLocal* local, double val) {
   return __Local_setData(local, &val, 8);
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_get(CThreadLocal* local, void** result) {
   void* data = __Local_getData(local);
   if (!data) {
@@ -165,7 +150,7 @@ Local_get(CThreadLocal* local, void** result) {
   }
   return true;
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_getChar(CThreadLocal* local, char* result) {
   void* data = __Local_getData(local);
   if (data && result) {
@@ -173,7 +158,7 @@ Local_getChar(CThreadLocal* local, char* result) {
   }
   return data;
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_getU8(CThreadLocal* local, unsigned char* result) {
   void* data = __Local_getData(local);
   if (data && result) {
@@ -181,7 +166,7 @@ Local_getU8(CThreadLocal* local, unsigned char* result) {
   }
   return data;
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_getInt16(CThreadLocal* local, int16_t* result) {
   void* data = __Local_getData(local);
   if (data && result) {
@@ -189,7 +174,7 @@ Local_getInt16(CThreadLocal* local, int16_t* result) {
   }
   return data;
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_getU16(CThreadLocal* local, uint16_t* result) {
   void* data = __Local_getData(local);
   if (data && result) {
@@ -197,7 +182,7 @@ Local_getU16(CThreadLocal* local, uint16_t* result) {
   }
   return data;
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_getInt32(CThreadLocal* local, int32_t* result) {
   void* data = __Local_getData(local);
   if (data && result) {
@@ -205,7 +190,7 @@ Local_getInt32(CThreadLocal* local, int32_t* result) {
   }
   return data;
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_getU32(CThreadLocal* local, uint32_t* result) {
   void* data = __Local_getData(local);
   if (data && result) {
@@ -213,7 +198,7 @@ Local_getU32(CThreadLocal* local, uint32_t* result) {
   }
   return data;
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_getFloat(CThreadLocal* local, float* result) {
   void* data = __Local_getData(local);
   if (data && result) {
@@ -221,7 +206,7 @@ Local_getFloat(CThreadLocal* local, float* result) {
   }
   return data;
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_getInt64(CThreadLocal* local, int64_t* result) {
   void* data = __Local_getData(local);
   if (data && result) {
@@ -229,7 +214,7 @@ Local_getInt64(CThreadLocal* local, int64_t* result) {
   }
   return data;
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_getU64(CThreadLocal* local, uint64_t* result) {
   void* data = __Local_getData(local);
   if (data && result) {
@@ -237,7 +222,7 @@ Local_getU64(CThreadLocal* local, uint64_t* result) {
   }
   return data;
 }
-bool
+XCL_PUBLIC bool XCL_API
 Local_getDouble(CThreadLocal* local, double* result) {
   void* data = __Local_getData(local);
   if (data && result) {

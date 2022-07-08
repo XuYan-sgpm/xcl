@@ -198,7 +198,7 @@ __Config_iniReadCb(void* usr,
   Config* config = args->config;
   if (secRegion.str) {
     /*
-     * section found, record section name in read cb args
+     * section found, record section name in read proc args
      */
     SectionData* secData = __Config_checkoutSection(config, secRegion);
     if (secData) {

@@ -7,10 +7,11 @@
 #include "lang/CLocalStorage.h"
 
 #include <iostream>
-#include <zconf.h>
+//#include <zconf.h>
 using namespace std;
 
-static void __testThreadLocal(CThreadLocal* local) {
+static void
+__testThreadLocal(CThreadLocal* local) {
   const char* p = "hello world";
   assert(Local_set(local, (void*)p));
   void* ptr;
@@ -26,7 +27,8 @@ static void __testThreadLocal(CThreadLocal* local) {
   assert(val2 == 3.1415926f);
 }
 
-void* threadProc(void* args) {
+void*
+threadProc(void* args) {
   CThreadLocal locals[10];
   for (int i = 0; i < 10; i++) {
     locals[i] = Local_make();
