@@ -22,5 +22,5 @@ else ()
 endif ()
 
 set(test_files src/TestLock.cc)
-add_executable(main src/main.cc ${test_files})
-target_link_libraries(main xcl gtest gtest_main)
+add_executable(xcl_unit_test src/main.cc ${test_files})
+target_link_libraries(xcl_unit_test xcl gtest gtest_main)

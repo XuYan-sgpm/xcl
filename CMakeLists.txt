@@ -124,7 +124,7 @@ endif ()
 
 if (BUILD_TEST)
     message(STATUS "building unit test")
-    add_subdirectory(XclUnitTest)
+    add_subdirectory(UnitTest)
     if (NOT compile_static_lib)
         add_custom_command(TARGET ${xcl_lib_name} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${xcl_lib_name}> ${EXECUTABLE_OUTPUT_PATH}
