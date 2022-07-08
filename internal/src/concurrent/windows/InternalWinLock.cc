@@ -4,7 +4,6 @@
 
 #define _AMD64_
 
-#include <lang/XclDef.h>
 #include <synchapi.h>
 #include <handleapi.h>
 #include <windef.h>
@@ -12,7 +11,7 @@
 #include "concurrent/Lock.h"
 
 namespace {
-class XCL_HIDDEN __InternalWinMutex : public xcl::Lock {
+class __InternalWinMutex : public xcl::Lock {
  public:
   ~__InternalWinMutex() override;
   __InternalWinMutex();

@@ -23,6 +23,12 @@
 #include <lang/XclDef.h>
 #include <stdbool.h>
 
+#if WINDOWS
+typedef unsigned (*ThreadProc)(void*);
+#elif LINUX || MACOSX
+typedef void* (*ThreadProc)(void*);
+#endif
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -35,7 +41,7 @@ typedef struct _CThread_st CThread;
  * @return thread object if successfully, otherwise false
  */
 XCL_PUBLIC CThread* XCL_API
-Thread_new(bool suspend,unsigned (*threadProc)(void*),void*usr);
+Thread_new(bool suspend, ThreadProc threadProc, void* usr);
 
 /**
  * get current thread object

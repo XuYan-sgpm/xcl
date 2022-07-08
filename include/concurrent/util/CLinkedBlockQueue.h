@@ -6,7 +6,7 @@
  * a simplified linked blocking queue based on list
  * using read-write lock separation for optimize
  * simple and graceful
- * cross platform, available under windows, linux, macos
+ * cross platform, available under windows, linux, macosx
  * enjoy it!
  */
 
