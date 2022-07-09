@@ -16,7 +16,7 @@ extern "C" {
  * new condition variable
  * @return condition variable if successfully, otherwise NULL
  */
-XCL_PUBLIC void XCL_API*
+XCL_PUBLIC void* XCL_API
 Cond_new();
 
 /**

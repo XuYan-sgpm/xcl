@@ -3,7 +3,7 @@
 //
 
 #include <gtest/gtest.h>
-#include "util/CBits.h"
+#include "xcl/util/CBits.h"
 
 TEST(CBitsTest, func0) {
   //  auto bits = bits64();

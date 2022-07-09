@@ -18,8 +18,8 @@ typedef struct _CSingleNode {
 } CSingleNode;
 
 typedef struct {
-  CSingleNode header;
   CSingleNode* tail;
+  CSingleNode header;
 } CSingleList;
 
 typedef struct {

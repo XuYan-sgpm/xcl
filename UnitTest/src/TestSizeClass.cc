@@ -3,7 +3,7 @@
 //
 
 #include <gtest/gtest.h>
-#include "pool/SizeClass.h"
+#include "xcl/pool/SizeClass.h"
 #include <iostream>
 using namespace std;
 

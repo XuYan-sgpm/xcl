@@ -16,7 +16,7 @@ typedef struct {
 
 static __LocalIdQueue __idQueue;
 
-static void
+void
 __LocalId_initQueue() {
   memset(&__idQueue, 0, sizeof(__idQueue));
   __idQueue.cap = 8;
@@ -74,11 +74,11 @@ __LocalId_pollQueue(int64_t* id) {
 }
 
 bool
-__Local_offerId(int64_t id) {
+__ThreadLocal_offerId(int64_t id) {
   return __LocalId_offerQueue(id);
 }
 
 bool
-__Local_pollId(int64_t* id) {
+__ThreadLocal_pollId(int64_t* id) {
   return __LocalId_pollQueue(id);
 }

@@ -31,9 +31,9 @@ struct _CThread_st {
   void* const threadLock;
   CThreadState state;
   const unsigned threadId;
-  CSingleList callStack;
   ThreadProcObj main;
   unsigned exitCode;
+  CSingleList callStack;
 };
 
 static inline void

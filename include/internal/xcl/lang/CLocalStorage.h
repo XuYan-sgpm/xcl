@@ -71,24 +71,6 @@ LocalStorage_get(CLocalStorage* localStorage, int idx);
 void
 LocalStorage_free(CLocalStorage* localStorage);
 
-/**
- * get thread local storage
- * @return local storage bind to current thread
- * if local storage of current thread initialization
- * failed, return NULL
- */
-CLocalStorage*
-__Local_getLocalStorage();
-
-/**
- * bind local storage with current thread
- * @param localStorage local thread object
- * @return if bind local storage with current thread
- * successfully, return true; otherwise return false
- */
-bool
-__Local_setLocalStorage(CLocalStorage* localStorage);
-
 #ifdef __cplusplus
 }
 #endif

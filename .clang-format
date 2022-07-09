@@ -8,7 +8,7 @@ AlignConsecutiveMacros: AcrossEmptyLinesAndComments
 #AlignConsecutiveDeclarations: false
 #AlignEscapedNewlines: Left
 #AlignOperands:   Align
-#AlignTrailingComments: true
+AlignTrailingComments: true
 #AllowAllArgumentsOnNextLine: true
 #AllowAllConstructorInitializersOnNextLine: true
 #AllowAllParametersOfDeclarationOnNextLine: true
