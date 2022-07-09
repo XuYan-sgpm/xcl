@@ -3,11 +3,11 @@
 //
 
 #include <gtest/gtest.h>
-#include "concurrent/Lock.h"
-#include "concurrent/CMutex.h"
+#include "xcl/concurrent/Lock.h"
+#include "xcl/concurrent/CMutex.h"
 #include <iostream>
 #include <Windows.h>
-#include "util/system.h"
+#include "xcl/util/system.h"
 using namespace std;
 
 static void*

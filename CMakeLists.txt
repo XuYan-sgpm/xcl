@@ -1,8 +1,7 @@
 cmake_minimum_required(VERSION 3.15)
 
-project(xcl C CXX)
+project(include/public/xcl C CXX)
 
-set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/lib)
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/bin)
 
 set(CMAKE_CXX_STANDARD 11)
@@ -30,10 +29,12 @@ if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(STATUS "Debug")
     set(CMAKE_C_FLAGS "-g ${CMAKE_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "-g ${CMAKE_CXX_FLAGS}")
+    set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/lib/debug)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     message(STATUS "Release")
     set(CMAKE_C_FLAGS "-O2 ${CMAKE_C_FLAGS}")
     set(CMAKE_CXX_FLAGS "-O2 ${CMAKE_CXX_FLAGS}")
+    set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/lib/release)
 endif ()
 
 if (${CMAKE_C_COMPILER_ID} STREQUAL "GNU" OR ${CMAKE_C_COMPILER_ID} STREQUAL "Clang")
@@ -46,7 +47,7 @@ endif ()
 message(STATUS "C FLAGS:${CMAKE_C_FLAGS}")
 message(STATUS "CXX FLAGS:${CMAKE_CXX_FLAGS}")
 
-set(xcl_inc_dir include internal/inc)
+set(xcl_inc_dir include/public include/internal)
 set(xcl_lib_dir ${LIBRARY_OUTPUT_PATH})
 include_directories(${xcl_inc_dir})
 
@@ -94,7 +95,6 @@ function(collect_source_files source_dir)
 endfunction()
 
 collect_source_files(${CMAKE_CURRENT_LIST_DIR}/src)
-collect_source_files(${CMAKE_CURRENT_LIST_DIR}/internal/src)
 
 foreach (source_file ${lib_src_files})
     message(STATUS ${source_file})
