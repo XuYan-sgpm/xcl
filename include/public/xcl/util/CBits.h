@@ -4,6 +4,12 @@
 
 #pragma once
 
+#include "xcl/lang/XclDef.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -36,30 +42,34 @@ typedef struct {
   char ctx[0];
 } CBitsSet;
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
-CBits*
+XCL_PUBLIC CBits* XCL_API
 Bits_new(int32_t size);
-void
+
+XCL_PUBLIC void XCL_API
 Bits_delete(CBits* bits);
-int32_t
+
+XCL_PUBLIC int32_t XCL_API
 Bits_len(CBits* bits);
-void
+
+XCL_PUBLIC void XCL_API
 Bits_set(CBits* bits, int32_t idx, bool on);
-bool
+
+XCL_PUBLIC bool XCL_API
 Bits_get(CBits* bits, int32_t idx);
-unsigned char
+
+XCL_PUBLIC unsigned char XCL_API
 Bits_getByte(CBits* bits, int32_t idx);
 
-CBits64
+XCL_PUBLIC CBits64 XCL_API
 bits64();
-CBits8
+
+XCL_PUBLIC CBits8 XCL_API
 bits8();
-CBits16
+
+XCL_PUBLIC CBits16 XCL_API
 bits16();
-CBits32
+
+XCL_PUBLIC CBits32 XCL_API
 bits32();
 
 #ifdef __cplusplus

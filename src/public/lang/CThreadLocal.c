@@ -4,6 +4,7 @@
 
 #include "xcl/lang/CThreadLocal.h"
 #include "xcl/lang/CLocalStorage.h"
+#include "xcl/lang/CBaseThreadImpl.h"
 #include <stdatomic.h>
 #include <stdlib.h>
 #include <string.h>
@@ -19,12 +20,12 @@ __ThreadLocal_initCtx() {
 }
 #endif
 
-CLocalStorage*
-__ThreadLocal_getLocalStorage();
-bool
-__ThreadLocal_setLocalStorage(CLocalStorage* localStorage);
-
-static atomic_int_fast64_t __localIdGenerator = 0;
+/**
+ * thread local id starts from 1 not 0, because
+ * position 0 is token by CThread to store current
+ * thread object
+ */
+static atomic_int_fast64_t __localIdGenerator = 1;
 
 bool
 __ThreadLocal_offerId(int64_t id);
@@ -63,10 +64,10 @@ __ThreadLocal_newLocalStorage() {
 
 static CLocalStorage*
 __ThreadLocal_checkoutLocalStorage() {
-  CLocalStorage* localStorage = __ThreadLocal_getLocalStorage();
+  CLocalStorage* localStorage = __Thread_getLocalStorage();
   if (!localStorage) {
     localStorage = __ThreadLocal_newLocalStorage();
-    if (localStorage && !__ThreadLocal_setLocalStorage(localStorage)) {
+    if (localStorage && !__Thread_setLocalStorage(localStorage)) {
       free(localStorage);
       localStorage = NULL;
     }
@@ -91,7 +92,7 @@ __ThreadLocal_getData(CThreadLocal* local) {
   if (local->id < 0) {
     return NULL;
   }
-  CLocalStorage* localStorage = __ThreadLocal_getLocalStorage();
+  CLocalStorage* localStorage = __Thread_getLocalStorage();
   if (!localStorage) {
     return NULL;
   }

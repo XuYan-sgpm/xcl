@@ -8,9 +8,10 @@
 #include <iostream>
 #include <Windows.h>
 #include "xcl/util/system.h"
+#include "xcl/lang/CThread.h"
 using namespace std;
 
-static void*
+static unsigned
 __testLock(void* args) {
   auto* lock = (xcl::TimedLock*)args;
   for (;;) {
@@ -28,10 +29,10 @@ __testLock(void* args) {
   Sleep(3000);
   lock->unlock();
   cout << "unlock successfully" << endl;
-  return nullptr;
+  return 0;
 }
 
-static void* __stdcall __testCMutex(void* args) {
+static unsigned __stdcall __testCMutex(void* args) {
   for (;;) {
     auto st = chrono::steady_clock::now();
     if (!Mutex_tryLock2(args, 20)) {
@@ -47,23 +48,24 @@ static void* __stdcall __testCMutex(void* args) {
   Sleep(40);
   Mutex_unlock(args);
   cout << "unlock successfully" << endl;
-  return nullptr;
+  return 0;
 }
 
-static void __stdcall __runLockThreads(void* (*threadProc)(void*), void* args) {
-  //  int32_t nThreads = 8;
-  //  pthread_t threads[nThreads];
-  //  for (int i = 0; i < nThreads; i++) {
-  //    ASSERT_EQ(pthread_create(&threads[i], nullptr, threadProc, args), 0);
-  //  }
-  //  for (int i = 0; i < nThreads; i++) {
-  //    pthread_join(threads[i], nullptr);
-  //  }
+static void __stdcall __runLockThreads(ThreadProc threadProc, void* args) {
+  int32_t nThreads = 8;
+  CThread* threads[nThreads];
+  for (int i = 0; i < nThreads; i++) {
+    threads[i] = Thread_new(false, threadProc, args);
+    ASSERT_NE(threads[i], nullptr);
+  }
+  for (int i = 0; i < nThreads; i++) {
+    Thread_join(threads[i]);
+  }
 }
 
 TEST(TestLock, func1) {
-  //  xcl::TimedLock *lock = xcl::TimedLock::NewLock();
-  //  __runLockThreads(__testLock, lock);
+  xcl::TimedLock* lock = xcl::TimedLock::NewLock();
+  __runLockThreads(__testLock, lock);
 }
 
 TEST(TestLock, func2) {

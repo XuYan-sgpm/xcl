@@ -17,11 +17,16 @@
 
 #include "XclDef.h"
 #include <stdbool.h>
+#include <stdint.h>
 
 #if WINDOWS
 typedef unsigned (*ThreadProc)(void*);
-#elif LINUX || MACOSX
+typedef void* ThreadHandle;
+#else
+#  include <pthread.h>
+
 typedef void* (*ThreadProc)(void*);
+typedef pthread_t ThreadHandle;
 #endif
 
 #ifdef __cplusplus
@@ -75,8 +80,12 @@ Thread_addCbBack(CThread* thread, void (*cb)(void*), void* usr);
  * @param thread thread object
  * @return true if thread is joined or detached before
  * delete call, otherwise return false
+ * @return true if delete successfully, otherwise false
+ * Thread_delete return false only when delete current
+ * thread object, you must delete one thread object in
+ * another thread
  */
-XCL_PUBLIC void XCL_API
+XCL_PUBLIC bool XCL_API
 Thread_delete(CThread* thread);
 
 /**

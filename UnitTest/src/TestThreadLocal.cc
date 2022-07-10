@@ -5,6 +5,7 @@
 #include <gtest/gtest.h>
 #include "xcl/lang/CThreadLocal.h"
 #include "xcl/lang/CLocalStorage.h"
+#include "xcl/lang/CThread.h"
 
 #include <windows.h>
 #include <iostream>
@@ -29,7 +30,7 @@ __testThreadLocal(CThreadLocal* local) {
   assert(val2 == 3.1415926f);
 }
 
-void*
+unsigned
 threadProc(void* args) {
   CThreadLocal locals[10];
   for (int i = 0; i < 10; i++) {
@@ -43,23 +44,24 @@ threadProc(void* args) {
     Sleep(200);
   }
   *(int*)args = 0;
-  return args;
+  return 0;
 }
 
 TEST(ThreadLocal, func1) {
-//  int n = 4;
-//  pthread_t threads[n];
-//  int code[n];
-//  for (int i = 0; i < n; i++) {
-//    code[i] = -1;
-//  }
-//  for (int i = 0; i < n; i++) {
-//    ASSERT_EQ(pthread_create(&threads[i], nullptr, threadProc, code + i), 0);
-//  }
-//  for (int i = 0; i < n; i++) {
-//    pthread_join(threads[i], nullptr);
-//  }
-//  for (int i = 0; i < n; i++) {
-//    ASSERT_EQ(code[0], 0);
-//  }
+  int n = 4;
+  CThread* threads[n];
+  int code[n];
+  for (int i = 0; i < n; i++) {
+    code[i] = -1;
+  }
+  for (int i = 0; i < n; i++) {
+    threads[i] = Thread_new(false, threadProc, code + i);
+    ASSERT_NE(threads[i], nullptr);
+  }
+  for (int i = 0; i < n; i++) {
+    Thread_join(threads[i]);
+  }
+  for (int i = 0; i < n; i++) {
+    ASSERT_EQ(code[0], 0);
+  }
 }

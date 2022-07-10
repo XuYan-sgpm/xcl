@@ -4,31 +4,33 @@
 
 #pragma once
 
-#include <stdbool.h>
-#include <stdint.h>
+#include <xcl/lang/XclDef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#include <stdbool.h>
+#include <stdint.h>
+
 /**
  * initialize size class
  * @return true if successfully, otherwise false
  */
-bool
+XCL_PUBLIC bool XCL_API
 SizeClass_initialize();
 
 /**
  * release size class resource
  */
-void
+XCL_PUBLIC void XCL_API
 SizeClass_finalize();
 
 /**
  * get size class items
  * @return size tab count
  */
-int32_t
+XCL_PUBLIC int32_t XCL_API
 SizeClass_size();
 
 /**
@@ -37,7 +39,7 @@ SizeClass_size();
  * @param tab output
  * @return get tab successfully if true, otherwise false
  */
-bool
+XCL_PUBLIC bool XCL_API
 SizeClass_get(int32_t idx, int32_t out[6]);
 
 /**
@@ -45,7 +47,7 @@ SizeClass_get(int32_t idx, int32_t out[6]);
  * @param size original size
  * @return size normalized by size class
  */
-uint32_t
+XCL_PUBLIC uint32_t XCL_API
 SizeClass_normalize(uint32_t size);
 
 /**
@@ -53,7 +55,7 @@ SizeClass_normalize(uint32_t size);
  * @param size original size
  * @return normalized pages
  */
-uint32_t
+XCL_PUBLIC uint32_t XCL_API
 SizeClass_size2pages(uint32_t size);
 
 #ifdef __cplusplus

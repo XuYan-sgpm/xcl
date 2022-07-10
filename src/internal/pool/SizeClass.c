@@ -78,7 +78,7 @@ __initSizeClassTab(int32_t idx,
 // */
 // static void __size2idxTab(int32_t *size2idx);
 
-bool
+XCL_PUBLIC bool XCL_API
 SizeClass_initialize() {
   if (sizeClasses) {
     return true;
@@ -108,7 +108,7 @@ SizeClass_initialize() {
   return success;
 }
 
-void
+XCL_PUBLIC void XCL_API
 SizeClass_finalize() {
   free(sizeClasses);
   sizeClasses = NULL;
@@ -121,12 +121,12 @@ SizeClass_finalize() {
   tabs = 0;
 }
 
-int32_t
+XCL_PUBLIC int32_t XCL_API
 SizeClass_size() {
   return tabs;
 }
 
-bool
+XCL_PUBLIC bool XCL_API
 SizeClass_get(int32_t idx, int32_t* out) {
   if (idx >= tabs) {
     return false;
@@ -153,7 +153,7 @@ __SC_getGroupAndDelta(uint32_t size, uint32_t* log2Group, uint32_t* log2Delta) {
   }
 }
 
-uint32_t
+XCL_PUBLIC uint32_t XCL_API
 SizeClass_normalize(uint32_t size) {
   if (size <= 16) {
     return 16;
@@ -186,7 +186,7 @@ SizeClass_normalize(uint32_t size) {
   return (1u << log2Group) + (nDelta << log2Delta);
 }
 
-uint32_t
+XCL_PUBLIC uint32_t XCL_API
 SizeClass_size2pages(uint32_t size) {
   if (size <= PAGE_SIZE) {
     return 1;

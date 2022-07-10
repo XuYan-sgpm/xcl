@@ -26,6 +26,7 @@ __ThreadLocal_setLocalStorage(CLocalStorage* localStorage) {
 #else
 #  include <windows.h>
 #  include <processthreadsapi.h>
+#  include "xcl/lang/CBaseThreadImpl.h"
 
 static DWORD __localStorageKey = TLS_OUT_OF_INDEXES;
 
@@ -36,18 +37,21 @@ __LocalInit_allocTls() {
     __localStorageKey = idx;
   }
 }
+
 #  if !MSVC
 __attribute__((constructor)) static void
 __LocalInit_initKey() {
   __LocalInit_allocTls();
 }
 #  endif
+
 CLocalStorage*
-__ThreadLocal_getLocalStorage() {
+__Thread_getLocalStorage() {
   return (CLocalStorage*)TlsGetValue(__localStorageKey);
 }
 bool
-__ThreadLocal_setLocalStorage(CLocalStorage* localStorage) {
+__Thread_setLocalStorage(CLocalStorage* localStorage) {
   return TlsSetValue(__localStorageKey, localStorage);
 }
+
 #endif
