@@ -53,7 +53,7 @@ class __InternalUnixTimedMutex : public xcl::TimedLock,
 
  public:
   bool
-  tryLock(int32_t millis) override;
+  tryLock(int32_t timeout) override;
   void
   lock() override;
   void
@@ -62,10 +62,18 @@ class __InternalUnixTimedMutex : public xcl::TimedLock,
   tryLock() override;
 };
 bool
-__InternalUnixTimedMutex::tryLock(int32_t millis) {
+__InternalUnixTimedMutex::tryLock(int32_t timeout) {
   timespec ts{0, 0};
   clock_gettime(CLOCK_REALTIME, &ts);
-  ts.tv_nsec += millis * 1000000L;
+  if (timeout > 1000) {
+    ts.tv_sec += timeout / 1000;
+    timeout = timeout % 1000;
+  }
+  ts.tv_nsec += (int64_t)timeout * 1000000L;
+  if (ts.tv_nsec > 1000000000) {
+    ts.tv_sec += ts.tv_nsec / 1000000000;
+    ts.tv_nsec = ts.tv_nsec % 1000000000;
+  }
   return ::pthread_mutex_timedlock(&mutex_, &ts) == 0;
 }
 __InternalUnixTimedMutex::__InternalUnixTimedMutex(bool recursive)

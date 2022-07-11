@@ -168,7 +168,6 @@ Thread_new(bool suspend, Callback cb, void* usr) {
       if (__Thread_initThreadCallStack(thread)) {
         __Thread_beforeCreate(thread);
         __Thread_setThreadProc(thread, cb, usr);
-        unsigned tid;
         ThreadHandle handle;
         /**
          * we set thread state to suspend before create handle

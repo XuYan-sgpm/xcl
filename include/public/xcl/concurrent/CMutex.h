@@ -52,14 +52,14 @@ XCL_PUBLIC bool XCL_API
 Mutex_tryLock(void* mutex);
 
 /**
- * try lock mutex during millis, return if acquire mutex successfully
+ * try lock mutex during timeout, return if acquire mutex successfully
  * or timeout expired
  * @param mutex  mutex object
- * @param millis timeout milliseconds
- * @return true if lock mutex object during millis, otherwise false
+ * @param timeout timeout milliseconds
+ * @return true if lock mutex object during timeout, otherwise false
  */
 XCL_PUBLIC bool XCL_API
-Mutex_tryLock2(void* mutex, int32_t millis);
+Mutex_tryLock2(void* mutex, int32_t timeout);
 
 #ifdef __cplusplus
 }

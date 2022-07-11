@@ -36,7 +36,8 @@ void XCL_API
 sleepMillis(int32_t timeout) {
 #if _POSIX_C_SOURCE >= 199309L
   struct timespec ts = {0, 0};
-  ts.tv_nsec = timeout * 1000000L;
+  ts.tv_sec = timeout / 1000;
+  ts.tv_nsec = (int64_t)(timeout - ts.tv_sec * 1000) * 1000000L;
   nanosleep(&ts, NULL);
 #else
   usleep(timeout * 1000);

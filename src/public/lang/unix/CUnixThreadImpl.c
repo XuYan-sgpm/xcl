@@ -24,7 +24,7 @@ __Thread_wait(CThread* thread) {
 }
 bool
 __Thread_waitTimeout(CThread* thread, int32_t timeout) {
-  int64_t nanoTimeout = timeout * 1000000;
+  int64_t nanoTimeout = timeout * 1000000L;
   int64_t totalWait = 0;
   ThreadHandle handle = __Thread_handle(thread);
   int64_t st = nanos();
@@ -76,7 +76,9 @@ __Thread_currentHandle(CThread* thread, unsigned tid) {
   return __Thread_handle(thread);
 }
 void
-__Thread_finalize(CThread* thread) {}
+__Thread_finalize(CThread* thread) {
+  Blocker_delete((CBlocker*)__Thread_attach(thread));
+}
 void
 __Thread_detach(CThread* thread) {
   pthread_detach(__Thread_handle(thread));

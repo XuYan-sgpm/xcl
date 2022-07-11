@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include <string.h>
 #include "xcl/lang/system.h"
-#include <stdio.h>
 #include <unistd.h>
 
 typedef struct {
@@ -65,15 +64,23 @@ Mutex_tryLock(void* mutex) {
 }
 
 XCL_PUBLIC bool XCL_API
-Mutex_tryLock2(void* mutex, int32_t millis) {
+Mutex_tryLock2(void* mutex, int32_t timeout) {
   if (mutex) {
-#if 0 && LINUX
+#if LINUX && _POSIX_C_SOURCE >= 199309L
     struct timespec ts = {0, 0};
     clock_gettime(CLOCK_REALTIME, &ts);
-    ts.tv_nsec += millis * 1000000;
-    return 0 == pthread_mutex_timedlock(&((CUnixMutex*)mutex)->handle, &ts);
+    if (timeout > 1000) {
+      ts.tv_sec += timeout / 1000;
+      timeout = timeout % 1000;
+    }
+    ts.tv_nsec += (int64_t)timeout * 1000000L;
+    if (ts.tv_nsec > 1000000000) {
+      ts.tv_sec += ts.tv_nsec / 1000000000;
+      ts.tv_nsec = ts.tv_nsec % 1000000000;
+    }
+    return pthread_mutex_timedlock(mutex, &ts) == 0;
 #else
-    int64_t nanoTimeout = millis * 1000000L;
+    int64_t nanoTimeout = (int64_t)timeout * 1000000L;
     int64_t totalWait = 0;
     int64_t st = nanos();
     while (totalWait < nanoTimeout) {
