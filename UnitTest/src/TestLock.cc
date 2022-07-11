@@ -7,7 +7,7 @@
 #include "xcl/concurrent/CMutex.h"
 #include <iostream>
 #include <Windows.h>
-#include "xcl/util/system.h"
+#include "xcl/lang/system.h"
 #include "xcl/lang/CThread.h"
 using namespace std;
 
@@ -26,7 +26,7 @@ __testLock(void* args) {
   }
   //  lock->lock();
   cout << "lock successfully" << endl;
-  Sleep(3000);
+  sleepMillis(3000);
   lock->unlock();
   cout << "unlock successfully" << endl;
   return 0;
@@ -45,7 +45,7 @@ static unsigned __stdcall __testCMutex(void* args) {
   }
   //  lock->lock();
   cout << "lock successfully" << endl;
-  Sleep(40);
+  sleepMillis(40);
   Mutex_unlock(args);
   cout << "unlock successfully" << endl;
   return 0;

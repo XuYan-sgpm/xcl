@@ -2,7 +2,7 @@
 // Created by xuyan on 2022/7/4.
 //
 
-#include "xcl/util/system.h"
+#include "xcl/lang/system.h"
 #include <Windows.h>
 #include <sysinfoapi.h>
 #include <profileapi.h>
@@ -34,4 +34,10 @@ nanos() {
   } else {
     return -1;
   }
+}
+void
+sleepMillis(int32_t timeout) {
+  timeBeginPeriod(1);
+  Sleep(timeout);
+  timeEndPeriod(1);
 }

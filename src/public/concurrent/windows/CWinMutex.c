@@ -4,7 +4,7 @@
 
 #include <Windows.h>
 #include "xcl/concurrent/CMutex.h"
-#include "xcl/util/system.h"
+#include "xcl/lang/system.h"
 
 typedef struct {
   CRITICAL_SECTION criticalSection;

@@ -4,15 +4,14 @@
 
 #include <gtest/gtest.h>
 #include <xcl/lang/CThread.h>
-#include <windows.h>
-#include <synchapi.h>
 #include <iostream>
+#include "xcl/lang/system.h"
 using namespace std;
 
 static CThread* t = NULL;
 
 unsigned __stdcall __threadProc(void*) {
-  Sleep(3000);
+  sleepMillis(3000);
   cout << "sleep finished" << endl;
   CThread* currentThread = Thread_current();
   assert(Thread_delete(currentThread) == false);

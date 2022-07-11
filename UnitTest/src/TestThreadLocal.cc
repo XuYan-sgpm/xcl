@@ -7,10 +7,8 @@
 #include "xcl/lang/CLocalStorage.h"
 #include "xcl/lang/CThread.h"
 
-#include <windows.h>
+#include <xcl/lang/system.h>
 #include <iostream>
-#include <synchapi.h>
-//#include <zconf.h>
 using namespace std;
 
 static void
@@ -41,7 +39,7 @@ threadProc(void* args) {
       __testThreadLocal(locals + i);
     }
     cout << "test local successfully" << endl;
-    Sleep(200);
+    sleepMillis(200);
   }
   *(int*)args = 0;
   return 0;
