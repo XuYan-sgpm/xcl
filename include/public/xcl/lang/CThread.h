@@ -19,13 +19,12 @@
 #include <stdbool.h>
 #include <stdint.h>
 
+typedef void (*Callback)(void*);
+
 #if WINDOWS
-typedef unsigned (XCL_API *ThreadProc)(void*);
 typedef void* ThreadHandle;
 #else
 #  include <pthread.h>
-
-typedef void* (*ThreadProc)(void*);
 typedef pthread_t ThreadHandle;
 #endif
 
@@ -41,7 +40,7 @@ typedef struct _CThread_st CThread;
  * @return thread object if successfully, otherwise false
  */
 XCL_PUBLIC CThread* XCL_API
-Thread_new(bool suspend, ThreadProc threadProc, void* usr);
+Thread_new(bool suspend, Callback cb, void* usr);
 
 /**
  * get current thread object
@@ -51,26 +50,26 @@ XCL_PUBLIC CThread* XCL_API
 Thread_current();
 
 /**
- * add proc for front call, proc will called first if no any other
- * proc added to the front
+ * add cb for front call, cb will called first if no any other
+ * cb added to the front
  * @param thread thread object
  * @param cb callback
  * @param usr callback parameter
- * @return true if add proc successfully, otherwise false
+ * @return true if add cb successfully, otherwise false
  */
 XCL_PUBLIC bool XCL_API
-Thread_addCbFront(CThread* thread, void (*cb)(void*), void* usr);
+Thread_addCbFront(CThread* thread, Callback cb, void* usr);
 
 /**
- * add proc for back call, proc will called last if no any other
- * proc added to the back
+ * add cb for back call, cb will called last if no any other
+ * cb added to the back
  * @param thread thread object
  * @param cb callback
  * @param usr callback parameter
- * @return true if proc added successfully, otherwise false
+ * @return true if cb added successfully, otherwise false
  */
 XCL_PUBLIC bool XCL_API
-Thread_addCbBack(CThread* thread, void (*cb)(void*), void* usr);
+Thread_addCbBack(CThread* thread, Callback cb, void* usr);
 
 /**
  * delete thread object

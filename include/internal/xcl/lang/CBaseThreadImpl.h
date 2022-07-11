@@ -12,6 +12,16 @@
 extern "C" {
 #endif
 
+#if WINDOWS
+typedef unsigned __ThreadRunReturnType;
+#  define INVALID_THREAD_HANDLE NULL
+#else
+typedef void* __ThreadRunReturnType;
+#  define INVALID_THREAD_HANDLE (0)
+#endif
+
+typedef __ThreadRunReturnType(XCL_API* __ThreadRunProc)(void*);
+
 /**
  * called before thread create
  * @param thread thread object
@@ -46,15 +56,15 @@ __Thread_waitTimeout(CThread* thread, int32_t timeout);
 /**
  * create a thread
  * @param suspend if thread suspended after create
- * @param proc thread run proc
- * @param usr pointer store data for proc use
+ * @param run thread run run
+ * @param usr pointer store data for run use
  * @param handle output the thread handle
  * @param tid output the thread id
  * @return true if create successfully, otherwise false
  */
 bool
 __Thread_create(bool suspend,
-                ThreadProc proc,
+                __ThreadRunProc run,
                 void* usr,
                 ThreadHandle* handle,
                 unsigned* tid);
@@ -67,12 +77,19 @@ void
 __Thread_resume(CThread* thread);
 
 /**
+ * called when enter thread run routine
+ * @param thread thread object
+ */
+void
+__Thread_onStart(CThread* thread);
+
+/**
  * called before thread routine return
  * @param thread thread object
  * @param retVal thread return code
  */
 void
-__Thread_onFinish(CThread* thread, unsigned retVal);
+__Thread_onFinish(CThread* thread, __ThreadRunReturnType retVal);
 
 /**
  * get current thread id

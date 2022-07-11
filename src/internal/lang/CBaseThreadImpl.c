@@ -18,22 +18,15 @@
 static CThreadLocal __localThread = {0};
 
 typedef struct {
-  unsigned (*const proc)(void*);
+  const Callback cb;
   void* const usr;
-} ThreadProcObj;
-
-typedef struct {
-  void (*const cb)(void*);
-  void* const usr;
-} CallObj;
+} CallbackObj;
 
 struct _CThread_st {
   const ThreadHandle handle;
   void* const threadLock;
   CThreadState state;
   const unsigned threadId;
-  ThreadProcObj main;
-  unsigned exitCode;
   CSingleList* callStack;
 };
 
@@ -59,19 +52,18 @@ __Thread_setThreadId(CThread* thread, unsigned tid) {
 static inline bool
 __Thread_initThreadCallStack(CThread* thread) {
   thread->callStack = SingleList_new();
-  CSingleNode* node = malloc(sizeof(CSingleNode) + sizeof(CallObj));
+  return thread->callStack;
+}
+
+static inline bool
+__Thread_setThreadProc(CThread* thread, Callback proc, void* usr) {
+  CallbackObj callbackObj = {.cb = proc, .usr = usr};
+  CSingleNode* node = malloc(sizeof(CSingleNode) + sizeof(CallbackObj));
   if (node) {
-    CallObj* callObj = (CallObj*)node->data;
-    memset(callObj, 0, sizeof(CallObj));
+    memcpy((CallbackObj*)node->data, &callbackObj, sizeof(CallbackObj));
     SingleList_pushBack(thread->callStack, node);
   }
   return node;
-}
-
-static inline void
-__Thread_setThreadProc(CThread* thread, ThreadProc proc, void* usr) {
-  ThreadProcObj threadProcObj = {.proc = proc, .usr = usr};
-  memcpy((void*)&thread->main, (void*)&threadProcObj, sizeof(ThreadProcObj));
 }
 
 static inline CThreadState
@@ -115,46 +107,44 @@ __Thread_handle(CThread* thread) {
   return thread->handle;
 }
 
-static unsigned __stdcall __Thread_run(void* args) {
+static __ThreadRunReturnType XCL_API
+__Thread_run(void* args) {
   CThread* thread = args;
   Local_set(&__localThread, thread);
+  __Thread_onStart(thread);
   CSingleNode* node;
   while ((node = SingleList_popFront(thread->callStack))) {
-    CallObj* callObj = (CallObj*)node->data;
-    if (!callObj->cb) {
-      thread->exitCode = thread->main.proc(thread->main.usr);
-    } else {
-      callObj->cb(callObj->usr);
-    }
+    CallbackObj* cbObj = (CallbackObj*)node->data;
+    cbObj->cb(cbObj->usr);
     free(node);
   }
   SingleList_delete(thread->callStack);
   thread->callStack = NULL;
   __Thread_releaseLocalStorage();
   __Thread_syncSetThreadState(thread, TERMINATED);
-  __Thread_onFinish(thread, thread->exitCode);
-  return thread->exitCode;
+  __ThreadRunReturnType retVal = 0;
+  __Thread_onFinish(thread, retVal);
+  return retVal;
 }
 
 XCL_PUBLIC CThread* XCL_API
-Thread_new(bool suspend, ThreadProc threadProc, void* usr) {
+Thread_new(bool suspend, Callback cb, void* usr) {
   bool success = false;
   CThread* thread = malloc(sizeof(CThread));
   if (thread) {
     memset(thread, 0, sizeof(CThread));
     thread->state = INVALID;
-    thread->exitCode = 0;
     if (__Thread_initThreadLock(thread)) {
       if (__Thread_initThreadCallStack(thread)) {
         __Thread_beforeCreate(thread);
-        __Thread_setThreadProc(thread, threadProc, usr);
+        __Thread_setThreadProc(thread, cb, usr);
         unsigned tid;
         ThreadHandle handle;
         /**
          * we set thread state to suspend before create handle
          * because if thread create successfully, all cb
-         * in thread call stack will see thread's state is
-         * SUSPEND. otherwise, thread create failed, and thread
+         * in thread call stack will see all thread's members
+         * otherwise, thread create failed, and thread
          * run proc would not be executed, so we set to INVALID
          */
         thread->state = SUSPEND;
@@ -197,7 +187,7 @@ Thread_current() {
       memset(thread, 0, sizeof(CThread));
       thread->state = ALIVE;
       ThreadHandle h = __Thread_currentHandle(tid);
-      if (h != NULL) {
+      if (h != INVALID_THREAD_HANDLE) {
         if (__Thread_initThreadLock(thread)) {
           __Thread_setThreadId(thread, tid);
           __Thread_setThreadHandle(thread, h);
@@ -212,14 +202,14 @@ Thread_current() {
   return thread;
 }
 XCL_PUBLIC bool XCL_API
-Thread_addCbFront(CThread* thread, void (*cb)(void*), void* usr) {
+Thread_addCbFront(CThread* thread, Callback cb, void* usr) {
   Mutex_lock(thread->threadLock);
   bool ret = false;
   if (thread->state != ALIVE) {
-    CallObj callObj = {.cb = cb, .usr = usr};
-    CSingleNode* node = malloc(sizeof(CSingleNode) + sizeof(CallObj));
+    CallbackObj cbObj = {.cb = cb, .usr = usr};
+    CSingleNode* node = malloc(sizeof(CSingleNode) + sizeof(CallbackObj));
     if (node) {
-      memcpy(node->data, &callObj, sizeof(CallObj));
+      memcpy(node->data, &cbObj, sizeof(CallbackObj));
       SingleList_pushFront(thread->callStack, node);
       ret = true;
     }
@@ -228,14 +218,14 @@ Thread_addCbFront(CThread* thread, void (*cb)(void*), void* usr) {
   return ret;
 }
 XCL_PUBLIC bool XCL_API
-Thread_addCbBack(CThread* thread, void (*cb)(void*), void* usr) {
+Thread_addCbBack(CThread* thread, Callback cb, void* usr) {
   Mutex_lock(thread->threadLock);
   bool ret = false;
   if (thread->state != ALIVE) {
-    CallObj callObj = {.cb = cb, .usr = usr};
-    CSingleNode* node = malloc(sizeof(CSingleNode) + sizeof(CallObj));
+    CallbackObj cbObj = {.cb = cb, .usr = usr};
+    CSingleNode* node = malloc(sizeof(CSingleNode) + sizeof(CallbackObj));
     if (node) {
-      memcpy(node->data, &callObj, sizeof(CallObj));
+      memcpy(node->data, &cbObj, sizeof(CallbackObj));
       SingleList_pushBack(thread->callStack, node);
       ret = true;
     }

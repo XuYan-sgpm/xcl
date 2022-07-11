@@ -37,7 +37,7 @@ __Thread_resume(CThread* thread) {
   ResumeThread(__Thread_handle(thread));
 }
 void
-__Thread_onFinish(CThread* thread, unsigned int retVal) {
+__Thread_onFinish(CThread* thread, __ThreadRunReturnType retVal) {
   _endthreadex(retVal);
 }
 unsigned
