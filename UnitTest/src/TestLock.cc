@@ -11,7 +11,7 @@
 #include "xcl/lang/CThread.h"
 using namespace std;
 
-static unsigned
+static void
 __testLock(void* args) {
   auto* lock = (xcl::TimedLock*)args;
   for (;;) {
@@ -29,10 +29,10 @@ __testLock(void* args) {
   sleepMillis(3000);
   lock->unlock();
   cout << "unlock successfully" << endl;
-  return 0;
 }
 
-static unsigned __stdcall __testCMutex(void* args) {
+static void
+__testCMutex(void* args) {
   for (;;) {
     auto st = chrono::steady_clock::now();
     if (!Mutex_tryLock2(args, 20)) {
@@ -48,14 +48,14 @@ static unsigned __stdcall __testCMutex(void* args) {
   sleepMillis(40);
   Mutex_unlock(args);
   cout << "unlock successfully" << endl;
-  return 0;
 }
 
-static void __stdcall __runLockThreads(ThreadProc threadProc, void* args) {
+static void
+__runLockThreads(Callback cb, void* args) {
   int32_t nThreads = 8;
   CThread* threads[nThreads];
   for (int i = 0; i < nThreads; i++) {
-    threads[i] = Thread_new(false, threadProc, args);
+    threads[i] = Thread_new(false, cb, args);
     ASSERT_NE(threads[i], nullptr);
   }
   for (int i = 0; i < nThreads; i++) {

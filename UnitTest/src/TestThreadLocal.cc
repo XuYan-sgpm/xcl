@@ -28,7 +28,7 @@ __testThreadLocal(CThreadLocal* local) {
   assert(val2 == 3.1415926f);
 }
 
-unsigned
+void
 threadProc(void* args) {
   CThreadLocal locals[10];
   for (int i = 0; i < 10; i++) {
@@ -42,7 +42,6 @@ threadProc(void* args) {
     sleepMillis(200);
   }
   *(int*)args = 0;
-  return 0;
 }
 
 TEST(ThreadLocal, func1) {
