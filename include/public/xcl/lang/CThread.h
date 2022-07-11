@@ -20,7 +20,7 @@
 #include <stdint.h>
 
 #if WINDOWS
-typedef unsigned (*ThreadProc)(void*);
+typedef unsigned (XCL_API *ThreadProc)(void*);
 typedef void* ThreadHandle;
 #else
 #  include <pthread.h>

@@ -53,6 +53,7 @@
 #endif
 
 #if WINDOWS
+#  define XCL_API __stdcall
 #  if defined(_MSC_VER) && defined(DYNAMIC)
 #    define XCL_PUBLIC __declspec(dllexport)
 #  elif GNUC || CLANG
@@ -66,11 +67,10 @@
 #    define XCL_HIDDEN
 #  endif
 #elif GNUC
+#  define XCL_API
 #  define XCL_HIDDEN __attribute__((visibility("hidden")))
 #  define XCL_PUBLIC __attribute__((visibility("default")))
 #else
 #  define XCL_HIDDEN
 #  define XCL_PUBLIC
 #endif
-
-#define XCL_API __stdcall

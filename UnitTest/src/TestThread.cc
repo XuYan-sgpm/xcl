@@ -10,7 +10,7 @@ using namespace std;
 
 static CThread* t = NULL;
 
-unsigned __stdcall __threadProc(void*) {
+unsigned XCL_API __threadProc(void*) {
   sleepMillis(3000);
   cout << "sleep finished" << endl;
   CThread* currentThread = Thread_current();

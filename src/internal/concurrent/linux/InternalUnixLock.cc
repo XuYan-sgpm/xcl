@@ -2,7 +2,7 @@
 // Created by xuyan on 2022/6/25.
 //
 
-#include <concurrent/Lock.h>
+#include <xcl/concurrent/Lock.h>
 #include <pthread.h>
 
 namespace {
@@ -34,7 +34,7 @@ bool
 __InternalUnixMutex::tryLock() {
   return pthread_mutex_trylock(&mutex_) == 0;
 }
-__InternalUnixMutex::__InternalUnixMutex(bool recursive) : mutex_(nullptr) {
+__InternalUnixMutex::__InternalUnixMutex(bool recursive) : mutex_() {
   if (recursive) {
     pthread_mutexattr_t attr;
     pthread_mutexattr_init(&attr);
