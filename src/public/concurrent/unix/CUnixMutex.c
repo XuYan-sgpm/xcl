@@ -67,7 +67,7 @@ Mutex_tryLock(void* mutex) {
 XCL_PUBLIC bool XCL_API
 Mutex_tryLock2(void* mutex, int32_t millis) {
   if (mutex) {
-#if !LINUX
+#if 0 && LINUX
     struct timespec ts = {0, 0};
     clock_gettime(CLOCK_REALTIME, &ts);
     ts.tv_nsec += millis * 1000000;
@@ -76,13 +76,11 @@ Mutex_tryLock2(void* mutex, int32_t millis) {
     int64_t nanoTimeout = millis * 1000000L;
     int64_t totalWait = 0;
     int64_t st = nanos();
-    int error;
     while (totalWait < nanoTimeout) {
-      if ((error=pthread_mutex_trylock(&((CUnixMutex*)mutex)->handle)) == 0) {
+      if ((pthread_mutex_trylock(&((CUnixMutex*)mutex)->handle)) == 0) {
         return true;
       }
-      printf("err:%d\n",error);
-#  if 0&&_POSIX_C_SOURCE >= 199309L
+#  if _POSIX_C_SOURCE >= 199309L
       struct timespec ts = {0, 1000000};
       nanosleep(&ts, NULL);
 #  else

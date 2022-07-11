@@ -33,13 +33,13 @@ __testLock(void* args) {
 static void
 __testCMutex(void* args) {
   for (;;) {
-    //    auto st = chrono::steady_clock::now();
-    auto st = nanos();
+    auto st = chrono::steady_clock::now();
+    //    auto st = nanos();
     if (!Mutex_tryLock2(args, 20)) {
-      //      auto et = chrono::steady_clock::now();
-      auto et = nanos();
-      //      auto duration = chrono::duration<double, milli>(et - st).count();
-      auto duration = (et - st) / 1000000;
+      auto et = chrono::steady_clock::now();
+      //      auto et = nanos();
+      auto duration = chrono::duration<double, milli>(et - st).count();
+      //      auto duration = (et - st) / 1000000;
       cout << "acquire lock failed:" << duration << endl;
     } else {
       break;
@@ -65,10 +65,10 @@ __runLockThreads(Callback cb, void* args) {
   }
 }
 
-//TEST(TestLock, func1) {
-//  xcl::TimedLock* lock = xcl::TimedLock::NewLock();
-//  __runLockThreads(__testLock, lock);
-//}
+// TEST(TestLock, func1) {
+//   xcl::TimedLock* lock = xcl::TimedLock::NewLock();
+//   __runLockThreads(__testLock, lock);
+// }
 
 TEST(TestLock, func2) {
   void* mutex = Mutex_new();

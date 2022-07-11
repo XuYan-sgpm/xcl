@@ -34,14 +34,10 @@ nanos() {
 
 void XCL_API
 sleepMillis(int32_t timeout) {
-#if 0&&_POSIX_C_SOURCE >= 199309L
-  struct timespec tv = {0, 0};
-  tv.tv_nsec = timeout * 1000000;
-  struct timespec left = tv;
-  do {
-    nanosleep(&tv, &left);
-    tv = left;
-  } while (left.tv_nsec > 0);
+#if _POSIX_C_SOURCE >= 199309L
+  struct timespec ts = {0, 0};
+  ts.tv_nsec = timeout * 1000000L;
+  nanosleep(&ts, NULL);
 #else
   usleep(timeout * 1000);
 #endif
