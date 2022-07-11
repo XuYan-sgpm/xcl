@@ -35,6 +35,8 @@ Cond_wait(void* mutex, void* cond);
 
 /**
  * wait signal on the condition during millis
+ * this function may returned even if no signal
+ * send to current thread
  * @param cond condition variable
  * @param millis timeout milliseconds
  * @return true if condition variable signaled, otherwise false

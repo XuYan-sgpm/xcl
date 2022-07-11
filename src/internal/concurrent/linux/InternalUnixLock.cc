@@ -64,7 +64,8 @@ class __InternalUnixTimedMutex : public xcl::TimedLock,
 bool
 __InternalUnixTimedMutex::tryLock(int32_t millis) {
   timespec ts{0, 0};
-  ts.tv_nsec = millis * 1000000L;
+  clock_gettime(CLOCK_REALTIME, &ts);
+  ts.tv_nsec += millis * 1000000L;
   return ::pthread_mutex_timedlock(&mutex_, &ts) == 0;
 }
 __InternalUnixTimedMutex::__InternalUnixTimedMutex(bool recursive)

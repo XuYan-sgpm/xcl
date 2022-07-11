@@ -66,8 +66,7 @@ bool
 __Thread_create(bool suspend,
                 __ThreadRunProc run,
                 void* usr,
-                ThreadHandle* handle,
-                unsigned* tid);
+                ThreadHandle* handle);
 
 /**
  * resume thread if thread in suspend state
@@ -104,7 +103,7 @@ __Thread_currentId();
  * @return current thread handle
  */
 ThreadHandle
-__Thread_currentHandle(unsigned tid);
+__Thread_currentHandle(CThread* thread, unsigned tid);
 
 /**
  * release thread resource when thread routine
@@ -135,6 +134,10 @@ void*
 __Thread_mutex(CThread* thread);
 ThreadHandle
 __Thread_handle(CThread* thread);
+void*
+__Thread_attach(CThread* thread);
+void
+__Thread_setAttach(CThread* thread, void* attach);
 
 #ifdef __cplusplus
 }

@@ -1,7 +1,6 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-// #include <util/CBuffer.h>
 #include "xcl/util/CString.h"
 
 const static unsigned __STATE_MASK__ = 0x7fffffff;

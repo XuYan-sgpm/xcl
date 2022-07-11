@@ -24,10 +24,9 @@ bool
 __Thread_create(bool suspend,
                 __ThreadRunProc run,
                 void* usr,
-                ThreadHandle* handle,
-                unsigned int* tid) {
+                ThreadHandle* handle) {
   ThreadHandle h = (ThreadHandle)_beginthreadex(
-      NULL, 0, run, usr, suspend ? CREATE_SUSPENDED : 0, tid);
+      NULL, 0, run, usr, suspend ? CREATE_SUSPENDED : 0, NULL);
   *handle = h;
   return h != NULL;
 }
@@ -47,7 +46,7 @@ __Thread_currentId() {
   return GetCurrentThreadId();
 }
 ThreadHandle
-__Thread_currentHandle(unsigned int tid) {
+__Thread_currentHandle(CThread* thread, unsigned tid) {
   return OpenThread(SYNCHRONIZE, false, tid);
 }
 void
@@ -59,3 +58,35 @@ __Thread_detach(CThread* thread) {
   CloseHandle(__Thread_handle(thread));
   __Thread_setState(thread, DETACHED);
 }
+
+#ifdef DYNAMIC
+#  include <windows.h>
+#  include <processthreadsapi.h>
+#  include "xcl/lang/CBaseThreadImpl.h"
+
+static DWORD __localStorageKey = TLS_OUT_OF_INDEXES;
+
+void
+__LocalInit_allocTls() {
+  DWORD idx = TlsAlloc();
+  if (idx != TLS_OUT_OF_INDEXES) {
+    __localStorageKey = idx;
+  }
+}
+
+#  if !MSVC
+__attribute__((constructor)) static void
+__LocalInit_initKey() {
+  __LocalInit_allocTls();
+}
+#  endif
+
+CLocalStorage*
+__Thread_getLocalStorage() {
+  return (CLocalStorage*)TlsGetValue(__localStorageKey);
+}
+bool
+__Thread_setLocalStorage(CLocalStorage* localStorage) {
+  return TlsSetValue(__localStorageKey, localStorage);
+}
+#endif

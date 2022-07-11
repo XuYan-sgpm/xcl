@@ -28,6 +28,7 @@ struct _CThread_st {
   CThreadState state;
   const unsigned threadId;
   CSingleList* callStack;
+  void* attach;
 };
 
 static inline void
@@ -81,6 +82,26 @@ __Thread_syncSetThreadState(CThread* thread, CThreadState state) {
   Mutex_unlock(thread->threadLock);
 }
 
+#ifdef STATIC
+#  ifdef _MSC_VER
+#    define THREAD_LOCAL __declspec(thread)
+#  else
+#    define THREAD_LOCAL __thread;
+#  endif
+
+static THREAD_LOCAL CLocalStorage* __Thread_localStorage = NULL;
+
+CLocalStorage*
+__Thread_getLocalStorage() {
+  return __Thread_localStorage;
+}
+bool
+__Thread_setLocalStorage(CLocalStorage* localStorage) {
+  __Thread_localStorage = localStorage;
+  return true;
+}
+#endif
+
 void
 __Thread_releaseLocalStorage() {
   CLocalStorage* localStorage = __Thread_getLocalStorage();
@@ -106,10 +127,19 @@ ThreadHandle
 __Thread_handle(CThread* thread) {
   return thread->handle;
 }
+void*
+__Thread_attach(CThread* thread) {
+  return thread->attach;
+}
+void
+__Thread_setAttach(CThread* thread, void* attach) {
+  thread->attach = attach;
+}
 
 static __ThreadRunReturnType XCL_API
 __Thread_run(void* args) {
   CThread* thread = args;
+  __Thread_setThreadId(thread, __Thread_currentId());
   Local_set(&__localThread, thread);
   __Thread_onStart(thread);
   CSingleNode* node;
@@ -148,8 +178,7 @@ Thread_new(bool suspend, Callback cb, void* usr) {
          * run proc would not be executed, so we set to INVALID
          */
         thread->state = SUSPEND;
-        if (__Thread_create(true, __Thread_run, thread, &handle, &tid)) {
-          __Thread_setThreadId(thread, tid);
+        if (__Thread_create(true, __Thread_run, thread, &handle)) {
           __Thread_setThreadHandle(thread, handle);
           success = true;
         } else {
@@ -186,7 +215,7 @@ Thread_current() {
     if (thread) {
       memset(thread, 0, sizeof(CThread));
       thread->state = ALIVE;
-      ThreadHandle h = __Thread_currentHandle(tid);
+      ThreadHandle h = __Thread_currentHandle(thread, tid);
       if (h != INVALID_THREAD_HANDLE) {
         if (__Thread_initThreadLock(thread)) {
           __Thread_setThreadId(thread, tid);
