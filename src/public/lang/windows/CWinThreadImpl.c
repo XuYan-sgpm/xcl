@@ -22,12 +22,12 @@ __Thread_waitTimeout(CThread* thread, int32_t timeout) {
 }
 bool
 __Thread_create(bool suspend,
-                ThreadProc proc,
+                __ThreadRunProc run,
                 void* usr,
                 ThreadHandle* handle,
                 unsigned int* tid) {
   ThreadHandle h = (ThreadHandle)_beginthreadex(
-      NULL, 0, proc, usr, suspend ? CREATE_SUSPENDED : 0, tid);
+      NULL, 0, run, usr, suspend ? CREATE_SUSPENDED : 0, tid);
   *handle = h;
   return h != NULL;
 }
@@ -36,6 +36,8 @@ __Thread_resume(CThread* thread) {
   __Thread_setState(thread, ALIVE);
   ResumeThread(__Thread_handle(thread));
 }
+void
+__Thread_onStart(CThread* thread) {}
 void
 __Thread_onFinish(CThread* thread, __ThreadRunReturnType retVal) {
   _endthreadex(retVal);

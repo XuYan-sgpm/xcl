@@ -10,13 +10,12 @@ using namespace std;
 
 static CThread* t = NULL;
 
-void* XCL_API
+void XCL_API
 __threadProc(void*) {
   sleepMillis(3000);
   cout << "sleep finished" << endl;
   CThread* currentThread = Thread_current();
   assert(Thread_delete(currentThread) == false);
-  return 0;
 }
 
 static void
