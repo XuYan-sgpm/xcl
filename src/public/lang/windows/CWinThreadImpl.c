@@ -76,7 +76,7 @@ __LocalInit_allocTls() {
 
 #  if !MSVC
 __attribute__((constructor)) static void
-__LocalInit_initKey() {
+__initKey() {
   __LocalInit_allocTls();
 }
 #  endif
