@@ -52,29 +52,26 @@
 #  define X86
 #endif
 
-#if WINDOWS
-#  define XCL_API __stdcall
-#  if defined(_MSC_VER) && defined(DYNAMIC)
-#    ifdef BUILD_LIBRARY
-#      define XCL_PUBLIC __declspec(dllexport)
-#    else
-#      define XCL_PUBLIC __declspec(dllimport)
-#    endif
-#  elif GNUC || CLANG
-#    define XCL_PUBLIC __attribute__((visibility("default")))
+#ifdef _MSC_VER
+#  ifdef BUILD_LIBRARY
+#    define XCL_PUBLIC __declspec(dllexport)
 #  else
-#    define XCL_PUBLIC
+#    define XCL_PUBLIC __declspec(dllimport)
 #  endif
-#  if GNUC || CLANG
-#    define XCL_HIDDEN __attribute__((visibility("hidden")))
-#  else
-#    define XCL_HIDDEN
-#  endif
-#elif GNUC
-#  define XCL_API
-#  define XCL_HIDDEN __attribute__((visibility("hidden")))
+#elif CLANG || GNUC
 #  define XCL_PUBLIC __attribute__((visibility("default")))
 #else
-#  define XCL_HIDDEN
 #  define XCL_PUBLIC
+#endif
+
+#if GNUC || CLANG
+#  define XCL_HIDDEN __attribute__((visibility("hidden")))
+#else
+#  define XCL_HIDDEN
+#endif
+
+#if WINDOWS
+#  define XCL_API __stdcall
+#else
+#  define XCL_API
 #endif

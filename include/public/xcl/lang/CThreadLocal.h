@@ -236,11 +236,6 @@ Local_getDouble(CThreadLocal* local, double* result);
 XCL_PUBLIC void XCL_API
 Local_discard(CThreadLocal* local);
 
-#ifdef STATIC
-XCL_PUBLIC void XCL_API
-recycleUnusedThreadLocals();
-#endif
-
 #ifdef __cplusplus
 }
 #endif
