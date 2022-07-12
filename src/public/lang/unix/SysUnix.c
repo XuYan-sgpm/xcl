@@ -6,7 +6,7 @@
 #include <sys/time.h>
 #include <stddef.h>
 #include <time.h>
-#include <unistd.h>
+#include <errno.h>
 
 int64_t XCL_API
 currentMillis() {
@@ -42,4 +42,13 @@ sleepMillis(int32_t timeout) {
 #else
   usleep(timeout * 1000);
 #endif
+}
+unsigned XCL_API
+error() {
+  return errno;
+}
+
+void XCL_API
+setErr(unsigned int errorCode) {
+  errno = (int)errorCode;
 }

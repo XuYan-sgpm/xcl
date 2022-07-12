@@ -8,6 +8,7 @@
 #include <string.h>
 #include "xcl/lang/system.h"
 #include <unistd.h>
+#include <errno.h>
 
 typedef struct {
   pthread_mutex_t handle;
@@ -21,20 +22,26 @@ Mutex_new() {
     pthread_mutexattr_t attr;
     pthread_mutexattr_init(&attr);
     pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-    if (pthread_mutex_init(&mutex->handle, &attr) == 0) {
+    int err;
+    if ((err = pthread_mutex_init(&mutex->handle, &attr) == 0)) {
       return mutex;
     }
+    errno = err;
     free(mutex);
   }
   return NULL;
 }
 
-XCL_PUBLIC void XCL_API
+XCL_PUBLIC bool XCL_API
 Mutex_delete(void* mutex) {
   if (mutex) {
-    pthread_mutex_destroy(&((CUnixMutex*)mutex)->handle);
+    int ret = pthread_mutex_destroy(&((CUnixMutex*)mutex)->handle);
     free(mutex);
+    if (ret != 0)
+      errno = ret;
+    return !ret;
   }
+  return false;
 }
 
 XCL_PUBLIC bool XCL_API
@@ -44,21 +51,29 @@ Mutex_lock(void* mutex) {
     if (ret == 0) {
       return true;
     }
+    errno = ret;
   }
   return false;
 }
 
-XCL_PUBLIC void XCL_API
+XCL_PUBLIC bool XCL_API
 Mutex_unlock(void* mutex) {
   if (mutex) {
-    pthread_mutex_unlock(&((CUnixMutex*)mutex)->handle);
+    int ret = pthread_mutex_unlock(&((CUnixMutex*)mutex)->handle);
+    if (ret != 0)
+      errno = ret;
+    return !ret;
   }
+  return false;
 }
 
 XCL_PUBLIC bool XCL_API
 Mutex_tryLock(void* mutex) {
   if (mutex) {
-    return 0 == pthread_mutex_trylock(&((CUnixMutex*)mutex)->handle);
+    int ret = pthread_mutex_trylock(&((CUnixMutex*)mutex)->handle);
+    if (ret)
+      errno = ret;
+    return !ret;
   }
   return false;
 }
@@ -78,7 +93,10 @@ Mutex_tryLock2(void* mutex, int32_t timeout) {
       ts.tv_sec += ts.tv_nsec / 1000000000;
       ts.tv_nsec = ts.tv_nsec % 1000000000;
     }
-    return pthread_mutex_timedlock(mutex, &ts) == 0;
+    int ret = pthread_mutex_timedlock(mutex, &ts);
+    if (ret)
+      errno = ret;
+    return !ret;
 #else
     int64_t nanoTimeout = (int64_t)timeout * 1000000L;
     int64_t totalWait = 0;
@@ -95,7 +113,10 @@ Mutex_tryLock2(void* mutex, int32_t timeout) {
 #  endif
       totalWait = nanos() - st;
     }
-    return pthread_mutex_trylock(&((CUnixMutex*)mutex)->handle) == 0;
+    int ret = pthread_mutex_trylock(&((CUnixMutex*)mutex)->handle);
+    if (ret)
+      errno = ret;
+    return !ret;
 #endif
   }
   return false;

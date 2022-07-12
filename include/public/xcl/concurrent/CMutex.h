@@ -24,8 +24,9 @@ Mutex_new();
 /**
  * delete a mutex object
  * @param mutex mutex object
+ * @return true if delete successfully, otherwise false
  */
-XCL_PUBLIC void XCL_API
+XCL_PUBLIC bool XCL_API
 Mutex_delete(void* mutex);
 
 /**
@@ -39,8 +40,9 @@ Mutex_lock(void* mutex);
 /**
  * release the mutex object
  * @param mutex mutex object
+ * @return true if unlock successfully, otherwise false
  */
-XCL_PUBLIC void XCL_API
+XCL_PUBLIC bool XCL_API
 Mutex_unlock(void* mutex);
 
 /**

@@ -34,6 +34,24 @@ nanos();
 XCL_PUBLIC void XCL_API
 sleepMillis(int32_t timeout);
 
+/**
+ * get current thread error code
+ * usually set from system-level api
+ * however, if api no return value
+ * and some errors has been occurred, you
+ * can use error() to check
+ * @return err code
+ */
+XCL_PUBLIC unsigned XCL_API
+error();
+
+/**
+ * set global error code
+ * @param errorCode error code
+ */
+XCL_PUBLIC void XCL_API
+setErr(unsigned errorCode);
+
 #ifdef __cplusplus
 }
 #endif

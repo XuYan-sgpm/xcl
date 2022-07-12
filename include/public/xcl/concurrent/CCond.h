@@ -23,7 +23,7 @@ Cond_new();
  * delete condition variable
  * @param cond condition variable
  */
-XCL_PUBLIC void XCL_API
+XCL_PUBLIC bool XCL_API
 Cond_delete(void* cond);
 
 /**
@@ -48,14 +48,14 @@ Cond_waitFor(void* mutex, void* cond, int32_t millis);
  * signal random thread wait on cond
  * @param cond condition variable
  */
-XCL_PUBLIC void XCL_API
+XCL_PUBLIC bool XCL_API
 Cond_signal(void* cond);
 
 /**
  * signal all threads wait on cond
  * @param cond condition variable
  */
-XCL_PUBLIC void XCL_API
+XCL_PUBLIC bool XCL_API
 Cond_signalAll(void* cond);
 
 #ifdef __cplusplus

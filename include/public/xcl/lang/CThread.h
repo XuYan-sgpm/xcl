@@ -50,6 +50,13 @@ XCL_PUBLIC CThread* XCL_API
 Thread_current();
 
 /**
+ * get current thread id
+ * @return current thread id
+ */
+XCL_PUBLIC unsigned XCL_API
+Thread_currentId();
+
+/**
  * add cb for front call, cb will called first if no any other
  * cb added to the front
  * @param thread thread object

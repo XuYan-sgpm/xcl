@@ -41,6 +41,7 @@ __testCMutex(void* args) {
       auto duration = chrono::duration<double, milli>(et - st).count();
       //      auto duration = (et - st) / 1000000;
       cout << "acquire lock failed:" << duration << endl;
+      cout << "err:" << error() << endl;
     } else {
       break;
     }

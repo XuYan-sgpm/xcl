@@ -6,6 +6,7 @@
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 
 typedef struct {
   pthread_cond_t handle;
@@ -20,22 +21,29 @@ Cond_new() {
     if (ret == 0) {
       return cond;
     }
+    errno = ret;
     free(cond);
   }
   return NULL;
 }
-XCL_PUBLIC void XCL_API
+XCL_PUBLIC bool XCL_API
 Cond_delete(void* cond) {
   if (cond) {
-    pthread_cond_destroy(&((CUnixCond*)cond)->handle);
+    int ret = pthread_cond_destroy(&((CUnixCond*)cond)->handle);
     free(cond);
+    if (ret)
+      errno = ret;
+    return !ret;
   }
+  return false;
 }
 XCL_PUBLIC bool XCL_API
 Cond_wait(void* mutex, void* cond) {
   if (mutex && cond) {
     int ret = pthread_cond_wait(cond, mutex);
-    return ret == 0;
+    if (ret)
+      errno = ret;
+    return !ret;
   }
   return false;
 }
@@ -43,19 +51,30 @@ XCL_PUBLIC bool XCL_API
 Cond_waitFor(void* mutex, void* cond, int32_t millis) {
   if (mutex && cond) {
     struct timespec ts = {0, millis * 1000000};
-    return pthread_cond_timedwait(cond, mutex, &ts) == 0;
+    int ret = pthread_cond_timedwait(cond, mutex, &ts);
+    if (ret)
+      errno = ret;
+    return !ret;
   }
   return false;
 }
-XCL_PUBLIC void XCL_API
+XCL_PUBLIC bool XCL_API
 Cond_signal(void* cond) {
   if (cond) {
-    pthread_cond_signal(cond);
+    int ret = pthread_cond_signal(cond);
+    if (ret)
+      errno = ret;
+    return !ret;
   }
+  return false;
 }
-XCL_PUBLIC void XCL_API
+XCL_PUBLIC bool XCL_API
 Cond_signalAll(void* cond) {
   if (cond) {
-    pthread_cond_broadcast(cond);
+    int ret = pthread_cond_broadcast(cond);
+    if (ret)
+      errno = ret;
+    return !ret;
   }
+  return false;
 }

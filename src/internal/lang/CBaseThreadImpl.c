@@ -10,6 +10,8 @@
 #include "xcl/concurrent/CMutex.h"
 #include "xcl/lang/CThreadLocal.h"
 #include "xcl/lang/CLocalStorage.h"
+#include "xcl/lang/CThread.h"
+
 #include <stdlib.h>
 
 /**
@@ -322,4 +324,8 @@ Thread_detach(CThread* thread) {
     __Thread_detach(thread);
   }
   Mutex_unlock(thread->threadLock);
+}
+XCL_PUBLIC unsigned XCL_API
+Thread_currentId() {
+  return __Thread_currentId();
 }

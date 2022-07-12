@@ -5,7 +5,6 @@
 #include "xcl/lang/CBaseThreadImpl.h"
 #include "xcl/lang/system.h"
 #include "xcl/util/CBlocker.h"
-#include "xcl/concurrent/CMutex.h"
 #include <pthread.h>
 #include <signal.h>
 #include <errno.h>
@@ -20,7 +19,9 @@ void
 __Thread_afterCreate(CThread* thread) {}
 void
 __Thread_wait(CThread* thread) {
-  pthread_join(__Thread_handle(thread), NULL);
+  int ret = pthread_join(__Thread_handle(thread), NULL);
+  if (ret)
+    errno = ret;
 }
 bool
 __Thread_waitTimeout(CThread* thread, int32_t timeout) {
@@ -54,6 +55,7 @@ __Thread_create(bool suspend,
     *handle = h;
     return true;
   }
+  errno = ret;
   return false;
 }
 void
@@ -81,7 +83,9 @@ __Thread_finalize(CThread* thread) {
 }
 void
 __Thread_detach(CThread* thread) {
-  pthread_detach(__Thread_handle(thread));
+  int ret = pthread_detach(__Thread_handle(thread));
+  if (ret)
+    errno = ret;
 }
 
 #ifdef DYNAMIC
