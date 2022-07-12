@@ -39,7 +39,7 @@ if (NOT DEFINED CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif ()
 
-set(compile_static_lib false)
+set(compile_static_lib true)
 
 if (${compile_static_lib})
     set(xcl_lib_type "static")
@@ -166,12 +166,12 @@ add_custom_command(TARGET ${xcl_lib_name} PRE_BUILD
 if (BUILD_TEST)
     message(STATUS "building unit test")
     set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/bin/${build_type})
+    add_custom_command(TARGET ${xcl_lib_name} PRE_BUILD
+            COMMAND ${CMAKE_COMMAND} -E make_directory ${EXECUTABLE_OUTPUT_PATH}
+            COMMAND ${CMAKE_COMMAND} -E echo "make binary directories ${EXECUTABLE_OUTPUT_PATH}"
+            VERBATIM)
     add_subdirectory(UnitTest)
     if (NOT compile_static_lib)
-        add_custom_command(TARGET ${xcl_lib_name} PRE_BUILD
-                COMMAND ${CMAKE_COMMAND} -E make_directory ${EXECUTABLE_OUTPUT_PATH}
-                COMMAND ${CMAKE_COMMAND} -E echo "make binary directories ${EXECUTABLE_OUTPUT_PATH}"
-                VERBATIM)
         add_custom_command(TARGET ${xcl_lib_name} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${xcl_lib_name}> ${EXECUTABLE_OUTPUT_PATH}
                 COMMAND ${CMAKE_COMMAND} -E echo "copy $<TARGET_FILE:${xcl_lib_name}> to ${EXECUTABLE_OUTPUT_PATH}"

@@ -88,7 +88,7 @@ __Thread_syncSetThreadState(CThread* thread, CThreadState state) {
 #  ifdef _MSC_VER
 #    define THREAD_LOCAL __declspec(thread)
 #  else
-#    define THREAD_LOCAL __thread;
+#    define THREAD_LOCAL __thread
 #  endif
 
 static THREAD_LOCAL CLocalStorage* __Thread_localStorage = NULL;

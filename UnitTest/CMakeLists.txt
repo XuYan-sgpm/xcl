@@ -13,6 +13,6 @@ else ()
 endif ()
 
 file(GLOB test_files src/*.cc)
-#set(test_files src/TestLock.cc)
+#set(test_files src/TestThreadLocal.cc)
 add_executable(xcl_unit_test src/main.cc ${test_files})
 target_link_libraries(xcl_unit_test xcl gtest gtest_main)
