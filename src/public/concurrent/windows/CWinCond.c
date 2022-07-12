@@ -19,8 +19,10 @@ Cond_new() {
   }
   return cond;
 }
-XCL_PUBLIC void XCL_API
-Cond_delete(void* cond) {}
+XCL_PUBLIC bool XCL_API
+Cond_delete(void* cond) {
+  return true;
+}
 XCL_PUBLIC bool XCL_API
 Cond_wait(void* mutex, void* cond) {
   if (cond) {
@@ -37,15 +39,21 @@ Cond_waitFor(void* mutex, void* cond, int32_t millis) {
   return SleepConditionVariableCS(
       &((CWinCond*)cond)->conditionVariable, mutex, millis);
 }
-XCL_PUBLIC void XCL_API
+XCL_PUBLIC bool XCL_API
 Cond_signal(void* cond) {
   if (cond) {
     WakeConditionVariable(&((CWinCond*)cond)->conditionVariable);
+    return true;
+  } else {
+    return false;
   }
 }
-XCL_PUBLIC void XCL_API
+XCL_PUBLIC bool XCL_API
 Cond_signalAll(void* cond) {
   if (cond) {
     WakeAllConditionVariable(&((CWinCond*)cond)->conditionVariable);
+    return true;
+  } else {
+    return false;
   }
 }

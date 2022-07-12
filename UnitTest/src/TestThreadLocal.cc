@@ -62,3 +62,38 @@ TEST(ThreadLocal, func1) {
     ASSERT_EQ(code[0], 0);
   }
 }
+
+typedef struct {
+  CThreadLocal* local;
+  int32_t val;
+} __TestLocalParameter;
+
+static void
+__threadProc2(void* args) {
+  __TestLocalParameter* parameter = static_cast<__TestLocalParameter*>(args);
+  CThreadLocal* local = parameter->local;
+  int32_t val;
+  Local_setInt32(local, parameter->val);
+  sleepMillis(1000);
+  ASSERT_TRUE(Local_getInt32(local, &val));
+  ASSERT_EQ(val, parameter->val);
+}
+
+TEST(ThreadLocal, func2) {
+  int n = 4;
+  CThread* threads[n];
+  int code[n];
+  for (int i = 0; i < n; i++) {
+    code[i] = -1;
+  }
+  __TestLocalParameter parameters[n];
+  CThreadLocal local = Local_make();
+  for (int i = 0; i < n; i++) {
+    parameters[i] = {&local, 45 + i};
+    threads[i] = Thread_new(false, __threadProc2, parameters + i);
+    ASSERT_NE(threads[i], nullptr);
+  }
+  for (int i = 0; i < n; i++) {
+    Thread_join(threads[i]);
+  }
+}

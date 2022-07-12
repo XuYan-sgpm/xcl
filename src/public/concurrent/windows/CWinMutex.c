@@ -18,10 +18,13 @@ Mutex_new() {
   }
   return mutex;
 }
-XCL_PUBLIC void XCL_API
+XCL_PUBLIC bool XCL_API
 Mutex_delete(void* mutex) {
   if (mutex) {
     DeleteCriticalSection(&((CWinMutex*)mutex)->criticalSection);
+    return true;
+  } else {
+    return false;
   }
 }
 XCL_PUBLIC bool XCL_API
@@ -33,10 +36,13 @@ Mutex_lock(void* mutex) {
     return false;
   }
 }
-XCL_PUBLIC void XCL_API
+XCL_PUBLIC bool XCL_API
 Mutex_unlock(void* mutex) {
   if (mutex) {
     LeaveCriticalSection(&((CWinMutex*)mutex)->criticalSection);
+    return true;
+  } else {
+    return false;
   }
 }
 XCL_PUBLIC bool XCL_API

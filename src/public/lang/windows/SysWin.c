@@ -17,11 +17,11 @@ __SYS_initNanoFreq() {
   }
 }
 
-int64_t
+int64_t XCL_API
 currentMillis() {
   return GetTickCount();
 }
-int64_t
+int64_t XCL_API
 nanos() {
   if (__NANO_FREQ_PER_SEC == -1) {
     __SYS_initNanoFreq();
@@ -35,9 +35,17 @@ nanos() {
     return -1;
   }
 }
-void
+void XCL_API
 sleepMillis(int32_t timeout) {
   timeBeginPeriod(1);
   Sleep(timeout);
   timeEndPeriod(1);
+}
+unsigned XCL_API
+error() {
+  return GetLastError();
+}
+void XCL_API
+setErr(unsigned errorCode) {
+  SetLastError(errorCode);
 }
