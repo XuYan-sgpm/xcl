@@ -23,8 +23,6 @@ endfunction()
 
 check_c_cxx_compiler()
 
-set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/bin)
-
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_C_STANDARD 11)
 
@@ -68,15 +66,17 @@ set(CMAKE_CXX_FLAGS "${wall} ${hidden}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     message(STATUS "Debug")
-#    set(CMAKE_C_FLAGS "${debug} ${CMAKE_C_FLAGS}")
-#    set(CMAKE_CXX_FLAGS "${debug} ${CMAKE_CXX_FLAGS}")
-    set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/lib/${xcl_lib_type}/debug)
+    #    set(CMAKE_C_FLAGS "${debug} ${CMAKE_C_FLAGS}")
+    #    set(CMAKE_CXX_FLAGS "${debug} ${CMAKE_CXX_FLAGS}")
+    set(build_type debug)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
     message(STATUS "Release")
-#    set(CMAKE_C_FLAGS "${o2} ${CMAKE_C_FLAGS}")
-#    set(CMAKE_CXX_FLAGS "${o2} ${CMAKE_CXX_FLAGS}")
-    set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/lib/${xcl_lib_type}/release)
+    #    set(CMAKE_C_FLAGS "${o2} ${CMAKE_C_FLAGS}")
+    #    set(CMAKE_CXX_FLAGS "${o2} ${CMAKE_CXX_FLAGS}")
+    set(build_type release)
 endif ()
+
+set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/lib/${xcl_lib_type}/${build_type})
 
 message(STATUS "C FLAGS:${CMAKE_C_FLAGS}")
 message(STATUS "CXX FLAGS:${CMAKE_CXX_FLAGS}")
@@ -158,10 +158,20 @@ else ()
     target_link_libraries(${xcl_lib_name} pthread)
 endif ()
 
+add_custom_command(TARGET ${xcl_lib_name} PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBRARY_OUTPUT_PATH}
+        COMMAND ${CMAKE_COMMAND} -E echo "make library directories ${LIBRARY_OUTPUT_PATH}"
+        VERBATIM)
+
 if (BUILD_TEST)
     message(STATUS "building unit test")
+    set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/bin/${build_type})
     add_subdirectory(UnitTest)
     if (NOT compile_static_lib)
+        add_custom_command(TARGET ${xcl_lib_name} PRE_BUILD
+                COMMAND ${CMAKE_COMMAND} -E make_directory ${EXECUTABLE_OUTPUT_PATH}
+                COMMAND ${CMAKE_COMMAND} -E echo "make binary directories ${EXECUTABLE_OUTPUT_PATH}"
+                VERBATIM)
         add_custom_command(TARGET ${xcl_lib_name} POST_BUILD
                 COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${xcl_lib_name}> ${EXECUTABLE_OUTPUT_PATH}
                 COMMAND ${CMAKE_COMMAND} -E echo "copy $<TARGET_FILE:${xcl_lib_name}> to ${EXECUTABLE_OUTPUT_PATH}"
