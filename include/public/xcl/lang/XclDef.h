@@ -55,7 +55,11 @@
 #if WINDOWS
 #  define XCL_API __stdcall
 #  if defined(_MSC_VER) && defined(DYNAMIC)
-#    define XCL_PUBLIC __declspec(dllexport)
+#    ifdef BUILD_LIBRARY
+#      define XCL_PUBLIC __declspec(dllexport)
+#    else
+#      define XCL_PUBLIC __declspec(dllimport)
+#    endif
 #  elif GNUC || CLANG
 #    define XCL_PUBLIC __attribute__((visibility("default")))
 #  else

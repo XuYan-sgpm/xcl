@@ -29,9 +29,9 @@ set(CMAKE_C_STANDARD 11)
 set(CMAKE_DEBUG_POSTFIX "d")
 set(xcl_lib_name xcl)
 
-set(CMAKE_SHARED_LIBRARY_PREFIX lib)
+set(CMAKE_SHARED_LIBRARY_PREFIX )
 #set(CMAKE_SHARED_LIBRARY_SUFFIX "")
-set(CMAKE_STATIC_LIBRARY_PREFIX lib)
+set(CMAKE_STATIC_LIBRARY_PREFIX )
 #set(CMAKE_STATIC_LIBRARY_SUFFIX  "")
 
 if (NOT DEFINED CMAKE_BUILD_TYPE)
@@ -39,7 +39,7 @@ if (NOT DEFINED CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE "Debug")
 endif ()
 
-set(compile_static_lib true)
+set(compile_static_lib false)
 
 if (${compile_static_lib})
     set(xcl_lib_type "static")
@@ -135,6 +135,8 @@ foreach (source_file ${lib_src_files})
     message(STATUS ${source_file})
 endforeach ()
 
+add_definitions(-DBUILD_LIBRARY)
+
 if (compile_static_lib)
     message(STATUS "static")
     add_definitions(-DSTATIC)
@@ -162,19 +164,3 @@ add_custom_command(TARGET ${xcl_lib_name} PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBRARY_OUTPUT_PATH}
         COMMAND ${CMAKE_COMMAND} -E echo "make library directories ${LIBRARY_OUTPUT_PATH}"
         VERBATIM)
-
-if (BUILD_TEST)
-    message(STATUS "building unit test")
-    set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/bin/${build_type})
-    add_custom_command(TARGET ${xcl_lib_name} PRE_BUILD
-            COMMAND ${CMAKE_COMMAND} -E make_directory ${EXECUTABLE_OUTPUT_PATH}
-            COMMAND ${CMAKE_COMMAND} -E echo "make binary directories ${EXECUTABLE_OUTPUT_PATH}"
-            VERBATIM)
-    add_subdirectory(UnitTest)
-    if (NOT compile_static_lib)
-        add_custom_command(TARGET ${xcl_lib_name} POST_BUILD
-                COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:${xcl_lib_name}> ${EXECUTABLE_OUTPUT_PATH}
-                COMMAND ${CMAKE_COMMAND} -E echo "copy $<TARGET_FILE:${xcl_lib_name}> to ${EXECUTABLE_OUTPUT_PATH}"
-                VERBATIM)
-    endif ()
-endif ()
