@@ -4,6 +4,13 @@
 
 #pragma once
 
+/**
+ * all apis in this header should not be invoked
+ * directly, please using CThread.h api instead
+ * these apis only for developer to develop thread
+ * impl for different platforms
+ */
+
 #include <xcl/lang/CThread.h>
 #include <stdint.h>
 #include "CLocalStorage.h"
@@ -122,20 +129,66 @@ __Thread_detach(CThread* thread);
 
 typedef enum { SUSPEND, ALIVE, TERMINATED, INVALID, DETACHED } CThreadState;
 
+/**
+ * get current thread localstorage
+ * @return local storage
+ */
 CLocalStorage*
 __Thread_getLocalStorage();
+
+/**
+ * set current thread localstorage
+ * @param localStorage local storage
+ * @return true if set localstorage successfully, otherwise false
+ */
 bool
 __Thread_setLocalStorage(CLocalStorage* localStorage);
+
+/**
+ * set thread current state
+ * @param thread CThread object
+ * @param state CThreadState
+ */
 void
 __Thread_setState(CThread* thread, CThreadState state);
+
+/**
+ * get thread current state
+ * @param thread CThread object
+ * @return current thread state
+ */
 CThreadState
 __Thread_state(CThread* thread);
+
+/**
+ * get thread mutex
+ * @param thread CThread object
+ * @return mutex lock thread using
+ */
 void*
 __Thread_mutex(CThread* thread);
+
+/**
+ * get thread handle
+ * @param thread CThread object
+ * @return thread handle
+ */
 ThreadHandle
 __Thread_handle(CThread* thread);
+
+/**
+ * get thread attach object
+ * @param thread CThread object
+ * @return thread attach data
+ */
 void*
 __Thread_attach(CThread* thread);
+
+/**
+ * set thread attach object
+ * @param thread CThread object
+ * @param attach thread attach data
+ */
 void
 __Thread_setAttach(CThread* thread, void* attach);
 

@@ -8,12 +8,12 @@
 #include "xcl/util/CBits.h"
 
 static inline void
-__CBits_setBitsLen(CBits* bits, const int32_t category) {
+__Bits_setLen(CBits* bits, const int32_t category) {
   memcpy((void*)&bits->nBits, &category, sizeof(category));
 }
 
 static inline char*
-__CBits_getValPtr(CBits* bits) {
+__Bits_getValPtr(CBits* bits) {
   return ((CBitsSet*)bits)->ctx;
 }
 
@@ -26,8 +26,8 @@ Bits_new(int32_t size) {
   if (!bits) {
     return NULL;
   }
-  __CBits_setBitsLen(bits, size >> 3);
-  memset(__CBits_getValPtr(bits), 0, size >> 3);
+  __Bits_setLen(bits, size >> 3);
+  memset(__Bits_getValPtr(bits), 0, size >> 3);
   return bits;
 }
 
@@ -39,7 +39,7 @@ Bits_delete(CBits* bits) {
 XCL_PUBLIC void XCL_API
 Bits_set(CBits* bits, int32_t idx, bool on) {
   assert((idx >= 0 && idx < bits->nBits) && "index overflow");
-  unsigned char* vp = (unsigned char*)__CBits_getValPtr(bits) + (idx >> 3);
+  unsigned char* vp = (unsigned char*)__Bits_getValPtr(bits) + (idx >> 3);
   unsigned char value = vp[0];
   if (on) {
     unsigned char op = 1 << (idx & 7);
@@ -57,7 +57,7 @@ Bits_len(CBits* bits) {
 
 XCL_PUBLIC bool XCL_API
 Bits_get(CBits* bits, int32_t idx) {
-  unsigned char* vp = (unsigned char*)__CBits_getValPtr(bits) + (idx >> 3);
+  unsigned char* vp = (unsigned char*)__Bits_getValPtr(bits) + (idx >> 3);
   unsigned char value = vp[0];
   unsigned char op = 1 << (idx & 7);
   return value & op;
@@ -85,5 +85,5 @@ bits32() {
 
 XCL_PUBLIC unsigned char XCL_API
 Bits_getByte(CBits* bits, int32_t idx) {
-  return *(unsigned char*)(__CBits_getValPtr(bits) + idx);
+  return *(unsigned char*)(__Bits_getValPtr(bits) + idx);
 }

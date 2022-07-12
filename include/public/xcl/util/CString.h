@@ -3,6 +3,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
+#include <xcl/lang/XclDef.h>
 
 #pragma once
 
@@ -23,106 +24,106 @@ typedef struct {
   int32_t state;
 } CString;
 
-CString
+XCL_PUBLIC CString XCL_API
 String_new(const char* str);
 
-CString
+XCL_PUBLIC CString XCL_API
 String_newRegion(const char* str, const int len);
 
-CString
+XCL_PUBLIC CString XCL_API
 String_alloc(const int cap);
 
-void
+XCL_PUBLIC void XCL_API
 String_release(CString* string);
 
-void
+XCL_PUBLIC void XCL_API
 String_clear(CString* string);
 
-int
+XCL_PUBLIC int XCL_API
 String_size(const CString* string);
 
-int
+XCL_PUBLIC int XCL_API
 String_cap(const CString* string);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_empty(const CString* string);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_assign(CString* string, const char* str);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_assignRegion(CString* string, const char* str, const int len);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_assignStr(CString* string, const CString* src);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_pushChar(CString* string, char ch);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_pushChars(CString* string, const int n, char ch);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_pushRegion(CString* string, const char* str, const int len);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_push(CString* string, const char* str);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_pushStr(CString* string, const CString* src);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_writeChar(CString* string, const int pos, char ch);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_writeChars(CString* string, const int pos, const int n, char ch);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_writeRegion(CString* string,
                    const int pos,
                    const char* str,
                    const int len);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_write(CString* string, const int pos, const char* str);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_writeStr(CString* string, const int pos, const CString* src);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_pop(CString* string, char* dst);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_popBack(CString* string, char* dst);
 
-bool
+XCL_PUBLIC bool XCL_API
 String_get(const CString* string, const int pos, char* dst);
 
-int
+XCL_PUBLIC int XCL_API
 String_gets(const CString* string, const int pos, const int len, char* dst);
 
-void
+XCL_PUBLIC void XCL_API
 String_delete(CString* string, const int pos);
 
-void
+XCL_PUBLIC void XCL_API
 String_deleteRegion(CString* string, const int pos, const int len);
 
-const char*
+XCL_PUBLIC const char* XCL_API
 String_queryChar(const CString* string, const bool left, char ch);
 
-const char*
+XCL_PUBLIC const char* XCL_API
 String_query(const CString* string, const char* str);
 
-const char*
+XCL_PUBLIC const char* XCL_API
 String_queryRegion(const CString* string, const char* str, const int len);
 
-char
+XCL_PUBLIC char XCL_API
 String_at(const CString* string, const int pos);
 
-CString
+XCL_PUBLIC CString XCL_API
 String_dup(const CString* string);
 
-CString
+XCL_PUBLIC CString XCL_API
 String_dupRegion(const CString* string, const int pos, const int len);
 
 #ifdef __cplusplus

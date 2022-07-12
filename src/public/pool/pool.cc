@@ -11,7 +11,7 @@ class SysPool : public Pool {
   void
   dealloc(void* ptr, uint64_t size) override;
   void*
-  redistribute(void* ptr, uint64_t oldSize, uint64_t newSize) override;
+  realloc(void* ptr, uint64_t oldSize, uint64_t newSize) override;
 
  public:
   static SysPool*
@@ -35,8 +35,8 @@ SysPool::dealloc(void* ptr, uint64_t size) {
   free(ptr);
 }
 void*
-SysPool::redistribute(void* ptr, uint64_t oldSize, uint64_t newSize) {
-  return redistribute(ptr, oldSize, newSize);
+SysPool::realloc(void* ptr, uint64_t oldSize, uint64_t newSize) {
+  return realloc(ptr, oldSize, newSize);
 }
 SysPool*
 SysPool::instance() {

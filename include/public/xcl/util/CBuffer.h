@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdbool.h>
+#include <xcl/lang/XclDef.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,76 +13,76 @@ typedef struct {
   int size;
 } CBuffer;
 
-CBuffer
+XCL_PUBLIC CBuffer XCL_API
 Buffer_new(int cap);
 
-CBuffer
+XCL_PUBLIC CBuffer XCL_API
 Buffer_newRegion(char* src, int len);
 
-int
+XCL_PUBLIC int XCL_API
 Buffer_cap(const CBuffer* buffer);
 
-CBuffer
+XCL_PUBLIC CBuffer XCL_API
 wrapBuf(char* src, int len);
 
-CBuffer
+XCL_PUBLIC CBuffer XCL_API
 wrapBuf2(const CBuffer* buffer, int pos, int len);
 
-bool
+XCL_PUBLIC bool XCL_API
 Buffer_free(CBuffer* buffer);
 
-bool
+XCL_PUBLIC bool XCL_API
 Buffer_push(CBuffer* buffer, char ch);
 
-int
+XCL_PUBLIC int XCL_API
 Buffer_appendRegion(CBuffer* buffer, const char* src, int len);
 
-int
+XCL_PUBLIC int XCL_API
 Buffer_append(CBuffer* buffer, const char* src);
 
-int
+XCL_PUBLIC int XCL_API
 Buffer_appendChars(CBuffer* buffer, int n, char ch);
 
-bool
+XCL_PUBLIC bool XCL_API
 Buffer_pop(CBuffer* buffer, char* dst);
 
-bool
+XCL_PUBLIC bool XCL_API
 Buffer_get(const CBuffer* buffer, int pos, char* dst);
 
-bool
+XCL_PUBLIC bool XCL_API
 Buffer_writeChar(CBuffer* buffer, int pos, char ch);
 
-bool
+XCL_PUBLIC bool XCL_API
 Buffer_writeChars(CBuffer* buffer, int pos, int n, char ch);
 
-int
+XCL_PUBLIC int XCL_API
 Buffer_writeRegion(CBuffer* buffer, int pos, const char* src, int len);
 
-int
+XCL_PUBLIC int XCL_API
 Buffer_write(CBuffer* buffer, int pos, const char* src);
 
-int
+XCL_PUBLIC int XCL_API
 Buffer_readRegion(const CBuffer* buffer, int pos, char* dst, int len);
 
-int
+XCL_PUBLIC int XCL_API
 Buffer_read(const CBuffer* buffer, int pos, char* dst);
 
-bool
+XCL_PUBLIC bool XCL_API
 Buffer_expand(CBuffer* buffer, int cap);
 
-void
+XCL_PUBLIC void XCL_API
 Buffer_removeRegion(CBuffer* buffer, int pos, int len);
 
-void
+XCL_PUBLIC void XCL_API
 Buffer_removePos(CBuffer* buffer, int pos);
 
-void
+XCL_PUBLIC void XCL_API
 Buffer_clear(CBuffer* buffer);
 
-bool
+XCL_PUBLIC bool XCL_API
 Buffer_realloc(CBuffer* buffer, int cap);
 
-char*
+XCL_PUBLIC char* XCL_API
 Buffer_at(const CBuffer* buffer, int pos);
 
 #ifdef __cplusplus
