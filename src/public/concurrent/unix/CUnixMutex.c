@@ -14,7 +14,7 @@ typedef struct {
   pthread_mutex_t handle;
 } CUnixMutex;
 
-XCL_PUBLIC void* XCL_API
+XCL_EXPORT(void*)
 Mutex_new() {
   CUnixMutex* mutex = malloc(sizeof(CUnixMutex));
   if (mutex) {
@@ -32,7 +32,7 @@ Mutex_new() {
   return NULL;
 }
 
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Mutex_delete(void* mutex) {
   if (mutex) {
     int ret = pthread_mutex_destroy(&((CUnixMutex*)mutex)->handle);
@@ -44,7 +44,7 @@ Mutex_delete(void* mutex) {
   return false;
 }
 
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Mutex_lock(void* mutex) {
   if (mutex) {
     int ret = pthread_mutex_lock(&((CUnixMutex*)mutex)->handle);
@@ -56,7 +56,7 @@ Mutex_lock(void* mutex) {
   return false;
 }
 
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Mutex_unlock(void* mutex) {
   if (mutex) {
     int ret = pthread_mutex_unlock(&((CUnixMutex*)mutex)->handle);
@@ -67,7 +67,7 @@ Mutex_unlock(void* mutex) {
   return false;
 }
 
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Mutex_tryLock(void* mutex) {
   if (mutex) {
     int ret = pthread_mutex_trylock(&((CUnixMutex*)mutex)->handle);
@@ -78,7 +78,7 @@ Mutex_tryLock(void* mutex) {
   return false;
 }
 
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Mutex_tryLock2(void* mutex, int32_t timeout) {
   if (mutex) {
 #if LINUX && _POSIX_C_SOURCE >= 199309L

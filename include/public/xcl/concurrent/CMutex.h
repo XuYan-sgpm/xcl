@@ -18,7 +18,7 @@ extern "C" {
  * default is a recursive mutex
  * @return mutex object if succeed, otherwise return NULL
  */
-XCL_PUBLIC void* XCL_API
+XCL_EXPORT(void*)
 Mutex_new();
 
 /**
@@ -26,7 +26,7 @@ Mutex_new();
  * @param mutex mutex object
  * @return true if delete successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Mutex_delete(void* mutex);
 
 /**
@@ -34,7 +34,7 @@ Mutex_delete(void* mutex);
  * @param mutex mutex object
  * @return true if lock successfully
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Mutex_lock(void* mutex);
 
 /**
@@ -42,7 +42,7 @@ Mutex_lock(void* mutex);
  * @param mutex mutex object
  * @return true if unlock successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Mutex_unlock(void* mutex);
 
 /**
@@ -50,7 +50,7 @@ Mutex_unlock(void* mutex);
  * @param mutex mutex object
  * @return true if acquire mutex object successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Mutex_tryLock(void* mutex);
 
 /**
@@ -60,7 +60,7 @@ Mutex_tryLock(void* mutex);
  * @param timeout timeout milliseconds
  * @return true if lock mutex object during timeout, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Mutex_tryLock2(void* mutex, int32_t timeout);
 
 #ifdef __cplusplus

@@ -17,20 +17,20 @@ extern "C" {
  * initialize size class
  * @return true if successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 SizeClass_initialize();
 
 /**
  * release size class resource
  */
-XCL_PUBLIC void XCL_API
+XCL_EXPORT(void)
 SizeClass_finalize();
 
 /**
  * get size class items
  * @return size tab count
  */
-XCL_PUBLIC int32_t XCL_API
+XCL_EXPORT(int32_t)
 SizeClass_size();
 
 /**
@@ -39,7 +39,7 @@ SizeClass_size();
  * @param tab output
  * @return get tab successfully if true, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 SizeClass_get(int32_t idx, int32_t out[6]);
 
 /**
@@ -47,7 +47,7 @@ SizeClass_get(int32_t idx, int32_t out[6]);
  * @param size original size
  * @return size normalized by size class
  */
-XCL_PUBLIC uint32_t XCL_API
+XCL_EXPORT(uint32_t)
 SizeClass_normalize(uint32_t size);
 
 /**
@@ -55,7 +55,7 @@ SizeClass_normalize(uint32_t size);
  * @param size original size
  * @return normalized pages
  */
-XCL_PUBLIC uint32_t XCL_API
+XCL_EXPORT(uint32_t)
 SizeClass_size2pages(uint32_t size);
 
 #ifdef __cplusplus

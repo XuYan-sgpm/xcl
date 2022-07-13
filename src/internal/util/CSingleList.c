@@ -11,7 +11,7 @@ struct _CSingleList_st {
   CSingleNode header;
 };
 
-XCL_PUBLIC CSingleList* XCL_API
+XCL_EXPORT(CSingleList*)
 SingleList_new() {
   CSingleList* list = malloc(sizeof(CSingleList));
   if (list) {
@@ -21,12 +21,12 @@ SingleList_new() {
   return list;
 }
 
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 SingleList_empty(const CSingleList* list) {
   return list->header.next == NULL;
 }
 
-XCL_PUBLIC int32_t XCL_API
+XCL_EXPORT(int32_t)
 SingleList_size(const CSingleList* list) {
   int32_t count = 0;
   CSingleNode* cur = list->header.next;
@@ -36,30 +36,30 @@ SingleList_size(const CSingleList* list) {
   }
   return count;
 }
-XCL_PUBLIC CSingleListIter XCL_API
+XCL_EXPORT(CSingleListIter)
 SingleList_begin(CSingleList* list) {
   CSingleListIter iter = {.tag = &list->header, .cur = list->header.next};
   return iter;
 }
-XCL_PUBLIC CSingleListIter XCL_API
+XCL_EXPORT(CSingleListIter)
 SingleList_end(CSingleList* list) {
   CSingleListIter iter = {.tag = &list->header, .cur = &list->header};
   return iter;
 }
-XCL_PUBLIC void XCL_API
+XCL_EXPORT(void)
 SingleList_pushFront(CSingleList* list, CSingleNode* node) {
   node->next = list->header.next;
   list->header.next = node;
   if (list->tail == &list->header)
     list->tail = node;
 }
-XCL_PUBLIC void XCL_API
+XCL_EXPORT(void)
 SingleList_pushBack(CSingleList* list, CSingleNode* node) {
   node->next = NULL;
   list->tail->next = node;
   list->tail = node;
 }
-XCL_PUBLIC CSingleNode* XCL_API
+XCL_EXPORT(CSingleNode*)
 SingleList_popFront(CSingleList* list) {
   CSingleNode* node = list->header.next;
   if (node) {
@@ -69,7 +69,7 @@ SingleList_popFront(CSingleList* list) {
   }
   return node;
 }
-XCL_PUBLIC CSingleNode* XCL_API
+XCL_EXPORT(CSingleNode*)
 SingleList_popBack(CSingleList* list) {
   CSingleNode* prev = &list->header;
   CSingleNode* node = prev->next;
@@ -84,7 +84,7 @@ SingleList_popBack(CSingleList* list) {
   list->tail = prev;
   return node;
 }
-XCL_PUBLIC CSingleListIter XCL_API
+XCL_EXPORT(CSingleListIter)
 SingleList_next(CSingleList* list, CSingleListIter iter) {
   if (!iter.cur || iter.cur == iter.tag) {
     return iter;
@@ -98,11 +98,11 @@ SingleList_next(CSingleList* list, CSingleListIter iter) {
   return next;
 }
 
-XCL_PUBLIC void XCL_API
+XCL_EXPORT(void)
 SingleList_sort(CSingleList* list, int (*cmp)(const void*, const void*)) {
   //
 }
-XCL_PUBLIC void XCL_API
+XCL_EXPORT(void)
 SingleList_delete(CSingleList* list) {
   free(list);
 }

@@ -8,7 +8,7 @@
 #include <time.h>
 #include <errno.h>
 
-int64_t XCL_API
+XCL_EXPORT(int64_t)
 currentMillis() {
   struct timeval time;
   gettimeofday(&time, NULL);
@@ -17,7 +17,7 @@ currentMillis() {
   return s1 + s2;
 }
 
-int64_t XCL_API
+XCL_EXPORT(int64_t)
 nanos() {
 #ifdef CLOCK_MONOTONIC
   struct timespec tv = {0, 0};
@@ -32,7 +32,7 @@ nanos() {
 #endif
 }
 
-void XCL_API
+XCL_EXPORT(void)
 sleepMillis(int32_t timeout) {
 #if _POSIX_C_SOURCE >= 199309L
   struct timespec ts = {0, 0};
@@ -43,12 +43,8 @@ sleepMillis(int32_t timeout) {
   usleep(timeout * 1000);
 #endif
 }
-unsigned XCL_API
-error() {
-  return errno;
-}
+XCL_EXPORT(unsigned)
+error() { return errno; }
 
-void XCL_API
-setErr(unsigned int errorCode) {
-  errno = (int)errorCode;
-}
+XCL_EXPORT(void)
+setErr(unsigned int errorCode) { errno = (int)errorCode; }

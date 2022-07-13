@@ -28,7 +28,7 @@ typedef struct {
  * create a thread local object
  * @return thread local object
  */
-XCL_PUBLIC CThreadLocal XCL_API
+XCL_EXPORT(CThreadLocal)
 Local_make();
 
 /**
@@ -37,7 +37,7 @@ Local_make();
  * @param ptr pointer to store data
  * @return true if set successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_set(CThreadLocal* local, void* ptr);
 
 /**
@@ -46,7 +46,7 @@ Local_set(CThreadLocal* local, void* ptr);
  * @param val character set to thread local
  * @return true if set successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_setChar(CThreadLocal* local, char val);
 
 /**
@@ -55,7 +55,7 @@ Local_setChar(CThreadLocal* local, char val);
  * @param val byte set to thread local
  * @return true if set successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_setU8(CThreadLocal* local, unsigned char val);
 
 /**
@@ -64,7 +64,7 @@ Local_setU8(CThreadLocal* local, unsigned char val);
  * @param val int set to thread local
  * @return true if set successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_setInt32(CThreadLocal* local, int32_t val);
 
 /**
@@ -73,7 +73,7 @@ Local_setInt32(CThreadLocal* local, int32_t val);
  * @param val data set to thread local
  * @return true if set successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_setU32(CThreadLocal* local, uint32_t val);
 
 /**
@@ -82,7 +82,7 @@ Local_setU32(CThreadLocal* local, uint32_t val);
  * @param val data set to thread local
  * @return true if set successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_setInt16(CThreadLocal* local, int16_t val);
 
 /**
@@ -91,7 +91,7 @@ Local_setInt16(CThreadLocal* local, int16_t val);
  * @param val data set to thread local
  * @return true if set successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_setU16(CThreadLocal* local, uint16_t val);
 
 /**
@@ -100,7 +100,7 @@ Local_setU16(CThreadLocal* local, uint16_t val);
  * @param val data set to thread local
  * @return true if set successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_setFloat(CThreadLocal* local, float val);
 
 /**
@@ -109,7 +109,7 @@ Local_setFloat(CThreadLocal* local, float val);
  * @param val data set to thread local
  * @return true if set successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_setInt64(CThreadLocal* local, int64_t val);
 
 /**
@@ -118,7 +118,7 @@ Local_setInt64(CThreadLocal* local, int64_t val);
  * @param val data set to thread local
  * @return true if set successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_setU64(CThreadLocal* local, uint64_t val);
 
 /**
@@ -127,7 +127,7 @@ Local_setU64(CThreadLocal* local, uint64_t val);
  * @param val data set to thread local
  * @return true if set successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_setDouble(CThreadLocal* local, double val);
 
 /**
@@ -136,7 +136,7 @@ Local_setDouble(CThreadLocal* local, double val);
  * @param result pointer store data
  * @return true if get successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_get(CThreadLocal* local, void** result);
 
 /**
@@ -145,7 +145,7 @@ Local_get(CThreadLocal* local, void** result);
  * @param result pointer store data
  * @return true if get successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_getChar(CThreadLocal* local, char* result);
 
 /**
@@ -154,7 +154,7 @@ Local_getChar(CThreadLocal* local, char* result);
  * @param result pointer store data
  * @return true if get successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_getU8(CThreadLocal* local, unsigned char* result);
 
 /**
@@ -163,7 +163,7 @@ Local_getU8(CThreadLocal* local, unsigned char* result);
  * @param result pointer store data
  * @return true if get successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_getInt16(CThreadLocal* local, int16_t* result);
 
 /**
@@ -172,7 +172,7 @@ Local_getInt16(CThreadLocal* local, int16_t* result);
  * @param result pointer store data
  * @return true if get successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_getU16(CThreadLocal* local, uint16_t* result);
 
 /**
@@ -181,7 +181,7 @@ Local_getU16(CThreadLocal* local, uint16_t* result);
  * @param result pointer store data
  * @return true if get successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_getInt32(CThreadLocal* local, int32_t* result);
 
 /**
@@ -190,7 +190,7 @@ Local_getInt32(CThreadLocal* local, int32_t* result);
  * @param result pointer store data
  * @return true if get successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_getU32(CThreadLocal* local, uint32_t* result);
 
 /**
@@ -199,7 +199,7 @@ Local_getU32(CThreadLocal* local, uint32_t* result);
  * @param result pointer store data
  * @return true if successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_getFloat(CThreadLocal* local, float* result);
 
 /**
@@ -208,7 +208,7 @@ Local_getFloat(CThreadLocal* local, float* result);
  * @param result pointer store data
  * @return true if successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_getInt64(CThreadLocal* local, int64_t* result);
 
 /**
@@ -217,7 +217,7 @@ Local_getInt64(CThreadLocal* local, int64_t* result);
  * @param result pointer store data
  * @return true if successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_getU64(CThreadLocal* local, uint64_t* result);
 
 /**
@@ -226,14 +226,14 @@ Local_getU64(CThreadLocal* local, uint64_t* result);
  * @param result pointer store data
  * @return true if get successfully, otherwise false
  */
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Local_getDouble(CThreadLocal* local, double* result);
 
 /**
  * discard a thread local, thread local object is not available
  * @param local thread local object
  */
-XCL_PUBLIC void XCL_API
+XCL_EXPORT(void)
 Local_discard(CThreadLocal* local);
 
 #ifdef __cplusplus

@@ -17,21 +17,21 @@ const static int64_t NANOS_PER_SEC = 1000000000;
  * get current ticks
  * @return current cpu ticks
  */
-XCL_PUBLIC int64_t XCL_API
+XCL_EXPORT(int64_t)
 currentMillis();
 
 /**
  * get current ticks but in nano period
  * @return ticks for nano period
  */
-XCL_PUBLIC int64_t XCL_API
+XCL_EXPORT(int64_t)
 nanos();
 
 /**
  * sleep current thread during timeout milliseconds
  * @param timeout milliseconds timeout
  */
-XCL_PUBLIC void XCL_API
+XCL_EXPORT(void)
 sleepMillis(int32_t timeout);
 
 /**
@@ -42,14 +42,14 @@ sleepMillis(int32_t timeout);
  * can use error() to check
  * @return err code
  */
-XCL_PUBLIC unsigned XCL_API
+XCL_EXPORT(unsigned)
 error();
 
 /**
  * set global error code
  * @param errorCode error code
  */
-XCL_PUBLIC void XCL_API
+XCL_EXPORT(void)
 setErr(unsigned errorCode);
 
 #ifdef __cplusplus

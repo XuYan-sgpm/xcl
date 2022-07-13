@@ -10,7 +10,7 @@ typedef struct {
   CRITICAL_SECTION criticalSection;
 } CWinMutex;
 
-XCL_PUBLIC void* XCL_API
+XCL_EXPORT(void*)
 Mutex_new() {
   CWinMutex* mutex = (CWinMutex*)malloc(sizeof(CWinMutex));
   if (mutex) {
@@ -18,7 +18,7 @@ Mutex_new() {
   }
   return mutex;
 }
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Mutex_delete(void* mutex) {
   if (mutex) {
     DeleteCriticalSection(&((CWinMutex*)mutex)->criticalSection);
@@ -27,7 +27,7 @@ Mutex_delete(void* mutex) {
     return false;
   }
 }
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Mutex_lock(void* mutex) {
   if (mutex) {
     EnterCriticalSection(&((CWinMutex*)mutex)->criticalSection);
@@ -36,7 +36,7 @@ Mutex_lock(void* mutex) {
     return false;
   }
 }
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Mutex_unlock(void* mutex) {
   if (mutex) {
     LeaveCriticalSection(&((CWinMutex*)mutex)->criticalSection);
@@ -45,14 +45,14 @@ Mutex_unlock(void* mutex) {
     return false;
   }
 }
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Mutex_tryLock(void* mutex) {
   if (!mutex) {
     return false;
   }
   return TryEnterCriticalSection(&((CWinMutex*)mutex)->criticalSection);
 }
-XCL_PUBLIC bool XCL_API
+XCL_EXPORT(bool)
 Mutex_tryLock2(void* mutex, int32_t millis) {
   if (!mutex) {
     return false;

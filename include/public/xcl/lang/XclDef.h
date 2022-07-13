@@ -75,3 +75,5 @@
 #else
 #  define XCL_API
 #endif
+
+#define XCL_EXPORT(type) XCL_PUBLIC type XCL_API

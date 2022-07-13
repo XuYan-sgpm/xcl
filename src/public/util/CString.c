@@ -154,12 +154,12 @@ __String_assign(CString* string,
   return assignCursor;
 }
 
-XCL_PUBLIC CString XCL_API
+XCL_EXPORT(CString)
 String_new(const char* str) {
   return String_newRegion(str, strlen(str));
 }
 
-XCL_PUBLIC CString XCL_API
+XCL_EXPORT(CString)
 String_newRegion(const char* str, const int len) {
   CString string;
   __String_init(&string, len);
@@ -168,7 +168,7 @@ String_newRegion(const char* str, const int len) {
   return string;
 }
 
-XCL_PUBLIC CString XCL_API
+XCL_EXPORT(CString)
 String_alloc(const int cap) {
   assert(cap > 0);
   CString string;
@@ -176,7 +176,7 @@ String_alloc(const int cap) {
   return string;
 }
 
-void XCL_API
+XCL_EXPORT(void)
 String_release(CString* string) {
   if (!__String_useStack(string)) {
     free(string->mem.heap.ptr);
@@ -184,42 +184,42 @@ String_release(CString* string) {
   __String_setState(string, true, 0);
 }
 
-void XCL_API
+XCL_EXPORT(void)
 String_clear(CString* string) {
   __String_setSize(string, 0);
 }
 
-int XCL_API
+XCL_EXPORT(int)
 String_size(const CString* string) {
   return __String_getSize(string);
 }
 
-int XCL_API
+XCL_EXPORT(int)
 String_cap(const CString* string) {
   return __String_cap(string);
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_empty(const CString* string) {
   return __String_getSize(string) == 0;
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_assign(CString* string, const char* str) {
   return __String_assign(string, 0, str, strlen(str));
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_assignRegion(CString* string, const char* str, const int len) {
   return __String_assign(string, 0, str, len);
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_assignStr(CString* string, const CString* src) {
   return __String_assign(string, 0, __String_cPtr(src, 0), String_size(src));
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_pushChar(CString* string, char ch) {
   char* cursor = __String_beforeInsert(string, String_size(string), 1);
   if (cursor) {
@@ -228,7 +228,7 @@ String_pushChar(CString* string, char ch) {
   return cursor;
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_pushChars(CString* string, const int n, char ch) {
   char* cursor = __String_beforeInsert(string, String_size(string), n);
   if (cursor) {
@@ -237,7 +237,7 @@ String_pushChars(CString* string, const int n, char ch) {
   return cursor;
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_pushRegion(CString* string, const char* str, const int len) {
   char* cursor = __String_beforeInsert(string, String_size(string), len);
   if (cursor) {
@@ -246,17 +246,17 @@ String_pushRegion(CString* string, const char* str, const int len) {
   return cursor;
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_push(CString* string, const char* str) {
   return String_pushRegion(string, str, strlen(str));
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_pushStr(CString* string, const CString* src) {
   return String_pushRegion(string, __String_cPtr(src, 0), String_size(src));
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_writeChar(CString* string, const int pos, char ch) {
   char* cursor = __String_beforeInsert(string, pos, 1);
   if (cursor) {
@@ -265,7 +265,7 @@ String_writeChar(CString* string, const int pos, char ch) {
   return cursor;
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_writeChars(CString* string, const int pos, const int n, char ch) {
   char* cursor = __String_beforeInsert(string, pos, n);
   if (cursor) {
@@ -274,7 +274,7 @@ String_writeChars(CString* string, const int pos, const int n, char ch) {
   return cursor;
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_writeRegion(CString* string,
                    const int pos,
                    const char* str,
@@ -286,7 +286,7 @@ String_writeRegion(CString* string,
   return cursor;
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_write(CString* string, const int pos, const char* str) {
   const int len = strlen(str);
   char* cursor = __String_beforeInsert(string, pos, len);
@@ -296,13 +296,13 @@ String_write(CString* string, const int pos, const char* str) {
   return cursor;
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_writeStr(CString* string, const int pos, const CString* src) {
   return String_writeRegion(
       string, pos, __String_cPtr(src, 0), String_size(src));
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_pop(CString* string, char* dst) {
   if (String_empty(string)) {
     return false;
@@ -315,7 +315,7 @@ String_pop(CString* string, char* dst) {
   return true;
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_popBack(CString* string, char* dst) {
   if (String_empty(string)) {
     return false;
@@ -327,7 +327,7 @@ String_popBack(CString* string, char* dst) {
   return true;
 }
 
-bool XCL_API
+XCL_EXPORT(bool)
 String_get(const CString* string, const int pos, char* dst) {
   if (pos >= 0 && pos < String_size(string)) {
     *dst = *__String_cPtr(string, pos);
@@ -336,7 +336,7 @@ String_get(const CString* string, const int pos, char* dst) {
   return false;
 }
 
-int XCL_API
+XCL_EXPORT(int)
 String_gets(const CString* string, const int pos, const int len, char* dst) {
   if (!__String_removeCheck(string, pos, len)) {
     return -1;
@@ -345,7 +345,7 @@ String_gets(const CString* string, const int pos, const int len, char* dst) {
   return len;
 }
 
-void XCL_API
+XCL_EXPORT(void)
 String_delete(CString* string, const int pos) {
   const int size = String_size(string);
   if (pos < 0 || pos >= size) {
@@ -356,7 +356,7 @@ String_delete(CString* string, const int pos) {
   __String_setSize(string, size - 1);
 }
 
-void XCL_API
+XCL_EXPORT(void)
 String_deleteRegion(CString* string, const int pos, const int len) {
   if (__String_removeCheck(string, pos, len)) {
     char* p = __String_ptr(string, pos);
@@ -479,17 +479,17 @@ String_queryRegion(const CString* string, const char* str, const int len) {
                                     : __String_kmpSearch(string, str, len);
 }
 
-char XCL_API
+XCL_EXPORT(char)
 String_at(const CString* string, const int pos) {
   return *__String_cPtr(string, pos);
 }
 
-XCL_PUBLIC CString XCL_API
+XCL_EXPORT(CString)
 String_dup(const CString* string) {
   return String_dupRegion(string, 0, String_size(string));
 }
 
-XCL_PUBLIC CString XCL_API
+XCL_EXPORT(CString)
 String_dupRegion(const CString* string, const int pos, const int len) {
   CString copy;
   __String_init(&copy, len);

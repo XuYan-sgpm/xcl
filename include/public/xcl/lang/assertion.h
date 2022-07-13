@@ -14,7 +14,7 @@ extern "C" {
 #include <assert.h>
 #include <stdarg.h>
 
-XCL_PUBLIC void XCL_API
+XCL_EXPORT(void)
 assertIf(bool cond, const char* msg) {
   if (!cond) {
     fprintf(stderr, "%s\n", msg);
