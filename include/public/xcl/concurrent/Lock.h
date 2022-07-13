@@ -8,7 +8,7 @@
 #include "xcl/lang/XclDef.h"
 
 namespace xcl {
-class XCL_PUBLIC Lock {
+class XCL_EXPORT Lock {
  public:
   virtual ~Lock() = default;
   Lock(const Lock&) = delete;
@@ -41,7 +41,7 @@ class XCL_PUBLIC Lock {
   NewLock();
 };
 
-class XCL_PUBLIC TimedLock : public Lock {
+class XCL_EXPORT TimedLock : public Lock {
  public:
   using Lock::tryLock;
 
@@ -58,7 +58,7 @@ class XCL_PUBLIC TimedLock : public Lock {
   NewLock();
 };
 
-class XCL_PUBLIC Locker final {
+class XCL_EXPORT Locker final {
  public:
   explicit Locker(Lock* lock);
   ~Locker();

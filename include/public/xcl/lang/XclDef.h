@@ -54,20 +54,20 @@
 
 #ifdef _MSC_VER
 #  ifdef BUILD_LIBRARY
-#    define XCL_PUBLIC __declspec(dllexport)
+#    define XCL_EXPORT __declspec(dllexport)
 #  else
-#    define XCL_PUBLIC __declspec(dllimport)
+#    define XCL_EXPORT __declspec(dllimport)
 #  endif
 #elif CLANG || GNUC
-#  define XCL_PUBLIC __attribute__((visibility("default")))
+#  define XCL_EXPORT __attribute__((visibility("default")))
 #else
-#  define XCL_PUBLIC
+#  define XCL_EXPORT
 #endif
 
 #if GNUC || CLANG
-#  define XCL_HIDDEN __attribute__((visibility("hidden")))
+#  define XCL_LOCAL __attribute__((visibility("hidden")))
 #else
-#  define XCL_HIDDEN
+#  define XCL_LOCAL
 #endif
 
 #if WINDOWS
@@ -76,4 +76,4 @@
 #  define XCL_API
 #endif
 
-#define XCL_EXPORT(type) XCL_PUBLIC type XCL_API
+#define XCL_PUBLIC(type) XCL_EXPORT type XCL_API

@@ -42,34 +42,34 @@ typedef struct {
   char ctx[0];
 } CBitsSet;
 
-XCL_EXPORT(CBits*)
+XCL_PUBLIC(CBits*)
 Bits_new(int32_t size);
 
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 Bits_delete(CBits* bits);
 
-XCL_EXPORT(int32_t)
+XCL_PUBLIC(int32_t)
 Bits_len(CBits* bits);
 
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 Bits_set(CBits* bits, int32_t idx, bool on);
 
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Bits_get(CBits* bits, int32_t idx);
 
-XCL_EXPORT(unsigned char)
+XCL_PUBLIC(unsigned char)
 Bits_getByte(CBits* bits, int32_t idx);
 
-XCL_EXPORT(CBits64)
+XCL_PUBLIC(CBits64)
 bits64();
 
-XCL_EXPORT(CBits8)
+XCL_PUBLIC(CBits8)
 bits8();
 
-XCL_EXPORT(CBits16)
+XCL_PUBLIC(CBits16)
 bits16();
 
-XCL_EXPORT(CBits32)
+XCL_PUBLIC(CBits32)
 bits32();
 
 #ifdef __cplusplus

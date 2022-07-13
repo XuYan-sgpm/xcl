@@ -16,7 +16,7 @@ struct _CBlocker_st {
   bool externalLock;
 };
 
-XCL_EXPORT(CBlocker*)
+XCL_PUBLIC(CBlocker*)
 Blocker_new() {
   CBlocker* blocker = malloc(sizeof(CBlocker));
   if (blocker) {
@@ -42,7 +42,7 @@ Blocker_new() {
   return NULL;
 }
 
-XCL_EXPORT(CBlocker*)
+XCL_PUBLIC(CBlocker*)
 Blocker_new2(void* mutex) {
   CBlocker* blocker = malloc(sizeof(CBlocker));
   if (blocker) {
@@ -59,7 +59,7 @@ Blocker_new2(void* mutex) {
   return NULL;
 }
 
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Blocker_delete(CBlocker* blocker) {
   int ret = pthread_mutex_lock(blocker->mutex);
   if (ret != 0) {
@@ -95,7 +95,7 @@ Blocker_delete(CBlocker* blocker) {
   return allowRelease;
 }
 
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Blocker_wait(CBlocker* blocker) {
   int ret = pthread_mutex_lock(blocker->mutex);
   if (ret != 0) {
@@ -112,7 +112,7 @@ Blocker_wait(CBlocker* blocker) {
   return ret == 0;
 }
 
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Blocker_cancel(CBlocker* blocker) {
   int ret = pthread_mutex_lock(blocker->mutex);
   if (ret != 0) {
@@ -133,7 +133,7 @@ Blocker_cancel(CBlocker* blocker) {
   return ret == 0;
 }
 
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Blocker_wakeAll(CBlocker* blocker) {
   int ret = pthread_mutex_lock(blocker->mutex);
   if (ret != 0) {

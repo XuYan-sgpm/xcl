@@ -14,7 +14,7 @@ extern "C" {
 #include <assert.h>
 #include <stdarg.h>
 
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 assertIf(bool cond, const char* msg) {
   if (!cond) {
     fprintf(stderr, "%s\n", msg);
@@ -22,7 +22,7 @@ assertIf(bool cond, const char* msg) {
   }
 }
 
-XCL_PUBLIC void
+XCL_EXPORT void
 assertMessage(bool cond, const char* fmt, ...) {
   if (!cond) {
     va_list args;

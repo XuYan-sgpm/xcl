@@ -39,21 +39,21 @@ typedef struct _CThread_st CThread;
  * @param suspend if thread suspend when created
  * @return thread object if successfully, otherwise false
  */
-XCL_EXPORT(CThread*)
+XCL_PUBLIC(CThread*)
 Thread_new(bool suspend, Callback cb, void* usr);
 
 /**
  * get current thread object
  * @return thread object current running
  */
-XCL_EXPORT(CThread*)
+XCL_PUBLIC(CThread*)
 Thread_current();
 
 /**
  * get current thread id
  * @return current thread id
  */
-XCL_EXPORT(unsigned)
+XCL_PUBLIC(unsigned)
 Thread_currentId();
 
 /**
@@ -64,7 +64,7 @@ Thread_currentId();
  * @param usr callback parameter
  * @return true if add cb successfully, otherwise false
  */
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Thread_addCbFront(CThread* thread, Callback cb, void* usr);
 
 /**
@@ -75,7 +75,7 @@ Thread_addCbFront(CThread* thread, Callback cb, void* usr);
  * @param usr callback parameter
  * @return true if cb added successfully, otherwise false
  */
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Thread_addCbBack(CThread* thread, Callback cb, void* usr);
 
 /**
@@ -91,14 +91,14 @@ Thread_addCbBack(CThread* thread, Callback cb, void* usr);
  * thread object, you must delete one thread object in
  * another thread
  */
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Thread_delete(CThread* thread);
 
 /**
  * start a thread if thread is suspended
  * @param thread thread object
  */
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 Thread_start(CThread* thread);
 
 /**
@@ -107,14 +107,14 @@ Thread_start(CThread* thread);
  * @return true if thread is created and not terminated
  *
  */
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Thread_isAlive(CThread* thread);
 
 /**
  * wait util thread is terminated
  * @param thread thread object
  */
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 Thread_join(CThread* thread);
 
 /**
@@ -126,14 +126,14 @@ Thread_join(CThread* thread);
  * @param terminated if thread is terminated
  * @return 0 if function succeed, otherwise -1
  */
-XCL_EXPORT(int32_t)
+XCL_PUBLIC(int32_t)
 Thread_join2(CThread* thread, int32_t timeout, bool* terminated);
 
 /**
  * detach thread
  * @param thread thread object
  */
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 Thread_detach(CThread* thread);
 
 #ifdef __cplusplus

@@ -26,14 +26,14 @@ extern "C" {
  * new a linked blocking queue object
  * @return queue object if successfully, otherwise NULL
  */
-XCL_EXPORT(CLinkedBlockingQueue*)
+XCL_PUBLIC(CLinkedBlockingQueue*)
 LinkedBlockingQueue_new(uint32_t blockSize);
 
 /**
  * delete a linked blocking queue object
  * @param queue queue object
  */
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 LinkedBlockingQueue_delete(CLinkedBlockingQueue* queue);
 
 /**
@@ -43,7 +43,7 @@ LinkedBlockingQueue_delete(CLinkedBlockingQueue* queue);
  * @param len data length
  * @return true if offer successfully, otherwise false
  */
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 LinkedBlockingQueue_offer(CLinkedBlockingQueue* queue,
                           const void* src,
                           uint32_t len);
@@ -56,7 +56,7 @@ LinkedBlockingQueue_offer(CLinkedBlockingQueue* queue,
  * data size in dst
  * @return true if peek successfully, otherwise false
  */
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 LinkedBlockingQueue_peek(CLinkedBlockingQueue* queue, void* dst, uint32_t* len);
 
 /**
@@ -67,7 +67,7 @@ LinkedBlockingQueue_peek(CLinkedBlockingQueue* queue, void* dst, uint32_t* len);
  * data size in dst
  * @return true if poll successfully, otherwise false
  */
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 LinkedBlockingQueue_poll(CLinkedBlockingQueue* queue, void* dst, uint32_t* len);
 
 /**
@@ -75,7 +75,7 @@ LinkedBlockingQueue_poll(CLinkedBlockingQueue* queue, void* dst, uint32_t* len);
  * @param queue queue object
  * @return true if queue is empty, otherwise false
  */
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 LinkedBlockingQueue_isEmpty(const CLinkedBlockingQueue* queue);
 
 /**
@@ -83,7 +83,7 @@ LinkedBlockingQueue_isEmpty(const CLinkedBlockingQueue* queue);
  * @param queue queue object
  * @return available byte data block count in queue
  */
-XCL_EXPORT(int32_t)
+XCL_PUBLIC(int32_t)
 LinkedBlockingQueue_size(const CLinkedBlockingQueue* queue);
 
 #ifdef __cplusplus

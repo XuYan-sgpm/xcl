@@ -17,7 +17,7 @@ __Bits_getValPtr(CBits* bits) {
   return ((CBitsSet*)bits)->ctx;
 }
 
-XCL_EXPORT(CBits*)
+XCL_PUBLIC(CBits*)
 Bits_new(int32_t size) {
   if ((size & 7)) {
     size = ((size >> 3) + 1) << 3;
@@ -31,10 +31,10 @@ Bits_new(int32_t size) {
   return bits;
 }
 
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 Bits_delete(CBits* bits) { free(bits); }
 
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 Bits_set(CBits* bits, int32_t idx, bool on) {
   assert((idx >= 0 && idx < bits->nBits) && "index overflow");
   unsigned char* vp = (unsigned char*)__Bits_getValPtr(bits) + (idx >> 3);
@@ -48,10 +48,10 @@ Bits_set(CBits* bits, int32_t idx, bool on) {
   }
 }
 
-XCL_EXPORT(int32_t)
+XCL_PUBLIC(int32_t)
 Bits_len(CBits* bits) { return bits->nBits; }
 
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Bits_get(CBits* bits, int32_t idx) {
   unsigned char* vp = (unsigned char*)__Bits_getValPtr(bits) + (idx >> 3);
   unsigned char value = vp[0];
@@ -59,19 +59,19 @@ Bits_get(CBits* bits, int32_t idx) {
   return value & op;
 }
 
-XCL_EXPORT(CBits64)
+XCL_PUBLIC(CBits64)
 bits64() { return (CBits64){{64}, 0}; }
 
-XCL_EXPORT(CBits8)
+XCL_PUBLIC(CBits8)
 bits8() { return (CBits8){{8}, 0}; }
 
-XCL_EXPORT(CBits16)
+XCL_PUBLIC(CBits16)
 bits16() { return (CBits16){{16}, 0}; }
 
-XCL_EXPORT(CBits32)
+XCL_PUBLIC(CBits32)
 bits32() { return (CBits32){{32}, 0}; }
 
-XCL_EXPORT(unsigned char)
+XCL_PUBLIC(unsigned char)
 Bits_getByte(CBits* bits, int32_t idx) {
   return *(unsigned char*)(__Bits_getValPtr(bits) + idx);
 }

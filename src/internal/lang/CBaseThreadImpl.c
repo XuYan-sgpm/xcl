@@ -159,7 +159,7 @@ __Thread_run(void* args) {
   return retVal;
 }
 
-XCL_EXPORT(CThread*)
+XCL_PUBLIC(CThread*)
 Thread_new(bool suspend, Callback cb, void* usr) {
   bool success = false;
   CThread* thread = malloc(sizeof(CThread));
@@ -201,7 +201,7 @@ Thread_new(bool suspend, Callback cb, void* usr) {
   }
   return NULL;
 }
-XCL_EXPORT(CThread*)
+XCL_PUBLIC(CThread*)
 Thread_current() {
   CThread* thread;
   if (!Local_get(&__localThread, (void**)&thread))
@@ -231,7 +231,7 @@ Thread_current() {
   }
   return thread;
 }
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Thread_addCbFront(CThread* thread, Callback cb, void* usr) {
   Mutex_lock(thread->threadLock);
   bool ret = false;
@@ -247,7 +247,7 @@ Thread_addCbFront(CThread* thread, Callback cb, void* usr) {
   Mutex_unlock(thread->threadLock);
   return ret;
 }
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Thread_addCbBack(CThread* thread, Callback cb, void* usr) {
   Mutex_lock(thread->threadLock);
   bool ret = false;
@@ -263,7 +263,7 @@ Thread_addCbBack(CThread* thread, Callback cb, void* usr) {
   Mutex_unlock(thread->threadLock);
   return ret;
 }
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Thread_delete(CThread* thread) {
   unsigned tid = __Thread_currentId();
   bool success = false;
@@ -283,7 +283,7 @@ Thread_delete(CThread* thread) {
   }
   return success;
 }
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 Thread_start(CThread* thread) {
   Mutex_lock(thread->threadLock);
   if (thread->state == SUSPEND) {
@@ -291,21 +291,21 @@ Thread_start(CThread* thread) {
   }
   Mutex_unlock(thread->threadLock);
 }
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Thread_isAlive(CThread* thread) {
   Mutex_lock(thread->threadLock);
   bool ret = thread->state == ALIVE;
   Mutex_unlock(thread->threadLock);
   return ret;
 }
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 Thread_join(CThread* thread) {
   if (__Thread_syncGetThreadState(thread) == ALIVE) {
     __Thread_wait(thread);
     __Thread_finalize(thread);
   }
 }
-XCL_EXPORT(int32_t)
+XCL_PUBLIC(int32_t)
 Thread_join2(CThread* thread, int32_t timeout, bool* terminated) {
   int32_t ret = -1;
   if (__Thread_syncGetThreadState(thread) == ALIVE) {
@@ -317,7 +317,7 @@ Thread_join2(CThread* thread, int32_t timeout, bool* terminated) {
   }
   return ret;
 }
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 Thread_detach(CThread* thread) {
   Mutex_lock(thread->threadLock);
   if (thread->state == ALIVE) {
@@ -325,7 +325,5 @@ Thread_detach(CThread* thread) {
   }
   Mutex_unlock(thread->threadLock);
 }
-XCL_EXPORT(unsigned)
-Thread_currentId() {
-  return __Thread_currentId();
-}
+XCL_PUBLIC(unsigned)
+Thread_currentId() { return __Thread_currentId(); }

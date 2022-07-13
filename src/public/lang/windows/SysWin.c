@@ -17,9 +17,9 @@ __SYS_initNanoFreq() {
   }
 }
 
-XCL_EXPORT(int64_t)
+XCL_PUBLIC(int64_t)
 currentMillis() { return GetTickCount(); }
-XCL_EXPORT(int64_t)
+XCL_PUBLIC(int64_t)
 nanos() {
   if (__NANO_FREQ_PER_SEC == -1) {
     __SYS_initNanoFreq();
@@ -33,13 +33,13 @@ nanos() {
     return -1;
   }
 }
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 sleepMillis(int32_t timeout) {
   timeBeginPeriod(1);
   Sleep(timeout);
   timeEndPeriod(1);
 }
-XCL_EXPORT(unsigned)
+XCL_PUBLIC(unsigned)
 error() { return GetLastError(); }
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 setErr(unsigned errorCode) { SetLastError(errorCode); }

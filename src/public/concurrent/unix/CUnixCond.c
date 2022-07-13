@@ -12,7 +12,7 @@ typedef struct {
   pthread_cond_t handle;
 } CUnixCond;
 
-XCL_EXPORT(void*)
+XCL_PUBLIC(void*)
 Cond_new() {
   CUnixCond* cond = malloc(sizeof(CUnixCond));
   if (cond) {
@@ -26,7 +26,7 @@ Cond_new() {
   }
   return NULL;
 }
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Cond_delete(void* cond) {
   if (cond) {
     int ret = pthread_cond_destroy(&((CUnixCond*)cond)->handle);
@@ -37,7 +37,7 @@ Cond_delete(void* cond) {
   }
   return false;
 }
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Cond_wait(void* mutex, void* cond) {
   if (mutex && cond) {
     int ret = pthread_cond_wait(cond, mutex);
@@ -47,7 +47,7 @@ Cond_wait(void* mutex, void* cond) {
   }
   return false;
 }
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Cond_waitFor(void* mutex, void* cond, int32_t millis) {
   if (mutex && cond) {
     struct timespec ts = {0, millis * 1000000};
@@ -58,7 +58,7 @@ Cond_waitFor(void* mutex, void* cond, int32_t millis) {
   }
   return false;
 }
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Cond_signal(void* cond) {
   if (cond) {
     int ret = pthread_cond_signal(cond);
@@ -68,7 +68,7 @@ Cond_signal(void* cond) {
   }
   return false;
 }
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 Cond_signalAll(void* cond) {
   if (cond) {
     int ret = pthread_cond_broadcast(cond);

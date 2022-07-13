@@ -32,14 +32,14 @@ typedef struct {
  * new a single list object
  * @return single list object
  */
-XCL_EXPORT(CSingleList*)
+XCL_PUBLIC(CSingleList*)
 SingleList_new();
 
 /**
  * delete list object
  * @param list single list object
  */
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 SingleList_delete(CSingleList* list);
 
 /**
@@ -47,7 +47,7 @@ SingleList_delete(CSingleList* list);
  * @param list single list object
  * @return true if list is empty, otherwise false
  */
-XCL_EXPORT(bool)
+XCL_PUBLIC(bool)
 SingleList_empty(const CSingleList* list);
 
 /**
@@ -55,7 +55,7 @@ SingleList_empty(const CSingleList* list);
  * @param list single list object
  * @return element count of list
  */
-XCL_EXPORT(int32_t)
+XCL_PUBLIC(int32_t)
 SingleList_size(const CSingleList* list);
 
 /**
@@ -63,7 +63,7 @@ SingleList_size(const CSingleList* list);
  * @param list single list object
  * @return iter of begin position of single list
  */
-XCL_EXPORT(CSingleListIter)
+XCL_PUBLIC(CSingleListIter)
 SingleList_begin(CSingleList* list);
 
 /**
@@ -72,7 +72,7 @@ SingleList_begin(CSingleList* list);
  * @return iter of last position of single list,
  * without list data
  */
-XCL_EXPORT(CSingleListIter)
+XCL_PUBLIC(CSingleListIter)
 SingleList_end(CSingleList* list);
 
 /**
@@ -80,7 +80,7 @@ SingleList_end(CSingleList* list);
  * @param list single list object
  * @param node node contains data
  */
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 SingleList_pushFront(CSingleList* list, CSingleNode* node);
 
 /**
@@ -88,7 +88,7 @@ SingleList_pushFront(CSingleList* list, CSingleNode* node);
  * @param list single list object
  * @param node node contains data
  */
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 SingleList_pushBack(CSingleList* list, CSingleNode* node);
 
 /**
@@ -96,7 +96,7 @@ SingleList_pushBack(CSingleList* list, CSingleNode* node);
  * @param list single list object
  * @return first node of single list
  */
-XCL_EXPORT(CSingleNode*)
+XCL_PUBLIC(CSingleNode*)
 SingleList_popFront(CSingleList* list);
 
 /**
@@ -104,7 +104,7 @@ SingleList_popFront(CSingleList* list);
  * @param list single list object
  * @return last node contains value
  */
-XCL_EXPORT(CSingleNode*)
+XCL_PUBLIC(CSingleNode*)
 SingleList_popBack(CSingleList* list);
 
 /**
@@ -113,7 +113,7 @@ SingleList_popBack(CSingleList* list);
  * @param iter current list iter
  * @return next iter
  */
-XCL_EXPORT(CSingleListIter)
+XCL_PUBLIC(CSingleListIter)
 SingleList_next(CSingleList* list, CSingleListIter iter);
 
 /**
@@ -121,7 +121,7 @@ SingleList_next(CSingleList* list, CSingleListIter iter);
  * @param list single list object
  * @param cmp compare function pointer
  */
-XCL_EXPORT(void)
+XCL_PUBLIC(void)
 SingleList_sort(CSingleList* list, int (*cmp)(const void*, const void*));
 
 #ifdef __cplusplus
