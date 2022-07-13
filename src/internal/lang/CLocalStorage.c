@@ -23,13 +23,15 @@ __LocalStorage_reserve(CLocalStorage* localStorage, int n) {
     int32_t newCap = __LocalStorage_grow(localStorage, n);
     Block* newBlocks =
         (Block*)realloc(localStorage->blocks, newCap * sizeof(Block));
-    if (!newBlocks) {
-      return false;
+    if (newBlocks) {
+      localStorage->blocks = newBlocks;
+      localStorage->cap = newCap;
+      return true;
     }
-    localStorage->blocks = newBlocks;
-    localStorage->cap = newCap;
+  } else {
+    return true;
   }
-  return true;
+  return false;
 }
 
 static CLocalStorage*
@@ -52,7 +54,8 @@ LocalStorage_get(CLocalStorage* localStorage, int idx) {
   if (!__LocalStorage_checkMemory(localStorage, idx)) {
     return NULL;
   }
-  return localStorage->blocks[idx].data;
+  void* p = localStorage->blocks[idx].data;
+  return p;
 }
 void
 LocalStorage_free(CLocalStorage* localStorage) {
@@ -67,7 +70,7 @@ LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr) {
   if (!localStorage) {
     return false;
   }
-  void* data = LocalStorage_get(localStorage, idx);
+  void* data = localStorage->blocks[idx].data;
   *(intptr_t*)data = ptr;
   return true;
 }

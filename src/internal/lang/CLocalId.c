@@ -8,7 +8,7 @@
 #include "xcl/concurrent/CMutex.h"
 
 typedef struct {
-  int64_t* freeIdList;
+  int32_t* freeIdList;
   void* freeIdLock;
   int32_t size;
   int32_t cap;
@@ -20,11 +20,11 @@ void
 __LocalId_initQueue() {
   memset(&__idQueue, 0, sizeof(__idQueue));
   __idQueue.cap = 8;
-  int64_t* idList = malloc(__idQueue.cap * sizeof(int64_t));
+  int32_t* idList = malloc(__idQueue.cap * sizeof(int32_t));
   if (idList) {
     void* lock = Mutex_new();
     if (lock) {
-      memset(idList, 0, sizeof(int64_t) * __idQueue.cap);
+      memset(idList, 0, sizeof(int32_t) * __idQueue.cap);
       __idQueue.freeIdLock = lock;
       __idQueue.freeIdList = idList;
       return;
@@ -43,13 +43,13 @@ __LocalId_releaseQueue() {
 }
 
 static bool
-__LocalId_offerQueue(int64_t id) {
+__LocalId_offerQueue(int32_t id) {
   bool success = false;
   Mutex_lock(__idQueue.freeIdLock);
   if (__idQueue.size == __idQueue.cap) {
     int32_t newCap = __idQueue.cap << 1;
-    int64_t* newIdList =
-        realloc(__idQueue.freeIdList, newCap * sizeof(int64_t));
+    int32_t* newIdList =
+        realloc(__idQueue.freeIdList, newCap * sizeof(int32_t));
     if (newIdList) {
       __idQueue.cap = newCap;
     }
@@ -63,7 +63,7 @@ __LocalId_offerQueue(int64_t id) {
 }
 
 static bool
-__LocalId_pollQueue(int64_t* id) {
+__LocalId_pollQueue(int32_t* id) {
   *id = -1;
   Mutex_lock(__idQueue.freeIdLock);
   if (__idQueue.size > 0) {
@@ -74,11 +74,11 @@ __LocalId_pollQueue(int64_t* id) {
 }
 
 bool
-__ThreadLocal_offerId(int64_t id) {
+__ThreadLocal_offerId(int32_t id) {
   return __LocalId_offerQueue(id);
 }
 
 bool
-__ThreadLocal_pollId(int64_t* id) {
+__ThreadLocal_pollId(int32_t* id) {
   return __LocalId_pollQueue(id);
 }

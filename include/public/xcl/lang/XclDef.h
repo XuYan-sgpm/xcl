@@ -54,9 +54,15 @@
 
 #ifdef _MSC_VER
 #  ifdef BUILD_LIBRARY
-#    define XCL_EXPORT __declspec(dllexport)
-#  else
+#    ifdef DYNAMIC
+#      define XCL_EXPORT __declspec(dllexport)
+#    else
+#      define XCL_EXPORT
+#    endif
+#  elif defined(DYNAMIC)
 #    define XCL_EXPORT __declspec(dllimport)
+#  else
+#    define XCL_EXPORT
 #  endif
 #elif CLANG || GNUC
 #  define XCL_EXPORT __attribute__((visibility("default")))

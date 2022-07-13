@@ -11,8 +11,9 @@
  * make it compatible
  */
 
-#include "xcl/lang/XclDef.h"
-#if MSVC
+#if _MSC_VER && defined(DYNAMIC)
+
+#  include <xcl/lang/CBaseThreadImpl.h>
 #  include <windows.h>
 #  pragma comment(lib, "ntdll.lib")
 
@@ -22,23 +23,27 @@ __MsvcImplGlobalInit();
 void NTAPI
 __GlobalInit_cb(PVOID DllHandle, DWORD Reason, PVOID Reserved) {
   switch (Reason) {
-  case DLL_PROCESS_ATTACH:
+  case DLL_PROCESS_ATTACH: {
     __MsvcImplGlobalInit();
     break;
+  }
+  case DLL_THREAD_DETACH: {
+    __Thread_releaseLocalStorage();
+    break;
+  }
   default:
     break;
   }
 }
 
 #  ifdef _WIN64
-#    pragma comment(linker, "/INCLUDE:_tls_used")         // See p. 1 below
-#    pragma comment(linker, "/INCLUDE:tls_callback_func") // See p. 3 below
+#    pragma comment(linker, "/INCLUDE:_tls_used")
+#    pragma comment(linker, "/INCLUDE:tls_callback_func")
 #  else
-#    pragma comment(linker, "/INCLUDE:__tls_used")         // See p. 1 below
-#    pragma comment(linker, "/INCLUDE:_tls_callback_func") // See p. 3 below
+#    pragma comment(linker, "/INCLUDE:__tls_used")
+#    pragma comment(linker, "/INCLUDE:_tls_callback_func")
 #  endif
 
-// Explained in p. 3 below
 #  ifdef _WIN64
 #    pragma const_seg(".CRT$XLF")
 const

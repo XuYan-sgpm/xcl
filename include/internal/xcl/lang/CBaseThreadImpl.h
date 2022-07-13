@@ -110,7 +110,7 @@ __Thread_currentId();
  * @return current thread handle
  */
 ThreadHandle
-__Thread_currentHandle(CThread* thread, unsigned tid);
+__Thread_currentHandle();
 
 /**
  * release thread resource when thread routine
@@ -191,6 +191,12 @@ __Thread_attach(CThread* thread);
  */
 void
 __Thread_setAttach(CThread* thread, void* attach);
+
+/**
+ * release current thread local storage
+ */
+void
+__Thread_releaseLocalStorage();
 
 #ifdef __cplusplus
 }

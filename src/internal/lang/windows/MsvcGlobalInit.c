@@ -4,11 +4,12 @@
 
 #include <xcl/lang/XclDef.h>
 
-#if MSVC
+#if _MSC_VER && defined(DYNAMIC)
+
 void
 __LocalId_initQueue();
 void
-__LocalInit_allocTls();
+__allocTls();
 
 /**
  * write init code there
@@ -17,6 +18,7 @@ __LocalInit_allocTls();
 void
 __MsvcImplGlobalInit() {
   __LocalId_initQueue();
-  __LocalInit_allocTls();
+  __allocTls();
 }
+
 #endif

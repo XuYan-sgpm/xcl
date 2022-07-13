@@ -43,7 +43,10 @@ XCL_PUBLIC(CThread*)
 Thread_new(bool suspend, Callback cb, void* usr);
 
 /**
- * get current thread object
+ * get current CThread object
+ * if current thread is created by system api
+ * not with Thread_new, Thread_current will
+ * return NULL
  * @return thread object current running
  */
 XCL_PUBLIC(CThread*)
@@ -55,6 +58,13 @@ Thread_current();
  */
 XCL_PUBLIC(unsigned)
 Thread_currentId();
+
+/**
+ * get current thread handle
+ * @return current thread handle
+ */
+XCL_PUBLIC(ThreadHandle)
+Thread_currentHandle();
 
 /**
  * add cb for front call, cb will called first if no any other

@@ -85,6 +85,7 @@ __Thread_syncSetThreadState(CThread* thread, CThreadState state) {
 }
 
 #ifdef STATIC
+
 #  ifdef _MSC_VER
 #    define THREAD_LOCAL __declspec(thread)
 #  else
@@ -102,6 +103,7 @@ __Thread_setLocalStorage(CLocalStorage* localStorage) {
   __Thread_localStorage = localStorage;
   return true;
 }
+
 #endif
 
 void
@@ -203,32 +205,9 @@ Thread_new(bool suspend, Callback cb, void* usr) {
 }
 XCL_PUBLIC(CThread*)
 Thread_current() {
-  CThread* thread;
+  CThread* thread = NULL;
   if (!Local_get(&__localThread, (void**)&thread))
     return NULL;
-  if (!thread) {
-    /**
-     * current thread must not created by Thread_new
-     * so we need to wrap thread
-     */
-    unsigned tid = __Thread_currentId();
-    thread = malloc(sizeof(CThread));
-    if (thread) {
-      memset(thread, 0, sizeof(CThread));
-      thread->state = ALIVE;
-      ThreadHandle h = __Thread_currentHandle(thread, tid);
-      if (h != INVALID_THREAD_HANDLE) {
-        if (__Thread_initThreadLock(thread)) {
-          __Thread_setThreadId(thread, tid);
-          __Thread_setThreadHandle(thread, h);
-          Local_set(&__localThread, thread);
-          return thread;
-        }
-      }
-      free(thread);
-      thread = NULL;
-    }
-  }
   return thread;
 }
 XCL_PUBLIC(bool)
@@ -327,3 +306,5 @@ Thread_detach(CThread* thread) {
 }
 XCL_PUBLIC(unsigned)
 Thread_currentId() { return __Thread_currentId(); }
+XCL_PUBLIC(ThreadHandle)
+Thread_currentHandle() { return __Thread_currentHandle(); }

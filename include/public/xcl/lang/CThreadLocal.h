@@ -21,7 +21,7 @@ extern "C" {
 #endif
 
 typedef struct {
-  int64_t id;
+  int32_t id;
 } CThreadLocal;
 
 /**

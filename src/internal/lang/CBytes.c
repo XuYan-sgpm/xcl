@@ -26,31 +26,31 @@ __translate(const void* src, void* dst, int size, bool big) {
   }
 }
 
-void
+XCL_PUBLIC(void)
 int32ToBytes(int val, void* dst, bool big) {
   __translate(&val, dst, sizeof(int), big);
 }
 
-int
+XCL_PUBLIC(int32_t)
 bytesToInt32(const void* src, bool big) {
   int result;
   __translate(src, &result, sizeof(int), big);
   return result;
 }
 
-void
+XCL_PUBLIC(void)
 int64ToBytes(int64_t val, void* dst, bool big) {
   __translate(&val, dst, 8, big);
 }
 
-int64_t
+XCL_PUBLIC(int64_t)
 bytesToInt64(const void* src, bool big) {
   int64_t result;
   __translate(src, &result, 8, big);
   return result;
 }
 
-void
+XCL_PUBLIC(void)
 bytesCopy(const void* src, void* dst, int len, bool big) {
   __translate(src, dst, len, big);
 }

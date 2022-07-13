@@ -10,7 +10,8 @@
 #include <string.h>
 #include <xcl/lang/XclDef.h>
 
-#if !MSVC
+#ifndef _MSC_VER
+
 void
 __LocalId_initQueue();
 
@@ -18,6 +19,7 @@ __attribute__((constructor)) static void
 __ThreadLocal_initCtx() {
   __LocalId_initQueue();
 }
+
 #endif
 
 /**
@@ -25,22 +27,22 @@ __ThreadLocal_initCtx() {
  * position 0 is token by CThread to store current
  * thread object
  */
-static atomic_int_fast64_t __localIdGenerator = 1;
+static atomic_int_fast32_t __localIdGenerator = 1;
 
 bool
-__ThreadLocal_offerId(int64_t id);
+__ThreadLocal_offerId(int32_t id);
 bool
-__ThreadLocal_pollId(int64_t* id);
+__ThreadLocal_pollId(int32_t* id);
 
-static int64_t
+static int32_t
 __ThreadLocal_newId() {
   return atomic_fetch_add_explicit(
       &__localIdGenerator, 1, memory_order_seq_cst);
 }
 
-static int64_t
+static int32_t
 __ThreadLocal_getId() {
-  int64_t id;
+  int32_t id;
   if (!__ThreadLocal_pollId(&id)) {
     id = __ThreadLocal_newId();
   }

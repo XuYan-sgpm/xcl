@@ -122,9 +122,7 @@ SizeClass_finalize() {
 }
 
 XCL_PUBLIC(int32_t)
-SizeClass_size() {
-  return tabs;
-}
+SizeClass_size() { return tabs; }
 
 XCL_PUBLIC(bool)
 SizeClass_get(int32_t idx, int32_t* out) {

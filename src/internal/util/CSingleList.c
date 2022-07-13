@@ -22,9 +22,7 @@ SingleList_new() {
 }
 
 XCL_PUBLIC(bool)
-SingleList_empty(const CSingleList* list) {
-  return list->header.next == NULL;
-}
+SingleList_empty(const CSingleList* list) { return list->header.next == NULL; }
 
 XCL_PUBLIC(int32_t)
 SingleList_size(const CSingleList* list) {
@@ -103,6 +101,4 @@ SingleList_sort(CSingleList* list, int (*cmp)(const void*, const void*)) {
   //
 }
 XCL_PUBLIC(void)
-SingleList_delete(CSingleList* list) {
-  free(list);
-}
+SingleList_delete(CSingleList* list) { free(list); }
