@@ -15,6 +15,10 @@
 #define XCL_LOCAL_INVALID_ID XCL_ERR(3)
 #define XCL_LOCAL_NO_STORAGE XCL_ERR(4)
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /**
  * get current thread error code
  * usually set from system-level api
@@ -32,3 +36,7 @@ error();
  */
 XCL_PUBLIC(void)
 setErr(unsigned errorCode);
+
+#ifdef __cplusplus
+}
+#endif

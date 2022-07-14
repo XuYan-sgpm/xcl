@@ -3,6 +3,7 @@
 //
 
 #include "xcl/lang/CLocalStorage.h"
+#include "xcl/lang/XclErr.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -28,6 +29,7 @@ __LocalStorage_reserve(CLocalStorage* localStorage, int n) {
       localStorage->cap = newCap;
       return true;
     }
+    setErr(XCL_MEMORY_ERR);
   } else {
     return true;
   }

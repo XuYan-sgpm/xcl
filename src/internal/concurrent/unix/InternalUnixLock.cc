@@ -4,6 +4,8 @@
 
 #include <xcl/concurrent/Lock.h>
 #include <pthread.h>
+#include "xcl/lang/XclErr.h"
+#include "xcl/concurrent/CMutex.h"
 
 namespace {
 class __InternalUnixMutex : public xcl::Lock {
@@ -24,27 +26,34 @@ class __InternalUnixMutex : public xcl::Lock {
 };
 void
 __InternalUnixMutex::lock() {
-  ::pthread_mutex_lock(&mutex_);
+  Mutex_lock(&mutex_);
 }
 void
 __InternalUnixMutex::unlock() {
-  ::pthread_mutex_unlock(&mutex_);
+  Mutex_unlock(&mutex_);
 }
 bool
 __InternalUnixMutex::tryLock() {
-  return pthread_mutex_trylock(&mutex_) == 0;
+  return Mutex_tryLock(&mutex_);
 }
 __InternalUnixMutex::__InternalUnixMutex(bool recursive) : mutex_() {
+  int ret;
   if (recursive) {
     pthread_mutexattr_t attr;
     pthread_mutexattr_init(&attr);
     pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-    pthread_mutex_init(&mutex_, &attr);
+    ret = pthread_mutex_init(&mutex_, &attr);
   } else {
-    pthread_mutex_init(&mutex_, nullptr);
+    ret = pthread_mutex_init(&mutex_, nullptr);
   }
+  if (ret)
+    setErr(ret);
 }
-__InternalUnixMutex::~__InternalUnixMutex() { pthread_mutex_destroy(&mutex_); }
+__InternalUnixMutex::~__InternalUnixMutex() {
+  int ret = pthread_mutex_destroy(&mutex_);
+  if (ret)
+    setErr(ret);
+}
 
 class __InternalUnixTimedMutex : public xcl::TimedLock,
                                  public __InternalUnixMutex {
@@ -63,18 +72,7 @@ class __InternalUnixTimedMutex : public xcl::TimedLock,
 };
 bool
 __InternalUnixTimedMutex::tryLock(int32_t timeout) {
-  timespec ts{0, 0};
-  clock_gettime(CLOCK_REALTIME, &ts);
-  if (timeout > 1000) {
-    ts.tv_sec += timeout / 1000;
-    timeout = timeout % 1000;
-  }
-  ts.tv_nsec += (int64_t)timeout * 1000000L;
-  if (ts.tv_nsec > 1000000000) {
-    ts.tv_sec += ts.tv_nsec / 1000000000;
-    ts.tv_nsec = ts.tv_nsec % 1000000000;
-  }
-  return ::pthread_mutex_timedlock(&mutex_, &ts) == 0;
+  return Mutex_tryLock2(&mutex_, timeout);
 }
 __InternalUnixTimedMutex::__InternalUnixTimedMutex(bool recursive)
     : __InternalUnixMutex(recursive) {}
