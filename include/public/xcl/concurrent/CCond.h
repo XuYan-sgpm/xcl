@@ -5,7 +5,8 @@
 #pragma once
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include <stdint.h>
@@ -24,14 +25,14 @@ Cond_new();
  * @param cond condition variable
  */
 XCL_PUBLIC(bool)
-Cond_delete(void* cond);
+Cond_delete(void*cond);
 
 /**
  * wait signal util Cond_signal called
  * @param cond condition variable
  */
 XCL_PUBLIC(bool)
-Cond_wait(void* mutex, void* cond);
+Cond_wait(void*mutex, void*cond);
 
 /**
  * wait signal on the condition during millis
@@ -42,21 +43,21 @@ Cond_wait(void* mutex, void* cond);
  * @return true if condition variable signaled, otherwise false
  */
 XCL_PUBLIC(bool)
-Cond_waitFor(void* mutex, void* cond, int32_t millis);
+Cond_waitFor(void*mutex, void*cond, int32_t millis);
 
 /**
  * signal random thread wait on cond
  * @param cond condition variable
  */
 XCL_PUBLIC(bool)
-Cond_signal(void* cond);
+Cond_signal(void*cond);
 
 /**
  * signal all threads wait on cond
  * @param cond condition variable
  */
 XCL_PUBLIC(bool)
-Cond_signalAll(void* cond);
+Cond_signalAll(void*cond);
 
 #ifdef __cplusplus
 }

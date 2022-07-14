@@ -7,67 +7,75 @@
 #include <cstdint>
 #include "xcl/lang/XclDef.h"
 
-namespace xcl {
-class XCL_EXPORT Lock {
- public:
-  virtual ~Lock() = default;
-  Lock(const Lock&) = delete;
-  Lock&
-  operator=(const Lock&) = delete;
-  explicit Lock() = default;
+namespace xcl
+{
+    class XCL_EXPORT Lock
+    {
+    public:
+        virtual ~Lock() = default;
 
- public:
-  /**
-   * acquire a lock for current thread
-   */
-  virtual void
-  lock() = 0;
+        Lock(const Lock&) = delete;
 
-  /**
-   * release a lock for current thread
-   */
-  virtual void
-  unlock() = 0;
+        Lock&
+        operator=(const Lock&) = delete;
 
-  /**
-   * try acquire lock for current thread
-   * @return true if acquire successfully, otherwise false
-   */
-  virtual bool
-  tryLock() = 0;
+        explicit Lock() = default;
 
- public:
-  static Lock*
-  NewLock();
-};
+    public:
+        /**
+         * acquire a lock for current thread
+         */
+        virtual void
+        lock() = 0;
 
-class XCL_EXPORT TimedLock : public Lock {
- public:
-  using Lock::tryLock;
+        /**
+         * release a lock for current thread
+         */
+        virtual void
+        unlock() = 0;
 
-  /**
-   * try acquire lock during timeout millis for current thread
-   * @param millis timeout
-   * @return true if acquire during timeout millis successfully
-   * otherwise false
-   */
-  virtual bool
-  tryLock(int32_t millis) = 0;
+        /**
+         * try acquire lock for current thread
+         * @return true if acquire successfully, otherwise false
+         */
+        virtual bool
+        tryLock() = 0;
 
-  static TimedLock*
-  NewLock();
-};
+    public:
+        static Lock*
+        NewLock();
+    };
 
-class XCL_EXPORT Locker final {
- public:
-  explicit Locker(Lock* lock);
-  ~Locker();
+    class XCL_EXPORT TimedLock : public Lock
+    {
+    public:
+        using Lock::tryLock;
 
- public:
-  Locker&
-  operator=(const Locker&) = delete;
+        /**
+         * try acquire lock during timeout millis for current thread
+         * @param millis timeout
+         * @return true if acquire during timeout millis successfully
+         * otherwise false
+         */
+        virtual bool
+        tryLock(int32_t millis) = 0;
 
- private:
-  Lock* lock_;
-};
+        static TimedLock*
+        NewLock();
+    };
+
+    class XCL_EXPORT Locker final
+    {
+    public:
+        explicit Locker(Lock*lock);
+
+        ~Locker();
+
+    public:
+        Locker&
+        operator=(const Locker&) = delete;
+
+    private:
+        Lock*lock_;
+    };
 } // namespace xcl

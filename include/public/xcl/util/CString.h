@@ -8,123 +8,128 @@
 #pragma once
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-typedef struct {
-  union {
-    struct {
-      char data[16];
-    } stack;
-    struct {
-      char* ptr;
-      int cap;
-    } heap;
-  } mem;
-  int32_t state;
+typedef struct
+{
+    union
+    {
+        struct
+        {
+            char data[16];
+        } stack;
+        struct
+        {
+            char*ptr;
+            int cap;
+        } heap;
+    } mem;
+    int32_t state;
 } CString;
 
 XCL_PUBLIC(CString)
-String_new(const char* str);
+String_new(const char*str);
 
 XCL_PUBLIC(CString)
-String_newRegion(const char* str, const int len);
+String_newRegion(const char*str, const int len);
 
 XCL_PUBLIC(CString)
 String_alloc(const int cap);
 
 XCL_PUBLIC(void)
-String_release(CString* string);
+String_release(CString*string);
 
 XCL_PUBLIC(void)
-String_clear(CString* string);
+String_clear(CString*string);
 
 XCL_PUBLIC(int)
-String_size(const CString* string);
+String_size(const CString*string);
 
 XCL_PUBLIC(int)
-String_cap(const CString* string);
+String_cap(const CString*string);
 
 XCL_PUBLIC(bool)
-String_empty(const CString* string);
+String_empty(const CString*string);
 
 XCL_PUBLIC(bool)
-String_assign(CString* string, const char* str);
+String_assign(CString*string, const char*str);
 
 XCL_PUBLIC(bool)
-String_assignRegion(CString* string, const char* str, const int len);
+String_assignRegion(CString*string, const char*str, const int len);
 
 XCL_PUBLIC(bool)
-String_assignStr(CString* string, const CString* src);
+String_assignStr(CString*string, const CString*src);
 
 XCL_PUBLIC(bool)
-String_pushChar(CString* string, char ch);
+String_pushChar(CString*string, char ch);
 
 XCL_PUBLIC(bool)
-String_pushChars(CString* string, const int n, char ch);
+String_pushChars(CString*string, const int n, char ch);
 
 XCL_PUBLIC(bool)
-String_pushRegion(CString* string, const char* str, const int len);
+String_pushRegion(CString*string, const char*str, const int len);
 
 XCL_PUBLIC(bool)
-String_push(CString* string, const char* str);
+String_push(CString*string, const char*str);
 
 XCL_PUBLIC(bool)
-String_pushStr(CString* string, const CString* src);
+String_pushStr(CString*string, const CString*src);
 
 XCL_PUBLIC(bool)
-String_writeChar(CString* string, const int pos, char ch);
+String_writeChar(CString*string, const int pos, char ch);
 
 XCL_PUBLIC(bool)
-String_writeChars(CString* string, const int pos, const int n, char ch);
+String_writeChars(CString*string, const int pos, const int n, char ch);
 
 XCL_PUBLIC(bool)
-String_writeRegion(CString* string,
+String_writeRegion(CString*string,
                    const int pos,
-                   const char* str,
+                   const char*str,
                    const int len);
 
 XCL_PUBLIC(bool)
-String_write(CString* string, const int pos, const char* str);
+String_write(CString*string, const int pos, const char*str);
 
 XCL_PUBLIC(bool)
-String_writeStr(CString* string, const int pos, const CString* src);
+String_writeStr(CString*string, const int pos, const CString*src);
 
 XCL_PUBLIC(bool)
-String_pop(CString* string, char* dst);
+String_pop(CString*string, char*dst);
 
 XCL_PUBLIC(bool)
-String_popBack(CString* string, char* dst);
+String_popBack(CString*string, char*dst);
 
 XCL_PUBLIC(bool)
-String_get(const CString* string, const int pos, char* dst);
+String_get(const CString*string, const int pos, char*dst);
 
 XCL_PUBLIC(int)
-String_gets(const CString* string, const int pos, const int len, char* dst);
+String_gets(const CString*string, const int pos, const int len, char*dst);
 
 XCL_PUBLIC(void)
-String_delete(CString* string, const int pos);
+String_delete(CString*string, const int pos);
 
 XCL_PUBLIC(void)
-String_deleteRegion(CString* string, const int pos, const int len);
+String_deleteRegion(CString*string, const int pos, const int len);
 
 XCL_PUBLIC(const char*)
-String_queryChar(const CString* string, const bool left, char ch);
+String_queryChar(const CString*string, const bool left, char ch);
 
 XCL_PUBLIC(const char*)
-String_query(const CString* string, const char* str);
+String_query(const CString*string, const char*str);
 
 XCL_PUBLIC(const char*)
-String_queryRegion(const CString* string, const char* str, const int len);
+String_queryRegion(const CString*string, const char*str, const int len);
 
 XCL_PUBLIC(char)
-String_at(const CString* string, const int pos);
+String_at(const CString*string, const int pos);
 
 XCL_PUBLIC(CString)
-String_dup(const CString* string);
+String_dup(const CString*string);
 
 XCL_PUBLIC(CString)
-String_dupRegion(const CString* string, const int pos, const int len);
+String_dupRegion(const CString*string, const int pos, const int len);
 
 #ifdef __cplusplus
 }

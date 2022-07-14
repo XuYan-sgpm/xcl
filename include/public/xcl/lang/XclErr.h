@@ -16,7 +16,8 @@
 #define XCL_LOCAL_NO_STORAGE XCL_ERR(4)
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /**

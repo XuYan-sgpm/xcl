@@ -10,9 +10,10 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-typedef struct {
-  const char* str;
-  int len;
+typedef struct
+{
+    const char*str;
+    int len;
 } Region;
 
 /*
@@ -35,27 +36,29 @@ typedef void (*IniCallback)(void*, Region, Region, Region);
  */
 typedef int32_t (*IniReadFunc)(void*, char*, int);
 
-typedef struct {
-  /*
-   * when error occurred, continue parse or interrupt
-   */
-  const bool allowError;
-  /*
-   * allow inline comment like aaa#bbb
-   */
-  const bool allowInlineComment;
-  /*
-   * buf memory size
-   */
-  const int length;
-  /*
-   * buf to store ini characters
-   */
-  char* const buf;
+typedef struct
+{
+    /*
+     * when error occurred, continue parse or interrupt
+     */
+    const bool allowError;
+    /*
+     * allow inline comment like aaa#bbb
+     */
+    const bool allowInlineComment;
+    /*
+     * buf memory size
+     */
+    const int length;
+    /*
+     * buf to store ini characters
+     */
+    char*const buf;
 } Ini;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /*
@@ -64,19 +67,19 @@ extern "C" {
  */
 bool
 iniParseStream(
-    Ini ini, void* stream, IniReadFunc reader, IniCallback cb, void* usr);
+    Ini ini, void*stream, IniReadFunc reader, IniCallback cb, void*usr);
 
 /*
  * parse ini data from file
  */
 bool
-iniParse(Ini ini, const char* filePath, IniCallback cb, void* usr);
+iniParse(Ini ini, const char*filePath, IniCallback cb, void*usr);
 
 /*
  * parse ini data from str
  */
 bool
-iniParseString(Ini ini, const char* str, IniCallback cb, void* usr);
+iniParseString(Ini ini, const char*str, IniCallback cb, void*usr);
 
 #ifdef __cplusplus
 }

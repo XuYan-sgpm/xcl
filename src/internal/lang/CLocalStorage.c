@@ -10,82 +10,106 @@
 const static int __initialLocalStorageSize = 8;
 
 static inline int
-__LocalStorage_grow(CLocalStorage* localStorage, int n) {
-  int32_t cap = localStorage->cap;
-  return cap + (cap > n - cap ? cap : n - cap);
+__LocalStorage_grow(CLocalStorage*localStorage, int n)
+{
+    int32_t cap = localStorage->cap;
+    return cap + (cap > n - cap ? cap : n - cap);
 }
 
 /*
  * reserve n blocks for passing local storage
  */
 static bool
-__LocalStorage_reserve(CLocalStorage* localStorage, int n) {
-  if (n > localStorage->cap) {
-    int32_t newCap = __LocalStorage_grow(localStorage, n);
-    Block* newBlocks =
-        (Block*)realloc(localStorage->blocks, newCap * sizeof(Block));
-    if (newBlocks) {
-      localStorage->blocks = newBlocks;
-      localStorage->cap = newCap;
-      return true;
+__LocalStorage_reserve(CLocalStorage*localStorage, int n)
+{
+    if (n > localStorage->cap)
+    {
+        int32_t newCap = __LocalStorage_grow(localStorage, n);
+        Block*newBlocks =
+            (Block*)realloc(localStorage->blocks, newCap * sizeof(Block));
+        if (newBlocks)
+        {
+            localStorage->blocks = newBlocks;
+            localStorage->cap = newCap;
+            return true;
+        }
+        setErr(XCL_MEMORY_ERR);
     }
-    setErr(XCL_MEMORY_ERR);
-  } else {
-    return true;
-  }
-  return false;
+    else
+    {
+        return true;
+    }
+    return false;
 }
 
 static CLocalStorage*
-__LocalStorage_checkMemory(CLocalStorage* localStorage, int idx) {
-  if (!localStorage->cap) {
-    int cap =
-        __initialLocalStorageSize > idx ? __initialLocalStorageSize : idx + 1;
-    if (!__LocalStorage_reserve(localStorage, cap)) {
-      return NULL;
+__LocalStorage_checkMemory(CLocalStorage*localStorage, int idx)
+{
+    if (!localStorage->cap)
+    {
+        int cap = __initialLocalStorageSize > idx ? __initialLocalStorageSize
+                                                  : idx + 1;
+        if (!__LocalStorage_reserve(localStorage, cap))
+        {
+            return NULL;
+        }
     }
-  } else {
-    if (!__LocalStorage_reserve(localStorage, idx + 1)) {
-      return NULL;
+    else
+    {
+        if (!__LocalStorage_reserve(localStorage, idx + 1))
+        {
+            return NULL;
+        }
     }
-  }
-  return localStorage;
+    return localStorage;
 }
+
 void*
-LocalStorage_get(CLocalStorage* localStorage, int idx) {
-  if (!__LocalStorage_checkMemory(localStorage, idx)) {
-    return NULL;
-  }
-  void* p = localStorage->blocks[idx].data;
-  return p;
+LocalStorage_get(CLocalStorage*localStorage, int idx)
+{
+    if (!__LocalStorage_checkMemory(localStorage, idx))
+    {
+        return NULL;
+    }
+    void*p = localStorage->blocks[idx].data;
+    return p;
 }
+
 void
-LocalStorage_free(CLocalStorage* localStorage) {
-  if (localStorage->blocks) {
-    free(localStorage->blocks);
-    memset(localStorage, 0, sizeof(CLocalStorage));
-  }
+LocalStorage_free(CLocalStorage*localStorage)
+{
+    if (localStorage->blocks)
+    {
+        free(localStorage->blocks);
+        memset(localStorage, 0, sizeof(CLocalStorage));
+    }
 }
+
 bool
-LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr) {
-  localStorage = __LocalStorage_checkMemory(localStorage, idx);
-  if (!localStorage) {
-    return false;
-  }
-  void* data = localStorage->blocks[idx].data;
-  *(intptr_t*)data = ptr;
-  return true;
+LocalStorage_setPtr(CLocalStorage*localStorage, int idx, intptr_t ptr)
+{
+    localStorage = __LocalStorage_checkMemory(localStorage, idx);
+    if (!localStorage)
+    {
+        return false;
+    }
+    void*data = localStorage->blocks[idx].data;
+    *(intptr_t*)data = ptr;
+    return true;
 }
+
 bool
-LocalStorage_setTiny(CLocalStorage* localStorage,
+LocalStorage_setTiny(CLocalStorage*localStorage,
                      int idx,
-                     const void* src,
-                     int len) {
-  localStorage = __LocalStorage_checkMemory(localStorage, idx);
-  if (!localStorage) {
-    return false;
-  }
-  void* data = localStorage->blocks[idx].data;
-  memcpy(data, src, len);
-  return true;
+                     const void*src,
+                     int len)
+{
+    localStorage = __LocalStorage_checkMemory(localStorage, idx);
+    if (!localStorage)
+    {
+        return false;
+    }
+    void*data = localStorage->blocks[idx].data;
+    memcpy(data, src, len);
+    return true;
 }

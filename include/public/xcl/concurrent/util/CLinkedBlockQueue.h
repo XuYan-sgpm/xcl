@@ -15,7 +15,8 @@
 typedef struct CLinkedBlockingQueue_st CLinkedBlockingQueue;
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include <stdint.h>
@@ -34,7 +35,7 @@ LinkedBlockingQueue_new(uint32_t blockSize);
  * @param queue queue object
  */
 XCL_PUBLIC(void)
-LinkedBlockingQueue_delete(CLinkedBlockingQueue* queue);
+LinkedBlockingQueue_delete(CLinkedBlockingQueue*queue);
 
 /**
  * offer a byte block to queue
@@ -44,8 +45,8 @@ LinkedBlockingQueue_delete(CLinkedBlockingQueue* queue);
  * @return true if offer successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-LinkedBlockingQueue_offer(CLinkedBlockingQueue* queue,
-                          const void* src,
+LinkedBlockingQueue_offer(CLinkedBlockingQueue*queue,
+                          const void*src,
                           uint32_t len);
 
 /**
@@ -57,7 +58,9 @@ LinkedBlockingQueue_offer(CLinkedBlockingQueue* queue,
  * @return true if peek successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-LinkedBlockingQueue_peek(CLinkedBlockingQueue* queue, void* dst, uint32_t* len);
+LinkedBlockingQueue_peek(CLinkedBlockingQueue*queue,
+                         void*dst,
+                         uint32_t*len);
 
 /**
  * poll first byte data block from queue
@@ -68,7 +71,9 @@ LinkedBlockingQueue_peek(CLinkedBlockingQueue* queue, void* dst, uint32_t* len);
  * @return true if poll successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-LinkedBlockingQueue_poll(CLinkedBlockingQueue* queue, void* dst, uint32_t* len);
+LinkedBlockingQueue_poll(CLinkedBlockingQueue*queue,
+                         void*dst,
+                         uint32_t*len);
 
 /**
  * handle if queue is empty
@@ -76,7 +81,7 @@ LinkedBlockingQueue_poll(CLinkedBlockingQueue* queue, void* dst, uint32_t* len);
  * @return true if queue is empty, otherwise false
  */
 XCL_PUBLIC(bool)
-LinkedBlockingQueue_isEmpty(const CLinkedBlockingQueue* queue);
+LinkedBlockingQueue_isEmpty(const CLinkedBlockingQueue*queue);
 
 /**
  * get queue block count
@@ -84,7 +89,7 @@ LinkedBlockingQueue_isEmpty(const CLinkedBlockingQueue* queue);
  * @return available byte data block count in queue
  */
 XCL_PUBLIC(int32_t)
-LinkedBlockingQueue_size(const CLinkedBlockingQueue* queue);
+LinkedBlockingQueue_size(const CLinkedBlockingQueue*queue);
 
 #ifdef __cplusplus
 }

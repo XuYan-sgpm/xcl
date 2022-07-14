@@ -12,47 +12,65 @@
 static int64_t __NANO_FREQ_PER_SEC = -1;
 
 static void
-__SYS_initNanoFreq() {
-  LARGE_INTEGER freq;
-  if (QueryPerformanceFrequency(&freq)) {
-    __NANO_FREQ_PER_SEC = freq.QuadPart;
-  }
+__SYS_initNanoFreq()
+{
+    LARGE_INTEGER freq;
+    if (QueryPerformanceFrequency(&freq))
+    {
+        __NANO_FREQ_PER_SEC = freq.QuadPart;
+    }
 }
 
 XCL_PUBLIC(int64_t)
-currentMillis() { return GetTickCount(); }
+currentMillis()
+{ return GetTickCount(); }
+
 XCL_PUBLIC(int64_t)
-nanos() {
-  if (__NANO_FREQ_PER_SEC == -1) {
-    __SYS_initNanoFreq();
-  }
-  if (__NANO_FREQ_PER_SEC > 0) {
-    LARGE_INTEGER current;
-    QueryPerformanceCounter(&current);
-    double tmp = ((double)NANOS_PER_SEC / (double)__NANO_FREQ_PER_SEC);
-    return (int64_t)((double)current.QuadPart * tmp);
-  } else {
-    return -1;
-  }
+nanos()
+{
+    if (__NANO_FREQ_PER_SEC == -1)
+    {
+        __SYS_initNanoFreq();
+    }
+    if (__NANO_FREQ_PER_SEC > 0)
+    {
+        LARGE_INTEGER current;
+        QueryPerformanceCounter(&current);
+        double tmp = ((double)NANOS_PER_SEC / (double)__NANO_FREQ_PER_SEC);
+        return (int64_t)((double)current.QuadPart * tmp);
+    }
+    else
+    {
+        return -1;
+    }
 }
+
 XCL_PUBLIC(void)
-sleepMillis(int32_t timeout) {
-  timeBeginPeriod(1);
-  Sleep(timeout);
-  timeEndPeriod(1);
+sleepMillis(int32_t timeout)
+{
+    timeBeginPeriod(1);
+    Sleep(timeout);
+    timeEndPeriod(1);
 }
 
 bool
-__Win32_wait(HANDLE handle, DWORD timeout) {
-  DWORD ret = WaitForSingleObject(handle, timeout);
-  if (ret != WAIT_OBJECT_0) {
-    if (ret == WAIT_FAILED) {
-      setErr(GetLastError());
-    } else {
-      setErr(ret);
+__Win32_wait(HANDLE handle, DWORD timeout)
+{
+    DWORD ret = WaitForSingleObject(handle, timeout);
+    if (ret != WAIT_OBJECT_0)
+    {
+        if (ret == WAIT_FAILED)
+        {
+            setErr(GetLastError());
+        }
+        else
+        {
+            setErr(ret);
+        }
+        return false;
     }
-    return false;
-  } else {
-    return true;
-  }
+    else
+    {
+        return true;
+    }
 }

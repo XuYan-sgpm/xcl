@@ -9,7 +9,8 @@
 #include "xcl/lang/XclDef.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 /*
@@ -20,13 +21,15 @@ extern "C" {
  * or store buffer or object pointer
  * each block store one thread local data
  */
-typedef struct {
-  char data[8];
+typedef struct
+{
+    char data[8];
 } Block;
 
-typedef struct {
-  Block* blocks;
-  int32_t cap;
+typedef struct
+{
+    Block*blocks;
+    int32_t cap;
 } CLocalStorage;
 
 /**
@@ -38,7 +41,7 @@ typedef struct {
  * @return true if set successfully, false otherwise
  */
 bool
-LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr);
+LocalStorage_setPtr(CLocalStorage*localStorage, int idx, intptr_t ptr);
 
 /**
  * copy buffer to local storage if buffer size less than 8
@@ -49,9 +52,9 @@ LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr);
  * @return true if push buffer successfully, false otherwise
  */
 bool
-LocalStorage_setTiny(CLocalStorage* localStorage,
+LocalStorage_setTiny(CLocalStorage*localStorage,
                      int idx,
-                     const void* src,
+                     const void*src,
                      int len);
 
 /**
@@ -61,7 +64,7 @@ LocalStorage_setTiny(CLocalStorage* localStorage,
  * @return local data address if successfully, otherwise false
  */
 void*
-LocalStorage_get(CLocalStorage* localStorage, int idx);
+LocalStorage_get(CLocalStorage*localStorage, int idx);
 
 /**
  * release local storage memory, not include
@@ -69,7 +72,7 @@ LocalStorage_get(CLocalStorage* localStorage, int idx);
  * @param localStorage local storage object
  */
 void
-LocalStorage_free(CLocalStorage* localStorage);
+LocalStorage_free(CLocalStorage*localStorage);
 
 #ifdef __cplusplus
 }

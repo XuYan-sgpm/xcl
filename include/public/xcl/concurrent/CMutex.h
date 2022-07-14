@@ -7,7 +7,8 @@
 #include "xcl/lang/XclDef.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #include <stdbool.h>
@@ -27,7 +28,7 @@ Mutex_new();
  * @return true if delete successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Mutex_delete(void* mutex);
+Mutex_delete(void*mutex);
 
 /**
  * lock a mutex
@@ -35,7 +36,7 @@ Mutex_delete(void* mutex);
  * @return true if lock successfully
  */
 XCL_PUBLIC(bool)
-Mutex_lock(void* mutex);
+Mutex_lock(void*mutex);
 
 /**
  * release the mutex object
@@ -43,7 +44,7 @@ Mutex_lock(void* mutex);
  * @return true if unlock successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Mutex_unlock(void* mutex);
+Mutex_unlock(void*mutex);
 
 /**
  * try lock mutex
@@ -51,7 +52,7 @@ Mutex_unlock(void* mutex);
  * @return true if acquire mutex object successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Mutex_tryLock(void* mutex);
+Mutex_tryLock(void*mutex);
 
 /**
  * try lock mutex during timeout, return if acquire mutex successfully
@@ -61,7 +62,7 @@ Mutex_tryLock(void* mutex);
  * @return true if lock mutex object during timeout, otherwise false
  */
 XCL_PUBLIC(bool)
-Mutex_tryLock2(void* mutex, int32_t timeout);
+Mutex_tryLock2(void*mutex, int32_t timeout);
 
 #ifdef __cplusplus
 }

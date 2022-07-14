@@ -16,39 +16,42 @@
 #include "CLocalStorage.h"
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
 #if WINDOWS
+
 typedef unsigned __ThreadRunReturnType;
-#  define INVALID_THREAD_HANDLE NULL
+
+    #define INVALID_THREAD_HANDLE NULL
 #else
 typedef void* __ThreadRunReturnType;
-#  define INVALID_THREAD_HANDLE (0)
+    #define INVALID_THREAD_HANDLE (0)
 #endif
 
-typedef __ThreadRunReturnType(XCL_API* __ThreadRunProc)(void*);
+typedef __ThreadRunReturnType(XCL_API*__ThreadRunProc)(void*);
 
 /**
  * called before thread create
  * @param thread thread object
  */
 void
-__Thread_beforeCreate(CThread* thread);
+__Thread_beforeCreate(CThread*thread);
 
 /**
  * called after thread create
  * @param thread thread object
  */
 void
-__Thread_afterCreate(CThread* thread);
+__Thread_afterCreate(CThread*thread);
 
 /**
  * wait util thread execute finished
  * @param thread thread object
  */
 void
-__Thread_wait(CThread* thread);
+__Thread_wait(CThread*thread);
 
 /**
  * wait thread, return if thread finished
@@ -58,7 +61,7 @@ __Thread_wait(CThread* thread);
  * @return true if thread finished, otherwise false
  */
 bool
-__Thread_waitTimeout(CThread* thread, int32_t timeout);
+__Thread_waitTimeout(CThread*thread, int32_t timeout);
 
 /**
  * create a thread
@@ -72,22 +75,22 @@ __Thread_waitTimeout(CThread* thread, int32_t timeout);
 bool
 __Thread_create(bool suspend,
                 __ThreadRunProc run,
-                void* usr,
-                ThreadHandle* handle);
+                void*usr,
+                ThreadHandle*handle);
 
 /**
  * resume thread if thread in suspend state
  * @param thread thread object
  */
 void
-__Thread_resume(CThread* thread);
+__Thread_resume(CThread*thread);
 
 /**
  * called when enter thread run routine
  * @param thread thread object
  */
 void
-__Thread_onStart(CThread* thread);
+__Thread_onStart(CThread*thread);
 
 /**
  * called before thread routine return
@@ -95,7 +98,7 @@ __Thread_onStart(CThread* thread);
  * @param retVal thread return code
  */
 void
-__Thread_onFinish(CThread* thread, __ThreadRunReturnType retVal);
+__Thread_onFinish(CThread*thread, __ThreadRunReturnType retVal);
 
 /**
  * get current thread id
@@ -118,16 +121,23 @@ __Thread_currentHandle();
  * @param thread thread object
  */
 void
-__Thread_finalize(CThread* thread);
+__Thread_finalize(CThread*thread);
 
 /**
  * detach thread
  * @param thread thread object
  */
 void
-__Thread_detach(CThread* thread);
+__Thread_detach(CThread*thread);
 
-typedef enum { SUSPEND, ALIVE, TERMINATED, INVALID, DETACHED } CThreadState;
+typedef enum
+{
+    SUSPEND,
+    ALIVE,
+    TERMINATED,
+    INVALID,
+    DETACHED
+} CThreadState;
 
 /**
  * get current thread localstorage
@@ -142,7 +152,7 @@ __Thread_getLocalStorage();
  * @return true if set localstorage successfully, otherwise false
  */
 bool
-__Thread_setLocalStorage(CLocalStorage* localStorage);
+__Thread_setLocalStorage(CLocalStorage*localStorage);
 
 /**
  * set thread current state
@@ -150,7 +160,7 @@ __Thread_setLocalStorage(CLocalStorage* localStorage);
  * @param state CThreadState
  */
 void
-__Thread_setState(CThread* thread, CThreadState state);
+__Thread_setState(CThread*thread, CThreadState state);
 
 /**
  * get thread current state
@@ -158,7 +168,7 @@ __Thread_setState(CThread* thread, CThreadState state);
  * @return current thread state
  */
 CThreadState
-__Thread_state(CThread* thread);
+__Thread_state(CThread*thread);
 
 /**
  * get thread mutex
@@ -166,7 +176,7 @@ __Thread_state(CThread* thread);
  * @return mutex lock thread using
  */
 void*
-__Thread_mutex(CThread* thread);
+__Thread_mutex(CThread*thread);
 
 /**
  * get thread handle
@@ -174,7 +184,7 @@ __Thread_mutex(CThread* thread);
  * @return thread handle
  */
 ThreadHandle
-__Thread_handle(CThread* thread);
+__Thread_handle(CThread*thread);
 
 /**
  * release current thread local storage

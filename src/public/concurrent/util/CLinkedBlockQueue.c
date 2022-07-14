@@ -6,13 +6,14 @@
 #include "xcl/concurrent/CMutex.h"
 #include <stdatomic.h>
 
-struct CLinkedBlockingQueue_st {
-  void* putLock;
-  void* popLock;
-  void* notEmpty;
-  void* notFull;
-  const uint32_t blockSize;
-  void* blocks;
-  atomic_int_fast32_t blockCount;
-  const uint32_t queueCap;
+struct CLinkedBlockingQueue_st
+{
+    void*putLock;
+    void*popLock;
+    void*notEmpty;
+    void*notFull;
+    const uint32_t blockSize;
+    void*blocks;
+    atomic_int_fast32_t blockCount;
+    const uint32_t queueCap;
 };

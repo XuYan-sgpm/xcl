@@ -17,11 +17,13 @@
 #include <stdint.h>
 
 #ifdef __cplusplus
-extern "C" {
+extern "C"
+{
 #endif
 
-typedef struct {
-  int32_t id;
+typedef struct
+{
+    int32_t id;
 } CThreadLocal;
 
 /**
@@ -38,7 +40,7 @@ Local_make();
  * @return true if set successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_set(CThreadLocal* local, void* ptr);
+Local_set(CThreadLocal*local, void*ptr);
 
 /**
  * set char to thread local object
@@ -47,7 +49,7 @@ Local_set(CThreadLocal* local, void* ptr);
  * @return true if set successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_setChar(CThreadLocal* local, char val);
+Local_setChar(CThreadLocal*local, char val);
 
 /**
  * set byte to thread local
@@ -56,7 +58,7 @@ Local_setChar(CThreadLocal* local, char val);
  * @return true if set successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_setU8(CThreadLocal* local, unsigned char val);
+Local_setU8(CThreadLocal*local, unsigned char val);
 
 /**
  * set int to thread local
@@ -65,7 +67,7 @@ Local_setU8(CThreadLocal* local, unsigned char val);
  * @return true if set successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_setInt32(CThreadLocal* local, int32_t val);
+Local_setInt32(CThreadLocal*local, int32_t val);
 
 /**
  * set unsigned to thread local
@@ -74,7 +76,7 @@ Local_setInt32(CThreadLocal* local, int32_t val);
  * @return true if set successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_setU32(CThreadLocal* local, uint32_t val);
+Local_setU32(CThreadLocal*local, uint32_t val);
 
 /**
  * set short to thread local
@@ -83,7 +85,7 @@ Local_setU32(CThreadLocal* local, uint32_t val);
  * @return true if set successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_setInt16(CThreadLocal* local, int16_t val);
+Local_setInt16(CThreadLocal*local, int16_t val);
 
 /**
  * set unsigned short to thread local
@@ -92,7 +94,7 @@ Local_setInt16(CThreadLocal* local, int16_t val);
  * @return true if set successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_setU16(CThreadLocal* local, uint16_t val);
+Local_setU16(CThreadLocal*local, uint16_t val);
 
 /**
  * set float to thread local
@@ -101,7 +103,7 @@ Local_setU16(CThreadLocal* local, uint16_t val);
  * @return true if set successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_setFloat(CThreadLocal* local, float val);
+Local_setFloat(CThreadLocal*local, float val);
 
 /**
  * set 64 bits int to thread local
@@ -110,7 +112,7 @@ Local_setFloat(CThreadLocal* local, float val);
  * @return true if set successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_setInt64(CThreadLocal* local, int64_t val);
+Local_setInt64(CThreadLocal*local, int64_t val);
 
 /**
  * set 64 bits unsigned to thread local
@@ -119,7 +121,7 @@ Local_setInt64(CThreadLocal* local, int64_t val);
  * @return true if set successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_setU64(CThreadLocal* local, uint64_t val);
+Local_setU64(CThreadLocal*local, uint64_t val);
 
 /**
  * set double to thread local
@@ -128,7 +130,7 @@ Local_setU64(CThreadLocal* local, uint64_t val);
  * @return true if set successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_setDouble(CThreadLocal* local, double val);
+Local_setDouble(CThreadLocal*local, double val);
 
 /**
  * get ptr from thread local
@@ -137,7 +139,7 @@ Local_setDouble(CThreadLocal* local, double val);
  * @return true if get successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_get(CThreadLocal* local, void** result);
+Local_get(CThreadLocal*local, void**result);
 
 /**
  * get character from thread local
@@ -146,7 +148,7 @@ Local_get(CThreadLocal* local, void** result);
  * @return true if get successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_getChar(CThreadLocal* local, char* result);
+Local_getChar(CThreadLocal*local, char*result);
 
 /**
  * get byte from thread local
@@ -155,7 +157,7 @@ Local_getChar(CThreadLocal* local, char* result);
  * @return true if get successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_getU8(CThreadLocal* local, unsigned char* result);
+Local_getU8(CThreadLocal*local, unsigned char*result);
 
 /**
  * get short from thread local
@@ -164,7 +166,7 @@ Local_getU8(CThreadLocal* local, unsigned char* result);
  * @return true if get successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_getInt16(CThreadLocal* local, int16_t* result);
+Local_getInt16(CThreadLocal*local, int16_t*result);
 
 /**
  * get unsigned short from thread local
@@ -173,7 +175,7 @@ Local_getInt16(CThreadLocal* local, int16_t* result);
  * @return true if get successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_getU16(CThreadLocal* local, uint16_t* result);
+Local_getU16(CThreadLocal*local, uint16_t*result);
 
 /**
  * get int from thread local
@@ -182,7 +184,7 @@ Local_getU16(CThreadLocal* local, uint16_t* result);
  * @return true if get successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_getInt32(CThreadLocal* local, int32_t* result);
+Local_getInt32(CThreadLocal*local, int32_t*result);
 
 /**
  * get unsigned from thread local
@@ -191,7 +193,7 @@ Local_getInt32(CThreadLocal* local, int32_t* result);
  * @return true if get successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_getU32(CThreadLocal* local, uint32_t* result);
+Local_getU32(CThreadLocal*local, uint32_t*result);
 
 /**
  * get float from thread local
@@ -200,7 +202,7 @@ Local_getU32(CThreadLocal* local, uint32_t* result);
  * @return true if successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_getFloat(CThreadLocal* local, float* result);
+Local_getFloat(CThreadLocal*local, float*result);
 
 /**
  * get long from thread local
@@ -209,7 +211,7 @@ Local_getFloat(CThreadLocal* local, float* result);
  * @return true if successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_getInt64(CThreadLocal* local, int64_t* result);
+Local_getInt64(CThreadLocal*local, int64_t*result);
 
 /**
  * get unsigned long from thread local
@@ -218,7 +220,7 @@ Local_getInt64(CThreadLocal* local, int64_t* result);
  * @return true if successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_getU64(CThreadLocal* local, uint64_t* result);
+Local_getU64(CThreadLocal*local, uint64_t*result);
 
 /**
  * get double from thread local
@@ -227,14 +229,14 @@ Local_getU64(CThreadLocal* local, uint64_t* result);
  * @return true if get successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Local_getDouble(CThreadLocal* local, double* result);
+Local_getDouble(CThreadLocal*local, double*result);
 
 /**
  * discard a thread local, thread local object is not available
  * @param local thread local object
  */
 XCL_PUBLIC(void)
-Local_discard(CThreadLocal* local);
+Local_discard(CThreadLocal*local);
 
 /**
  * initialize thread local environment

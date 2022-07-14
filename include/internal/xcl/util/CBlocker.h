@@ -28,7 +28,7 @@ Blocker_new();
  * @return blocker object if create successfully, otherwise false
  */
 XCL_PUBLIC(CBlocker*)
-Blocker_new2(void* mutex);
+Blocker_new2(void*mutex);
 
 /**
  * delete the blocker object
@@ -37,7 +37,7 @@ Blocker_new2(void* mutex);
  * otherwise false
  */
 XCL_PUBLIC(bool)
-Blocker_delete(CBlocker* blocker);
+Blocker_delete(CBlocker*blocker);
 
 /**
  * wait blocker util signal received
@@ -45,7 +45,7 @@ Blocker_delete(CBlocker* blocker);
  * @return blocker wait successfully
  */
 XCL_PUBLIC(bool)
-Blocker_wait(CBlocker* blocker);
+Blocker_wait(CBlocker*blocker);
 
 /**
  * send a signal if blocker is in waiting state
@@ -55,7 +55,7 @@ Blocker_wait(CBlocker* blocker);
  * @return blocker notify successfully
  */
 XCL_PUBLIC(bool)
-Blocker_cancel(CBlocker* blocker);
+Blocker_cancel(CBlocker*blocker);
 
 /**
  * wake all waiting blocker
@@ -63,4 +63,4 @@ Blocker_cancel(CBlocker* blocker);
  * @return notify all waiting blocker successfully
  */
 XCL_PUBLIC(bool)
-Blocker_wakeAll(CBlocker* blocker);
+Blocker_wakeAll(CBlocker*blocker);
