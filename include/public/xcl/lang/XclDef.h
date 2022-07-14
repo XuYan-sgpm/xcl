@@ -4,6 +4,8 @@
 
 #pragma once
 
+#include <stdint.h>
+
 #ifdef __APPLE__
 #  define MACOSX 1
 #else

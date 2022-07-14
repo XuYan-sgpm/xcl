@@ -5,6 +5,8 @@
 #include <xcl/lang/XclDef.h>
 #include <stdbool.h>
 #include "xcl/lang/CLocalStorage.h"
+#include "xcl/lang/CThreadLocal.h"
+#include "xcl/lang/XclErr.h"
 
 void
 __LocalId_initQueue();
@@ -41,6 +43,8 @@ __allocTls() {
   DWORD idx = TlsAlloc();
   if (idx != TLS_OUT_OF_INDEXES) {
     __Win32_storageKey = idx;
+  } else {
+    setErr(GetLastError());
   }
 }
 void
@@ -54,20 +58,14 @@ __Thread_getLocalStorage() {
 }
 bool
 __Thread_setLocalStorage(CLocalStorage* localStorage) {
-  return TlsSetValue(__Win32_storageKey, localStorage);
+  bool success = TlsSetValue(__Win32_storageKey, localStorage);
+  if (!success) {
+    setErr(GetLastError());
+  }
+  return success;
 }
 
 #endif
-
-XCL_PUBLIC(bool)
-Local_initEnv() {
-  static bool initDone = false;
-  if (!initDone) {
-    __Local_implInitialize();
-    initDone = true;
-  }
-  return initDone;
-}
 
 #if GNUC || CLANG
 

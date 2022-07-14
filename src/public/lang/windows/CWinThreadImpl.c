@@ -6,6 +6,10 @@
 #include <windows.h>
 #include <synchapi.h>
 #include <process.h>
+#include <xcl/lang/XclErr.h>
+
+bool
+__Win32_wait(HANDLE handle, DWORD timeout);
 
 void
 __Thread_beforeCreate(CThread* thread) {}
@@ -13,12 +17,11 @@ void
 __Thread_afterCreate(CThread* thread) {}
 void
 __Thread_wait(CThread* thread) {
-  WaitForSingleObject(__Thread_handle(thread), INFINITE);
+  __Win32_wait(__Thread_handle(thread), INFINITE);
 }
 bool
 __Thread_waitTimeout(CThread* thread, int32_t timeout) {
-  DWORD ret = WaitForSingleObject(__Thread_handle(thread), timeout);
-  return ret == WAIT_OBJECT_0;
+  return __Win32_wait(__Thread_handle(thread), timeout);
 }
 bool
 __Thread_create(bool suspend,
@@ -33,7 +36,10 @@ __Thread_create(bool suspend,
 void
 __Thread_resume(CThread* thread) {
   __Thread_setState(thread, ALIVE);
-  ResumeThread(__Thread_handle(thread));
+  DWORD ret = ResumeThread(__Thread_handle(thread));
+  if (ret == -1) {
+    setErr(GetLastError());
+  }
 }
 void
 __Thread_onStart(CThread* thread) {}

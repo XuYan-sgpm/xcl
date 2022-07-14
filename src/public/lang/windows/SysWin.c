@@ -3,9 +3,11 @@
 //
 
 #include "xcl/lang/system.h"
+#include "xcl/lang/XclErr.h"
 #include <Windows.h>
 #include <sysinfoapi.h>
 #include <profileapi.h>
+#include <stdbool.h>
 
 static int64_t __NANO_FREQ_PER_SEC = -1;
 
@@ -39,7 +41,18 @@ sleepMillis(int32_t timeout) {
   Sleep(timeout);
   timeEndPeriod(1);
 }
-XCL_PUBLIC(unsigned)
-error() { return GetLastError(); }
-XCL_PUBLIC(void)
-setErr(unsigned errorCode) { SetLastError(errorCode); }
+
+bool
+__Win32_wait(HANDLE handle, DWORD timeout) {
+  DWORD ret = WaitForSingleObject(handle, timeout);
+  if (ret != WAIT_OBJECT_0) {
+    if (ret == WAIT_FAILED) {
+      setErr(GetLastError());
+    } else {
+      setErr(ret);
+    }
+    return false;
+  } else {
+    return true;
+  }
+}

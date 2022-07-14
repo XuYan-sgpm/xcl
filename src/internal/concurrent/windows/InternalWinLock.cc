@@ -2,13 +2,15 @@
 // Created by xuyan on 2022/6/24.
 //
 
-#define _AMD64_
-
+#include <windows.h>
 #include <synchapi.h>
 #include <handleapi.h>
 #include <windef.h>
 #include <WinBase.h>
 #include "xcl/concurrent/Lock.h"
+
+extern "C" bool
+__Win32_wait(HANDLE handle, DWORD timeout);
 
 namespace {
 class __InternalWinMutex : public xcl::Lock {
@@ -66,7 +68,7 @@ class __InternalWinTimedMutex : public xcl::TimedLock {
 };
 void
 __InternalWinTimedMutex::lock() {
-  ::WaitForSingleObject(handle_, INFINITE);
+  __Win32_wait(handle_, INFINITE);
 }
 void
 __InternalWinTimedMutex::unlock() {
@@ -74,11 +76,11 @@ __InternalWinTimedMutex::unlock() {
 }
 bool
 __InternalWinTimedMutex::tryLock() {
-  return ::WaitForSingleObject(handle_, 0) == WAIT_OBJECT_0;
+  return __Win32_wait(handle_, 0);
 }
 bool
 __InternalWinTimedMutex::tryLock(int32_t millis) {
-  return ::WaitForSingleObject(handle_, millis) == WAIT_OBJECT_0;
+  return __Win32_wait(handle_, millis);
 }
 __InternalWinTimedMutex::__InternalWinTimedMutex() : handle_(nullptr) {
   handle_ = ::CreateMutex(nullptr, false, nullptr);

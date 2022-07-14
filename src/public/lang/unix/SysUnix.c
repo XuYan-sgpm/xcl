@@ -43,8 +43,3 @@ sleepMillis(int32_t timeout) {
   usleep(timeout * 1000);
 #endif
 }
-XCL_PUBLIC(unsigned)
-error() { return errno; }
-
-XCL_PUBLIC(void)
-setErr(unsigned int errorCode) { errno = (int)errorCode; }

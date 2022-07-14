@@ -9,6 +9,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <xcl/lang/XclDef.h>
+#include <xcl/lang/XclErr.h>
 
 void
 __LocalId_initQueue();
@@ -51,6 +52,7 @@ static CLocalStorage*
 __ThreadLocal_newLocalStorage() {
   CLocalStorage* localStorage = (CLocalStorage*)malloc(sizeof(CLocalStorage));
   if (!localStorage) {
+    setErr(XCL_MEMORY_ERR);
     return NULL;
   }
   memset(localStorage, 0, sizeof(CLocalStorage));
@@ -73,6 +75,7 @@ __ThreadLocal_checkoutLocalStorage() {
 static bool
 __ThreadLocal_setData(CThreadLocal* local, const void* src, int len) {
   if (local->id < 0) {
+    setErr(XCL_LOCAL_INVALID_ID);
     return false;
   }
   CLocalStorage* localStorage = __ThreadLocal_checkoutLocalStorage();
@@ -85,10 +88,12 @@ __ThreadLocal_setData(CThreadLocal* local, const void* src, int len) {
 static void*
 __ThreadLocal_getData(CThreadLocal* local) {
   if (local->id < 0) {
+    setErr(XCL_LOCAL_INVALID_ID);
     return NULL;
   }
   CLocalStorage* localStorage = __Thread_getLocalStorage();
   if (!localStorage) {
+    setErr(XCL_LOCAL_NO_STORAGE);
     return NULL;
   }
   return LocalStorage_get(localStorage, local->id);

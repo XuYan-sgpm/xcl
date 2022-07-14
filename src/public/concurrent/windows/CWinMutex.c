@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include "xcl/concurrent/CMutex.h"
 #include "xcl/lang/system.h"
+#include "xcl/lang/XclErr.h"
 
 typedef struct {
   CRITICAL_SECTION criticalSection;
@@ -15,6 +16,8 @@ Mutex_new() {
   CWinMutex* mutex = (CWinMutex*)malloc(sizeof(CWinMutex));
   if (mutex) {
     InitializeCriticalSection(&mutex->criticalSection);
+  } else {
+    setErr(XCL_MEMORY_ERR);
   }
   return mutex;
 }
@@ -24,6 +27,7 @@ Mutex_delete(void* mutex) {
     DeleteCriticalSection(&((CWinMutex*)mutex)->criticalSection);
     return true;
   } else {
+    setErr(XCL_INVALID_PARAM);
     return false;
   }
 }
@@ -33,6 +37,7 @@ Mutex_lock(void* mutex) {
     EnterCriticalSection(&((CWinMutex*)mutex)->criticalSection);
     return true;
   } else {
+    setErr(XCL_INVALID_PARAM);
     return false;
   }
 }
@@ -42,19 +47,23 @@ Mutex_unlock(void* mutex) {
     LeaveCriticalSection(&((CWinMutex*)mutex)->criticalSection);
     return true;
   } else {
+    setErr(XCL_INVALID_PARAM);
     return false;
   }
 }
 XCL_PUBLIC(bool)
 Mutex_tryLock(void* mutex) {
   if (!mutex) {
+    setErr(XCL_INVALID_PARAM);
     return false;
+  } else {
+    return TryEnterCriticalSection(&((CWinMutex*)mutex)->criticalSection);
   }
-  return TryEnterCriticalSection(&((CWinMutex*)mutex)->criticalSection);
 }
 XCL_PUBLIC(bool)
 Mutex_tryLock2(void* mutex, int32_t millis) {
   if (!mutex) {
+    setErr(XCL_INVALID_PARAM);
     return false;
   }
   int64_t st = nanos();

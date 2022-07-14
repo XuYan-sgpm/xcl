@@ -5,6 +5,7 @@
 #include <Windows.h>
 #include <synchapi.h>
 #include "xcl/concurrent/CCond.h"
+#include "xcl/lang/XclErr.h"
 #include <WinBase.h>
 
 typedef struct {
@@ -16,6 +17,8 @@ Cond_new() {
   CWinCond* cond = (CWinCond*)malloc(sizeof(CWinCond));
   if (cond) {
     InitializeConditionVariable(&cond->conditionVariable);
+  } else {
+    setErr(XCL_MEMORY_ERR);
   }
   return cond;
 }
@@ -26,16 +29,23 @@ Cond_wait(void* mutex, void* cond) {
   if (cond) {
     return SleepConditionVariableCS(
         &((CWinCond*)cond)->conditionVariable, mutex, INFINITE);
+  } else {
+    setErr(XCL_INVALID_PARAM);
   }
   return false;
 }
 XCL_PUBLIC(bool)
 Cond_waitFor(void* mutex, void* cond, int32_t millis) {
   if (!cond || !mutex) {
+    setErr(XCL_INVALID_PARAM);
     return false;
   }
-  return SleepConditionVariableCS(
+  bool success = SleepConditionVariableCS(
       &((CWinCond*)cond)->conditionVariable, mutex, millis);
+  if (!success) {
+    setErr(GetLastError());
+  }
+  return success;
 }
 XCL_PUBLIC(bool)
 Cond_signal(void* cond) {
@@ -43,6 +53,7 @@ Cond_signal(void* cond) {
     WakeConditionVariable(&((CWinCond*)cond)->conditionVariable);
     return true;
   } else {
+    setErr(XCL_INVALID_PARAM);
     return false;
   }
 }
@@ -52,6 +63,7 @@ Cond_signalAll(void* cond) {
     WakeAllConditionVariable(&((CWinCond*)cond)->conditionVariable);
     return true;
   } else {
+    setErr(XCL_INVALID_PARAM);
     return false;
   }
 }
