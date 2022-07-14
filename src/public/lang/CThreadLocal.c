@@ -10,17 +10,10 @@
 #include <string.h>
 #include <xcl/lang/XclDef.h>
 
-#ifndef _MSC_VER
-
 void
 __LocalId_initQueue();
-
-__attribute__((constructor)) static void
-__ThreadLocal_initCtx() {
-  __LocalId_initQueue();
-}
-
-#endif
+void
+__Local_implInitialize();
 
 /**
  * thread local id starts from 1 not 0, because
@@ -50,7 +43,7 @@ __ThreadLocal_getId() {
 }
 
 static void
-__ThreadLocal_recycleId(long id) {
+__ThreadLocal_recycleId(int32_t id) {
   __ThreadLocal_offerId(id);
 }
 
@@ -248,4 +241,13 @@ Local_getDouble(CThreadLocal* local, double* result) {
     *result = *(double*)data;
   }
   return data;
+}
+XCL_PUBLIC(bool)
+Local_initEnv() {
+  static bool initDone = false;
+  if (!initDone) {
+    __Local_implInitialize();
+    initDone = true;
+  }
+  return initDone;
 }

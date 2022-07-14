@@ -87,24 +87,3 @@ __Thread_detach(CThread* thread) {
   if (ret)
     errno = ret;
 }
-
-#ifdef DYNAMIC
-pthread_key_t __localStorageKey = 0;
-
-static __attribute__((constructor)) void
-__initKey() {
-  pthread_key_create(&__localStorageKey, NULL);
-}
-
-CLocalStorage*
-__Thread_getLocalStorage() {
-  return pthread_getspecific(__localStorageKey);
-}
-
-bool
-__Thread_setLocalStorage(CLocalStorage* localStorage) {
-  int ret = pthread_setspecific(__localStorageKey, localStorage);
-  return ret == 0;
-}
-
-#endif
