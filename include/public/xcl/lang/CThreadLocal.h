@@ -236,6 +236,17 @@ Local_getDouble(CThreadLocal* local, double* result);
 XCL_PUBLIC(void)
 Local_discard(CThreadLocal* local);
 
+/**
+ * initialize thread local environment
+ * the function is not thread safe, and can only
+ * called once
+ * note that if you use clang or gcc to compile
+ * you don't need to call this api
+ * @return true if initialize successfully, otherwise false
+ */
+XCL_PUBLIC(bool)
+Local_initEnv();
+
 #ifdef __cplusplus
 }
 #endif

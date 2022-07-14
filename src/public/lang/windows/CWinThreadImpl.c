@@ -58,39 +58,3 @@ __Thread_detach(CThread* thread) {
   CloseHandle(__Thread_handle(thread));
   __Thread_setState(thread, DETACHED);
 }
-
-#ifdef DYNAMIC
-
-#  include <windows.h>
-#  include <processthreadsapi.h>
-#  include "xcl/lang/CBaseThreadImpl.h"
-
-static DWORD __localStorageKey = TLS_OUT_OF_INDEXES;
-
-void
-__allocTls() {
-  DWORD idx = TlsAlloc();
-  if (idx != TLS_OUT_OF_INDEXES) {
-    __localStorageKey = idx;
-  }
-}
-
-#  ifndef _MSC_VER
-
-__attribute__((constructor)) static void
-__initKey() {
-  __allocTls();
-}
-
-#  endif
-
-CLocalStorage*
-__Thread_getLocalStorage() {
-  return (CLocalStorage*)TlsGetValue(__localStorageKey);
-}
-bool
-__Thread_setLocalStorage(CLocalStorage* localStorage) {
-  return TlsSetValue(__localStorageKey, localStorage);
-}
-
-#endif

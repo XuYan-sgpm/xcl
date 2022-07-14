@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.15)
 
 project(xcl C CXX)
 
+set(BUILD_LIB_TYPE dynamic)
+
 function(check_c_cxx_compiler)
     function(_check_compiler compiler)
         message(STATUS ${compiler})

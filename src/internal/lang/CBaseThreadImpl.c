@@ -84,28 +84,6 @@ __Thread_syncSetThreadState(CThread* thread, CThreadState state) {
   Mutex_unlock(thread->threadLock);
 }
 
-#ifdef STATIC
-
-#  ifdef _MSC_VER
-#    define THREAD_LOCAL __declspec(thread)
-#  else
-#    define THREAD_LOCAL __thread
-#  endif
-
-static THREAD_LOCAL CLocalStorage* __Thread_localStorage = NULL;
-
-CLocalStorage*
-__Thread_getLocalStorage() {
-  return __Thread_localStorage;
-}
-bool
-__Thread_setLocalStorage(CLocalStorage* localStorage) {
-  __Thread_localStorage = localStorage;
-  return true;
-}
-
-#endif
-
 void
 __Thread_releaseLocalStorage() {
   CLocalStorage* localStorage = __Thread_getLocalStorage();
