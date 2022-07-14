@@ -109,14 +109,10 @@ ThreadHandle
 __Thread_handle(CThread* thread) {
   return thread->handle;
 }
-void*
-__Thread_attach(CThread* thread) {
-  return thread->attach;
-}
-void
-__Thread_setAttach(CThread* thread, void* attach) {
-  thread->attach = attach;
-}
+XCL_PUBLIC(void*)
+Thread_attach(CThread* thread) { return thread->attach; }
+XCL_PUBLIC(void)
+Thread_setAttach(CThread* thread, void* attach) { thread->attach = attach; }
 
 static __ThreadRunReturnType XCL_API
 __Thread_run(void* args) {

@@ -90,12 +90,10 @@ Thread_addCbBack(CThread* thread, Callback cb, void* usr);
 
 /**
  * delete thread object
- * warning! this function is not thread safe and
+ * note that this function is not thread safe and
  * can only called once, and can not invoked together
  * with other Thread_xxx apis
  * @param thread thread object
- * @return true if thread is joined or detached before
- * delete call, otherwise return false
  * @return true if delete successfully, otherwise false
  * Thread_delete return false only when delete current
  * thread object, you must delete one thread object in
@@ -145,6 +143,22 @@ Thread_join2(CThread* thread, int32_t timeout, bool* terminated);
  */
 XCL_PUBLIC(void)
 Thread_detach(CThread* thread);
+
+/**
+ * get thread attach object
+ * @param thread CThread object
+ * @return thread attach data
+ */
+XCL_PUBLIC(void*)
+Thread_attach(CThread* thread);
+
+/**
+ * set thread attach object
+ * @param thread CThread object
+ * @param attach thread attach data
+ */
+XCL_PUBLIC(void)
+Thread_setAttach(CThread* thread, void* attach);
 
 #ifdef __cplusplus
 }

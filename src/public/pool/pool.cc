@@ -36,7 +36,7 @@ SysPool::dealloc(void* ptr, uint64_t size) {
 }
 void*
 SysPool::realloc(void* ptr, uint64_t oldSize, uint64_t newSize) {
-  return realloc(ptr, oldSize, newSize);
+  return ::realloc(ptr, newSize);
 }
 SysPool*
 SysPool::instance() {

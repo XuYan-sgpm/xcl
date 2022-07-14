@@ -6,7 +6,6 @@
 #include <stdbool.h>
 #include "xcl/lang/CLocalStorage.h"
 #include "xcl/lang/CThreadLocal.h"
-#include "xcl/lang/XclErr.h"
 
 void
 __LocalId_initQueue();
@@ -35,6 +34,7 @@ __Local_implInitialize() {
 
 #  include <windows.h>
 #  include <processthreadsapi.h>
+#  include "xcl/lang/XclErr.h"
 
 static DWORD __Win32_storageKey = TLS_OUT_OF_INDEXES;
 

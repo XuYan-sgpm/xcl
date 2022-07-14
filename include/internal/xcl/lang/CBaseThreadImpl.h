@@ -177,22 +177,6 @@ ThreadHandle
 __Thread_handle(CThread* thread);
 
 /**
- * get thread attach object
- * @param thread CThread object
- * @return thread attach data
- */
-void*
-__Thread_attach(CThread* thread);
-
-/**
- * set thread attach object
- * @param thread CThread object
- * @param attach thread attach data
- */
-void
-__Thread_setAttach(CThread* thread, void* attach);
-
-/**
  * release current thread local storage
  */
 void
