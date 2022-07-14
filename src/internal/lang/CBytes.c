@@ -5,8 +5,7 @@
 #include "xcl/lang/CBytes.h"
 #include <string.h>
 
-static bool
-__isCPUBigEndian()
+static bool __isCPUBigEndian()
 {
     union
     {
@@ -17,13 +16,9 @@ __isCPUBigEndian()
     return unit.data[1] == 1;
 }
 
-static void
-__translate(const void*src, void*dst, int size, bool big)
+static void __translate(const void* src, void* dst, int size, bool big)
 {
-    if (big == __isCPUBigEndian())
-    {
-        memcpy(dst, src, size);
-    }
+    if (big == __isCPUBigEndian()) { memcpy(dst, src, size); }
     else
     {
         for (int i = 0; i < size; ++i)
@@ -34,13 +29,13 @@ __translate(const void*src, void*dst, int size, bool big)
 }
 
 XCL_PUBLIC(void)
-int32ToBytes(int val, void*dst, bool big)
+int32ToBytes(int val, void* dst, bool big)
 {
     __translate(&val, dst, sizeof(int), big);
 }
 
 XCL_PUBLIC(int32_t)
-bytesToInt32(const void*src, bool big)
+bytesToInt32(const void* src, bool big)
 {
     int result;
     __translate(src, &result, sizeof(int), big);
@@ -48,13 +43,13 @@ bytesToInt32(const void*src, bool big)
 }
 
 XCL_PUBLIC(void)
-int64ToBytes(int64_t val, void*dst, bool big)
+int64ToBytes(int64_t val, void* dst, bool big)
 {
     __translate(&val, dst, 8, big);
 }
 
 XCL_PUBLIC(int64_t)
-bytesToInt64(const void*src, bool big)
+bytesToInt64(const void* src, bool big)
 {
     int64_t result;
     __translate(src, &result, 8, big);
@@ -62,7 +57,7 @@ bytesToInt64(const void*src, bool big)
 }
 
 XCL_PUBLIC(void)
-bytesCopy(const void*src, void*dst, int len, bool big)
+bytesCopy(const void* src, void* dst, int len, bool big)
 {
     __translate(src, dst, len, big);
 }

@@ -2,33 +2,26 @@
 // Created by xuyan on 2022/7/4.
 //
 
-#include <Windows.h>
 #include "xcl/concurrent/CMutex.h"
-#include "xcl/lang/system.h"
 #include "xcl/lang/XclErr.h"
+#include "xcl/lang/system.h"
+#include <Windows.h>
 
-typedef struct
-{
+typedef struct {
     CRITICAL_SECTION criticalSection;
 } CWinMutex;
 
 XCL_PUBLIC(void*)
 Mutex_new()
 {
-    CWinMutex*mutex = (CWinMutex*)malloc(sizeof(CWinMutex));
-    if (mutex)
-    {
-        InitializeCriticalSection(&mutex->criticalSection);
-    }
-    else
-    {
-        setErr(XCL_MEMORY_ERR);
-    }
+    CWinMutex* mutex = (CWinMutex*)malloc(sizeof(CWinMutex));
+    if (mutex) { InitializeCriticalSection(&mutex->criticalSection); }
+    else { setErr(XCL_MEMORY_ERR); }
     return mutex;
 }
 
 XCL_PUBLIC(bool)
-Mutex_delete(void*mutex)
+Mutex_delete(void* mutex)
 {
     if (mutex)
     {
@@ -43,7 +36,7 @@ Mutex_delete(void*mutex)
 }
 
 XCL_PUBLIC(bool)
-Mutex_lock(void*mutex)
+Mutex_lock(void* mutex)
 {
     if (mutex)
     {
@@ -58,7 +51,7 @@ Mutex_lock(void*mutex)
 }
 
 XCL_PUBLIC(bool)
-Mutex_unlock(void*mutex)
+Mutex_unlock(void* mutex)
 {
     if (mutex)
     {
@@ -73,7 +66,7 @@ Mutex_unlock(void*mutex)
 }
 
 XCL_PUBLIC(bool)
-Mutex_tryLock(void*mutex)
+Mutex_tryLock(void* mutex)
 {
     if (!mutex)
     {
@@ -87,7 +80,7 @@ Mutex_tryLock(void*mutex)
 }
 
 XCL_PUBLIC(bool)
-Mutex_tryLock2(void*mutex, int32_t millis)
+Mutex_tryLock2(void* mutex, int32_t millis)
 {
     if (!mutex)
     {

@@ -6,19 +6,13 @@
 
 namespace xcl
 {
-    xcl::Locker::Locker(xcl::Lock*lock) : lock_(lock)
+    xcl::Locker::Locker(xcl::Lock* lock) : lock_(lock)
     {
-        if (lock_)
-        {
-            lock_->lock();
-        }
+        if (lock_) { lock_->lock(); }
     }
 
     Locker::~Locker()
     {
-        if (lock_)
-        {
-            lock_->unlock();
-        }
+        if (lock_) { lock_->unlock(); }
     }
-} // namespace xcl
+}// namespace xcl

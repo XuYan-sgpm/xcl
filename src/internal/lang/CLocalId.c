@@ -2,32 +2,30 @@
 // Created by xuyan on 2022/7/8.
 //
 
-#include <stdint.h>
-#include <string.h>
-#include <stdlib.h>
-#include <assert.h>
 #include "xcl/concurrent/CMutex.h"
 #include "xcl/lang/XclErr.h"
+#include <assert.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <string.h>
 
-typedef struct
-{
-    int32_t*freeIdList;
-    void*freeIdLock;
+typedef struct {
+    int32_t* freeIdList;
+    void* freeIdLock;
     int32_t size;
     int32_t cap;
 } __LocalIdQueue;
 
 static __LocalIdQueue __idQueue;
 
-void
-__LocalId_initQueue()
+void __LocalId_initQueue()
 {
     memset(&__idQueue, 0, sizeof(__idQueue));
     __idQueue.cap = 8;
-    int32_t*idList = malloc(__idQueue.cap * sizeof(int32_t));
+    int32_t* idList = malloc(__idQueue.cap * sizeof(int32_t));
     if (idList)
     {
-        void*lock = Mutex_new();
+        void* lock = Mutex_new();
         if (lock)
         {
             memset(idList, 0, sizeof(int32_t) * __idQueue.cap);
@@ -41,8 +39,7 @@ __LocalId_initQueue()
     assert(false);
 }
 
-static void
-__LocalId_releaseQueue()
+static void __LocalId_releaseQueue()
 {
     if (__idQueue.freeIdList)
     {
@@ -52,25 +49,21 @@ __LocalId_releaseQueue()
     memset(&__idQueue, 0, sizeof(__idQueue));
 }
 
-static bool
-__LocalId_offerQueue(int32_t id)
+static bool __LocalId_offerQueue(int32_t id)
 {
     bool success = false;
     Mutex_lock(__idQueue.freeIdLock);
     if (__idQueue.size == __idQueue.cap)
     {
         int32_t newCap = __idQueue.cap << 1;
-        int32_t*newIdList =
+        int32_t* newIdList =
             realloc(__idQueue.freeIdList, newCap * sizeof(int32_t));
         if (newIdList)
         {
             __idQueue.cap = newCap;
             __idQueue.freeIdList = newIdList;
         }
-        else
-        {
-            setErr(XCL_MEMORY_ERR);
-        }
+        else { setErr(XCL_MEMORY_ERR); }
     }
     if (__idQueue.size < __idQueue.cap)
     {
@@ -81,27 +74,15 @@ __LocalId_offerQueue(int32_t id)
     return success;
 }
 
-static bool
-__LocalId_pollQueue(int32_t*id)
+static bool __LocalId_pollQueue(int32_t* id)
 {
     *id = -1;
     Mutex_lock(__idQueue.freeIdLock);
-    if (__idQueue.size > 0)
-    {
-        *id = __idQueue.freeIdList[--__idQueue.size];
-    }
+    if (__idQueue.size > 0) { *id = __idQueue.freeIdList[--__idQueue.size]; }
     Mutex_unlock(__idQueue.freeIdLock);
     return *id != -1;
 }
 
-bool
-__ThreadLocal_offerId(int32_t id)
-{
-    return __LocalId_offerQueue(id);
-}
+bool __ThreadLocal_offerId(int32_t id) { return __LocalId_offerQueue(id); }
 
-bool
-__ThreadLocal_pollId(int32_t*id)
-{
-    return __LocalId_pollQueue(id);
-}
+bool __ThreadLocal_pollId(int32_t* id) { return __LocalId_pollQueue(id); }

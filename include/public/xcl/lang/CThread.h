@@ -23,7 +23,7 @@ typedef void (*Callback)(void*);
 
 #if WINDOWS
 
-typedef void*ThreadHandle;
+typedef void* ThreadHandle;
 
 #else
     #include <pthread.h>
@@ -31,8 +31,7 @@ typedef pthread_t ThreadHandle;
 #endif
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 typedef struct _CThread_st CThread;
@@ -43,7 +42,7 @@ typedef struct _CThread_st CThread;
  * @return thread object if successfully, otherwise false
  */
 XCL_PUBLIC(CThread*)
-Thread_new(bool suspend, Callback cb, void*usr);
+Thread_new(bool suspend, Callback cb, void* usr);
 
 /**
  * get current CThread object
@@ -78,7 +77,7 @@ Thread_currentHandle();
  * @return true if add cb successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Thread_addCbFront(CThread*thread, Callback cb, void*usr);
+Thread_addCbFront(CThread* thread, Callback cb, void* usr);
 
 /**
  * add cb for back call, cb will called last if no any other
@@ -89,7 +88,7 @@ Thread_addCbFront(CThread*thread, Callback cb, void*usr);
  * @return true if cb added successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Thread_addCbBack(CThread*thread, Callback cb, void*usr);
+Thread_addCbBack(CThread* thread, Callback cb, void* usr);
 
 /**
  * delete thread object
@@ -103,14 +102,14 @@ Thread_addCbBack(CThread*thread, Callback cb, void*usr);
  * another thread
  */
 XCL_PUBLIC(bool)
-Thread_delete(CThread*thread);
+Thread_delete(CThread* thread);
 
 /**
  * start a thread if thread is suspended
  * @param thread thread object
  */
 XCL_PUBLIC(void)
-Thread_start(CThread*thread);
+Thread_start(CThread* thread);
 
 /**
  * handle if thread is still alive
@@ -119,14 +118,14 @@ Thread_start(CThread*thread);
  *
  */
 XCL_PUBLIC(bool)
-Thread_isAlive(CThread*thread);
+Thread_isAlive(CThread* thread);
 
 /**
  * wait util thread is terminated
  * @param thread thread object
  */
 XCL_PUBLIC(void)
-Thread_join(CThread*thread);
+Thread_join(CThread* thread);
 
 /**
  * wait thread for terminated during timeout milliseconds
@@ -138,14 +137,14 @@ Thread_join(CThread*thread);
  * @return 0 if function succeed, otherwise -1
  */
 XCL_PUBLIC(int32_t)
-Thread_join2(CThread*thread, int32_t timeout, bool*terminated);
+Thread_join2(CThread* thread, int32_t timeout, bool* terminated);
 
 /**
  * detach thread
  * @param thread thread object
  */
 XCL_PUBLIC(void)
-Thread_detach(CThread*thread);
+Thread_detach(CThread* thread);
 
 /**
  * get thread attach object
@@ -153,7 +152,7 @@ Thread_detach(CThread*thread);
  * @return thread attach data
  */
 XCL_PUBLIC(void*)
-Thread_attach(CThread*thread);
+Thread_attach(CThread* thread);
 
 /**
  * set thread attach object
@@ -161,7 +160,7 @@ Thread_attach(CThread*thread);
  * @param attach thread attach data
  */
 XCL_PUBLIC(void)
-Thread_setAttach(CThread*thread, void*attach);
+Thread_setAttach(CThread* thread, void* attach);
 
 #ifdef __cplusplus
 }

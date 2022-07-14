@@ -4,31 +4,28 @@
 
 #pragma once
 
+#include "xcl/lang/XclDef.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include "xcl/lang/XclDef.h"
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
-typedef struct _CSingleNode
-{
-    struct _CSingleNode*next;
+typedef struct _CSingleNode {
+    struct _CSingleNode* next;
     char data[0];
 } CSingleNode;
 
 typedef struct _CSingleList_st CSingleList;
 
-typedef struct
-{
+typedef struct {
     /*
      * pointer to an object which can prove
      * relationship between iter and list
      */
-    void*const tag;
-    CSingleNode*cur;
+    void* const tag;
+    CSingleNode* cur;
 } CSingleListIter;
 
 /**
@@ -43,7 +40,7 @@ SingleList_new();
  * @param list single list object
  */
 XCL_PUBLIC(void)
-SingleList_delete(CSingleList*list);
+SingleList_delete(CSingleList* list);
 
 /**
  * check if single list is empty
@@ -51,7 +48,7 @@ SingleList_delete(CSingleList*list);
  * @return true if list is empty, otherwise false
  */
 XCL_PUBLIC(bool)
-SingleList_empty(const CSingleList*list);
+SingleList_empty(const CSingleList* list);
 
 /**
  * get single list element count
@@ -59,7 +56,7 @@ SingleList_empty(const CSingleList*list);
  * @return element count of list
  */
 XCL_PUBLIC(int32_t)
-SingleList_size(const CSingleList*list);
+SingleList_size(const CSingleList* list);
 
 /**
  * begin iter of single list
@@ -67,7 +64,7 @@ SingleList_size(const CSingleList*list);
  * @return iter of begin position of single list
  */
 XCL_PUBLIC(CSingleListIter)
-SingleList_begin(CSingleList*list);
+SingleList_begin(CSingleList* list);
 
 /**
  * end iter of single list
@@ -76,7 +73,7 @@ SingleList_begin(CSingleList*list);
  * without list data
  */
 XCL_PUBLIC(CSingleListIter)
-SingleList_end(CSingleList*list);
+SingleList_end(CSingleList* list);
 
 /**
  * push node before begin position of single list
@@ -84,7 +81,7 @@ SingleList_end(CSingleList*list);
  * @param node node contains data
  */
 XCL_PUBLIC(void)
-SingleList_pushFront(CSingleList*list, CSingleNode*node);
+SingleList_pushFront(CSingleList* list, CSingleNode* node);
 
 /**
  * push node at last position of single list
@@ -92,7 +89,7 @@ SingleList_pushFront(CSingleList*list, CSingleNode*node);
  * @param node node contains data
  */
 XCL_PUBLIC(void)
-SingleList_pushBack(CSingleList*list, CSingleNode*node);
+SingleList_pushBack(CSingleList* list, CSingleNode* node);
 
 /**
  * pop first node of single list
@@ -100,7 +97,7 @@ SingleList_pushBack(CSingleList*list, CSingleNode*node);
  * @return first node of single list
  */
 XCL_PUBLIC(CSingleNode*)
-SingleList_popFront(CSingleList*list);
+SingleList_popFront(CSingleList* list);
 
 /**
  * pop last node contains data of single list
@@ -108,7 +105,7 @@ SingleList_popFront(CSingleList*list);
  * @return last node contains value
  */
 XCL_PUBLIC(CSingleNode*)
-SingleList_popBack(CSingleList*list);
+SingleList_popBack(CSingleList* list);
 
 /**
  * next iter of passing iter
@@ -117,7 +114,7 @@ SingleList_popBack(CSingleList*list);
  * @return next iter
  */
 XCL_PUBLIC(CSingleListIter)
-SingleList_next(CSingleList*list, CSingleListIter iter);
+SingleList_next(CSingleList* list, CSingleListIter iter);
 
 /**
  * sort single list
@@ -125,7 +122,7 @@ SingleList_next(CSingleList*list, CSingleListIter iter);
  * @param cmp compare function pointer
  */
 XCL_PUBLIC(void)
-SingleList_sort(CSingleList*list, int (*cmp)(const void*, const void*));
+SingleList_sort(CSingleList* list, int (*cmp)(const void*, const void*));
 
 #ifdef __cplusplus
 }

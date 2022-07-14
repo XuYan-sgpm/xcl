@@ -11,13 +11,12 @@
  * impl for different platforms
  */
 
-#include <xcl/lang/CThread.h>
-#include <stdint.h>
 #include "CLocalStorage.h"
+#include <stdint.h>
+#include <xcl/lang/CThread.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #if WINDOWS
@@ -30,28 +29,25 @@ typedef void* __ThreadRunReturnType;
     #define INVALID_THREAD_HANDLE (0)
 #endif
 
-typedef __ThreadRunReturnType(XCL_API*__ThreadRunProc)(void*);
+typedef __ThreadRunReturnType(XCL_API* __ThreadRunProc)(void*);
 
 /**
  * called before thread create
  * @param thread thread object
  */
-void
-__Thread_beforeCreate(CThread*thread);
+void __Thread_beforeCreate(CThread* thread);
 
 /**
  * called after thread create
  * @param thread thread object
  */
-void
-__Thread_afterCreate(CThread*thread);
+void __Thread_afterCreate(CThread* thread);
 
 /**
  * wait util thread execute finished
  * @param thread thread object
  */
-void
-__Thread_wait(CThread*thread);
+void __Thread_wait(CThread* thread);
 
 /**
  * wait thread, return if thread finished
@@ -60,8 +56,7 @@ __Thread_wait(CThread*thread);
  * @param timeout wait milliseconds
  * @return true if thread finished, otherwise false
  */
-bool
-__Thread_waitTimeout(CThread*thread, int32_t timeout);
+bool __Thread_waitTimeout(CThread* thread, int32_t timeout);
 
 /**
  * create a thread
@@ -72,63 +67,53 @@ __Thread_waitTimeout(CThread*thread, int32_t timeout);
  * @param tid output the thread id
  * @return true if create successfully, otherwise false
  */
-bool
-__Thread_create(bool suspend,
-                __ThreadRunProc run,
-                void*usr,
-                ThreadHandle*handle);
+bool __Thread_create(bool suspend, __ThreadRunProc run, void* usr,
+                     ThreadHandle* handle);
 
 /**
  * resume thread if thread in suspend state
  * @param thread thread object
  */
-void
-__Thread_resume(CThread*thread);
+void __Thread_resume(CThread* thread);
 
 /**
  * called when enter thread run routine
  * @param thread thread object
  */
-void
-__Thread_onStart(CThread*thread);
+void __Thread_onStart(CThread* thread);
 
 /**
  * called before thread routine return
  * @param thread thread object
  * @param retVal thread return code
  */
-void
-__Thread_onFinish(CThread*thread, __ThreadRunReturnType retVal);
+void __Thread_onFinish(CThread* thread, __ThreadRunReturnType retVal);
 
 /**
  * get current thread id
  * @return current thread id
  */
-unsigned
-__Thread_currentId();
+unsigned __Thread_currentId();
 
 /**
  * get current thread handle
  * @param tid current thread id
  * @return current thread handle
  */
-ThreadHandle
-__Thread_currentHandle();
+ThreadHandle __Thread_currentHandle();
 
 /**
  * release thread resource when thread routine
  * is returned
  * @param thread thread object
  */
-void
-__Thread_finalize(CThread*thread);
+void __Thread_finalize(CThread* thread);
 
 /**
  * detach thread
  * @param thread thread object
  */
-void
-__Thread_detach(CThread*thread);
+void __Thread_detach(CThread* thread);
 
 typedef enum
 {
@@ -143,54 +128,47 @@ typedef enum
  * get current thread localstorage
  * @return local storage
  */
-CLocalStorage*
-__Thread_getLocalStorage();
+CLocalStorage* __Thread_getLocalStorage();
 
 /**
  * set current thread localstorage
  * @param localStorage local storage
  * @return true if set localstorage successfully, otherwise false
  */
-bool
-__Thread_setLocalStorage(CLocalStorage*localStorage);
+bool __Thread_setLocalStorage(CLocalStorage* localStorage);
 
 /**
  * set thread current state
  * @param thread CThread object
  * @param state CThreadState
  */
-void
-__Thread_setState(CThread*thread, CThreadState state);
+void __Thread_setState(CThread* thread, CThreadState state);
 
 /**
  * get thread current state
  * @param thread CThread object
  * @return current thread state
  */
-CThreadState
-__Thread_state(CThread*thread);
+CThreadState __Thread_state(CThread* thread);
 
 /**
  * get thread mutex
  * @param thread CThread object
  * @return mutex lock thread using
  */
-void*
-__Thread_mutex(CThread*thread);
+void* __Thread_mutex(CThread* thread);
 
 /**
  * get thread handle
  * @param thread CThread object
  * @return thread handle
  */
-ThreadHandle
-__Thread_handle(CThread*thread);
+ThreadHandle __Thread_handle(CThread* thread);
 
 /**
  * release current thread local storage
  */
-void
-__Thread_releaseLocalStorage();
+void __Thread_releaseLocalStorage();
 
 #ifdef __cplusplus
 }

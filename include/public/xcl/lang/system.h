@@ -4,12 +4,11 @@
 
 #pragma once
 
-#include <stdint.h>
 #include "XclDef.h"
+#include <stdint.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 const static int64_t NANOS_PER_SEC = 1000000000;

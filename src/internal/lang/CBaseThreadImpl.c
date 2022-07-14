@@ -3,14 +3,14 @@
 //
 
 #include "xcl/lang/CBaseThreadImpl.h"
+#include "xcl/concurrent/CMutex.h"
+#include "xcl/lang/CLocalStorage.h"
+#include "xcl/lang/CThread.h"
+#include "xcl/lang/CThreadLocal.h"
+#include "xcl/util/CSingleList.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
-#include "xcl/util/CSingleList.h"
-#include "xcl/concurrent/CMutex.h"
-#include "xcl/lang/CThreadLocal.h"
-#include "xcl/lang/CLocalStorage.h"
-#include "xcl/lang/CThread.h"
 
 #include <stdlib.h>
 
@@ -19,32 +19,29 @@
  */
 static CThreadLocal __localThread = {0};
 
-typedef struct
-{
+typedef struct {
     const Callback cb;
-    void*const usr;
+    void* const usr;
 } CallbackObj;
 
-struct _CThread_st
-{
+struct _CThread_st {
     const ThreadHandle handle;
-    void*const threadLock;
+    void* const threadLock;
     CThreadState state;
     const unsigned threadId;
-    CSingleList*callStack;
-    void*attach;
+    CSingleList* callStack;
+    void* attach;
 };
 
-static inline void
-__Thread_setThreadHandle(CThread*thread, ThreadHandle handle)
+static inline void __Thread_setThreadHandle(CThread* thread,
+                                            ThreadHandle handle)
 {
     memcpy((void*)&thread->handle, (void*)&handle, sizeof(ThreadHandle));
 }
 
-static inline bool
-__Thread_initThreadLock(CThread*thread)
+static inline bool __Thread_initThreadLock(CThread* thread)
 {
-    void*lock = Mutex_new();
+    void* lock = Mutex_new();
     if (lock)
     {
         memcpy((void*)&thread->threadLock, (void*)&lock, sizeof(void*));
@@ -52,24 +49,22 @@ __Thread_initThreadLock(CThread*thread)
     return lock;
 }
 
-static inline void
-__Thread_setThreadId(CThread*thread, unsigned tid)
+static inline void __Thread_setThreadId(CThread* thread, unsigned tid)
 {
     memcpy((void*)&thread->threadId, (void*)&tid, sizeof(unsigned));
 }
 
-static inline bool
-__Thread_initThreadCallStack(CThread*thread)
+static inline bool __Thread_initThreadCallStack(CThread* thread)
 {
     thread->callStack = SingleList_new();
     return thread->callStack;
 }
 
-static inline bool
-__Thread_setThreadProc(CThread*thread, Callback proc, void*usr)
+static inline bool __Thread_setThreadProc(CThread* thread, Callback proc,
+                                          void* usr)
 {
     CallbackObj callbackObj = {.cb = proc, .usr = usr};
-    CSingleNode*node = malloc(sizeof(CSingleNode) + sizeof(CallbackObj));
+    CSingleNode* node = malloc(sizeof(CSingleNode) + sizeof(CallbackObj));
     if (node)
     {
         memcpy((CallbackObj*)node->data, &callbackObj, sizeof(CallbackObj));
@@ -78,8 +73,7 @@ __Thread_setThreadProc(CThread*thread, Callback proc, void*usr)
     return node;
 }
 
-static inline CThreadState
-__Thread_syncGetThreadState(CThread*thread)
+static inline CThreadState __Thread_syncGetThreadState(CThread* thread)
 {
     Mutex_lock(thread->threadLock);
     CThreadState state = thread->state;
@@ -87,18 +81,17 @@ __Thread_syncGetThreadState(CThread*thread)
     return state;
 }
 
-static inline void
-__Thread_syncSetThreadState(CThread*thread, CThreadState state)
+static inline void __Thread_syncSetThreadState(CThread* thread,
+                                               CThreadState state)
 {
     Mutex_lock(thread->threadLock);
     thread->state = state;
     Mutex_unlock(thread->threadLock);
 }
 
-void
-__Thread_releaseLocalStorage()
+void __Thread_releaseLocalStorage()
 {
-    CLocalStorage*localStorage = __Thread_getLocalStorage();
+    CLocalStorage* localStorage = __Thread_getLocalStorage();
     if (localStorage)
     {
         __Thread_setLocalStorage(NULL);
@@ -106,49 +99,33 @@ __Thread_releaseLocalStorage()
     }
 }
 
-void
-__Thread_setState(CThread*thread, CThreadState state)
+void __Thread_setState(CThread* thread, CThreadState state)
 {
     thread->state = state;
 }
 
-CThreadState
-__Thread_state(CThread*thread)
-{
-    return thread->state;
-}
+CThreadState __Thread_state(CThread* thread) { return thread->state; }
 
-void*
-__Thread_mutex(CThread*thread)
-{
-    return thread->threadLock;
-}
+void* __Thread_mutex(CThread* thread) { return thread->threadLock; }
 
-ThreadHandle
-__Thread_handle(CThread*thread)
-{
-    return thread->handle;
-}
+ThreadHandle __Thread_handle(CThread* thread) { return thread->handle; }
 
 XCL_PUBLIC(void*)
-Thread_attach(CThread*thread)
-{ return thread->attach; }
+Thread_attach(CThread* thread) { return thread->attach; }
 
 XCL_PUBLIC(void)
-Thread_setAttach(CThread*thread, void*attach)
-{ thread->attach = attach; }
+Thread_setAttach(CThread* thread, void* attach) { thread->attach = attach; }
 
-static __ThreadRunReturnType XCL_API
-__Thread_run(void*args)
+static __ThreadRunReturnType XCL_API __Thread_run(void* args)
 {
-    CThread*thread = args;
+    CThread* thread = args;
     __Thread_setThreadId(thread, __Thread_currentId());
     Local_set(&__localThread, thread);
     __Thread_onStart(thread);
-    CSingleNode*node;
+    CSingleNode* node;
     while ((node = SingleList_popFront(thread->callStack)))
     {
-        CallbackObj*cbObj = (CallbackObj*)node->data;
+        CallbackObj* cbObj = (CallbackObj*)node->data;
         cbObj->cb(cbObj->usr);
         free(node);
     }
@@ -162,10 +139,10 @@ __Thread_run(void*args)
 }
 
 XCL_PUBLIC(CThread*)
-Thread_new(bool suspend, Callback cb, void*usr)
+Thread_new(bool suspend, Callback cb, void* usr)
 {
     bool success = false;
-    CThread*thread = malloc(sizeof(CThread));
+    CThread* thread = malloc(sizeof(CThread));
     if (thread)
     {
         memset(thread, 0, sizeof(CThread));
@@ -190,17 +167,11 @@ Thread_new(bool suspend, Callback cb, void*usr)
                     __Thread_setThreadHandle(thread, handle);
                     success = true;
                 }
-                else
-                {
-                    thread->state = INVALID;
-                }
+                else { thread->state = INVALID; }
                 __Thread_afterCreate(thread);
                 if (success)
                 {
-                    if (!suspend)
-                    {
-                        __Thread_resume(thread);
-                    }
+                    if (!suspend) { __Thread_resume(thread); }
                     return thread;
                 }
                 free(SingleList_popFront(thread->callStack));
@@ -216,23 +187,20 @@ Thread_new(bool suspend, Callback cb, void*usr)
 XCL_PUBLIC(CThread*)
 Thread_current()
 {
-    CThread*thread = NULL;
-    if (!Local_get(&__localThread, (void**)&thread))
-    {
-        return NULL;
-    }
+    CThread* thread = NULL;
+    if (!Local_get(&__localThread, (void**)&thread)) { return NULL; }
     return thread;
 }
 
 XCL_PUBLIC(bool)
-Thread_addCbFront(CThread*thread, Callback cb, void*usr)
+Thread_addCbFront(CThread* thread, Callback cb, void* usr)
 {
     Mutex_lock(thread->threadLock);
     bool ret = false;
     if (thread->state != ALIVE)
     {
         CallbackObj cbObj = {.cb = cb, .usr = usr};
-        CSingleNode*node = malloc(sizeof(CSingleNode) + sizeof(CallbackObj));
+        CSingleNode* node = malloc(sizeof(CSingleNode) + sizeof(CallbackObj));
         if (node)
         {
             memcpy(node->data, &cbObj, sizeof(CallbackObj));
@@ -245,14 +213,14 @@ Thread_addCbFront(CThread*thread, Callback cb, void*usr)
 }
 
 XCL_PUBLIC(bool)
-Thread_addCbBack(CThread*thread, Callback cb, void*usr)
+Thread_addCbBack(CThread* thread, Callback cb, void* usr)
 {
     Mutex_lock(thread->threadLock);
     bool ret = false;
     if (thread->state != ALIVE)
     {
         CallbackObj cbObj = {.cb = cb, .usr = usr};
-        CSingleNode*node = malloc(sizeof(CSingleNode) + sizeof(CallbackObj));
+        CSingleNode* node = malloc(sizeof(CSingleNode) + sizeof(CallbackObj));
         if (node)
         {
             memcpy(node->data, &cbObj, sizeof(CallbackObj));
@@ -265,7 +233,7 @@ Thread_addCbBack(CThread*thread, Callback cb, void*usr)
 }
 
 XCL_PUBLIC(bool)
-Thread_delete(CThread*thread)
+Thread_delete(CThread* thread)
 {
     unsigned tid = __Thread_currentId();
     bool success = false;
@@ -274,10 +242,7 @@ Thread_delete(CThread*thread)
         CThreadState state = __Thread_syncGetThreadState(thread);
         if (state == ALIVE || state == SUSPEND)
         {
-            if (state == SUSPEND)
-            {
-                __Thread_resume(thread);
-            }
+            if (state == SUSPEND) { __Thread_resume(thread); }
             __Thread_wait(thread);
             __Thread_finalize(thread);
         }
@@ -290,18 +255,15 @@ Thread_delete(CThread*thread)
 }
 
 XCL_PUBLIC(void)
-Thread_start(CThread*thread)
+Thread_start(CThread* thread)
 {
     Mutex_lock(thread->threadLock);
-    if (thread->state == SUSPEND)
-    {
-        __Thread_resume(thread);
-    }
+    if (thread->state == SUSPEND) { __Thread_resume(thread); }
     Mutex_unlock(thread->threadLock);
 }
 
 XCL_PUBLIC(bool)
-Thread_isAlive(CThread*thread)
+Thread_isAlive(CThread* thread)
 {
     Mutex_lock(thread->threadLock);
     bool ret = thread->state == ALIVE;
@@ -310,7 +272,7 @@ Thread_isAlive(CThread*thread)
 }
 
 XCL_PUBLIC(void)
-Thread_join(CThread*thread)
+Thread_join(CThread* thread)
 {
     if (__Thread_syncGetThreadState(thread) == ALIVE)
     {
@@ -320,7 +282,7 @@ Thread_join(CThread*thread)
 }
 
 XCL_PUBLIC(int32_t)
-Thread_join2(CThread*thread, int32_t timeout, bool*terminated)
+Thread_join2(CThread* thread, int32_t timeout, bool* terminated)
 {
     int32_t ret = -1;
     if (__Thread_syncGetThreadState(thread) == ALIVE)
@@ -336,20 +298,15 @@ Thread_join2(CThread*thread, int32_t timeout, bool*terminated)
 }
 
 XCL_PUBLIC(void)
-Thread_detach(CThread*thread)
+Thread_detach(CThread* thread)
 {
     Mutex_lock(thread->threadLock);
-    if (thread->state == ALIVE)
-    {
-        __Thread_detach(thread);
-    }
+    if (thread->state == ALIVE) { __Thread_detach(thread); }
     Mutex_unlock(thread->threadLock);
 }
 
 XCL_PUBLIC(unsigned)
-Thread_currentId()
-{ return __Thread_currentId(); }
+Thread_currentId() { return __Thread_currentId(); }
 
 XCL_PUBLIC(ThreadHandle)
-Thread_currentHandle()
-{ return __Thread_currentHandle(); }
+Thread_currentHandle() { return __Thread_currentHandle(); }

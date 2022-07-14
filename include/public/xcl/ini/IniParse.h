@@ -10,9 +10,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-typedef struct
-{
-    const char*str;
+typedef struct {
+    const char* str;
     int len;
 } Region;
 
@@ -36,8 +35,7 @@ typedef void (*IniCallback)(void*, Region, Region, Region);
  */
 typedef int32_t (*IniReadFunc)(void*, char*, int);
 
-typedef struct
-{
+typedef struct {
     /*
      * when error occurred, continue parse or interrupt
      */
@@ -53,33 +51,29 @@ typedef struct
     /*
      * buf to store ini characters
      */
-    char*const buf;
+    char* const buf;
 } Ini;
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /*
  * parse ini data
  * usr can be a specified object to invoke when cb is called
  */
-bool
-iniParseStream(
-    Ini ini, void*stream, IniReadFunc reader, IniCallback cb, void*usr);
+bool iniParseStream(Ini ini, void* stream, IniReadFunc reader, IniCallback cb,
+                    void* usr);
 
 /*
  * parse ini data from file
  */
-bool
-iniParse(Ini ini, const char*filePath, IniCallback cb, void*usr);
+bool iniParse(Ini ini, const char* filePath, IniCallback cb, void* usr);
 
 /*
  * parse ini data from str
  */
-bool
-iniParseString(Ini ini, const char*str, IniCallback cb, void*usr);
+bool iniParseString(Ini ini, const char* str, IniCallback cb, void* usr);
 
 #ifdef __cplusplus
 }

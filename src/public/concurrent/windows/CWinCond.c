@@ -2,53 +2,42 @@
 // Created by xuyan on 2022/7/5.
 //
 
-#include <Windows.h>
-#include <synchapi.h>
 #include "xcl/concurrent/CCond.h"
 #include "xcl/lang/XclErr.h"
 #include <WinBase.h>
+#include <Windows.h>
+#include <synchapi.h>
 
-typedef struct
-{
+typedef struct {
     CONDITION_VARIABLE conditionVariable;
 } CWinCond;
 
 XCL_PUBLIC(void*)
 Cond_new()
 {
-    CWinCond*cond = (CWinCond*)malloc(sizeof(CWinCond));
-    if (cond)
-    {
-        InitializeConditionVariable(&cond->conditionVariable);
-    }
-    else
-    {
-        setErr(XCL_MEMORY_ERR);
-    }
+    CWinCond* cond = (CWinCond*)malloc(sizeof(CWinCond));
+    if (cond) { InitializeConditionVariable(&cond->conditionVariable); }
+    else { setErr(XCL_MEMORY_ERR); }
     return cond;
 }
 
 XCL_PUBLIC(bool)
-Cond_delete(void*cond)
-{ return true; }
+Cond_delete(void* cond) { return true; }
 
 XCL_PUBLIC(bool)
-Cond_wait(void*mutex, void*cond)
+Cond_wait(void* mutex, void* cond)
 {
     if (cond)
     {
-        return SleepConditionVariableCS(
-            &((CWinCond*)cond)->conditionVariable, mutex, INFINITE);
+        return SleepConditionVariableCS(&((CWinCond*)cond)->conditionVariable,
+                                        mutex, INFINITE);
     }
-    else
-    {
-        setErr(XCL_INVALID_PARAM);
-    }
+    else { setErr(XCL_INVALID_PARAM); }
     return false;
 }
 
 XCL_PUBLIC(bool)
-Cond_waitFor(void*mutex, void*cond, int32_t millis)
+Cond_waitFor(void* mutex, void* cond, int32_t millis)
 {
     if (!cond || !mutex)
     {
@@ -57,15 +46,12 @@ Cond_waitFor(void*mutex, void*cond, int32_t millis)
     }
     bool success = SleepConditionVariableCS(
         &((CWinCond*)cond)->conditionVariable, mutex, millis);
-    if (!success)
-    {
-        setErr(GetLastError());
-    }
+    if (!success) { setErr(GetLastError()); }
     return success;
 }
 
 XCL_PUBLIC(bool)
-Cond_signal(void*cond)
+Cond_signal(void* cond)
 {
     if (cond)
     {
@@ -80,7 +66,7 @@ Cond_signal(void*cond)
 }
 
 XCL_PUBLIC(bool)
-Cond_signalAll(void*cond)
+Cond_signalAll(void* cond)
 {
     if (cond)
     {

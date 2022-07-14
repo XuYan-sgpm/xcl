@@ -9,8 +9,7 @@
 #include <xcl/lang/XclDef.h>
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 /**
@@ -20,7 +19,7 @@ extern "C"
  * @param big big ending
  */
 XCL_PUBLIC(void)
-int16ToBytes(int16_t val, void*dst, bool big);
+int16ToBytes(int16_t val, void* dst, bool big);
 
 /**
  * translate 2 bytes to int16_t
@@ -29,7 +28,7 @@ int16ToBytes(int16_t val, void*dst, bool big);
  * @return int16_t value
  */
 XCL_PUBLIC(int16_t)
-bytes2Int16(const void*src, bool big);
+bytes2Int16(const void* src, bool big);
 
 /**
  * translate int32 to bytes
@@ -38,7 +37,7 @@ bytes2Int16(const void*src, bool big);
  * @param big big endian
  */
 XCL_PUBLIC(void)
-int32ToBytes(int val, void*dst, bool big);
+int32ToBytes(int val, void* dst, bool big);
 
 /**
  * translate 4 bytes to int32
@@ -47,7 +46,7 @@ int32ToBytes(int val, void*dst, bool big);
  * @return int32 value
  */
 XCL_PUBLIC(int32_t)
-bytesToInt32(const void*src, bool big);
+bytesToInt32(const void* src, bool big);
 
 /**
  * translate float to 4 bytes
@@ -56,7 +55,7 @@ bytesToInt32(const void*src, bool big);
  * @param big big endian
  */
 XCL_PUBLIC(void)
-floatToBytes(float val, void*dst, bool big);
+floatToBytes(float val, void* dst, bool big);
 
 /**
  * translate 4 bytes to float
@@ -65,7 +64,7 @@ floatToBytes(float val, void*dst, bool big);
  * @return float value
  */
 XCL_PUBLIC(float)
-bytesToFloat(const void*src, bool big);
+bytesToFloat(const void* src, bool big);
 
 /**
  * int64 to 8 bytes
@@ -74,7 +73,7 @@ bytesToFloat(const void*src, bool big);
  * @param big big endian
  */
 XCL_PUBLIC(void)
-int64ToBytes(int64_t val, void*dst, bool big);
+int64ToBytes(int64_t val, void* dst, bool big);
 
 /**
  * translate 8 bytes to int64
@@ -83,7 +82,7 @@ int64ToBytes(int64_t val, void*dst, bool big);
  * @return int64 value
  */
 XCL_PUBLIC(int64_t)
-bytesToInt64(const void*src, bool big);
+bytesToInt64(const void* src, bool big);
 
 /**
  * translate double to 8 bytes
@@ -92,7 +91,7 @@ bytesToInt64(const void*src, bool big);
  * @param big big endian
  */
 XCL_PUBLIC(void)
-doubleToBytes(double val, void*dst, bool big);
+doubleToBytes(double val, void* dst, bool big);
 
 /**
  * translate 8 bytes to double
@@ -101,7 +100,7 @@ doubleToBytes(double val, void*dst, bool big);
  * @return double value
  */
 XCL_PUBLIC(double)
-bytesToDouble(const void*src, bool big);
+bytesToDouble(const void* src, bool big);
 
 /**
  * copy bytes in byte order
@@ -111,7 +110,7 @@ bytesToDouble(const void*src, bool big);
  * @param big big endian
  */
 XCL_PUBLIC(void)
-bytesCopy(const void*src, void*dst, int len, bool big);
+bytesCopy(const void* src, void* dst, int len, bool big);
 
 #ifdef __cplusplus
 }
