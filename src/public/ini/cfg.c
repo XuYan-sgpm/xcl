@@ -2,7 +2,6 @@
 
 #include <stdbool.h>
 #include <stdio.h>
-// #include <stdint.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -244,7 +243,7 @@ __Config_writeFile(void* stream, const char* buf, int32_t len) {
   return fwrite(buf, 1, len, (FILE*)stream);
 }
 
-Config*
+XCL_PUBLIC(Config*)
 Config_new(const char* storePath) {
   FILE* fp = fopen(storePath, "r");
   if (!fp) {
@@ -255,7 +254,7 @@ Config_new(const char* storePath) {
   return config;
 }
 
-Config*
+XCL_PUBLIC(Config*)
 Config_newFromStream(void* stream, int32_t (*reader)(void*, char*, int32_t)) {
   char buf[1024];
   Ini ini = {true, true, sizeof(buf), buf};
@@ -274,7 +273,7 @@ Config_newFromStream(void* stream, int32_t (*reader)(void*, char*, int32_t)) {
   return config;
 }
 
-int32_t
+XCL_PUBLIC(int32_t)
 Config_read(Config* config,
             const char* section,
             const char* key,
@@ -302,7 +301,7 @@ Config_read(Config* config,
   return -1;
 }
 
-int32_t
+XCL_PUBLIC(int32_t)
 Config_write(Config* config,
              const char* section,
              const char* key,
@@ -319,7 +318,7 @@ Config_write(Config* config,
              : -1;
 }
 
-int32_t
+XCL_PUBLIC(int32_t)
 Config_flushToPath(Config* config, const char* storePath) {
   FILE* fp = fopen(storePath, "w");
   if (!fp) {
@@ -346,7 +345,7 @@ __Config_streamFlush(void* stream,
   return total;
 }
 
-int32_t
+XCL_PUBLIC(int32_t)
 Config_flush(Config* config,
              void* stream,
              int32_t (*writer)(void*, const char*, int32_t)) {
@@ -373,7 +372,7 @@ Config_flush(Config* config,
   return 0;
 }
 
-void
+XCL_PUBLIC(void)
 Config_debug(Config* config) {
   CList* sections = config->sections;
   CListIter sectionIt = List_begin(sections);
@@ -391,7 +390,7 @@ Config_debug(Config* config) {
   }
 }
 
-void
+XCL_PUBLIC(void)
 Config_delete(Config* config) {
   CListNode* secNode = NULL;
   while ((secNode = List_pop(config->sections))) {

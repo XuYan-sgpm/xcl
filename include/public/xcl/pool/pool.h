@@ -1,9 +1,10 @@
 #include <cstdint>
+#include <xcl/lang/XclDef.h>
 
 #pragma once
 
 namespace xcl {
-class Pool {
+class XCL_EXPORT Pool {
  public:
   virtual ~Pool() = default;
 

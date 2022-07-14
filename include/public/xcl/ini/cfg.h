@@ -1,6 +1,7 @@
 #pragma once
 
 #include <stdint.h>
+#include <xcl/lang/XclDef.h>
 
 typedef struct _Config Config;
 
@@ -11,19 +12,19 @@ extern "C" {
 /*
  * create config from specified ini path
  */
-Config*
+XCL_PUBLIC(Config*)
 Config_new(const char* storePath);
 
 /*
  * create config from usr specified stream
  */
-Config*
+XCL_PUBLIC(Config*)
 Config_newFromStream(void* stream, int32_t (*reader)(void*, char*, int32_t));
 
 /*
  * read value from key under section
  */
-int32_t
+XCL_PUBLIC(int32_t)
 Config_read(Config* config,
             const char* section,
             const char* key,
@@ -31,10 +32,10 @@ Config_read(Config* config,
             int* valueLen);
 
 /*
- * write key-value paramter under section
+ * write key-value parameter under section
  * write to memory and no disk flush
  */
-int32_t
+XCL_PUBLIC(int32_t)
 Config_write(Config* config,
              const char* section,
              const char* key,
@@ -45,7 +46,7 @@ Config_write(Config* config,
  * write data not includes comment, so it may be different
  * from config content before
  */
-int32_t
+XCL_PUBLIC(int32_t)
 Config_flushToPath(Config* config, const char* storePath);
 
 /*
@@ -53,7 +54,7 @@ Config_flushToPath(Config* config, const char* storePath);
  * write data only contains available data without
  * comment string and useless blank lines
  */
-int32_t
+XCL_PUBLIC(int32_t)
 Config_flush(Config* config,
              void* stream,
              int32_t (*writer)(void*, const char*, int32_t));
@@ -61,13 +62,13 @@ Config_flush(Config* config,
 /*
  * free config resources
  */
-void
+XCL_PUBLIC(void)
 Config_delete(Config* config);
 
 /*
  * print config data in console, only for Config_debug test
  */
-void
+XCL_PUBLIC(void)
 Config_debug(Config* config);
 
 #ifdef __cplusplus
