@@ -4,7 +4,6 @@
 
 #include <stdbool.h>
 #include <xcl/lang/CLocalStorage.h>
-#include <stddef.h>
 #include "xcl/lang/CThreadLocal.h"
 
 void
@@ -13,6 +12,8 @@ void
 __Local_implInitialize();
 
 #if STATIC
+
+#  include <stddef.h>
 
 static __thread CLocalStorage* __Unix_Thread_localStorage = NULL;
 
@@ -33,6 +34,9 @@ __Local_implInitialize() {
 #elif DYNAMIC
 
 #  include <pthread.h>
+#  include <assert.h>
+#  include "xcl/lang/XclErr.h"
+
 pthread_key_t __Unix_storageKey = 0;
 
 static void
@@ -46,7 +50,10 @@ __releaseLocalStorage(void* args) {
 void
 __Local_implInitialize() {
   __LocalId_initQueue();
-  pthread_key_create(&__Unix_storageKey, __releaseLocalStorage);
+  int ret = pthread_key_create(&__Unix_storageKey, __releaseLocalStorage);
+  if (ret)
+    setErr(ret);
+  assert(ret == 0);
 }
 
 CLocalStorage*
@@ -57,7 +64,9 @@ __Thread_getLocalStorage() {
 bool
 __Thread_setLocalStorage(CLocalStorage* localStorage) {
   int ret = pthread_setspecific(__Unix_storageKey, localStorage);
-  return ret == 0;
+  if (ret)
+    setErr(ret);
+  return !ret;
 }
 
 #endif
