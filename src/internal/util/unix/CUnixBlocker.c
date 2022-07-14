@@ -2,26 +2,24 @@
 // Created by xy on 7/11/22.
 //
 
-#include <xcl/util/CBlocker.h>
-#include <stdint.h>
-#include <stdlib.h>
+#include <errno.h>
 #include <pthread.h>
 #include <stdbool.h>
-#include <errno.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <xcl/util/CBlocker.h>
 
-struct _CBlocker_st
-{
-    pthread_mutex_t*mutex;
+struct _CBlocker_st {
+    pthread_mutex_t* mutex;
     pthread_cond_t cond;
     int32_t wait;
     bool externalLock;
 };
 
-
 XCL_PUBLIC(CBlocker*)
 Blocker_new()
 {
-    CBlocker*blocker = malloc(sizeof(CBlocker));
+    CBlocker* blocker = malloc(sizeof(CBlocker));
     if (blocker)
     {
         pthread_mutexattr_t attr;
@@ -49,11 +47,10 @@ Blocker_new()
     return NULL;
 }
 
-
 XCL_PUBLIC(CBlocker*)
-Blocker_new2(void*mutex)
+Blocker_new2(void* mutex)
 {
-    CBlocker*blocker = malloc(sizeof(CBlocker));
+    CBlocker* blocker = malloc(sizeof(CBlocker));
     if (blocker)
     {
         blocker->mutex = (pthread_mutex_t*)mutex;
@@ -70,9 +67,8 @@ Blocker_new2(void*mutex)
     return NULL;
 }
 
-
 XCL_PUBLIC(bool)
-Blocker_delete(CBlocker*blocker)
+Blocker_delete(CBlocker* blocker)
 {
     int ret = pthread_mutex_lock(blocker->mutex);
     if (ret != 0)
@@ -111,16 +107,12 @@ Blocker_delete(CBlocker*blocker)
         pthread_mutex_destroy(blocker->mutex);
         free(blocker->mutex);
     }
-    if (allowRelease)
-    {
-        free(blocker);
-    }
+    if (allowRelease) { free(blocker); }
     return allowRelease;
 }
 
-
 XCL_PUBLIC(bool)
-Blocker_wait(CBlocker*blocker)
+Blocker_wait(CBlocker* blocker)
 {
     int ret = pthread_mutex_lock(blocker->mutex);
     if (ret != 0)
@@ -132,16 +124,14 @@ Blocker_wait(CBlocker*blocker)
     if (blocker->wait > 0)
     {
         ret = pthread_cond_wait(&blocker->cond, blocker->mutex);
-        if (ret)
-            errno = ret;
+        if (ret) errno = ret;
     }
     pthread_mutex_unlock(blocker->mutex);
     return ret == 0;
 }
 
-
 XCL_PUBLIC(bool)
-Blocker_cancel(CBlocker*blocker)
+Blocker_cancel(CBlocker* blocker)
 {
     int ret = pthread_mutex_lock(blocker->mutex);
     if (ret != 0)
@@ -151,26 +141,16 @@ Blocker_cancel(CBlocker*blocker)
     }
     if (blocker->wait >= 0)
     {
-        if (blocker->wait > 0)
-        {
-            ret = pthread_cond_signal(&blocker->cond);
-        }
-        if (ret == 0)
-        {
-            --blocker->wait;
-        }
-        else
-        {
-            errno = ret;
-        }
+        if (blocker->wait > 0) { ret = pthread_cond_signal(&blocker->cond); }
+        if (ret == 0) { --blocker->wait; }
+        else { errno = ret; }
     }
     pthread_mutex_unlock(blocker->mutex);
     return ret == 0;
 }
 
-
 XCL_PUBLIC(bool)
-Blocker_wakeAll(CBlocker*blocker)
+Blocker_wakeAll(CBlocker* blocker)
 {
     int ret = pthread_mutex_lock(blocker->mutex);
     if (ret != 0)
@@ -181,14 +161,8 @@ Blocker_wakeAll(CBlocker*blocker)
     if (blocker->wait > 0)
     {
         ret = pthread_cond_broadcast(&blocker->cond);
-        if (ret == 0)
-        {
-            blocker->wait = 0;
-        }
-        else
-        {
-            errno = ret;
-        }
+        if (ret == 0) { blocker->wait = 0; }
+        else { errno = ret; }
     }
     pthread_mutex_unlock(blocker->mutex);
     return ret == 0;

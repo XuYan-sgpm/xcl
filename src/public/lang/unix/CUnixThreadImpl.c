@@ -5,33 +5,26 @@
 #include "xcl/lang/CBaseThreadImpl.h"
 #include "xcl/lang/system.h"
 #include "xcl/util/CBlocker.h"
+#include <errno.h>
 #include <pthread.h>
 #include <signal.h>
-#include <errno.h>
-#include <unistd.h>
 #include <sys/syscall.h>
+#include <unistd.h>
 
-void
-__Thread_beforeCreate(CThread*thread)
+void __Thread_beforeCreate(CThread* thread)
 {
-    __Thread_setAttach(thread, Blocker_new2(__Thread_mutex(thread)));
+    Thread_setAttach(thread, Blocker_new2(__Thread_mutex(thread)));
 }
 
-void
-__Thread_afterCreate(CThread*thread)
-{
-}
+void __Thread_afterCreate(CThread* thread) {}
 
-void
-__Thread_wait(CThread*thread)
+void __Thread_wait(CThread* thread)
 {
     int ret = pthread_join(__Thread_handle(thread), NULL);
-    if (ret)
-        errno = ret;
+    if (ret) errno = ret;
 }
 
-bool
-__Thread_waitTimeout(CThread*thread, int32_t timeout)
+bool __Thread_waitTimeout(CThread* thread, int32_t timeout)
 {
     int64_t nanoTimeout = timeout * 1000000L;
     int64_t totalWait = 0;
@@ -40,10 +33,7 @@ __Thread_waitTimeout(CThread*thread, int32_t timeout)
     while (totalWait < nanoTimeout)
     {
         int ret = pthread_kill(handle, 0);
-        if (ret == ESRCH)
-        {
-            return true;
-        }
+        if (ret == ESRCH) { return true; }
 #if _POSIX_C_SOURCE >= 199309L
         struct timespec ts = {0, nanoTimeout - totalWait};
         nanosleep(&ts, NULL);
@@ -55,11 +45,8 @@ __Thread_waitTimeout(CThread*thread, int32_t timeout)
     return pthread_kill(handle, 0) == ESRCH;
 }
 
-bool
-__Thread_create(bool suspend,
-                __ThreadRunProc run,
-                void*usr,
-                ThreadHandle*handle)
+bool __Thread_create(bool suspend, __ThreadRunProc run, void* usr,
+                     ThreadHandle* handle)
 {
     pthread_t h;
     int ret = pthread_create(&h, NULL, run, usr);
@@ -72,46 +59,33 @@ __Thread_create(bool suspend,
     return false;
 }
 
-void
-__Thread_resume(CThread*thread)
+void __Thread_resume(CThread* thread)
 {
     __Thread_setState(thread, ALIVE);
-    Blocker_cancel((CBlocker*)__Thread_attach(thread));
+    Blocker_cancel((CBlocker*)Thread_attach(thread));
 }
 
-void
-__Thread_onStart(CThread*thread)
+void __Thread_onStart(CThread* thread)
 {
-    Blocker_wait((CBlocker*)__Thread_attach(thread));
+    Blocker_wait((CBlocker*)Thread_attach(thread));
 }
 
-void
-__Thread_onFinish(CThread*thread, __ThreadRunReturnType retVal)
-{
-}
+void __Thread_onFinish(CThread* thread, __ThreadRunReturnType retVal) {}
 
-unsigned
-__Thread_currentId()
-{
-    return syscall(__NR_gettid);
-}
+unsigned __Thread_currentId() { return syscall(__NR_gettid); }
 
-ThreadHandle
-__Thread_currentHandle(CThread*thread, unsigned tid)
+ThreadHandle __Thread_currentHandle(CThread* thread, unsigned tid)
 {
     return __Thread_handle(thread);
 }
 
-void
-__Thread_finalize(CThread*thread)
+void __Thread_finalize(CThread* thread)
 {
-    Blocker_delete((CBlocker*)__Thread_attach(thread));
+    Blocker_delete((CBlocker*)Thread_attach(thread));
 }
 
-void
-__Thread_detach(CThread*thread)
+void __Thread_detach(CThread* thread)
 {
     int ret = pthread_detach(__Thread_handle(thread));
-    if (ret)
-        errno = ret;
+    if (ret) errno = ret;
 }

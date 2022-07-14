@@ -26,7 +26,9 @@ typedef void (*Callback)(void*);
 typedef void* ThreadHandle;
 
 #else
+
     #include <pthread.h>
+
 typedef pthread_t ThreadHandle;
 #endif
 

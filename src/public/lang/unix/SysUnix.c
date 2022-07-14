@@ -2,12 +2,11 @@
 // Created by xy on 7/10/22.
 //
 
-#include <xcl/lang/system.h>
-#include <sys/time.h>
-#include <stddef.h>
-#include <time.h>
 #include <errno.h>
-
+#include <stddef.h>
+#include <sys/time.h>
+#include <time.h>
+#include <xcl/lang/system.h>
 
 XCL_PUBLIC(int64_t)
 currentMillis()
@@ -18,7 +17,6 @@ currentMillis()
     int64_t s2 = (time.tv_usec / 1000);
     return s1 + s2;
 }
-
 
 XCL_PUBLIC(int64_t)
 nanos()
@@ -35,7 +33,6 @@ nanos()
     return 1000 * (s1 + s2);
 #endif
 }
-
 
 XCL_PUBLIC(void)
 sleepMillis(int32_t timeout)
