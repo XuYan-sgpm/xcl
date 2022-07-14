@@ -5,7 +5,9 @@
 #include <stdint.h>
 #include <string.h>
 #include <stdlib.h>
+#include <assert.h>
 #include "xcl/concurrent/CMutex.h"
+#include "xcl/lang/XclErr.h"
 
 typedef struct {
   int32_t* freeIdList;
@@ -31,6 +33,8 @@ __LocalId_initQueue() {
     }
     free(idList);
   }
+  memset(&__idQueue, 0, sizeof(__idQueue));
+  assert(false);
 }
 
 static void
@@ -52,6 +56,9 @@ __LocalId_offerQueue(int32_t id) {
         realloc(__idQueue.freeIdList, newCap * sizeof(int32_t));
     if (newIdList) {
       __idQueue.cap = newCap;
+      __idQueue.freeIdList = newIdList;
+    } else {
+      setErr(XCL_MEMORY_ERR);
     }
   }
   if (__idQueue.size < __idQueue.cap) {

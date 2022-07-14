@@ -2,8 +2,6 @@ cmake_minimum_required(VERSION 3.15)
 
 project(xcl C CXX)
 
-set(BUILD_LIB_TYPE static)
-
 function(check_c_cxx_compiler)
     function(_check_compiler compiler)
         message(STATUS ${compiler})
@@ -30,11 +28,6 @@ set(CMAKE_C_STANDARD 11)
 
 set(CMAKE_DEBUG_POSTFIX "d")
 set(xcl_lib_name xcl)
-
-set(CMAKE_SHARED_LIBRARY_PREFIX)
-#set(CMAKE_SHARED_LIBRARY_SUFFIX "")
-set(CMAKE_STATIC_LIBRARY_PREFIX)
-#set(CMAKE_STATIC_LIBRARY_SUFFIX  "")
 
 if (NOT DEFINED CMAKE_BUILD_TYPE)
     message(WARNING "cmake build type is not specified, auto set to Debug")
