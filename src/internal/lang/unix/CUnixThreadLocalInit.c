@@ -4,7 +4,6 @@
 
 #include <stdbool.h>
 #include <xcl/lang/CLocalStorage.h>
-#include <stddef.h>
 #include "xcl/lang/CThreadLocal.h"
 
 void
