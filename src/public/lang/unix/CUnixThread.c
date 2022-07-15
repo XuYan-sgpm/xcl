@@ -2,7 +2,7 @@
 // Created by xy on 7/10/22.
 //
 
-#include "xcl/lang/CBaseThreadImpl.h"
+#include "xcl/lang/CAbstractThreadImpl.h"
 #include "xcl/lang/system.h"
 #include "xcl/util/CBlocker.h"
 #include <errno.h>

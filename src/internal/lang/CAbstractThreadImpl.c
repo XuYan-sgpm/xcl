@@ -2,7 +2,7 @@
 // Created by xuyan on 2022/7/10.
 //
 
-#include "xcl/lang/CBaseThreadImpl.h"
+#include "xcl/lang/CAbstractThreadImpl.h"
 #include "xcl/concurrent/CMutex.h"
 #include "xcl/lang/CLocalStorage.h"
 #include "xcl/lang/CThread.h"

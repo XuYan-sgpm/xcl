@@ -10,10 +10,14 @@
 
 #pragma once
 
+#include "xcl/lang/XclDef.h"
 #include <stdbool.h>
-#include <xcl/lang/XclDef.h>
 
 typedef struct _CBlocker_st CBlocker;
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 /**
  * new a blocker object
@@ -32,6 +36,9 @@ Blocker_new2(void* mutex);
 
 /**
  * delete the blocker object
+ * this method is not thread safe, should called
+ * when blocker is no longer use. call Blocker_delete
+ * on using blocker is undefined behaviour
  * @param blocker blocker object
  * @return true if blocker is not in waiting state,
  * otherwise false
@@ -64,3 +71,7 @@ Blocker_cancel(CBlocker* blocker);
  */
 XCL_PUBLIC(bool)
 Blocker_wakeAll(CBlocker* blocker);
+
+#ifdef __cplusplus
+}
+#endif
