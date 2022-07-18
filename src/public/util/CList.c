@@ -144,22 +144,17 @@ List_peekLast(CList* list)
     return it;
 }
 
-XCL_PUBLIC(bool)
-List_remove(CList* list, const void* value,
-            int (*cmp)(const void*, const void*))
+XCL_PUBLIC(CListIter)
+List_remove(CList* list, CListIter iter)
 {
-    CListNode* cur = list->header.next;
-    while (cur != &list->header)
+    if (iter.terminator != &list->header || iter.cur == iter.terminator)
     {
-        int ret = cmp(cur->data, value);
-        if (ret == 0)
-        {
-            __List_unlink(cur);
-            return true;
-        }
-        cur = cur->next;
+        return List_end(list);
     }
-    return false;
+    CListNode* node = iter.cur;
+    CListNode* next = node->next;
+    __List_unlink(iter.cur);
+    return (CListIter){&list->header, next};
 }
 
 XCL_PUBLIC(CListIter)
@@ -198,28 +193,6 @@ List_query2(CList* list, CListIter pos, const void* value,
     return it;
 }
 
-XCL_PUBLIC(int32_t)
-List_removeAll(CList* list, const void* value,
-               int (*cmp)(const void*, const void*))
-{
-    CListNode* cur = list->header.next;
-    CListNode* next;
-    int count = 0;
-    while (cur != &list->header)
-    {
-        next = cur->next;
-        if (cmp(cur->data, value) == 0)
-        {
-            // next = cur->next;
-            __List_unlink(cur);
-            // cur = next;
-            ++count;
-        }
-        cur = next;
-    }
-    return count;
-}
-
 XCL_PUBLIC(uint32_t)
 List_size(CList* list)
 {
@@ -243,9 +216,6 @@ List_spliceRange(CList* list, CListIter pos, CList* other, CListIter first,
     }
     if (last.cur == first.cur) { return true; }
     CListNode* lastRemoved = last.cur->prev;
-    // if (lastRemoved == first.cur) {
-    //   return;
-    // }
     __List_link(first.cur->prev, last.cur);
     __List_link(pos.cur->prev, first.cur);
     __List_link(lastRemoved, pos.cur);

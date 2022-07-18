@@ -237,15 +237,24 @@ XCL_PUBLIC(void)
 Local_discard(CThreadLocal* local);
 
 /**
+ * this api is only necessary to call on msvc compiler
  * initialize thread local environment
  * the function is not thread safe, and can only
  * called once
- * note that if you use clang or gcc to compile
- * you don't need to call this api
  * @return true if initialize successfully, otherwise false
  */
 XCL_PUBLIC(bool)
 Local_initEnv();
+
+/**
+ * recycle thread local storage if thread is dead
+ * thread safe api, only necessary for windows or
+ * static library on linux and macos
+ * if you use dynamic library on linux or macos platforms,
+ * this function is useless and don't do anything
+ */
+XCL_PUBLIC(void)
+Local_recycleStorages();
 
 #ifdef __cplusplus
 }

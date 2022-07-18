@@ -111,12 +111,14 @@ List_peekFirst(CList* list);
 XCL_PUBLIC(CListIter)
 List_peekLast(CList* list);
 
-/*
- * remove node which contains data equals to value
+/**
+ * remote node at list iterator, but no delete node data
+ * @param list list object
+ * @param iter list iterator
+ * @return true if remove successfully, otherwise false
  */
-XCL_PUBLIC(bool)
-List_remove(CList* list, const void* value,
-            int (*cmp)(const void*, const void*));
+XCL_PUBLIC(CListIter)
+List_remove(CList* list, CListIter iter);
 
 /*
  * use cmpHook to find node contains data equals to value
@@ -132,14 +134,6 @@ List_query(CList* list, const void* value,
 XCL_PUBLIC(CListIter)
 List_query2(CList* list, CListIter pos, const void* value,
             int (*cmp)(const void*, const void*));
-
-/*
- * similar to List_remove, but remove all nodes which contains data
- * equals to value
- */
-XCL_PUBLIC(int32_t)
-List_removeAll(CList* list, const void* value,
-               int (*cmp)(const void*, const void*));
 
 /*
  * return size of list, may be O(n)

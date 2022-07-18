@@ -66,3 +66,5 @@ static __attribute__((constructor)) void __Unix_initLocalEnv()
 {
     Local_initEnv();
 }
+
+void __clearObsoleteStorages() {}

@@ -130,22 +130,6 @@ Thread_join2(CThread* thread, int32_t timeout, bool* terminated);
 XCL_PUBLIC(void)
 Thread_detach(CThread* thread);
 
-/**
- * get thread attach object
- * @param thread CThread object
- * @return thread attach data
- */
-XCL_PUBLIC(void*)
-Thread_attach(CThread* thread);
-
-/**
- * set thread attach object
- * @param thread CThread object
- * @param attach thread attach data
- */
-XCL_PUBLIC(void)
-Thread_setAttach(CThread* thread, void* attach);
-
 #ifdef __cplusplus
 }
 #endif

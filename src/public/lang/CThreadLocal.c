@@ -280,3 +280,8 @@ Local_initEnv()
     }
     return initDone;
 }
+
+void __clearObsoleteStorages();
+
+XCL_PUBLIC(void)
+Local_recycleStorages() { __clearObsoleteStorages(); }
