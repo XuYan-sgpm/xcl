@@ -21,17 +21,6 @@
 
 typedef void (*Callback)(void*);
 
-#if WINDOWS
-
-typedef void* ThreadHandle;
-
-#else
-
-    #include <pthread.h>
-
-typedef pthread_t ThreadHandle;
-#endif
-
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -62,13 +51,6 @@ Thread_current();
  */
 XCL_PUBLIC(unsigned)
 Thread_currentId();
-
-/**
- * get current thread handle
- * @return current thread handle
- */
-XCL_PUBLIC(ThreadHandle)
-Thread_currentHandle();
 
 /**
  * add cb for front call, cb will called first if no any other

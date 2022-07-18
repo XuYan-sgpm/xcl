@@ -12,7 +12,7 @@ void __Local_implInitialize();
 
 #if STATIC
 
-    #include <stddef.h>
+#    include <stddef.h>
 
 static __thread CLocalStorage* __Unix_Thread_localStorage = NULL;
 
@@ -28,9 +28,9 @@ void __Local_implInitialize() { __LocalId_initQueue(); }
 
 #elif DYNAMIC
 
-    #include "xcl/lang/XclErr.h"
-    #include <assert.h>
-    #include <pthread.h>
+#    include "xcl/lang/XclErr.h"
+#    include <assert.h>
+#    include <pthread.h>
 
 pthread_key_t __Unix_storageKey = 0;
 

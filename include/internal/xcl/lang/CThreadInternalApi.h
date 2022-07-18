@@ -13,20 +13,21 @@
 
 #include "CLocalStorage.h"
 #include <stdint.h>
-#include <xcl/lang/CThread.h>
+typedef struct _CThread_st CThread;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 #if WINDOWS
-
 typedef unsigned __ThreadRunReturnType;
-
-    #define INVALID_THREAD_HANDLE NULL
+typedef void* ThreadHandle;
+#    define INVALID_THREAD_HANDLE NULL
 #else
+#    include <pthread.h>
+typedef pthread_t ThreadHandle;
 typedef void* __ThreadRunReturnType;
-    #define INVALID_THREAD_HANDLE (0)
+#    define INVALID_THREAD_HANDLE (0)
 #endif
 
 typedef __ThreadRunReturnType(XCL_API* __ThreadRunProc)(void*);
@@ -61,7 +62,7 @@ bool __Thread_waitTimeout(CThread* thread, int32_t timeout);
 /**
  * create a thread
  * @param suspend if thread suspended after create
- * @param run thread run run
+ * @param run thread run proc
  * @param usr pointer store data for run use
  * @param handle output the thread handle
  * @param tid output the thread id

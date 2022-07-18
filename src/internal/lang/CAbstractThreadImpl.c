@@ -2,10 +2,10 @@
 // Created by xuyan on 2022/7/10.
 //
 
-#include "xcl/lang/CAbstractThreadImpl.h"
 #include "xcl/concurrent/CMutex.h"
 #include "xcl/lang/CLocalStorage.h"
 #include "xcl/lang/CThread.h"
+#include "xcl/lang/CThreadInternalApi.h"
 #include "xcl/lang/CThreadLocal.h"
 #include "xcl/util/CSingleList.h"
 #include <stddef.h>

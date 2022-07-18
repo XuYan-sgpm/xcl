@@ -3,8 +3,8 @@
 //
 
 #include "xcl/lang/CThreadLocal.h"
-#include "xcl/lang/CAbstractThreadImpl.h"
 #include "xcl/lang/CLocalStorage.h"
+#include "xcl/lang/CThreadInternalApi.h"
 #include <stdatomic.h>
 #include <stdlib.h>
 #include <string.h>
