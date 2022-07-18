@@ -2,10 +2,10 @@
 // Created by xuyan on 2022/7/6.
 //
 
+#include <windows.h>
 #include <process.h>
 #include <synchapi.h>
-#include <windows.h>
-#include <xcl/lang/CBaseThreadImpl.h>
+#include <xcl/lang/CThreadInternalApi.h>
 #include <xcl/lang/XclErr.h>
 
 bool __Win32_wait(HANDLE handle, DWORD timeout);

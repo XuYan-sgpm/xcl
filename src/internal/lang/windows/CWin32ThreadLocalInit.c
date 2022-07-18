@@ -27,10 +27,9 @@ bool __Thread_setLocalStorage(CLocalStorage* localStorage)
 void __Local_implInitialize() { __LocalId_initQueue(); }
 
 #elif DYNAMIC
-
-    #include "xcl/lang/XclErr.h"
-    #include <processthreadsapi.h>
-    #include <windows.h>
+#    include <windows.h>
+#    include "xcl/lang/XclErr.h"
+#    include <processthreadsapi.h>
 
 static DWORD __Win32_storageKey = TLS_OUT_OF_INDEXES;
 
@@ -62,10 +61,8 @@ bool __Thread_setLocalStorage(CLocalStorage* localStorage)
 #endif
 
 #if GNUC || CLANG
-
 static __attribute__((constructor)) void __Win32_initLocalEnv()
 {
     Local_initEnv();
 }
-
 #endif

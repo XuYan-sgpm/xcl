@@ -2,12 +2,12 @@
 // Created by xuyan on 2022/6/24.
 //
 
+#include <windows.h>
 #include "xcl/concurrent/Lock.h"
 #include <WinBase.h>
 #include <handleapi.h>
 #include <synchapi.h>
 #include <windef.h>
-#include <windows.h>
 
 extern "C" bool __Win32_wait(HANDLE handle, DWORD timeout);
 
