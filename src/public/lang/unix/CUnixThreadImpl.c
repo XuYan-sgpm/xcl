@@ -11,9 +11,19 @@
 #include <sys/syscall.h>
 #include <unistd.h>
 
+typedef struct {
+    CThread base;
+    CBlocker* blocker;
+} CUnixThread;
+
+static inline CBlocker* __UnixThread_blocker(CThread* thread)
+{
+    return ((CUnixThread*)thread)->blocker;
+}
+
 void __Thread_beforeCreate(CThread* thread)
 {
-    Thread_setAttach(thread, Blocker_new2(__Thread_mutex(thread)));
+    ((CUnixThread*)thread)->blocker = Blocker_new2(__Thread_mutex(thread));
 }
 
 void __Thread_afterCreate(CThread* thread) {}
@@ -62,12 +72,12 @@ bool __Thread_create(bool suspend, __ThreadRunProc run, void* usr,
 void __Thread_resume(CThread* thread)
 {
     __Thread_setState(thread, ALIVE);
-    Blocker_cancel((CBlocker*)Thread_attach(thread));
+    Blocker_cancel(__UnixThread_blocker(thread));
 }
 
 void __Thread_onStart(CThread* thread)
 {
-    Blocker_wait((CBlocker*)Thread_attach(thread));
+    Blocker_wait(__UnixThread_blocker(thread));
 }
 
 void __Thread_onFinish(CThread* thread, __ThreadRunReturnType retVal) {}
@@ -81,7 +91,7 @@ ThreadHandle __Thread_currentHandle(CThread* thread, unsigned tid)
 
 void __Thread_finalize(CThread* thread)
 {
-    Blocker_delete((CBlocker*)Thread_attach(thread));
+    Blocker_delete(__UnixThread_blocker(thread));
 }
 
 void __Thread_detach(CThread* thread)

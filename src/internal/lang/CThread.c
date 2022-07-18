@@ -7,7 +7,6 @@
 #include "xcl/lang/CLocalStorage.h"
 #include "xcl/lang/CThreadInternalApi.h"
 #include "xcl/lang/CThreadLocal.h"
-#include "xcl/util/CSingleList.h"
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
@@ -18,20 +17,6 @@
  * position 0 used to store current CThread object
  */
 static CThreadLocal __localThread = {0};
-
-typedef struct {
-    const Callback cb;
-    void* const usr;
-} CallbackObj;
-
-struct _CThread_st {
-    const ThreadHandle handle;
-    void* const threadLock;
-    CThreadState state;
-    const unsigned threadId;
-    CSingleList* callStack;
-    void* attach;
-};
 
 static inline void __Thread_setThreadHandle(CThread* thread,
                                             ThreadHandle handle)
@@ -109,12 +94,6 @@ CThreadState __Thread_state(CThread* thread) { return thread->state; }
 void* __Thread_mutex(CThread* thread) { return thread->threadLock; }
 
 ThreadHandle __Thread_handle(CThread* thread) { return thread->handle; }
-
-XCL_PUBLIC(void*)
-Thread_attach(CThread* thread) { return thread->attach; }
-
-XCL_PUBLIC(void)
-Thread_setAttach(CThread* thread, void* attach) { thread->attach = attach; }
 
 static __ThreadRunReturnType XCL_API __Thread_run(void* args)
 {

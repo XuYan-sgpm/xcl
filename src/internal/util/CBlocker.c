@@ -25,7 +25,6 @@ Blocker_new()
     {
         blocker->wait = blocker->notify = 0;
         blocker->externalLock = false;
-        //        blocker->attach = 0;
         int ret = __Blocker_init(blocker, 0);
         if (ret)
         {
@@ -41,12 +40,11 @@ Blocker_new()
 XCL_PUBLIC(CBlocker*)
 Blocker_new2(void* mutex)
 {
-    CBlocker* blocker = malloc(sizeof(CBlocker));
+    CBlocker* blocker = __Blocker_alloc();
     if (blocker)
     {
         blocker->wait = blocker->notify = 0;
         blocker->externalLock = true;
-        //        blocker->attach = 0;
         int ret = __Blocker_init(blocker, mutex);
         if (ret)
         {
@@ -67,11 +65,7 @@ Blocker_delete(CBlocker* blocker)
     if (ret != 0) { setErr(ret); }
     else
     {
-        if (__Blocker_state(blocker) <= 0)
-        {
-            // blocker is not in waiting state
-            allow = true;
-        }
+        if (__Blocker_state(blocker) <= 0) { allow = true; }
         __Blocker_release(blocker);
         if (allow)
         {

@@ -3,7 +3,6 @@
 //
 
 #include "xcl/lang/XclErr.h"
-#include "xcl/util/CBlocker.h"
 #include <pthread.h>
 #include <stdint.h>
 #include <stdlib.h>

@@ -12,12 +12,21 @@
  */
 
 #include "CLocalStorage.h"
+#include "xcl/util/CSingleList.h"
 #include <stdint.h>
-typedef struct _CThread_st CThread;
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef enum
+{
+    SUSPEND,
+    ALIVE,
+    TERMINATED,
+    INVALID,
+    DETACHED
+} CThreadState;
 
 #if WINDOWS
 typedef unsigned __ThreadRunReturnType;
@@ -29,6 +38,21 @@ typedef pthread_t ThreadHandle;
 typedef void* __ThreadRunReturnType;
 #    define INVALID_THREAD_HANDLE (0)
 #endif
+
+typedef struct {
+    void (*const cb)(void*);
+    void* const usr;
+} CallbackObj;
+
+struct _CThread_st {
+    const ThreadHandle handle;
+    void* const threadLock;
+    CThreadState state;
+    const unsigned threadId;
+    CSingleList* callStack;
+};
+
+typedef struct _CThread_st CThread;
 
 typedef __ThreadRunReturnType(XCL_API* __ThreadRunProc)(void*);
 
@@ -115,15 +139,6 @@ void __Thread_finalize(CThread* thread);
  * @param thread thread object
  */
 void __Thread_detach(CThread* thread);
-
-typedef enum
-{
-    SUSPEND,
-    ALIVE,
-    TERMINATED,
-    INVALID,
-    DETACHED
-} CThreadState;
 
 /**
  * get current thread localstorage
