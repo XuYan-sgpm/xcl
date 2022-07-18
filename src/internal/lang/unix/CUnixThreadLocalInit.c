@@ -14,7 +14,6 @@ void __Local_implInitialize();
 #if STATIC
 
 #    include <stddef.h>
-#    include <assert.h>
 #    include <unistd.h>
 #    include <syscall.h>
 
