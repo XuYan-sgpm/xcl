@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <xcl/util/CBlocker.h>
+#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -19,6 +19,8 @@ struct _CBlocker_st {
     int32_t notify;
     bool externalLock;
 };
+
+typedef struct _CBlocker_st CBlocker;
 
 /**
  * functions below are need to implement

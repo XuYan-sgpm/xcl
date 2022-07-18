@@ -4,7 +4,7 @@
 
 #include <stdlib.h>
 #include <xcl/lang/XclErr.h>
-#include <xcl/util/CAbstractBlockerImpl.h>
+#include <xcl/util/CBlockerInternalApi.h>
 
 /**
  * get blocker state, if state is <= 0, blocker is in signaled

@@ -7,7 +7,7 @@
 #include <pthread.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <xcl/util/CAbstractBlockerImpl.h>
+#include <xcl/util/CBlockerInternalApi.h>
 
 typedef struct {
     CBlocker base;
