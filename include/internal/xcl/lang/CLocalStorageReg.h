@@ -14,7 +14,7 @@ extern "C" {
 #if WINDOWS
 typedef unsigned long ThreadId;
 #else
-typedef int ThreadId;
+typedef long ThreadId;
 #endif
 
 typedef struct {

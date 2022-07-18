@@ -1,18 +1,22 @@
 //
-// Created by xuyan on 2022/7/18.
+// Created by xy on 7/18/22.
 //
 
-#include "xcl/lang/CLocalStorage.h"
-#include "xcl/lang/CLocalStorageReg.h"
-#include "xcl/lang/XclErr.h"
-#include "xcl/util/CList.h"
+#include <xcl/lang/CLocalStorageReg.h>
+#include <pthread.h>
 #include <assert.h>
-#include <windows.h>
+#include "xcl/util/CList.h"
+#include "xcl/lang/XclErr.h"
+#include <stdlib.h>
+#include <unistd.h>
+#include <syscall.h>
+#include <bits/sigthread.h>
+#include <errno.h>
 
 typedef CList __RegList;
 
 typedef struct {
-    CRITICAL_SECTION mutex;
+    pthread_mutex_t mutex;
     __RegList* regList;
 } __CLocalStorageRegQueue;
 
@@ -20,27 +24,27 @@ static __CLocalStorageRegQueue __localStorageRegQueue;
 
 void __initializeRegQueue()
 {
-    InitializeCriticalSection(&__localStorageRegQueue.mutex);
+    assert(pthread_mutex_init(&__localStorageRegQueue.mutex, NULL) == 0);
     __localStorageRegQueue.regList = List_new();
     assert(__localStorageRegQueue.regList);
 }
 
 int32_t __Unix_cmpThreadId(const void* left, const void* right)
 {
-    return (int32_t)(*(const DWORD*)left - *(const DWORD*)right);
+    return (int32_t)(*(const long*)left - *(const long*)right);
 }
 
 void __regLocalStorage(CLocalStorage* localStorage)
 {
-    EnterCriticalSection(&__localStorageRegQueue.mutex);
+    pthread_mutex_lock(&__localStorageRegQueue.mutex);
     CListNode* node = malloc(sizeof(CListNode) + sizeof(__RegData));
     if (node)
     {
         __RegData* regData = (__RegData*)(node->data);
         regData->localStorage = localStorage;
-        regData->threadId = GetCurrentThreadId();
+        regData->threadId = syscall(__NR_gettid);
         CListIter iter = List_query(__localStorageRegQueue.regList,
-                                    &regData->threadId, __Win32_cmpThreadId);
+                                    &regData->threadId, __Unix_cmpThreadId);
         assert(List_iterEquals(iter, List_end(__localStorageRegQueue.regList)));
         List_push(__localStorageRegQueue.regList, node);
     }
@@ -49,12 +53,12 @@ void __regLocalStorage(CLocalStorage* localStorage)
         setErr(XCL_MEMORY_ERR);
         assert(false);
     }
-    LeaveCriticalSection(&__localStorageRegQueue.mutex);
+    pthread_mutex_unlock(&__localStorageRegQueue.mutex);
 }
 
 void __deregisterLocalStorage(ThreadId tid)
 {
-    EnterCriticalSection(&__localStorageRegQueue.mutex);
+    pthread_mutex_lock(&__localStorageRegQueue.mutex);
     CListIter iter = List_begin(__localStorageRegQueue.regList);
     while (!List_iterEquals(iter, List_end(__localStorageRegQueue.regList)))
     {
@@ -65,29 +69,18 @@ void __deregisterLocalStorage(ThreadId tid)
         }
         iter = List_next(iter);
     }
-    LeaveCriticalSection(&__localStorageRegQueue.mutex);
+    pthread_mutex_unlock(&__localStorageRegQueue.mutex);
 }
 
-static bool __isThreadAlive(DWORD threadId)
+static bool __isThreadAlive(long threadId)
 {
-    HANDLE handle = OpenThread(THREAD_QUERY_INFORMATION, false, threadId);
-    if (!handle)
-    {
-        setErr(GetLastError());
-        return false;
-    }
-    DWORD exit;
-    if (!GetExitCodeThread(handle, &exit))
-    {
-        setErr(GetLastError());
-        return false;
-    }
-    return exit == STILL_ACTIVE;
+    pthread_t handle = pthread_self();
+    return pthread_kill(handle, 0) != ESRCH;
 }
 
 void __clearObsoleteStorages()
 {
-    EnterCriticalSection(&__localStorageRegQueue.mutex);
+    pthread_mutex_lock(&__localStorageRegQueue.mutex);
     CListIter iter = List_begin(__localStorageRegQueue.regList);
     while (!List_iterEquals(iter, List_end(__localStorageRegQueue.regList)))
     {
@@ -101,13 +94,13 @@ void __clearObsoleteStorages()
         }
         else { iter = List_next(iter); }
     }
-    LeaveCriticalSection(&__localStorageRegQueue.mutex);
+    pthread_mutex_unlock(&__localStorageRegQueue.mutex);
 }
 
 bool __hasRegLocalStorage()
 {
-    EnterCriticalSection(&__localStorageRegQueue.mutex);
+    pthread_mutex_lock(&__localStorageRegQueue.mutex);
     bool ret = !List_empty(__localStorageRegQueue.regList);
-    LeaveCriticalSection(&__localStorageRegQueue.mutex);
+    pthread_mutex_unlock(&__localStorageRegQueue.mutex);
     return ret;
 }
