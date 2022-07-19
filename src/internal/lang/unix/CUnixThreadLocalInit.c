@@ -3,6 +3,7 @@
 //
 
 #include "xcl/lang/CThreadLocal.h"
+#include "xcl/lang/CLocalStorageReg.h"
 #include <stdbool.h>
 #include <xcl/lang/CLocalStorage.h>
 
@@ -11,6 +12,8 @@ void __LocalId_initQueue();
 #if STATIC
 
 #    include <stddef.h>
+#    include <unistd.h>
+#    include <syscall.h>
 
 static __thread CLocalStorage* __Unix_Thread_localStorage = NULL;
 
@@ -19,10 +22,16 @@ CLocalStorage* __Thread_getLocalStorage() { return __Unix_Thread_localStorage; }
 bool __Thread_setLocalStorage(CLocalStorage* localStorage)
 {
     __Unix_Thread_localStorage = localStorage;
+    if (!localStorage) { __deregisterLocalStorage(syscall(__NR_gettid)); }
+    else { __regLocalStorage(localStorage); }
     return true;
 }
 
-void __Local_implInitialize() { __LocalId_initQueue(); }
+void __Local_implInitialize()
+{
+    __LocalId_initQueue();
+    __initializeRegQueue();
+}
 
 #elif DYNAMIC
 
@@ -44,6 +53,7 @@ void __Local_implInitialize()
     int ret = pthread_key_create(&__Unix_storageKey, __releaseLocalStorage);
     if (ret) { setErr(ret); }
     assert(ret == 0);
+    __initializeRegQueue();
 }
 
 CLocalStorage* __Thread_getLocalStorage()
@@ -64,5 +74,3 @@ static __attribute__((constructor)) void __Unix_initLocalEnv()
 {
     Local_initEnv();
 }
-
-void __clearObsoleteStorages() {}
