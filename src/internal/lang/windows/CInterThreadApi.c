@@ -155,7 +155,8 @@ bool __Thread_setLocalStorage(CLocalStorage* localStorage)
     bool success = TlsSetValue(__Win32_storageKey, localStorage);
     if (!localStorage)
     {
-        __deregisterLocalStorage(__Thread_currentHandle());
+        if (success)
+            __deregisterLocalStorage(__Thread_currentHandle());
     }
     else
     {
