@@ -5,8 +5,7 @@
 #pragma once
 
 #ifdef __cplusplus
-extern "C"
-{
+extern "C" {
 #endif
 
 #include <stdbool.h>
@@ -16,7 +15,7 @@ extern "C"
 #include <stdarg.h>
 
 XCL_PUBLIC(void)
-assertIf(bool cond, const char*msg)
+assertIf(bool cond, const char* msg)
 {
     if (!cond)
     {
@@ -25,8 +24,7 @@ assertIf(bool cond, const char*msg)
     }
 }
 
-XCL_EXPORT void
-assertMessage(bool cond, const char*fmt, ...)
+XCL_EXPORT void assertMessage(bool cond, const char* fmt, ...)
 {
     if (!cond)
     {

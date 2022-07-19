@@ -27,11 +27,20 @@ namespace
         pthread_mutex_t mutex_;
     };
 
-    void __InternalUnixMutex::lock() { Mutex_lock(&mutex_); }
+    void __InternalUnixMutex::lock()
+    {
+        Mutex_lock((CMutex*)&mutex_);
+    }
 
-    void __InternalUnixMutex::unlock() { Mutex_unlock(&mutex_); }
+    void __InternalUnixMutex::unlock()
+    {
+        Mutex_unlock((CMutex*)&mutex_);
+    }
 
-    bool __InternalUnixMutex::tryLock() { return Mutex_tryLock(&mutex_); }
+    bool __InternalUnixMutex::tryLock()
+    {
+        return Mutex_tryLock((CMutex*)&mutex_);
+    }
 
     __InternalUnixMutex::__InternalUnixMutex(bool recursive) : mutex_()
     {
@@ -43,14 +52,19 @@ namespace
             pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
             ret = pthread_mutex_init(&mutex_, &attr);
         }
-        else { ret = pthread_mutex_init(&mutex_, nullptr); }
-        if (ret) setErr(ret);
+        else
+        {
+            ret = pthread_mutex_init(&mutex_, nullptr);
+        }
+        if (ret)
+            setErr(ret);
     }
 
     __InternalUnixMutex::~__InternalUnixMutex()
     {
         int ret = pthread_mutex_destroy(&mutex_);
-        if (ret) setErr(ret);
+        if (ret)
+            setErr(ret);
     }
 
     class __InternalUnixTimedMutex : public xcl::TimedLock,
@@ -71,16 +85,22 @@ namespace
 
     bool __InternalUnixTimedMutex::tryLock(int32_t timeout)
     {
-        return Mutex_tryLock2(&mutex_, timeout);
+        return Mutex_tryLock2((CMutex*)&mutex_, timeout);
     }
 
     __InternalUnixTimedMutex::__InternalUnixTimedMutex(bool recursive)
         : __InternalUnixMutex(recursive)
     {}
 
-    void __InternalUnixTimedMutex::lock() { __InternalUnixMutex::lock(); }
+    void __InternalUnixTimedMutex::lock()
+    {
+        __InternalUnixMutex::lock();
+    }
 
-    void __InternalUnixTimedMutex::unlock() { __InternalUnixMutex::unlock(); }
+    void __InternalUnixTimedMutex::unlock()
+    {
+        __InternalUnixMutex::unlock();
+    }
 
     bool __InternalUnixTimedMutex::tryLock()
     {
@@ -88,7 +108,10 @@ namespace
     }
 }// namespace
 
-xcl::Lock* xcl::Lock::NewLock() { return new __InternalUnixMutex(); }
+xcl::Lock* xcl::Lock::NewLock()
+{
+    return new __InternalUnixMutex();
+}
 
 xcl::TimedLock* xcl::TimedLock::NewLock()
 {

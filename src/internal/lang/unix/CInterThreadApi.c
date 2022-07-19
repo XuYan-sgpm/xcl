@@ -5,6 +5,7 @@
 #include "xcl/lang/CInterThreadApi.h"
 #include "xcl/lang/system.h"
 #include "xcl/util/CBlocker.h"
+#include "xcl/lang/CLocalStorageReg.h"
 #include <errno.h>
 #include <pthread.h>
 #include <signal.h>
@@ -21,17 +22,29 @@ static inline CBlocker* __UnixThread_blocker(CThread* thread)
     return ((CUnixThread*)thread)->blocker;
 }
 
+CThread* __Thread_alloc()
+{
+    return Pool_alloc(NULL, sizeof(CUnixThread));
+}
+
+void __Thread_dealloc(CThread* thread)
+{
+    Pool_dealloc(NULL, thread, sizeof(CUnixThread));
+}
+
 void __Thread_beforeCreate(CThread* thread)
 {
     ((CUnixThread*)thread)->blocker = Blocker_new2(__Thread_mutex(thread));
 }
 
-void __Thread_afterCreate(CThread* thread) {}
+void __Thread_afterCreate(CThread* thread)
+{}
 
 void __Thread_wait(CThread* thread)
 {
     int ret = pthread_join(__Thread_handle(thread), NULL);
-    if (ret) errno = ret;
+    if (ret)
+        errno = ret;
 }
 
 bool __Thread_waitTimeout(CThread* thread, int32_t timeout)
@@ -43,7 +56,10 @@ bool __Thread_waitTimeout(CThread* thread, int32_t timeout)
     while (totalWait < nanoTimeout)
     {
         int ret = pthread_kill(handle, 0);
-        if (ret == ESRCH) { return true; }
+        if (ret == ESRCH)
+        {
+            return true;
+        }
 #if _POSIX_C_SOURCE >= 199309L
         struct timespec ts = {0, nanoTimeout - totalWait};
         nanosleep(&ts, NULL);
@@ -80,13 +96,17 @@ void __Thread_onStart(CThread* thread)
     Blocker_wait(__UnixThread_blocker(thread));
 }
 
-void __Thread_onFinish(CThread* thread, __ThreadRunReturnType retVal) {}
+void __Thread_onFinish(CThread* thread, __ThreadRunReturnType retVal)
+{}
 
-unsigned __Thread_currentId() { return syscall(__NR_gettid); }
-
-ThreadHandle __Thread_currentHandle(CThread* thread, unsigned tid)
+unsigned __Thread_currentId()
 {
-    return __Thread_handle(thread);
+    return syscall(__NR_gettid);
+}
+
+ThreadHandle __Thread_currentHandle()
+{
+    return pthread_self();
 }
 
 void __Thread_finalize(CThread* thread)
@@ -97,5 +117,99 @@ void __Thread_finalize(CThread* thread)
 void __Thread_detach(CThread* thread)
 {
     int ret = pthread_detach(__Thread_handle(thread));
-    if (ret) errno = ret;
+    if (ret)
+        errno = ret;
+}
+
+bool __Thread_isAlive(ThreadHandle handle)
+{
+    return pthread_kill(handle, 0) != ESRCH;
+}
+
+void __LocalId_initQueue();
+
+#if STATIC
+
+#include <stddef.h>
+#include <unistd.h>
+#include <syscall.h>
+
+static __thread CLocalStorage* __Unix_Thread_localStorage = NULL;
+
+CLocalStorage* __Thread_getLocalStorage()
+{
+    return __Unix_Thread_localStorage;
+}
+
+bool __Thread_setLocalStorage(CLocalStorage* localStorage)
+{
+    __Unix_Thread_localStorage = localStorage;
+    if (!localStorage)
+    {
+        __deregisterLocalStorage(__Thread_currentHandle());
+    }
+    else
+    {
+        __regLocalStorage(localStorage);
+    }
+    return true;
+}
+
+#elif DYNAMIC
+
+#include "xcl/lang/XclErr.h"
+#include <assert.h>
+
+pthread_key_t __Unix_storageKey = 0;
+
+static void __releaseLocalStorage(void* args)
+{
+    CLocalStorage* localStorage = args;
+    if (localStorage)
+    {
+        LocalStorage_delete(localStorage);
+    }
+}
+
+CLocalStorage* __Thread_getLocalStorage()
+{
+    return pthread_getspecific(__Unix_storageKey);
+}
+
+bool __Thread_setLocalStorage(CLocalStorage* localStorage)
+{
+    int ret = pthread_setspecific(__Unix_storageKey, localStorage);
+    bool success = ret == 0;
+    if (!localStorage)
+    {
+        if (success)
+            __deregisterLocalStorage(__Thread_currentHandle());
+    }
+    else
+    {
+        if (!success)
+        {
+            setErr(ret);
+        }
+        else
+        {
+            __regLocalStorage(localStorage);
+        }
+    }
+    return success;
+}
+
+#endif
+
+void __initializeLocalStorageAccess()
+{
+    __initializeRegQueue();
+#ifdef DYNAMIC
+    int ret = pthread_key_create(&__Unix_storageKey, __releaseLocalStorage);
+    if (ret)
+    {
+        setErr(ret);
+    }
+    assert(ret == 0);
+#endif
 }

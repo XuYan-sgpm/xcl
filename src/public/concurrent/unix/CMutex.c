@@ -3,6 +3,7 @@
 //
 
 #include "xcl/lang/system.h"
+#include "xcl/pool/CPool.h"
 #include <errno.h>
 #include <pthread.h>
 #include <stdlib.h>
@@ -10,17 +11,17 @@
 #include <unistd.h>
 #include <xcl/concurrent/CMutex.h>
 
-typedef struct {
+struct _CMutex_st {
     pthread_mutex_t handle;
-} CUnixMutex;
+};
 
-XCL_PUBLIC(void*)
+XCL_PUBLIC(CMutex*)
 Mutex_new()
 {
-    CUnixMutex* mutex = Pool_alloc(NULL, sizeof(CUnixMutex));
+    CMutex* mutex = Pool_alloc(NULL, sizeof(CMutex));
     if (mutex)
     {
-        memset(mutex, 0, sizeof(CUnixMutex));
+        memset(mutex, 0, sizeof(CMutex));
         pthread_mutexattr_t attr;
         pthread_mutexattr_init(&attr);
         pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
@@ -30,62 +31,68 @@ Mutex_new()
             return mutex;
         }
         errno = err;
-        Pool_dealloc(NULL, mutex);
+        Pool_dealloc(NULL, mutex, sizeof(CMutex));
     }
     return NULL;
 }
 
 XCL_PUBLIC(bool)
-Mutex_delete(void* mutex)
+Mutex_delete(CMutex* mutex)
 {
     if (mutex)
     {
-        int ret = pthread_mutex_destroy(&((CUnixMutex*)mutex)->handle);
-        Pool_dealloc(NULL, mutex);
-        if (ret != 0) errno = ret;
+        int ret = pthread_mutex_destroy(&mutex->handle);
+        Pool_dealloc(NULL, mutex, sizeof(CMutex));
+        if (ret != 0)
+            errno = ret;
         return !ret;
     }
     return false;
 }
 
 XCL_PUBLIC(bool)
-Mutex_lock(void* mutex)
+Mutex_lock(CMutex* mutex)
 {
     if (mutex)
     {
-        int ret = pthread_mutex_lock(&((CUnixMutex*)mutex)->handle);
-        if (ret == 0) { return true; }
+        int ret = pthread_mutex_lock(&mutex->handle);
+        if (ret == 0)
+        {
+            return true;
+        }
         errno = ret;
     }
     return false;
 }
 
 XCL_PUBLIC(bool)
-Mutex_unlock(void* mutex)
+Mutex_unlock(CMutex* mutex)
 {
     if (mutex)
     {
-        int ret = pthread_mutex_unlock(&((CUnixMutex*)mutex)->handle);
-        if (ret != 0) errno = ret;
+        int ret = pthread_mutex_unlock(&mutex->handle);
+        if (ret != 0)
+            errno = ret;
         return !ret;
     }
     return false;
 }
 
 XCL_PUBLIC(bool)
-Mutex_tryLock(void* mutex)
+Mutex_tryLock(CMutex* mutex)
 {
     if (mutex)
     {
-        int ret = pthread_mutex_trylock(&((CUnixMutex*)mutex)->handle);
-        if (ret) errno = ret;
+        int ret = pthread_mutex_trylock(&mutex->handle);
+        if (ret)
+            errno = ret;
         return !ret;
     }
     return false;
 }
 
 XCL_PUBLIC(bool)
-Mutex_tryLock2(void* mutex, int32_t timeout)
+Mutex_tryLock2(CMutex* mutex, int32_t timeout)
 {
     if (mutex)
     {
@@ -103,8 +110,9 @@ Mutex_tryLock2(void* mutex, int32_t timeout)
             ts.tv_sec += ts.tv_nsec / 1000000000;
             ts.tv_nsec = ts.tv_nsec % 1000000000;
         }
-        int ret = pthread_mutex_timedlock(mutex, &ts);
-        if (ret) errno = ret;
+        int ret = pthread_mutex_timedlock(&mutex->handle, &ts);
+        if (ret)
+            errno = ret;
         return !ret;
 #else
         int64_t nanoTimeout = (int64_t)timeout * 1000000L;
@@ -112,20 +120,21 @@ Mutex_tryLock2(void* mutex, int32_t timeout)
         int64_t st = nanos();
         while (totalWait < nanoTimeout)
         {
-            if ((pthread_mutex_trylock(&((CUnixMutex*)mutex)->handle)) == 0)
+            if ((pthread_mutex_trylock(&mutex->handle)) == 0)
             {
                 return true;
             }
-#    if _POSIX_C_SOURCE >= 199309L
+#if _POSIX_C_SOURCE >= 199309L
             struct timespec ts = {0, 1000000};
             nanosleep(&ts, NULL);
-#    else
+#else
             usleep(1000);
-#    endif
+#endif
             totalWait = nanos() - st;
         }
-        int ret = pthread_mutex_trylock(&((CUnixMutex*)mutex)->handle);
-        if (ret) errno = ret;
+        int ret = pthread_mutex_trylock(&mutex->handle);
+        if (ret)
+            errno = ret;
         return !ret;
 #endif
     }

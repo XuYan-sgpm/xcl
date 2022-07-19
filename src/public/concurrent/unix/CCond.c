@@ -4,86 +4,95 @@
 
 #include <errno.h>
 #include <pthread.h>
-#include <stdlib.h>
 #include <string.h>
 #include <xcl/concurrent/CCond.h>
+#include "xcl/pool/CPool.h"
 
-typedef struct {
+struct _CCond_st {
     pthread_cond_t handle;
-} CUnixCond;
+};
 
-XCL_PUBLIC(void*)
+XCL_PUBLIC(CCond*)
 Cond_new()
 {
-    CUnixCond* cond = Pool_alloc(NULL, sizeof(CUnixCond));
+    CCond* cond = Pool_alloc(NULL, sizeof(CCond));
     if (cond)
     {
-        memset(cond, 0, sizeof(CUnixCond));
+        memset(cond, 0, sizeof(CCond));
         int ret = pthread_cond_init(&cond->handle, NULL);
-        if (ret == 0) { return cond; }
+        if (ret == 0)
+        {
+            return cond;
+        }
         errno = ret;
-        Pool_dealloc(NULL, cond);
+        Pool_dealloc(NULL, cond, sizeof(CCond));
     }
     return NULL;
 }
 
 XCL_PUBLIC(bool)
-Cond_delete(void* cond)
+Cond_delete(CCond* cond)
 {
     if (cond)
     {
-        int ret = pthread_cond_destroy(&((CUnixCond*)cond)->handle);
-        Pool_dealloc(NULL, cond);
-        if (ret) errno = ret;
+        int ret = pthread_cond_destroy(&((CCond*)cond)->handle);
+        Pool_dealloc(NULL, cond, sizeof(CCond));
+        if (ret)
+            errno = ret;
         return !ret;
     }
     return false;
 }
 
 XCL_PUBLIC(bool)
-Cond_wait(void* mutex, void* cond)
+Cond_wait(CMutex* mutex, CCond* cond)
 {
     if (mutex && cond)
     {
-        int ret = pthread_cond_wait(cond, mutex);
-        if (ret) errno = ret;
+        int ret = pthread_cond_wait(&cond->handle, (pthread_mutex_t*)mutex);
+        if (ret)
+            errno = ret;
         return !ret;
     }
     return false;
 }
 
 XCL_PUBLIC(bool)
-Cond_waitFor(void* mutex, void* cond, int32_t millis)
+Cond_waitFor(CMutex* mutex, CCond* cond, int32_t millis)
 {
     if (mutex && cond)
     {
         struct timespec ts = {0, millis * 1000000};
-        int ret = pthread_cond_timedwait(cond, mutex, &ts);
-        if (ret) errno = ret;
+        int ret =
+            pthread_cond_timedwait(&cond->handle, (pthread_mutex_t*)mutex, &ts);
+        if (ret)
+            errno = ret;
         return !ret;
     }
     return false;
 }
 
 XCL_PUBLIC(bool)
-Cond_signal(void* cond)
+Cond_signal(CCond* cond)
 {
     if (cond)
     {
-        int ret = pthread_cond_signal(cond);
-        if (ret) errno = ret;
+        int ret = pthread_cond_signal(&cond->handle);
+        if (ret)
+            errno = ret;
         return !ret;
     }
     return false;
 }
 
 XCL_PUBLIC(bool)
-Cond_signalAll(void* cond)
+Cond_signalAll(CCond* cond)
 {
     if (cond)
     {
-        int ret = pthread_cond_broadcast(cond);
-        if (ret) errno = ret;
+        int ret = pthread_cond_broadcast(&cond->handle);
+        if (ret)
+            errno = ret;
         return !ret;
     }
     return false;
