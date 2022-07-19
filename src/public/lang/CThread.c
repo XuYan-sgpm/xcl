@@ -24,6 +24,16 @@ static inline void __Thread_setThreadHandle(CThread* thread,
     memcpy((void*)&thread->handle, (void*)&handle, sizeof(ThreadHandle));
 }
 
+static inline CSingleNode* __Thread_allocCbNode()
+{
+    return Pool_alloc(NULL, sizeof(CSingleNode) + sizeof(CallbackObj));
+}
+
+static inline void __Thread_deallocCbNode(CSingleNode* node)
+{
+    Pool_dealloc(NULL, node, sizeof(CSingleNode) + sizeof(CallbackObj));
+}
+
 static inline bool __Thread_initThreadLock(CThread* thread)
 {
     void* lock = Mutex_new();
@@ -49,8 +59,7 @@ static inline bool __Thread_setThreadProc(CThread* thread, Callback proc,
                                           void* usr)
 {
     CallbackObj callbackObj = {.cb = proc, .usr = usr};
-    CSingleNode* node =
-        Pool_alloc(NULL, sizeof(CSingleNode) + sizeof(CallbackObj));
+    CSingleNode* node = __Thread_allocCbNode();
     if (node)
     {
         memcpy((CallbackObj*)node->data, &callbackObj, sizeof(CallbackObj));
@@ -116,7 +125,7 @@ static __ThreadRunReturnType XCL_API __Thread_run(void* args)
     {
         CallbackObj* cbObj = (CallbackObj*)node->data;
         cbObj->cb(cbObj->usr);
-        Pool_dealloc(NULL, node, sizeof(CSingleNode) + sizeof(CallbackObj));
+        __Thread_deallocCbNode(node);
     }
     SingleList_delete(thread->callStack);
     thread->callStack = NULL;
@@ -169,8 +178,7 @@ Thread_new(bool suspend, Callback cb, void* usr)
                     }
                     return thread;
                 }
-                Pool_dealloc(NULL, SingleList_popFront(thread->callStack),
-                             sizeof(CSingleNode) + sizeof(CallbackObj));
+                __Thread_deallocCbNode(SingleList_popFront(thread->callStack));
                 SingleList_delete(thread->callStack);
             }
             Mutex_delete(thread->threadLock);
@@ -199,8 +207,7 @@ Thread_addCbFront(CThread* thread, Callback cb, void* usr)
     if (thread->state != ALIVE)
     {
         CallbackObj cbObj = {.cb = cb, .usr = usr};
-        CSingleNode* node =
-            Pool_alloc(NULL, sizeof(CSingleNode) + sizeof(CallbackObj));
+        CSingleNode* node = __Thread_allocCbNode();
         if (node)
         {
             memcpy(node->data, &cbObj, sizeof(CallbackObj));
@@ -220,8 +227,7 @@ Thread_addCbBack(CThread* thread, Callback cb, void* usr)
     if (thread->state != ALIVE)
     {
         CallbackObj cbObj = {.cb = cb, .usr = usr};
-        CSingleNode* node =
-            Pool_alloc(NULL, sizeof(CSingleNode) + sizeof(CallbackObj));
+        CSingleNode* node = __Thread_allocCbNode();
         if (node)
         {
             memcpy(node->data, &cbObj, sizeof(CallbackObj));

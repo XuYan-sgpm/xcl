@@ -126,8 +126,6 @@ bool __Thread_isAlive(ThreadHandle handle)
     return pthread_kill(handle, 0) != ESRCH;
 }
 
-void __LocalId_initQueue();
-
 #if STATIC
 
 #include <stddef.h>

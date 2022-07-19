@@ -22,7 +22,7 @@ typedef struct {
             int cap;
         } heap;
     } mem;
-    int32_t state;
+    uint32_t state;
 } CString;
 
 XCL_PUBLIC(CString)

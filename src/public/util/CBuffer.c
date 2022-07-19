@@ -1,21 +1,47 @@
 #include "xcl/util/CBuffer.h"
 #include "xcl/pool/CPool.h"
-
-// #include <stdarg.h>
-#include <stdlib.h>
 #include <string.h>
 
 const static unsigned __BUF_MASK__ = 0x7fffffff;
 
-static inline bool __isBufReleasable(CBuffer* buffer)
+static inline bool __Buffer_isReleasable(CBuffer* buffer)
 {
     return (buffer->state & ~__BUF_MASK__) >> 31;
 }
 
-static void __setBufState(CBuffer* buffer, int cap, const bool flag)
+static inline void __Buffer_setState(CBuffer* buffer, int cap, const bool flag)
 {
     int val = flag;
     buffer->state = (cap & __BUF_MASK__) | (val << 31);
+}
+
+static inline void __Buffer_dealloc(CBuffer* buffer)
+{
+    if (buffer->data)
+        Pool_dealloc(NULL, buffer->data, Buffer_cap(buffer));
+    memset(buffer, 0, sizeof(CBuffer));
+}
+
+static inline bool __Buffer_alloc(CBuffer* buffer, int32_t cap)
+{
+    buffer->data = Pool_alloc(NULL, cap);
+    if (buffer->data)
+    {
+        buffer->size = 0;
+        __Buffer_setState(buffer, cap, true);
+    }
+    return buffer->data;
+}
+
+static inline bool __Buffer_reapply(CBuffer* buffer, int32_t req)
+{
+    void* p = Pool_reapply(NULL, buffer->data, Buffer_cap(buffer), req);
+    if (p)
+    {
+        buffer->data = p;
+        __Buffer_setState(buffer, req, true);
+    }
+    return p;
 }
 
 XCL_PUBLIC(CBuffer)
@@ -24,12 +50,7 @@ Buffer_make(int cap)
     CBuffer buffer = {NULL, 0, 0};
     if (cap > 0)
     {
-        char* p = (char*)Pool_alloc(NULL, cap);
-        if (p)
-        {
-            buffer.data = p;
-            __setBufState(&buffer, cap, true);
-        }
+        __Buffer_alloc(&buffer, cap);
     }
     return buffer;
 }
@@ -41,7 +62,7 @@ Buffer_newRegion(char* src, int len)
     if (src && len > 0)
     {
         buffer.data = src;
-        __setBufState(&buffer, len, false);
+        __Buffer_setState(&buffer, len, false);
     }
     return buffer;
 }
@@ -49,14 +70,14 @@ Buffer_newRegion(char* src, int len)
 XCL_PUBLIC(int)
 Buffer_cap(const CBuffer* buffer)
 {
-    return buffer->state & __BUF_MASK__;
+    return (int)(buffer->state & __BUF_MASK__);
 }
 
 XCL_PUBLIC(CBuffer)
-wrapBuf(char* src, int len)
+wrapBuf(const char* src, int len)
 {
-    CBuffer buffer = {src, 0, len};
-    __setBufState(&buffer, len, false);
+    CBuffer buffer = {(char*)src, 0, len};
+    __Buffer_setState(&buffer, len, false);
     return buffer;
 }
 
@@ -68,7 +89,7 @@ wrapBuf2(const CBuffer* origin, int pos, int len)
     {
         buffer.size = len;
         buffer.data = &origin->data[pos];
-        __setBufState(&buffer, len, false);
+        __Buffer_setState(&buffer, len, false);
     }
     return buffer;
 }
@@ -76,10 +97,9 @@ wrapBuf2(const CBuffer* origin, int pos, int len)
 XCL_PUBLIC(bool)
 Buffer_release(CBuffer* buffer)
 {
-    if (buffer->data && __isBufReleasable(buffer))
+    if (buffer->data && __Buffer_isReleasable(buffer))
     {
-        Pool_dealloc(NULL, buffer->data, Buffer_cap(buffer));
-        memset(buffer, 0, sizeof(*buffer));
+        __Buffer_dealloc(buffer);
         return true;
     }
     return false;
@@ -265,7 +285,7 @@ Buffer_expand(CBuffer* buffer, int cap)
     {}
     else
     {
-        if (!buffer->data || !__isBufReleasable(buffer))
+        if (!buffer->data || !__Buffer_isReleasable(buffer))
         {
             CBuffer newBuf = Buffer_make(cap);
             if (!newBuf.data)
@@ -276,26 +296,20 @@ Buffer_expand(CBuffer* buffer, int cap)
         }
         else
         {
-            char* p = Pool_reapply(NULL, buffer->data, Buffer_cap(buffer), cap);
-            if (!p)
+            if (!__Buffer_reapply(buffer, cap))
             {
                 CBuffer newBuf = Buffer_make(cap);
                 if (newBuf.data)
                 {
                     memcpy(newBuf.data, buffer->data, buffer->size);
                     newBuf.size = buffer->size;
-                    Pool_dealloc(NULL, buffer->data, Buffer_cap(buffer));
+                    __Buffer_dealloc(buffer);
                 }
                 else
                 {
                     return false;
                 }
                 *buffer = newBuf;
-            }
-            else
-            {
-                buffer->data = p;
-                __setBufState(buffer, cap, true);
             }
         }
     }
@@ -344,7 +358,7 @@ Buffer_remake(CBuffer* buffer, int cap)
     }
     else
     {
-        if (!__isBufReleasable(buffer))
+        if (!__Buffer_isReleasable(buffer))
         {
             CBuffer newBuf = Buffer_make(cap);
             if (!newBuf.data)
@@ -360,14 +374,10 @@ Buffer_remake(CBuffer* buffer, int cap)
         {
             if (cap > Buffer_cap(buffer))
             {
-                char* p = (char*)Pool_reapply(NULL, buffer->data,
-                                              Buffer_cap(buffer), cap);
-                if (!p)
+                if (!__Buffer_reapply(buffer, cap))
                 {
                     return false;
                 }
-                buffer->data = p;
-                __setBufState(buffer, cap, true);
             }
         }
     }

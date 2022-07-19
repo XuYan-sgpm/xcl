@@ -1,7 +1,6 @@
 #include "xcl/util/CString.h"
 #include "xcl/pool/CPool.h"
 #include <assert.h>
-#include <stdlib.h>
 #include <string.h>
 
 const static unsigned __STATE_MASK__ = 0x7fffffff;
@@ -13,13 +12,13 @@ static inline bool __String_useStack(const CString* string)
 
 static inline int __String_getSize(const CString* string)
 {
-    return string->state & __STATE_MASK__;
+    return (int)(string->state & __STATE_MASK__);
 }
 
 static inline void __String_setState(CString* string, const int useStack,
                                      const int size)
 {
-    string->state = (useStack << 31) | (size & __STATE_MASK__);
+    string->state = (useStack << 31u) | (size & __STATE_MASK__);
 }
 
 static inline void __String_setSize(CString* string, const int size)
@@ -41,7 +40,7 @@ static inline const char* __String_cPtr(const CString* string, const int pos)
 
 static inline int __String_cap(const CString* string)
 {
-    return __String_useStack(string) ? sizeof(string->mem.stack)
+    return __String_useStack(string) ? (int)sizeof(string->mem.stack)
                                      : string->mem.heap.cap;
 }
 
@@ -148,17 +147,6 @@ static char* __String_beforeAssign(CString* string, const int pos,
         assignCursor = newPtr + pos;
     }
     return assignCursor;
-}
-
-static bool __String_insert(CString* string, const int pos, const char* src,
-                            const int len)
-{
-    char* insertCursor = __String_beforeInsert(string, pos, len);
-    if (insertCursor)
-    {
-        memcpy(insertCursor, src, len);
-    }
-    return insertCursor;
 }
 
 static bool __String_assign(CString* string, const int pos, const char* src,

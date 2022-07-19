@@ -9,7 +9,7 @@ extern "C" {
 
 typedef struct {
     char* data;
-    int state;
+    uint32_t state;
     int size;
 } CBuffer;
 
@@ -23,7 +23,7 @@ XCL_PUBLIC(int)
 Buffer_cap(const CBuffer* buffer);
 
 XCL_PUBLIC(CBuffer)
-wrapBuf(char* src, int len);
+wrapBuf(const char* src, int len);
 
 XCL_PUBLIC(CBuffer)
 wrapBuf2(const CBuffer* buffer, int pos, int len);
