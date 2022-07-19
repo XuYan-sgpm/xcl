@@ -1,4 +1,5 @@
 #include "xcl/util/CString.h"
+#include "xcl/pool/CPool.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
@@ -72,7 +73,7 @@ static void __String_init(CString* string, const int cap)
     }
     else
     {
-        char* p = (char*)malloc(cap);
+        char* p = (char*)Pool_alloc(NULL, cap);
         if (p)
         {
             string->mem.heap.ptr = p;
@@ -98,11 +99,17 @@ static char* __String_beforeInsert(CString* string, const int pos,
     else
     {
         int newCap = __String_grow(cap, size + len - cap);
-        char* newPtr = (char*)malloc(newCap);
-        if (!newPtr) { return NULL; }
+        char* newPtr = (char*)Pool_alloc(NULL, newCap);
+        if (!newPtr)
+        {
+            return NULL;
+        }
         memcpy(newPtr, __String_ptr(string, 0), pos);
         memcpy(newPtr + pos + len, p, size - pos);
-        if (!__String_useStack(string)) { free(string->mem.heap.ptr); }
+        if (!__String_useStack(string))
+        {
+            Pool_dealloc(NULL, string->mem.heap.ptr, string->mem.heap.cap);
+        }
         string->mem.heap.ptr = newPtr;
         string->mem.heap.cap = newCap;
         __String_setState(string, false, size + len);
@@ -125,10 +132,16 @@ static char* __String_beforeAssign(CString* string, const int pos,
     else
     {
         int newCap = __String_grow(cap, pos + len - cap);
-        char* newPtr = (char*)malloc(newCap);
-        if (!newPtr) { return NULL; }
+        char* newPtr = (char*)Pool_alloc(NULL, newCap);
+        if (!newPtr)
+        {
+            return NULL;
+        }
         memcpy(newPtr, __String_ptr(string, 0), pos);
-        if (!__String_useStack(string)) { free(string->mem.heap.ptr); }
+        if (!__String_useStack(string))
+        {
+            Pool_dealloc(NULL, string->mem.heap.ptr, string->mem.heap.cap);
+        }
         string->mem.heap.ptr = newPtr;
         string->mem.heap.cap = newCap;
         __String_setState(string, false, pos + len);
@@ -141,7 +154,10 @@ static bool __String_insert(CString* string, const int pos, const char* src,
                             const int len)
 {
     char* insertCursor = __String_beforeInsert(string, pos, len);
-    if (insertCursor) { memcpy(insertCursor, src, len); }
+    if (insertCursor)
+    {
+        memcpy(insertCursor, src, len);
+    }
     return insertCursor;
 }
 
@@ -149,12 +165,18 @@ static bool __String_assign(CString* string, const int pos, const char* src,
                             const int len)
 {
     char* assignCursor = __String_beforeAssign(string, pos, len);
-    if (assignCursor) { memcpy(assignCursor, src, len); }
+    if (assignCursor)
+    {
+        memcpy(assignCursor, src, len);
+    }
     return assignCursor;
 }
 
 XCL_PUBLIC(CString)
-String_new(const char* str) { return String_newRegion(str, strlen(str)); }
+String_make(const char* str)
+{
+    return String_newRegion(str, strlen(str));
+}
 
 XCL_PUBLIC(CString)
 String_newRegion(const char* str, const int len)
@@ -178,21 +200,36 @@ String_alloc(const int cap)
 XCL_PUBLIC(void)
 String_release(CString* string)
 {
-    if (!__String_useStack(string)) { free(string->mem.heap.ptr); }
+    if (!__String_useStack(string))
+    {
+        Pool_dealloc(NULL, string->mem.heap.ptr, string->mem.heap.cap);
+    }
     __String_setState(string, true, 0);
 }
 
 XCL_PUBLIC(void)
-String_clear(CString* string) { __String_setSize(string, 0); }
+String_clear(CString* string)
+{
+    __String_setSize(string, 0);
+}
 
 XCL_PUBLIC(int)
-String_size(const CString* string) { return __String_getSize(string); }
+String_size(const CString* string)
+{
+    return __String_getSize(string);
+}
 
 XCL_PUBLIC(int)
-String_cap(const CString* string) { return __String_cap(string); }
+String_cap(const CString* string)
+{
+    return __String_cap(string);
+}
 
 XCL_PUBLIC(bool)
-String_empty(const CString* string) { return __String_getSize(string) == 0; }
+String_empty(const CString* string)
+{
+    return __String_getSize(string) == 0;
+}
 
 XCL_PUBLIC(bool)
 String_assign(CString* string, const char* str)
@@ -216,7 +253,10 @@ XCL_PUBLIC(bool)
 String_pushChar(CString* string, char ch)
 {
     char* cursor = __String_beforeInsert(string, String_size(string), 1);
-    if (cursor) { *cursor = ch; }
+    if (cursor)
+    {
+        *cursor = ch;
+    }
     return cursor;
 }
 
@@ -224,7 +264,10 @@ XCL_PUBLIC(bool)
 String_pushChars(CString* string, const int n, char ch)
 {
     char* cursor = __String_beforeInsert(string, String_size(string), n);
-    if (cursor) { memset(cursor, ch, n); }
+    if (cursor)
+    {
+        memset(cursor, ch, n);
+    }
     return cursor;
 }
 
@@ -232,7 +275,10 @@ XCL_PUBLIC(bool)
 String_pushRegion(CString* string, const char* str, const int len)
 {
     char* cursor = __String_beforeInsert(string, String_size(string), len);
-    if (cursor) { memcpy(cursor, str, len); }
+    if (cursor)
+    {
+        memcpy(cursor, str, len);
+    }
     return cursor;
 }
 
@@ -252,7 +298,10 @@ XCL_PUBLIC(bool)
 String_writeChar(CString* string, const int pos, char ch)
 {
     char* cursor = __String_beforeInsert(string, pos, 1);
-    if (cursor) { *cursor = ch; }
+    if (cursor)
+    {
+        *cursor = ch;
+    }
     return cursor;
 }
 
@@ -260,7 +309,10 @@ XCL_PUBLIC(bool)
 String_writeChars(CString* string, const int pos, const int n, char ch)
 {
     char* cursor = __String_beforeInsert(string, pos, n);
-    if (cursor) { memset(cursor, ch, n); }
+    if (cursor)
+    {
+        memset(cursor, ch, n);
+    }
     return cursor;
 }
 
@@ -269,7 +321,10 @@ String_writeRegion(CString* string, const int pos, const char* str,
                    const int len)
 {
     char* cursor = __String_beforeInsert(string, pos, len);
-    if (cursor) { memcpy(cursor, str, len); }
+    if (cursor)
+    {
+        memcpy(cursor, str, len);
+    }
     return cursor;
 }
 
@@ -278,7 +333,10 @@ String_write(CString* string, const int pos, const char* str)
 {
     const int len = strlen(str);
     char* cursor = __String_beforeInsert(string, pos, len);
-    if (cursor) { memcpy(cursor, str, len); }
+    if (cursor)
+    {
+        memcpy(cursor, str, len);
+    }
     return cursor;
 }
 
@@ -292,7 +350,10 @@ String_writeStr(CString* string, const int pos, const CString* src)
 XCL_PUBLIC(bool)
 String_pop(CString* string, char* dst)
 {
-    if (String_empty(string)) { return false; }
+    if (String_empty(string))
+    {
+        return false;
+    }
     char* p = __String_ptr(string, 0);
     *dst = *p;
     const int size = String_size(string);
@@ -304,7 +365,10 @@ String_pop(CString* string, char* dst)
 XCL_PUBLIC(bool)
 String_popBack(CString* string, char* dst)
 {
-    if (String_empty(string)) { return false; }
+    if (String_empty(string))
+    {
+        return false;
+    }
     const int size = String_size(string);
     char* p = __String_ptr(string, size - 1);
     *dst = *p;
@@ -326,7 +390,10 @@ String_get(const CString* string, const int pos, char* dst)
 XCL_PUBLIC(int)
 String_gets(const CString* string, const int pos, const int len, char* dst)
 {
-    if (!__String_removeCheck(string, pos, len)) { return -1; }
+    if (!__String_removeCheck(string, pos, len))
+    {
+        return -1;
+    }
     memcpy(dst, __String_cPtr(string, pos), len);
     return len;
 }
@@ -335,7 +402,10 @@ XCL_PUBLIC(void)
 String_delete(CString* string, const int pos)
 {
     const int size = String_size(string);
-    if (pos < 0 || pos >= size) { return; }
+    if (pos < 0 || pos >= size)
+    {
+        return;
+    }
     char* p = __String_ptr(string, pos);
     memcpy(p, p + 1, size - pos - 1);
     __String_setSize(string, size - 1);
@@ -362,14 +432,20 @@ const char* XCL_API String_queryChar(const CString* string, const bool left,
     {
         for (int i = 0; i < size; i++)
         {
-            if (*p == ch) { return p; }
+            if (*p == ch)
+            {
+                return p;
+            }
         }
     }
     else
     {
         for (int i = size - 1; i >= 0; i--)
         {
-            if (*p == ch) { return p; }
+            if (*p == ch)
+            {
+                return p;
+            }
         }
     }
     return NULL;
@@ -395,7 +471,10 @@ static const char* __String_cmpRegion(const char* src, const char* pattern,
     int i;
     for (i = 0; i < len; i++)
     {
-        if (src[i] != pattern[i]) { break; }
+        if (src[i] != pattern[i])
+        {
+            break;
+        }
     }
     return src + i;
 }
@@ -407,7 +486,10 @@ static const char* __String_directSearch(const CString* string,
     {
         const char* start = __String_cPtr(string, i);
         const char* cursor = __String_cmpRegion(start, pattern, len);
-        if (cursor - start == len) { return start; }
+        if (cursor - start == len)
+        {
+            return start;
+        }
     }
     return NULL;
 }
@@ -423,10 +505,19 @@ static void __String_genNext(const char* pattern, int* next, const int len)
     {
         if (val == -1 || pattern[idx] == pattern[val])
         {
-            if (pattern[++idx] == pattern[++val]) { next[idx] = next[val]; }
-            else { next[idx] = val; }
+            if (pattern[++idx] == pattern[++val])
+            {
+                next[idx] = next[val];
+            }
+            else
+            {
+                next[idx] = val;
+            }
         }
-        else { val = next[val]; }
+        else
+        {
+            val = next[val];
+        }
     }
 }
 
@@ -444,9 +535,15 @@ static const char* __String_kmpSearch(const CString* string,
             ++i;
             ++j;
         }
-        else { j = next[j]; }
+        else
+        {
+            j = next[j];
+        }
     }
-    if (j == len) { return &start[i - len]; }
+    if (j == len)
+    {
+        return &start[i - len];
+    }
     return NULL;
 }
 
@@ -458,7 +555,10 @@ const char* XCL_API String_query(const CString* string, const char* str)
 const char* XCL_API String_queryRegion(const CString* string, const char* str,
                                        const int len)
 {
-    if (String_size(string) < len) { return NULL; }
+    if (String_size(string) < len)
+    {
+        return NULL;
+    }
     return len <= STR_QUERY_THRESHOLD ? __String_directSearch(string, str, len)
                                       : __String_kmpSearch(string, str, len);
 }

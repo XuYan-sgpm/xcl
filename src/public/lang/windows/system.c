@@ -21,12 +21,18 @@ static void __SYS_initNanoFreq()
 }
 
 XCL_PUBLIC(int64_t)
-currentMillis() { return GetTickCount(); }
+currentMillis()
+{
+    return GetTickCount();
+}
 
 XCL_PUBLIC(int64_t)
 nanos()
 {
-    if (__NANO_FREQ_PER_SEC == -1) { __SYS_initNanoFreq(); }
+    if (__NANO_FREQ_PER_SEC == -1)
+    {
+        __SYS_initNanoFreq();
+    }
     if (__NANO_FREQ_PER_SEC > 0)
     {
         LARGE_INTEGER current;
@@ -34,7 +40,10 @@ nanos()
         double tmp = ((double)NANOS_PER_SEC / (double)__NANO_FREQ_PER_SEC);
         return (int64_t)((double)current.QuadPart * tmp);
     }
-    else { return -1; }
+    else
+    {
+        return -1;
+    }
 }
 
 XCL_PUBLIC(void)
@@ -50,9 +59,18 @@ bool __Win32_wait(HANDLE handle, DWORD timeout)
     DWORD ret = WaitForSingleObject(handle, timeout);
     if (ret != WAIT_OBJECT_0)
     {
-        if (ret == WAIT_FAILED) { setErr(GetLastError()); }
-        else { setErr(ret); }
+        if (ret == WAIT_FAILED)
+        {
+            setErr(GetLastError());
+        }
+        else
+        {
+            setErr(ret);
+        }
         return false;
     }
-    else { return true; }
+    else
+    {
+        return true;
+    }
 }

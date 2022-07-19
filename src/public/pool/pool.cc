@@ -28,17 +28,29 @@ namespace xcl
 
         SysPool SysPool::sysPool_ = SysPool();
 
-        void* SysPool::alloc(uint64_t size) { return malloc(size); }
+        void* SysPool::alloc(uint64_t size)
+        {
+            return malloc(size);
+        }
 
-        void SysPool::dealloc(void* ptr, uint64_t size) { free(ptr); }
+        void SysPool::dealloc(void* ptr, uint64_t size)
+        {
+            free(ptr);
+        }
 
         void* SysPool::realloc(void* ptr, uint64_t oldSize, uint64_t newSize)
         {
             return ::realloc(ptr, newSize);
         }
 
-        SysPool* SysPool::instance() { return &SysPool::sysPool_; }
+        SysPool* SysPool::instance()
+        {
+            return &SysPool::sysPool_;
+        }
     }// namespace
 
-    Pool* Pool::sys() { return SysPool::instance(); }
+    Pool* Pool::sys()
+    {
+        return SysPool::instance();
+    }
 }// namespace xcl

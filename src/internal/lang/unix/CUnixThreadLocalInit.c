@@ -8,8 +8,6 @@
 
 void __LocalId_initQueue();
 
-void __Local_implInitialize();
-
 #if STATIC
 
 #    include <stddef.h>

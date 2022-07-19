@@ -3,20 +3,36 @@
 //
 
 #include "xcl/util/CSingleList.h"
+#include "xcl/pool/CPool.h"
 #include <stdlib.h>
 #include <string.h>
 
 struct _CSingleList_st {
     CSingleNode* tail;
     CSingleNode header;
+    CPool* pool;
 };
 
 XCL_PUBLIC(CSingleList*)
 SingleList_new()
 {
-    CSingleList* list = malloc(sizeof(CSingleList));
+    CSingleList* list = Pool_alloc(NULL, sizeof(CSingleList));
     if (list)
     {
+        list->pool = NULL;
+        list->header.next = NULL;
+        list->tail = &list->header;
+    }
+    return list;
+}
+
+XCL_PUBLIC(CSingleList*)
+SingleList_new2(CPool* pool)
+{
+    CSingleList* list = Pool_alloc(pool, sizeof(CSingleList));
+    if (list)
+    {
+        list->pool = pool;
         list->header.next = NULL;
         list->tail = &list->header;
     }
@@ -24,7 +40,10 @@ SingleList_new()
 }
 
 XCL_PUBLIC(bool)
-SingleList_empty(const CSingleList* list) { return list->header.next == NULL; }
+SingleList_empty(const CSingleList* list)
+{
+    return list->header.next == NULL;
+}
 
 XCL_PUBLIC(int32_t)
 SingleList_size(const CSingleList* list)
@@ -58,7 +77,10 @@ SingleList_pushFront(CSingleList* list, CSingleNode* node)
 {
     node->next = list->header.next;
     list->header.next = node;
-    if (list->tail == &list->header) { list->tail = node; }
+    if (list->tail == &list->header)
+    {
+        list->tail = node;
+    }
 }
 
 XCL_PUBLIC(void)
@@ -76,7 +98,10 @@ SingleList_popFront(CSingleList* list)
     if (node)
     {
         list->header.next = node->next;
-        if (!list->header.next) { list->tail = &list->header; }
+        if (!list->header.next)
+        {
+            list->tail = &list->header;
+        }
     }
     return node;
 }
@@ -86,7 +111,10 @@ SingleList_popBack(CSingleList* list)
 {
     CSingleNode* prev = &list->header;
     CSingleNode* node = prev->next;
-    if (!node) { return NULL; }
+    if (!node)
+    {
+        return NULL;
+    }
     while (node->next)
     {
         prev = node;
@@ -100,10 +128,19 @@ SingleList_popBack(CSingleList* list)
 XCL_PUBLIC(CSingleListIter)
 SingleList_next(CSingleList* list, CSingleListIter iter)
 {
-    if (!iter.cur || iter.cur == iter.tag) { return iter; }
+    if (!iter.cur || iter.cur == iter.tag)
+    {
+        return iter;
+    }
     CSingleListIter next = iter;
-    if (next.cur->next) { next.cur = next.cur->next; }
-    else { next.cur = next.tag; }
+    if (next.cur->next)
+    {
+        next.cur = next.cur->next;
+    }
+    else
+    {
+        next.cur = next.tag;
+    }
     return next;
 }
 
@@ -114,4 +151,7 @@ SingleList_sort(CSingleList* list, int (*cmp)(const void*, const void*))
 }
 
 XCL_PUBLIC(void)
-SingleList_delete(CSingleList* list) { free(list); }
+SingleList_delete(CSingleList* list)
+{
+    Pool_dealloc(list->pool, list, sizeof(CSingleList));
+}

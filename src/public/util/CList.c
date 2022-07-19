@@ -1,4 +1,5 @@
 #include "xcl/util/CList.h"
+#include "xcl/pool/CPool.h"
 
 #include <stdlib.h>
 
@@ -7,8 +8,14 @@
  */
 static inline void __List_link(CListNode* prev, CListNode* next)
 {
-    if (prev) { prev->next = next; }
-    if (next) { next->prev = prev; }
+    if (prev)
+    {
+        prev->next = next;
+    }
+    if (next)
+    {
+        next->prev = prev;
+    }
 }
 
 /*
@@ -19,8 +26,14 @@ static inline void __List_unlink(CListNode* node)
 {
     if (node)
     {
-        if (node->prev) { node->prev->next = node->next; }
-        if (node->next) { node->next->prev = node->prev; }
+        if (node->prev)
+        {
+            node->prev->next = node->next;
+        }
+        if (node->next)
+        {
+            node->next->prev = node->prev;
+        }
         node->next = node->prev = NULL;
     }
 }
@@ -37,16 +50,22 @@ static void __List_init(CList* list)
 XCL_PUBLIC(CList*)
 List_new()
 {
-    CList* list = (CList*)malloc(sizeof(CList));
-    if (list) { __List_init(list); }
+    CList* list = (CList*)Pool_alloc(NULL, sizeof(CList));
+    if (list)
+    {
+        __List_init(list);
+    }
     return list;
 }
 
 XCL_PUBLIC(bool)
 List_delete(CList* list)
 {
-    if (!List_empty(list)) { return false; }
-    free(list);
+    if (!List_empty(list))
+    {
+        return false;
+    }
+    Pool_dealloc(NULL, list, sizeof(CList));
     return true;
 }
 
@@ -86,12 +105,18 @@ List_push(CList* list, CListNode* node)
 }
 
 XCL_PUBLIC(bool)
-List_iterEquals(CListIter it1, CListIter it2) { return it1.cur == it2.cur; }
+List_iterEquals(CListIter it1, CListIter it2)
+{
+    return it1.cur == it2.cur;
+}
 
 XCL_PUBLIC(bool)
 List_add(CList* list, CListIter pos, CListNode* node)
 {
-    if (!node || pos.terminator != &list->header) { return false; }
+    if (!node || pos.terminator != &list->header)
+    {
+        return false;
+    }
     __List_link(pos.cur->prev, pos.cur);
     __List_link(node, pos.cur);
     return true;
@@ -100,7 +125,10 @@ List_add(CList* list, CListIter pos, CListNode* node)
 XCL_PUBLIC(void)
 List_pushFront(CList* list, CListNode* node)
 {
-    if (!node) { return; }
+    if (!node)
+    {
+        return;
+    }
     __List_link(node, list->header.next);
     __List_link(&list->header, node);
 }
@@ -109,7 +137,10 @@ XCL_PUBLIC(CListNode*)
 List_pop(CList* list)
 {
     CListNode* node = list->header.next;
-    if (node == &list->header) { return NULL; }
+    if (node == &list->header)
+    {
+        return NULL;
+    }
     __List_unlink(node);
     return node;
 }
@@ -131,7 +162,10 @@ List_peekFirst(CList* list)
 {
     CListIter it = {&list->header, &list->header};
     CListNode* node = list->header.next;
-    if (node != it.terminator) { it.cur = node; }
+    if (node != it.terminator)
+    {
+        it.cur = node;
+    }
     return it;
 }
 
@@ -140,7 +174,10 @@ List_peekLast(CList* list)
 {
     CListIter it = {&list->header, &list->header};
     CListNode* node = list->header.prev;
-    if (node != it.terminator) { it.cur = node; }
+    if (node != it.terminator)
+    {
+        it.cur = node;
+    }
     return it;
 }
 
@@ -179,7 +216,10 @@ List_query2(CList* list, CListIter pos, const void* value,
             int (*cmp)(const void*, const void*))
 {
     CListIter it = List_end(list);
-    if (pos.terminator != &list->header) { return it; }
+    if (pos.terminator != &list->header)
+    {
+        return it;
+    }
     CListNode* cur = pos.cur;
     while (cur != &list->header)
     {
@@ -198,12 +238,18 @@ List_size(CList* list)
 {
     int size = 0;
     CListNode* cur = list->header.next;
-    while (cur != &list->header) { ++size; }
+    while (cur != &list->header)
+    {
+        ++size;
+    }
     return size;
 }
 
 XCL_PUBLIC(bool)
-List_empty(CList* list) { return list->header.next == &list->header; }
+List_empty(CList* list)
+{
+    return list->header.next == &list->header;
+}
 
 XCL_PUBLIC(bool)
 List_spliceRange(CList* list, CListIter pos, CList* other, CListIter first,
@@ -214,7 +260,10 @@ List_spliceRange(CList* list, CListIter pos, CList* other, CListIter first,
     {
         return false;
     }
-    if (last.cur == first.cur) { return true; }
+    if (last.cur == first.cur)
+    {
+        return true;
+    }
     CListNode* lastRemoved = last.cur->prev;
     __List_link(first.cur->prev, last.cur);
     __List_link(pos.cur->prev, first.cur);
@@ -239,8 +288,14 @@ List_splice(CList* list, CListIter pos, CList* other, CListIter it)
 XCL_PUBLIC(bool)
 List_spliceAll(CList* list, CListIter pos, CList* other)
 {
-    if (pos.terminator != &list->header) { return false; }
-    if (List_empty(other)) { return true; }
+    if (pos.terminator != &list->header)
+    {
+        return false;
+    }
+    if (List_empty(other))
+    {
+        return true;
+    }
     CListNode* first = other->header.next;
     CListNode* lastRemoved = other->header.prev;
     __List_link(first->prev, &other->header);
@@ -260,20 +315,29 @@ static void __List_merge(CList* list1, CList* list2,
     while (it1.cur != it1.terminator && it2.cur != it2.terminator)
     {
         int ret = cmp(it1.cur->data, it2.cur->data);
-        if (ret <= 0) { it1.cur = it1.cur->next; }
+        if (ret <= 0)
+        {
+            it1.cur = it1.cur->next;
+        }
         else
         {
             CListIter it3 = List_next(it2);
             while (it3.cur != it3.terminator)
             {
-                if (cmp(it1.cur->data, it3.cur->data) < 0) { break; }
+                if (cmp(it1.cur->data, it3.cur->data) < 0)
+                {
+                    break;
+                }
                 it3.cur = it3.cur->next;
             }
             List_spliceRange(list1, it1, list2, it2, it3);
             it2 = it3;
         }
     }
-    if (it2.cur != it2.terminator) { List_spliceAll(list1, it1, list2); }
+    if (it2.cur != it2.terminator)
+    {
+        List_spliceAll(list1, it1, list2);
+    }
 }
 
 XCL_PUBLIC(void)
@@ -285,7 +349,10 @@ List_sort(CList* list, int (*cmp)(const void*, const void*))
     }
     CList carry;
     CList tmp[64];
-    for (int i = 0; i < 64; i++) { __List_init(&tmp[i]); }
+    for (int i = 0; i < 64; i++)
+    {
+        __List_init(&tmp[i]);
+    }
     __List_init(&carry);
     int fill = 0;
     while (!List_empty(list))
@@ -298,11 +365,17 @@ List_sort(CList* list, int (*cmp)(const void*, const void*))
             List_spliceAll(&carry, List_begin(&carry), &tmp[i++]);
         }
         List_spliceAll(&tmp[i], List_begin(&tmp[i]), &carry);
-        if (i > fill) { fill = i; }
+        if (i > fill)
+        {
+            fill = i;
+        }
     }
     for (int i = 1; i <= fill; i++)
     {
-        if (!List_empty(&tmp[i])) { __List_merge(&tmp[0], &tmp[i], cmp); }
+        if (!List_empty(&tmp[i]))
+        {
+            __List_merge(&tmp[0], &tmp[i], cmp);
+        }
     }
     List_spliceAll(list, List_end(list), &tmp[0]);
 }

@@ -31,7 +31,10 @@ namespace
         bool tryLock() override;
     };
 
-    void __InternalWinMutex::lock() { EnterCriticalSection(&criticalSection_); }
+    void __InternalWinMutex::lock()
+    {
+        EnterCriticalSection(&criticalSection_);
+    }
 
     void __InternalWinMutex::unlock()
     {
@@ -73,11 +76,20 @@ namespace
         HANDLE handle_;
     };
 
-    void __InternalWinTimedMutex::lock() { __Win32_wait(handle_, INFINITE); }
+    void __InternalWinTimedMutex::lock()
+    {
+        __Win32_wait(handle_, INFINITE);
+    }
 
-    void __InternalWinTimedMutex::unlock() { ::ReleaseMutex(handle_); }
+    void __InternalWinTimedMutex::unlock()
+    {
+        ::ReleaseMutex(handle_);
+    }
 
-    bool __InternalWinTimedMutex::tryLock() { return __Win32_wait(handle_, 0); }
+    bool __InternalWinTimedMutex::tryLock()
+    {
+        return __Win32_wait(handle_, 0);
+    }
 
     bool __InternalWinTimedMutex::tryLock(int32_t millis)
     {
@@ -99,7 +111,10 @@ namespace
     }
 }// namespace
 
-xcl::Lock* xcl::Lock::NewLock() { return new __InternalWinMutex(); }
+xcl::Lock* xcl::Lock::NewLock()
+{
+    return new __InternalWinMutex();
+}
 
 xcl::TimedLock* xcl::TimedLock::NewLock()
 {

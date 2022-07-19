@@ -10,6 +10,8 @@
 extern "C" {
 #endif
 
+typedef struct _CMutex_st CMutex;
+
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -18,7 +20,7 @@ extern "C" {
  * default is a recursive mutex
  * @return mutex object if succeed, otherwise return NULL
  */
-XCL_PUBLIC(void*)
+XCL_PUBLIC(CMutex*)
 Mutex_new();
 
 /**
@@ -27,7 +29,7 @@ Mutex_new();
  * @return true if delete successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Mutex_delete(void* mutex);
+Mutex_delete(CMutex* mutex);
 
 /**
  * lock a mutex
@@ -35,7 +37,7 @@ Mutex_delete(void* mutex);
  * @return true if lock successfully
  */
 XCL_PUBLIC(bool)
-Mutex_lock(void* mutex);
+Mutex_lock(CMutex* mutex);
 
 /**
  * release the mutex object
@@ -43,7 +45,7 @@ Mutex_lock(void* mutex);
  * @return true if unlock successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Mutex_unlock(void* mutex);
+Mutex_unlock(CMutex* mutex);
 
 /**
  * try lock mutex
@@ -51,7 +53,7 @@ Mutex_unlock(void* mutex);
  * @return true if acquire mutex object successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Mutex_tryLock(void* mutex);
+Mutex_tryLock(CMutex* mutex);
 
 /**
  * try lock mutex during timeout, return if acquire mutex successfully
@@ -61,7 +63,7 @@ Mutex_tryLock(void* mutex);
  * @return true if lock mutex object during timeout, otherwise false
  */
 XCL_PUBLIC(bool)
-Mutex_tryLock2(void* mutex, int32_t timeout);
+Mutex_tryLock2(CMutex* mutex, int32_t timeout);
 
 #ifdef __cplusplus
 }

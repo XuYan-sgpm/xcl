@@ -160,6 +160,7 @@ else ()
 endif ()
 
 add_custom_command(TARGET ${xcl_lib_name} PRE_BUILD
+        COMMAND ${CMAKE_COMMAND} -E remove_directory ${LIBRARY_OUTPUT_PATH}
         COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBRARY_OUTPUT_PATH}
         COMMAND ${CMAKE_COMMAND} -E echo "make library directories ${LIBRARY_OUTPUT_PATH}"
         VERBATIM)

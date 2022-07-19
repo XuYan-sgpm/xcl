@@ -4,6 +4,7 @@
 
 #include "xcl/lang/CLocalStorage.h"
 #include "xcl/lang/XclErr.h"
+#include "xcl/pool/CPool.h"
 #include <stdlib.h>
 #include <string.h>
 
@@ -23,8 +24,10 @@ static bool __LocalStorage_reserve(CLocalStorage* localStorage, int n)
     if (n > localStorage->cap)
     {
         int32_t newCap = __LocalStorage_grow(localStorage, n);
-        Block* newBlocks =
-            (Block*)realloc(localStorage->blocks, newCap * sizeof(Block));
+        CStorageBlock* newBlocks = (CStorageBlock*)Pool_reapply(
+            NULL, localStorage->blocks,
+            localStorage->cap * sizeof(CStorageBlock),
+            newCap * sizeof(CStorageBlock));
         if (newBlocks)
         {
             localStorage->blocks = newBlocks;
@@ -33,7 +36,10 @@ static bool __LocalStorage_reserve(CLocalStorage* localStorage, int n)
         }
         setErr(XCL_MEMORY_ERR);
     }
-    else { return true; }
+    else
+    {
+        return true;
+    }
     return false;
 }
 
@@ -44,35 +50,60 @@ static CLocalStorage* __LocalStorage_checkMemory(CLocalStorage* localStorage,
     {
         int cap = __initialLocalStorageSize > idx ? __initialLocalStorageSize
                                                   : idx + 1;
-        if (!__LocalStorage_reserve(localStorage, cap)) { return NULL; }
+        if (!__LocalStorage_reserve(localStorage, cap))
+        {
+            return NULL;
+        }
     }
     else
     {
-        if (!__LocalStorage_reserve(localStorage, idx + 1)) { return NULL; }
+        if (!__LocalStorage_reserve(localStorage, idx + 1))
+        {
+            return NULL;
+        }
+    }
+    return localStorage;
+}
+
+CLocalStorage* LocalStorage_new()
+{
+    CLocalStorage* localStorage = Pool_alloc(NULL, sizeof(CLocalStorage));
+    if (localStorage)
+    {
+        memset(localStorage, 0, sizeof(CLocalStorage));
+    }
+    else
+    {
+        setErr(XCL_MEMORY_ERR);
     }
     return localStorage;
 }
 
 void* LocalStorage_get(CLocalStorage* localStorage, int idx)
 {
-    if (!__LocalStorage_checkMemory(localStorage, idx)) { return NULL; }
+    if (!__LocalStorage_checkMemory(localStorage, idx))
+    {
+        return NULL;
+    }
     void* p = localStorage->blocks[idx].data;
     return p;
 }
 
-void LocalStorage_free(CLocalStorage* localStorage)
+void LocalStorage_delete(CLocalStorage* localStorage)
 {
     if (localStorage->blocks)
-    {
-        free(localStorage->blocks);
-        memset(localStorage, 0, sizeof(CLocalStorage));
-    }
+        Pool_dealloc(NULL, localStorage->blocks,
+                     sizeof(CStorageBlock) * localStorage->cap);
+    Pool_dealloc(NULL, localStorage, sizeof(CLocalStorage));
 }
 
 bool LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr)
 {
     localStorage = __LocalStorage_checkMemory(localStorage, idx);
-    if (!localStorage) { return false; }
+    if (!localStorage)
+    {
+        return false;
+    }
     void* data = localStorage->blocks[idx].data;
     *(intptr_t*)data = ptr;
     return true;
@@ -82,7 +113,10 @@ bool LocalStorage_setTiny(CLocalStorage* localStorage, int idx, const void* src,
                           int len)
 {
     localStorage = __LocalStorage_checkMemory(localStorage, idx);
-    if (!localStorage) { return false; }
+    if (!localStorage)
+    {
+        return false;
+    }
     void* data = localStorage->blocks[idx].data;
     memcpy(data, src, len);
     return true;

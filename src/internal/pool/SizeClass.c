@@ -4,6 +4,7 @@
 
 #include "xcl/pool/SizeClass.h"
 #include "xcl/pool/PoolDef.h"
+#include "xcl/pool/CPool.h"
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
@@ -21,7 +22,10 @@ typedef struct {
 
 static uint32_t __log2(uint32_t i)
 {
-    if (i == 0) { return 32; }
+    if (i == 0)
+    {
+        return 32;
+    }
     uint32_t n = 1;
     if ((i >> 16) == 0)
     {
@@ -80,49 +84,53 @@ static int32_t __initSizeClassTab(int32_t idx, int32_t log2Group,
 XCL_PUBLIC(bool)
 SizeClass_initialize()
 {
-    if (sizeClasses) { return true; }
+    if (sizeClasses)
+    {
+        return true;
+    }
     bool success = false;
-    do {
-        int32_t groups = __log2(CHUNK_SIZE) + 1 - LOG2_QUANTUM;
-        sizeClasses =
-            (SizeTab*)malloc(sizeof(SizeTab) * (groups << LOG2_GROUP_SIZE));
-        if (!sizeClasses) { break; }
+    do
+    {
+        uint32_t groups = __log2(CHUNK_SIZE) + 1 - LOG2_QUANTUM;
+        sizeClasses = (SizeTab*)Pool_alloc(
+            NULL, sizeof(SizeTab) * (groups << LOG2_GROUP_SIZE));
+        if (!sizeClasses)
+        {
+            break;
+        }
         tabs = __initSizeClassTabs();
-        //    sizeIdx2size = (int32_t *)malloc(tabs << 2);
-        //    if (!sizeIdx2size) {
-        //      break;
-        //    }
-        //    pageIdx2size = (int32_t *)malloc(tabs << 2);
-        //    if (!pageIdx2size) {
-        //      break;
-        //    }
         success = true;
     } while (false);
-    if (!success) { SizeClass_finalize(); }
+    if (!success)
+    {
+        SizeClass_finalize();
+    }
     return success;
 }
 
 XCL_PUBLIC(void)
 SizeClass_finalize()
 {
-    free(sizeClasses);
+    uint32_t groups = __log2(CHUNK_SIZE) + 1 - LOG2_QUANTUM;
+    Pool_dealloc(NULL, sizeClasses,
+                 sizeof(SizeTab) * (groups << LOG2_GROUP_SIZE));
     sizeClasses = NULL;
-    //  free(sizeIdx2size);
-    //  sizeIdx2size = NULL;
-    //  free(pageIdx2size);
-    //  pageIdx2size = NULL;
-    //  free(size2idx);
-    //  size2idx = NULL;
     tabs = 0;
 }
 
 XCL_PUBLIC(int32_t)
-SizeClass_size() { return tabs; }
+SizeClass_size()
+{
+    return tabs;
+}
 
 XCL_PUBLIC(bool)
 SizeClass_get(int32_t idx, int32_t* out)
 {
-    if (idx >= tabs) { return false; }
+    if (idx >= tabs)
+    {
+        return false;
+    }
     SizeTab tab = sizeClasses[idx];
     out[0] = tab.log2Group;
     out[1] = tab.log2Delta;
@@ -152,15 +160,27 @@ static void __SC_getGroupAndDelta(uint32_t size, uint32_t* log2Group,
 XCL_PUBLIC(uint32_t)
 SizeClass_normalize(uint32_t size)
 {
-    if (size <= 16) { return 16; }
-    if (size >= CHUNK_SIZE) { return size; }
+    if (size <= 16)
+    {
+        return 16;
+    }
+    if (size >= CHUNK_SIZE)
+    {
+        return size;
+    }
     uint32_t log2Group, log2Delta;
     __SC_getGroupAndDelta(size, &log2Group, &log2Delta);
     uint32_t nDelta = (size - (1 << log2Group)) >> log2Delta;
-    if (size - ((1 << log2Group) + (nDelta << log2Delta)) == 0) { return size; }
+    if (size - ((1 << log2Group) + (nDelta << log2Delta)) == 0)
+    {
+        return size;
+    }
     if (log2Group == LOG2_QUANTUM)
     {
-        if (nDelta < 3) { ++nDelta; }
+        if (nDelta < 3)
+        {
+            ++nDelta;
+        }
         else
         {
             nDelta = 1;
@@ -169,7 +189,10 @@ SizeClass_normalize(uint32_t size)
     }
     else
     {
-        if (nDelta < 4) { ++nDelta; }
+        if (nDelta < 4)
+        {
+            ++nDelta;
+        }
         else
         {
             nDelta = 1;
@@ -183,9 +206,15 @@ SizeClass_normalize(uint32_t size)
 XCL_PUBLIC(uint32_t)
 SizeClass_size2pages(uint32_t size)
 {
-    if (size <= PAGE_SIZE) { return 1; }
+    if (size <= PAGE_SIZE)
+    {
+        return 1;
+    }
     uint32_t pages = size >> PAGE_SHIFTS;
-    if ((size & (PAGE_SIZE - 1)) == 0) { return pages; }
+    if ((size & (PAGE_SIZE - 1)) == 0)
+    {
+        return pages;
+    }
     return pages + 1;
 }
 
@@ -223,8 +252,14 @@ static int32_t __initSizeClassTab(int32_t idx, int32_t log2Group,
 {
     bool isMultiPage = false;
     int32_t size = (1 << log2Group) + (nDelta << log2Delta);
-    if (log2Delta >= PAGE_SHIFTS) { isMultiPage = true; }
-    else { isMultiPage = size % PAGE_SIZE == 0; }
+    if (log2Delta >= PAGE_SHIFTS)
+    {
+        isMultiPage = true;
+    }
+    else
+    {
+        isMultiPage = size % PAGE_SIZE == 0;
+    }
     bool isSubPage = size <= SUB_PAGE_THRESHOLD;
     SizeTab tab = {log2Group, log2Delta, nDelta, isMultiPage, isSubPage, size};
     sizeClasses[idx] = tab;

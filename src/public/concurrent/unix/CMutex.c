@@ -17,7 +17,7 @@ typedef struct {
 XCL_PUBLIC(void*)
 Mutex_new()
 {
-    CUnixMutex* mutex = malloc(sizeof(CUnixMutex));
+    CUnixMutex* mutex = Pool_alloc(NULL, sizeof(CUnixMutex));
     if (mutex)
     {
         memset(mutex, 0, sizeof(CUnixMutex));
@@ -30,7 +30,7 @@ Mutex_new()
             return mutex;
         }
         errno = err;
-        free(mutex);
+        Pool_dealloc(NULL, mutex);
     }
     return NULL;
 }
@@ -41,7 +41,7 @@ Mutex_delete(void* mutex)
     if (mutex)
     {
         int ret = pthread_mutex_destroy(&((CUnixMutex*)mutex)->handle);
-        free(mutex);
+        Pool_dealloc(NULL, mutex);
         if (ret != 0) errno = ret;
         return !ret;
     }

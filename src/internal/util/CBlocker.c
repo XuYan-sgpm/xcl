@@ -4,7 +4,17 @@
 
 #include <stdlib.h>
 #include <xcl/lang/XclErr.h>
-#include <xcl/util/CBlockerInternalApi.h>
+#include <xcl/util/CBlocker.h>
+#include "xcl/concurrent/CCond.h"
+#include "xcl/pool/CPool.h"
+
+struct _CBlocker_st {
+    int32_t wait;
+    int32_t notify;
+    bool externalLock;
+    CMutex* mutex;
+    CCond* cond;
+};
 
 /**
  * get blocker state, if state is <= 0, blocker is in signaled
@@ -17,61 +27,84 @@ static inline int32_t __Blocker_state(CBlocker* blocker)
     return blocker->wait - blocker->notify;
 }
 
-XCL_PUBLIC(CBlocker*)
-Blocker_new()
+static bool __Blocker_init(CBlocker* blocker, CMutex* mutex)
 {
-    CBlocker* blocker = __Blocker_alloc();
+    blocker->wait = blocker->notify = 0;
+    blocker->externalLock = mutex;
+    if (mutex)
+    {
+        blocker->mutex = mutex;
+    }
+    else
+    {
+        blocker->mutex = Mutex_new();
+    }
+    if (blocker->mutex)
+    {
+        blocker->cond = Cond_new();
+        if (blocker->cond)
+        {
+            return true;
+        }
+        if (!mutex)
+        {
+            Mutex_delete(blocker->mutex);
+        }
+    }
+    return false;
+}
+
+static CBlocker* __Blocker_new(CMutex* mutex)
+{
+    CBlocker* blocker = Pool_alloc(NULL, sizeof(CBlocker));
     if (blocker)
     {
-        blocker->wait = blocker->notify = 0;
-        blocker->externalLock = false;
-        int ret = __Blocker_init(blocker, 0);
-        if (ret)
+        if (!__Blocker_init(blocker, mutex))
         {
-            setErr(ret);
-            __Blocker_dealloc(blocker);
+            Pool_dealloc(NULL, blocker, sizeof(CBlocker));
             blocker = 0;
         }
     }
-    else { setErr(XCL_MEMORY_ERR); }
+    else
+    {
+        setErr(XCL_MEMORY_ERR);
+    }
     return blocker;
 }
 
 XCL_PUBLIC(CBlocker*)
-Blocker_new2(void* mutex)
+Blocker_new()
 {
-    CBlocker* blocker = __Blocker_alloc();
-    if (blocker)
-    {
-        blocker->wait = blocker->notify = 0;
-        blocker->externalLock = true;
-        int ret = __Blocker_init(blocker, mutex);
-        if (ret)
-        {
-            setErr(ret);
-            free(blocker);
-            blocker = 0;
-        }
-    }
-    else { setErr(XCL_MEMORY_ERR); }
-    return blocker;
+    return __Blocker_new(NULL);
+}
+
+XCL_PUBLIC(CBlocker*)
+Blocker_new2(CMutex* mutex)
+{
+    return __Blocker_new(mutex);
 }
 
 XCL_PUBLIC(bool)
 Blocker_delete(CBlocker* blocker)
 {
-    int ret = __Blocker_acquire(blocker);
     bool allow = false;
-    if (ret != 0) { setErr(ret); }
-    else
+    if (!Mutex_lock(blocker->mutex))
     {
-        if (__Blocker_state(blocker) <= 0) { allow = true; }
-        __Blocker_release(blocker);
-        if (allow)
+        return false;
+    }
+    if (__Blocker_state(blocker) <= 0)
+    {
+        allow = true;
+    }
+    Mutex_unlock(blocker->mutex);
+    if (allow)
+    {
+        if (!blocker->externalLock)
         {
-            __Blocker_finalize(blocker);
-            free(blocker);
+            Mutex_delete(blocker->mutex);
         }
+        Cond_delete(blocker->cond);
+        Pool_dealloc(NULL, blocker, sizeof(CBlocker));
     }
     return allow;
 }
@@ -79,57 +112,63 @@ Blocker_delete(CBlocker* blocker)
 XCL_PUBLIC(bool)
 Blocker_wait(CBlocker* blocker)
 {
-    int ret = __Blocker_acquire(blocker);
-    if (ret != 0) { setErr(ret); }
-    else
+    if (!Mutex_lock(blocker->mutex))
     {
-        ++blocker->wait;
-        if (__Blocker_state(blocker) > 0)
-        {
-            ret = __Blocker_wait(blocker);
-            if (ret) setErr(ret);
-        }
+        return false;
     }
-    __Blocker_release(blocker);
-    return ret == 0;
+    ++blocker->wait;
+    bool success = true;
+    if (__Blocker_state(blocker) > 0)
+    {
+        success = Cond_wait(blocker->mutex, blocker->cond);
+    }
+    Mutex_unlock(blocker->mutex);
+    return success;
 }
 
 XCL_PUBLIC(bool)
 Blocker_cancel(CBlocker* blocker)
 {
-    int ret = __Blocker_acquire(blocker);
-    if (ret != 0) { setErr(ret); }
-    else
+    if (!Mutex_lock(blocker->mutex))
     {
-        int32_t state = __Blocker_state(blocker);
-        if (state >= 0)
+        return false;
+    }
+    bool success = true;
+    int32_t state = __Blocker_state(blocker);
+    if (state >= 0)
+    {
+        if (state > 0)
         {
-            if (state > 0)
-            {
-                ret = __Blocker_notify(blocker);
-                if (ret) setErr(ret);
-            }
-            if (ret == 0) { ++blocker->notify; }
+            success = Cond_signal(blocker->cond);
+        }
+        if (success)
+        {
+            ++blocker->notify;
         }
     }
-    __Blocker_release(blocker);
-    return ret == 0;
+    Mutex_unlock(blocker->mutex);
+    return success;
 }
 
 XCL_PUBLIC(bool)
 Blocker_wakeAll(CBlocker* blocker)
 {
-    int ret = __Blocker_acquire(blocker);
-    if (ret != 0) { setErr(ret); }
-    else
+    if (!Mutex_lock(blocker->mutex))
     {
-        if (__Blocker_state(blocker) > 0)
+        return false;
+    }
+    bool success = true;
+    if (__Blocker_state(blocker) > 0)
+    {
+        if (Cond_signalAll(blocker->cond))
         {
-            ret = __Blocker_notifyAll(blocker);
-            if (ret == 0) { blocker->wait = blocker->notify = 0; }
-            else { setErr(ret); }
+            blocker->wait = blocker->notify = 0;
+        }
+        else
+        {
+            success = false;
         }
     }
-    __Blocker_release(blocker);
-    return ret == 0;
+    Mutex_unlock(blocker->mutex);
+    return success;
 }

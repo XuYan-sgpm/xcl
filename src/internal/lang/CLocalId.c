@@ -63,7 +63,10 @@ static bool __LocalId_offerQueue(int32_t id)
             __idQueue.cap = newCap;
             __idQueue.freeIdList = newIdList;
         }
-        else { setErr(XCL_MEMORY_ERR); }
+        else
+        {
+            setErr(XCL_MEMORY_ERR);
+        }
     }
     if (__idQueue.size < __idQueue.cap)
     {
@@ -78,11 +81,20 @@ static bool __LocalId_pollQueue(int32_t* id)
 {
     *id = -1;
     Mutex_lock(__idQueue.freeIdLock);
-    if (__idQueue.size > 0) { *id = __idQueue.freeIdList[--__idQueue.size]; }
+    if (__idQueue.size > 0)
+    {
+        *id = __idQueue.freeIdList[--__idQueue.size];
+    }
     Mutex_unlock(__idQueue.freeIdLock);
     return *id != -1;
 }
 
-bool __ThreadLocal_offerId(int32_t id) { return __LocalId_offerQueue(id); }
+bool __ThreadLocal_offerId(int32_t id)
+{
+    return __LocalId_offerQueue(id);
+}
 
-bool __ThreadLocal_pollId(int32_t* id) { return __LocalId_pollQueue(id); }
+bool __ThreadLocal_pollId(int32_t* id)
+{
+    return __LocalId_pollQueue(id);
+}

@@ -3,7 +3,7 @@
 #include <stdint.h>
 #include <xcl/lang/XclDef.h>
 
-typedef struct _Config Config;
+typedef struct _CConfig_st Config;
 
 #ifdef __cplusplus
 extern "C" {

@@ -15,14 +15,14 @@ typedef struct {
 XCL_PUBLIC(void*)
 Cond_new()
 {
-    CUnixCond* cond = malloc(sizeof(CUnixCond));
+    CUnixCond* cond = Pool_alloc(NULL, sizeof(CUnixCond));
     if (cond)
     {
         memset(cond, 0, sizeof(CUnixCond));
         int ret = pthread_cond_init(&cond->handle, NULL);
         if (ret == 0) { return cond; }
         errno = ret;
-        free(cond);
+        Pool_dealloc(NULL, cond);
     }
     return NULL;
 }
@@ -33,7 +33,7 @@ Cond_delete(void* cond)
     if (cond)
     {
         int ret = pthread_cond_destroy(&((CUnixCond*)cond)->handle);
-        free(cond);
+        Pool_dealloc(NULL, cond);
         if (ret) errno = ret;
         return !ret;
     }

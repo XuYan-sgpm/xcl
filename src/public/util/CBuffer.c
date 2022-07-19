@@ -1,4 +1,5 @@
 #include "xcl/util/CBuffer.h"
+#include "xcl/pool/CPool.h"
 
 // #include <stdarg.h>
 #include <stdlib.h>
@@ -18,12 +19,12 @@ static void __setBufState(CBuffer* buffer, int cap, const bool flag)
 }
 
 XCL_PUBLIC(CBuffer)
-Buffer_new(int cap)
+Buffer_make(int cap)
 {
     CBuffer buffer = {NULL, 0, 0};
     if (cap > 0)
     {
-        char* p = (char*)malloc(cap);
+        char* p = (char*)Pool_alloc(NULL, cap);
         if (p)
         {
             buffer.data = p;
@@ -46,7 +47,10 @@ Buffer_newRegion(char* src, int len)
 }
 
 XCL_PUBLIC(int)
-Buffer_cap(const CBuffer* buffer) { return buffer->state & __BUF_MASK__; }
+Buffer_cap(const CBuffer* buffer)
+{
+    return buffer->state & __BUF_MASK__;
+}
 
 XCL_PUBLIC(CBuffer)
 wrapBuf(char* src, int len)
@@ -70,11 +74,11 @@ wrapBuf2(const CBuffer* origin, int pos, int len)
 }
 
 XCL_PUBLIC(bool)
-Buffer_free(CBuffer* buffer)
+Buffer_release(CBuffer* buffer)
 {
     if (buffer->data && __isBufReleasable(buffer))
     {
-        free(buffer->data);
+        Pool_dealloc(NULL, buffer->data, Buffer_cap(buffer));
         memset(buffer, 0, sizeof(*buffer));
         return true;
     }
@@ -95,9 +99,15 @@ Buffer_push(CBuffer* buffer, char ch)
 XCL_PUBLIC(int)
 Buffer_appendRegion(CBuffer* buffer, const char* src, int len)
 {
-    if (len <= 0 || !src) { return 0; }
+    if (len <= 0 || !src)
+    {
+        return 0;
+    }
     int write = Buffer_cap(buffer) - buffer->size;
-    if (write > len) { write = len; }
+    if (write > len)
+    {
+        write = len;
+    }
     memcpy(buffer->data + buffer->size, src, write);
     buffer->size += write;
     return write;
@@ -112,9 +122,15 @@ Buffer_append(CBuffer* buffer, const char* src)
 XCL_PUBLIC(int)
 Buffer_appendChars(CBuffer* buffer, int n, char ch)
 {
-    if (n <= 0) { return 0; }
+    if (n <= 0)
+    {
+        return 0;
+    }
     int count = Buffer_cap(buffer) - buffer->size;
-    if (count > n) { count = n; }
+    if (count > n)
+    {
+        count = n;
+    }
     memset(buffer->data + buffer->size, count, ch);
     buffer->size += count;
     return count;
@@ -125,7 +141,10 @@ Buffer_pop(CBuffer* buffer, char* dst)
 {
     if (buffer->size)
     {
-        if (dst) { *dst = buffer->data[0]; }
+        if (dst)
+        {
+            *dst = buffer->data[0];
+        }
         if (buffer->size > 1)
         {
             memcpy(buffer->data, buffer->data + 1, buffer->size - 1);
@@ -139,8 +158,14 @@ Buffer_pop(CBuffer* buffer, char* dst)
 XCL_PUBLIC(bool)
 Buffer_get(const CBuffer* buffer, int pos, char* dst)
 {
-    if (pos < 0 || pos >= buffer->size) { return false; }
-    if (dst) { *dst = buffer->data[pos]; }
+    if (pos < 0 || pos >= buffer->size)
+    {
+        return false;
+    }
+    if (dst)
+    {
+        *dst = buffer->data[pos];
+    }
     return true;
 }
 
@@ -181,7 +206,10 @@ Buffer_writeChars(CBuffer* buffer, int pos, int n, char ch)
 XCL_PUBLIC(int)
 Buffer_writeRegion(CBuffer* buffer, int pos, const char* src, int len)
 {
-    if (pos > buffer->size || len <= 0 || !src) { return 0; }
+    if (pos > buffer->size || len <= 0 || !src)
+    {
+        return 0;
+    }
     int remaining = Buffer_cap(buffer) - buffer->size;
     int write = remaining > len ? len : remaining;
     if (pos < buffer->size)
@@ -203,11 +231,20 @@ Buffer_write(CBuffer* buffer, int pos, const char* src)
 XCL_PUBLIC(int)
 Buffer_readRegion(const CBuffer* buffer, int pos, char* dst, int len)
 {
-    if (pos >= buffer->size || len <= 0) { return 0; }
+    if (pos >= buffer->size || len <= 0)
+    {
+        return 0;
+    }
     int available = buffer->size - pos;
     int read = available > len ? len : available;
-    if (read > 1) { memcpy(dst, buffer->data + pos, read); }
-    else { *dst = buffer->data[pos]; }
+    if (read > 1)
+    {
+        memcpy(dst, buffer->data + pos, read);
+    }
+    else
+    {
+        *dst = buffer->data[pos];
+    }
     return read;
 }
 
@@ -224,28 +261,35 @@ Buffer_read(const CBuffer* buffer, int pos, char* dst)
 XCL_PUBLIC(bool)
 Buffer_expand(CBuffer* buffer, int cap)
 {
-    if (cap <= Buffer_cap(buffer)) {}
+    if (cap <= Buffer_cap(buffer))
+    {}
     else
     {
         if (!buffer->data || !__isBufReleasable(buffer))
         {
-            CBuffer newBuf = Buffer_new(cap);
-            if (!newBuf.data) { return false; }
+            CBuffer newBuf = Buffer_make(cap);
+            if (!newBuf.data)
+            {
+                return false;
+            }
             *buffer = newBuf;
         }
         else
         {
-            char* p = realloc(buffer->data, cap);
+            char* p = Pool_reapply(NULL, buffer->data, Buffer_cap(buffer), cap);
             if (!p)
             {
-                CBuffer newBuf = Buffer_new(cap);
+                CBuffer newBuf = Buffer_make(cap);
                 if (newBuf.data)
                 {
                     memcpy(newBuf.data, buffer->data, buffer->size);
                     newBuf.size = buffer->size;
-                    free(buffer->data);
+                    Pool_dealloc(NULL, buffer->data, Buffer_cap(buffer));
                 }
-                else { return false; }
+                else
+                {
+                    return false;
+                }
                 *buffer = newBuf;
             }
             else
@@ -281,20 +325,32 @@ Buffer_removePos(CBuffer* buffer, int pos)
 XCL_PUBLIC(void)
 Buffer_clear(CBuffer* buffer)
 {
-    if (buffer->size > 0) { buffer->size = 0; }
+    if (buffer->size > 0)
+    {
+        buffer->size = 0;
+    }
 }
 
 XCL_PUBLIC(bool)
-Buffer_realloc(CBuffer* buffer, int cap)
+Buffer_remake(CBuffer* buffer, int cap)
 {
-    if (cap < 0) { return false; }
-    if (cap == 0) { return Buffer_free(buffer); }
+    if (cap < 0)
+    {
+        return false;
+    }
+    if (cap == 0)
+    {
+        return Buffer_release(buffer);
+    }
     else
     {
         if (!__isBufReleasable(buffer))
         {
-            CBuffer newBuf = Buffer_new(cap);
-            if (!newBuf.data) { return false; }
+            CBuffer newBuf = Buffer_make(cap);
+            if (!newBuf.data)
+            {
+                return false;
+            }
             int size = cap > buffer->size ? buffer->size : cap;
             memcpy(newBuf.data, buffer->data, size);
             newBuf.size = size;
@@ -304,8 +360,12 @@ Buffer_realloc(CBuffer* buffer, int cap)
         {
             if (cap > Buffer_cap(buffer))
             {
-                char* p = (char*)realloc(buffer->data, cap);
-                if (!p) { return false; }
+                char* p = (char*)Pool_reapply(NULL, buffer->data,
+                                              Buffer_cap(buffer), cap);
+                if (!p)
+                {
+                    return false;
+                }
                 buffer->data = p;
                 __setBufState(buffer, cap, true);
             }
@@ -317,6 +377,9 @@ Buffer_realloc(CBuffer* buffer, int cap)
 XCL_PUBLIC(char*)
 Buffer_at(const CBuffer* buffer, int pos)
 {
-    if (pos >= 0 && pos <= buffer->size) { return buffer->data + pos; }
+    if (pos >= 0 && pos <= buffer->size)
+    {
+        return buffer->data + pos;
+    }
     return NULL;
 }

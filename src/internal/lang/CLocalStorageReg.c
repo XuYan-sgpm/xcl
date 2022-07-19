@@ -1,18 +1,19 @@
 //
-// Created by xuyan on 2022/7/18.
+// Created by xuyan on 2022/7/19.
 //
 
-#include "xcl/lang/CLocalStorage.h"
-#include "xcl/lang/CLocalStorageReg.h"
-#include "xcl/lang/XclErr.h"
-#include "xcl/util/CList.h"
+#include <xcl/lang/CLocalStorageReg.h>
 #include <assert.h>
-#include <windows.h>
+#include <stdlib.h>
+#include "xcl/util/CList.h"
+#include "xcl/concurrent/CMutex.h"
+#include "xcl/lang/XclErr.h"
+#include "xcl/pool/CPool.h"
 
 typedef CList __RegList;
 
 typedef struct {
-    CRITICAL_SECTION mutex;
+    CMutex* mutex;
     __RegList* regList;
 } __CLocalStorageRegQueue;
 
@@ -20,27 +21,28 @@ static __CLocalStorageRegQueue __localStorageRegQueue;
 
 void __initializeRegQueue()
 {
-    InitializeCriticalSection(&__localStorageRegQueue.mutex);
+    __localStorageRegQueue.mutex = Mutex_new();
+    assert(__localStorageRegQueue.mutex);
     __localStorageRegQueue.regList = List_new();
     assert(__localStorageRegQueue.regList);
 }
 
-int32_t __Win32_cmpThreadId(const void* left, const void* right)
+int32_t __cmpThreadHandle(const void* left, const void* right)
 {
-    return (int32_t)(*(const DWORD*)left - *(const DWORD*)right);
+    return (int32_t)(*(const ThreadHandle*)left - *(const ThreadHandle*)right);
 }
 
 void __regLocalStorage(CLocalStorage* localStorage)
 {
-    EnterCriticalSection(&__localStorageRegQueue.mutex);
     CListNode* node = malloc(sizeof(CListNode) + sizeof(__RegData));
+    Mutex_lock(__localStorageRegQueue.mutex);
     if (node)
     {
         __RegData* regData = (__RegData*)(node->data);
         regData->localStorage = localStorage;
-        regData->threadId = GetCurrentThreadId();
+        regData->handle = __Thread_currentHandle();
         CListIter iter = List_query(__localStorageRegQueue.regList,
-                                    &regData->threadId, __Win32_cmpThreadId);
+                                    &regData->handle, __cmpThreadHandle);
         assert(List_iterEquals(iter, List_end(__localStorageRegQueue.regList)));
         List_push(__localStorageRegQueue.regList, node);
     }
@@ -49,65 +51,52 @@ void __regLocalStorage(CLocalStorage* localStorage)
         setErr(XCL_MEMORY_ERR);
         assert(false);
     }
-    LeaveCriticalSection(&__localStorageRegQueue.mutex);
+    Mutex_unlock(__localStorageRegQueue.mutex);
 }
 
-void __deregisterLocalStorage(ThreadId tid)
+void __deregisterLocalStorage(ThreadHandle handle)
 {
-    EnterCriticalSection(&__localStorageRegQueue.mutex);
+    Mutex_lock(__localStorageRegQueue.mutex);
     CListIter iter = List_begin(__localStorageRegQueue.regList);
     while (!List_iterEquals(iter, List_end(__localStorageRegQueue.regList)))
     {
-        if (((__RegData*)iter.cur->data)->threadId == tid)
+        if (((__RegData*)iter.cur->data)->handle == handle)
         {
             List_remove(__localStorageRegQueue.regList, iter);
+            free(iter.cur);
             break;
         }
         iter = List_next(iter);
     }
-    LeaveCriticalSection(&__localStorageRegQueue.mutex);
-}
-
-static bool __isThreadAlive(DWORD threadId)
-{
-    HANDLE handle = OpenThread(THREAD_QUERY_INFORMATION, false, threadId);
-    if (!handle)
-    {
-        setErr(GetLastError());
-        return false;
-    }
-    DWORD exit;
-    if (!GetExitCodeThread(handle, &exit))
-    {
-        setErr(GetLastError());
-        return false;
-    }
-    return exit == STILL_ACTIVE;
+    Mutex_unlock(__localStorageRegQueue.mutex);
 }
 
 void __clearObsoleteStorages()
 {
-    EnterCriticalSection(&__localStorageRegQueue.mutex);
+    Mutex_lock(__localStorageRegQueue.mutex);
     CListIter iter = List_begin(__localStorageRegQueue.regList);
     while (!List_iterEquals(iter, List_end(__localStorageRegQueue.regList)))
     {
         __RegData* data = (__RegData*)iter.cur->data;
-        if (!__isThreadAlive(data->threadId))
+        if (!__Thread_isAlive(data->handle))
         {
             CListIter next = List_remove(__localStorageRegQueue.regList, iter);
-            LocalStorage_free(data->localStorage);
+            LocalStorage_delete(data->localStorage);
             free(iter.cur);
             iter = next;
         }
-        else { iter = List_next(iter); }
+        else
+        {
+            iter = List_next(iter);
+        }
     }
-    LeaveCriticalSection(&__localStorageRegQueue.mutex);
+    Mutex_unlock(__localStorageRegQueue.mutex);
 }
 
 bool __hasRegLocalStorage()
 {
-    EnterCriticalSection(&__localStorageRegQueue.mutex);
+    Mutex_lock(__localStorageRegQueue.mutex);
     bool ret = !List_empty(__localStorageRegQueue.regList);
-    LeaveCriticalSection(&__localStorageRegQueue.mutex);
+    Mutex_unlock(__localStorageRegQueue.mutex);
     return ret;
 }

@@ -11,6 +11,7 @@
 #pragma once
 
 #include "xcl/lang/XclDef.h"
+#include "xcl/concurrent/CMutex.h"
 #include <stdbool.h>
 
 typedef struct _CBlocker_st CBlocker;
@@ -32,7 +33,7 @@ Blocker_new();
  * @return blocker object if create successfully, otherwise false
  */
 XCL_PUBLIC(CBlocker*)
-Blocker_new2(void* mutex);
+Blocker_new2(CMutex* mutex);
 
 /**
  * delete the blocker object

@@ -45,6 +45,10 @@ typedef struct {
 XCL_PUBLIC(CBits*)
 Bits_new(int32_t size);
 
+/**
+ * delete a bits object, must be created by Bits_new
+ * @param bits bits object
+ */
 XCL_PUBLIC(void)
 Bits_delete(CBits* bits);
 

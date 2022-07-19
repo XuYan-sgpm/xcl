@@ -18,7 +18,10 @@ static bool __isCPUBigEndian()
 
 static void __translate(const void* src, void* dst, int size, bool big)
 {
-    if (big == __isCPUBigEndian()) { memcpy(dst, src, size); }
+    if (big == __isCPUBigEndian())
+    {
+        memcpy(dst, src, size);
+    }
     else
     {
         for (int i = 0; i < size; ++i)

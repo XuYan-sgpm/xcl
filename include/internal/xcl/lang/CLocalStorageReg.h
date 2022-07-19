@@ -6,27 +6,22 @@
 
 #include <xcl/lang/CLocalStorage.h>
 #include <xcl/lang/XclDef.h>
+#include <xcl/lang/CInterThreadApi.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#if WINDOWS
-typedef unsigned long ThreadId;
-#else
-typedef int ThreadId;
-#endif
-
 typedef struct {
     CLocalStorage* localStorage;
-    ThreadId threadId;
+    ThreadHandle handle;
 } __RegData;
 
 void __initializeRegQueue();
 
 void __regLocalStorage(CLocalStorage* localStorage);
 
-void __deregisterLocalStorage(ThreadId tid);
+void __deregisterLocalStorage(ThreadHandle handle);
 
 void __clearObsoleteStorages();
 

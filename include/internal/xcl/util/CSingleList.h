@@ -5,6 +5,7 @@
 #pragma once
 
 #include "xcl/lang/XclDef.h"
+#include "xcl/pool/CPool.h"
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -34,6 +35,14 @@ typedef struct {
  */
 XCL_PUBLIC(CSingleList*)
 SingleList_new();
+
+/**
+ * new a single list object using specified pool
+ * @param pool pool object
+ * @return single list object
+ */
+XCL_PUBLIC(CSingleList*)
+SingleList_new2(CPool* pool);
 
 /**
  * delete list object

@@ -5,27 +5,35 @@
 #include "xcl/concurrent/CMutex.h"
 #include "xcl/lang/XclErr.h"
 #include "xcl/lang/system.h"
+#include "xcl/pool/CPool.h"
 #include <Windows.h>
 
-typedef struct {
+struct _CMutex_st {
     CRITICAL_SECTION criticalSection;
-} CWinMutex;
+};
 
-XCL_PUBLIC(void*)
+XCL_PUBLIC(CMutex*)
 Mutex_new()
 {
-    CWinMutex* mutex = (CWinMutex*)malloc(sizeof(CWinMutex));
-    if (mutex) { InitializeCriticalSection(&mutex->criticalSection); }
-    else { setErr(XCL_MEMORY_ERR); }
+    CMutex* mutex = (CMutex*)Pool_alloc(0, sizeof(CMutex));
+    if (mutex)
+    {
+        InitializeCriticalSection(&mutex->criticalSection);
+    }
+    else
+    {
+        setErr(XCL_MEMORY_ERR);
+    }
     return mutex;
 }
 
 XCL_PUBLIC(bool)
-Mutex_delete(void* mutex)
+Mutex_delete(CMutex* mutex)
 {
     if (mutex)
     {
-        DeleteCriticalSection(&((CWinMutex*)mutex)->criticalSection);
+        DeleteCriticalSection(&mutex->criticalSection);
+        Pool_dealloc(NULL, mutex, sizeof(CMutex));
         return true;
     }
     else
@@ -36,11 +44,11 @@ Mutex_delete(void* mutex)
 }
 
 XCL_PUBLIC(bool)
-Mutex_lock(void* mutex)
+Mutex_lock(CMutex* mutex)
 {
     if (mutex)
     {
-        EnterCriticalSection(&((CWinMutex*)mutex)->criticalSection);
+        EnterCriticalSection(&mutex->criticalSection);
         return true;
     }
     else
@@ -51,11 +59,11 @@ Mutex_lock(void* mutex)
 }
 
 XCL_PUBLIC(bool)
-Mutex_unlock(void* mutex)
+Mutex_unlock(CMutex* mutex)
 {
     if (mutex)
     {
-        LeaveCriticalSection(&((CWinMutex*)mutex)->criticalSection);
+        LeaveCriticalSection(&mutex->criticalSection);
         return true;
     }
     else
@@ -66,7 +74,7 @@ Mutex_unlock(void* mutex)
 }
 
 XCL_PUBLIC(bool)
-Mutex_tryLock(void* mutex)
+Mutex_tryLock(CMutex* mutex)
 {
     if (!mutex)
     {
@@ -75,12 +83,12 @@ Mutex_tryLock(void* mutex)
     }
     else
     {
-        return TryEnterCriticalSection(&((CWinMutex*)mutex)->criticalSection);
+        return TryEnterCriticalSection(&mutex->criticalSection);
     }
 }
 
 XCL_PUBLIC(bool)
-Mutex_tryLock2(void* mutex, int32_t millis)
+Mutex_tryLock2(CMutex* mutex, int32_t millis)
 {
     if (!mutex)
     {
@@ -94,7 +102,7 @@ Mutex_tryLock2(void* mutex, int32_t millis)
     bool acquired = false;
     while ((nanoTimeout - totalWait) > 500000)
     {
-        if (TryEnterCriticalSection(&((CWinMutex*)mutex)->criticalSection))
+        if (TryEnterCriticalSection(&mutex->criticalSection))
         {
             acquired = true;
             break;
@@ -105,8 +113,7 @@ Mutex_tryLock2(void* mutex, int32_t millis)
     timeEndPeriod(1);
     if (!acquired)
     {
-        acquired =
-            TryEnterCriticalSection(&((CWinMutex*)mutex)->criticalSection);
+        acquired = TryEnterCriticalSection(&mutex->criticalSection);
     }
     return acquired;
 }

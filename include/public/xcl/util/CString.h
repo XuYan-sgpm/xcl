@@ -26,7 +26,7 @@ typedef struct {
 } CString;
 
 XCL_PUBLIC(CString)
-String_new(const char* str);
+String_make(const char* str);
 
 XCL_PUBLIC(CString)
 String_newRegion(const char* str, const int len);

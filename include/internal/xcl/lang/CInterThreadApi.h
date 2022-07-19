@@ -31,19 +31,23 @@ typedef enum
 #if WINDOWS
 typedef unsigned __ThreadRunReturnType;
 typedef void* ThreadHandle;
-#    define INVALID_THREAD_HANDLE NULL
 #else
-#    include <pthread.h>
+#include <pthread.h>
 typedef pthread_t ThreadHandle;
 typedef void* __ThreadRunReturnType;
-#    define INVALID_THREAD_HANDLE (0)
 #endif
+
+#define INVALID_THREAD_HANDLE (0)
 
 typedef struct {
     void (*const cb)(void*);
     void* const usr;
 } CallbackObj;
 
+/**
+ * basic thread structure, may be need
+ * to expand on different platforms
+ */
 struct _CThread_st {
     const ThreadHandle handle;
     void* const threadLock;
@@ -55,6 +59,23 @@ struct _CThread_st {
 typedef struct _CThread_st CThread;
 
 typedef __ThreadRunReturnType(XCL_API* __ThreadRunProc)(void*);
+
+/**
+ * functions below are strong associated with platform
+ * implementation is required for CThread api
+ */
+
+/**
+ * alloc a thread object
+ * @return thread object if successfully, otherwise NULL
+ */
+CThread* __Thread_alloc();
+
+/**
+ * dealloc thread object
+ * @param thread thread object
+ */
+void __Thread_dealloc(CThread* thread);
 
 /**
  * called before thread create
@@ -154,6 +175,20 @@ CLocalStorage* __Thread_getLocalStorage();
 bool __Thread_setLocalStorage(CLocalStorage* localStorage);
 
 /**
+ * check if thread is still alive
+ * @param handle thread handle
+ * @return true if thread is alive, otherwise false
+ */
+bool __Thread_isAlive(ThreadHandle handle);
+
+/**
+ * functions below are already implemented in CThread.c
+ * and do not implement these apis if you want to reuse
+ * implementation in CThread.c
+ * (for example, implement thread for specified platforms)
+ */
+
+/**
  * set thread current state
  * @param thread CThread object
  * @param state CThreadState
@@ -180,11 +215,6 @@ void* __Thread_mutex(CThread* thread);
  * @return thread handle
  */
 ThreadHandle __Thread_handle(CThread* thread);
-
-/**
- * release current thread local storage
- */
-void __Thread_releaseLocalStorage();
 
 #ifdef __cplusplus
 }

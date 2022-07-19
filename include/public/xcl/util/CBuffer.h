@@ -14,7 +14,7 @@ typedef struct {
 } CBuffer;
 
 XCL_PUBLIC(CBuffer)
-Buffer_new(int cap);
+Buffer_make(int cap);
 
 XCL_PUBLIC(CBuffer)
 Buffer_newRegion(char* src, int len);
@@ -29,7 +29,7 @@ XCL_PUBLIC(CBuffer)
 wrapBuf2(const CBuffer* buffer, int pos, int len);
 
 XCL_PUBLIC(bool)
-Buffer_free(CBuffer* buffer);
+Buffer_release(CBuffer* buffer);
 
 XCL_PUBLIC(bool)
 Buffer_push(CBuffer* buffer, char ch);
@@ -80,7 +80,7 @@ XCL_PUBLIC(void)
 Buffer_clear(CBuffer* buffer);
 
 XCL_PUBLIC(bool)
-Buffer_realloc(CBuffer* buffer, int cap);
+Buffer_remake(CBuffer* buffer, int cap);
 
 XCL_PUBLIC(char*)
 Buffer_at(const CBuffer* buffer, int pos);

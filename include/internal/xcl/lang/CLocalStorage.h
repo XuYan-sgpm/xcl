@@ -22,12 +22,18 @@ extern "C" {
  */
 typedef struct {
     char data[8];
-} Block;
+} CStorageBlock;
 
 typedef struct {
-    Block* blocks;
+    CStorageBlock* blocks;
     int32_t cap;
 } CLocalStorage;
+
+/**
+ * create a thread local storage
+ * @return local storage
+ */
+CLocalStorage* LocalStorage_new();
 
 /**
  * set ptr to local storage, treat ptr address as data
@@ -63,7 +69,7 @@ void* LocalStorage_get(CLocalStorage* localStorage, int idx);
  * memory pointer to ptr which stored in local storage
  * @param localStorage local storage object
  */
-void LocalStorage_free(CLocalStorage* localStorage);
+void LocalStorage_delete(CLocalStorage* localStorage);
 
 #ifdef __cplusplus
 }

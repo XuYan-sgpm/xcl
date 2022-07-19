@@ -4,16 +4,12 @@
 
 #include "xcl/lang/CThreadLocal.h"
 #include "xcl/lang/CLocalStorage.h"
-#include "xcl/lang/CThreadInternalApi.h"
+#include "xcl/lang/CInterThreadApi.h"
 #include <stdatomic.h>
 #include <stdlib.h>
 #include <string.h>
 #include <xcl/lang/XclDef.h>
 #include <xcl/lang/XclErr.h>
-
-void __LocalId_initQueue();
-
-void __Local_implInitialize();
 
 /**
  * thread local id starts from 1 not 0, because
@@ -35,18 +31,23 @@ static int32_t __ThreadLocal_newId()
 static int32_t __ThreadLocal_getId()
 {
     int32_t id;
-    if (!__ThreadLocal_pollId(&id)) { id = __ThreadLocal_newId(); }
+    if (!__ThreadLocal_pollId(&id))
+    {
+        id = __ThreadLocal_newId();
+    }
     return id;
 }
 
-static void __ThreadLocal_recycleId(int32_t id) { __ThreadLocal_offerId(id); }
+static void __ThreadLocal_recycleId(int32_t id)
+{
+    __ThreadLocal_offerId(id);
+}
 
 static CLocalStorage* __ThreadLocal_newLocalStorage()
 {
-    CLocalStorage* localStorage = (CLocalStorage*)malloc(sizeof(CLocalStorage));
+    CLocalStorage* localStorage = LocalStorage_new();
     if (!localStorage)
     {
-        setErr(XCL_MEMORY_ERR);
         return NULL;
     }
     memset(localStorage, 0, sizeof(CLocalStorage));
@@ -61,7 +62,7 @@ static CLocalStorage* __ThreadLocal_checkoutLocalStorage()
         localStorage = __ThreadLocal_newLocalStorage();
         if (localStorage && !__Thread_setLocalStorage(localStorage))
         {
-            free(localStorage);
+            LocalStorage_delete(localStorage);
             localStorage = NULL;
         }
     }
@@ -76,7 +77,10 @@ static bool __ThreadLocal_setData(CThreadLocal* local, const void* src, int len)
         return false;
     }
     CLocalStorage* localStorage = __ThreadLocal_checkoutLocalStorage();
-    if (!localStorage) { return false; }
+    if (!localStorage)
+    {
+        return false;
+    }
     return LocalStorage_setTiny(localStorage, local->id, src, len);
 }
 
@@ -184,8 +188,14 @@ XCL_PUBLIC(bool)
 Local_get(CThreadLocal* local, void** result)
 {
     void* data = __ThreadLocal_getData(local);
-    if (!data) { return false; }
-    if (result) { *result = (void*)*(intptr_t*)data; }
+    if (!data)
+    {
+        return false;
+    }
+    if (result)
+    {
+        *result = (void*)*(intptr_t*)data;
+    }
     return true;
 }
 
@@ -193,7 +203,10 @@ XCL_PUBLIC(bool)
 Local_getChar(CThreadLocal* local, char* result)
 {
     void* data = __ThreadLocal_getData(local);
-    if (data && result) { *result = *(char*)data; }
+    if (data && result)
+    {
+        *result = *(char*)data;
+    }
     return data;
 }
 
@@ -201,7 +214,10 @@ XCL_PUBLIC(bool)
 Local_getU8(CThreadLocal* local, unsigned char* result)
 {
     void* data = __ThreadLocal_getData(local);
-    if (data && result) { *result = *(unsigned char*)data; }
+    if (data && result)
+    {
+        *result = *(unsigned char*)data;
+    }
     return data;
 }
 
@@ -209,7 +225,10 @@ XCL_PUBLIC(bool)
 Local_getInt16(CThreadLocal* local, int16_t* result)
 {
     void* data = __ThreadLocal_getData(local);
-    if (data && result) { *result = *(int16_t*)data; }
+    if (data && result)
+    {
+        *result = *(int16_t*)data;
+    }
     return data;
 }
 
@@ -217,7 +236,10 @@ XCL_PUBLIC(bool)
 Local_getU16(CThreadLocal* local, uint16_t* result)
 {
     void* data = __ThreadLocal_getData(local);
-    if (data && result) { *result = *(uint16_t*)data; }
+    if (data && result)
+    {
+        *result = *(uint16_t*)data;
+    }
     return data;
 }
 
@@ -225,7 +247,10 @@ XCL_PUBLIC(bool)
 Local_getInt32(CThreadLocal* local, int32_t* result)
 {
     void* data = __ThreadLocal_getData(local);
-    if (data && result) { *result = *(int32_t*)data; }
+    if (data && result)
+    {
+        *result = *(int32_t*)data;
+    }
     return data;
 }
 
@@ -233,7 +258,10 @@ XCL_PUBLIC(bool)
 Local_getU32(CThreadLocal* local, uint32_t* result)
 {
     void* data = __ThreadLocal_getData(local);
-    if (data && result) { *result = *(uint32_t*)data; }
+    if (data && result)
+    {
+        *result = *(uint32_t*)data;
+    }
     return data;
 }
 
@@ -241,7 +269,10 @@ XCL_PUBLIC(bool)
 Local_getFloat(CThreadLocal* local, float* result)
 {
     void* data = __ThreadLocal_getData(local);
-    if (data && result) { *result = *(float*)data; }
+    if (data && result)
+    {
+        *result = *(float*)data;
+    }
     return data;
 }
 
@@ -249,7 +280,10 @@ XCL_PUBLIC(bool)
 Local_getInt64(CThreadLocal* local, int64_t* result)
 {
     void* data = __ThreadLocal_getData(local);
-    if (data && result) { *result = *(int64_t*)data; }
+    if (data && result)
+    {
+        *result = *(int64_t*)data;
+    }
     return data;
 }
 
@@ -257,7 +291,10 @@ XCL_PUBLIC(bool)
 Local_getU64(CThreadLocal* local, uint64_t* result)
 {
     void* data = __ThreadLocal_getData(local);
-    if (data && result) { *result = *(uint64_t*)data; }
+    if (data && result)
+    {
+        *result = *(uint64_t*)data;
+    }
     return data;
 }
 
@@ -265,9 +302,16 @@ XCL_PUBLIC(bool)
 Local_getDouble(CThreadLocal* local, double* result)
 {
     void* data = __ThreadLocal_getData(local);
-    if (data && result) { *result = *(double*)data; }
+    if (data && result)
+    {
+        *result = *(double*)data;
+    }
     return data;
 }
+
+void __LocalId_initQueue();
+
+void __initializeLocalStorageAccess();
 
 XCL_PUBLIC(bool)
 Local_initEnv()
@@ -275,7 +319,8 @@ Local_initEnv()
     static bool initDone = false;
     if (!initDone)
     {
-        __Local_implInitialize();
+        __LocalId_initQueue();
+        __initializeLocalStorageAccess();
         initDone = true;
     }
     return initDone;
@@ -284,4 +329,14 @@ Local_initEnv()
 void __clearObsoleteStorages();
 
 XCL_PUBLIC(void)
-Local_recycleStorages() { __clearObsoleteStorages(); }
+Local_recycleStorages()
+{
+    __clearObsoleteStorages();
+}
+
+#if GNUC || CLANG
+static __attribute__((constructor)) void __Local_globalInitialize()
+{
+    Local_initEnv();
+}
+#endif
