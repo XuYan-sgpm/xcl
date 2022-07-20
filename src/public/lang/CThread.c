@@ -10,8 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <string.h>
-
-#include <stdlib.h>
+#include <assert.h>
 
 /**
  * position 0 used to store current CThread object
@@ -36,7 +35,7 @@ static inline void __Thread_deallocCbNode(CSingleNode* node)
 
 static inline bool __Thread_initThreadLock(CThread* thread)
 {
-    void* lock = Mutex_new();
+    CMutex* lock = Mutex_new();
     if (lock)
     {
         memcpy((void*)&thread->threadLock, (void*)&lock, sizeof(void*));
@@ -44,9 +43,9 @@ static inline bool __Thread_initThreadLock(CThread* thread)
     return lock;
 }
 
-static inline void __Thread_setThreadId(CThread* thread, unsigned tid)
+static inline void __Thread_setThreadId(CThread* thread, unsigned long tid)
 {
-    memcpy((void*)&thread->threadId, (void*)&tid, sizeof(unsigned));
+    memcpy((void*)&thread->threadId, (void*)&tid, sizeof(tid));
 }
 
 static inline bool __Thread_initThreadCallStack(CThread* thread)
@@ -84,6 +83,29 @@ static inline void __Thread_syncSetThreadState(CThread* thread,
     Mutex_unlock(thread->threadLock);
 }
 
+static inline bool __Thread_block(CThread* thread, int32_t timeout)
+{
+    bool success = true;
+    Mutex_unlock(__Thread_mutex(thread));
+    if (timeout < 0)
+    {
+        do
+        {
+            if (!__Thread_wait(thread))
+            {
+                success = false;
+                break;
+            }
+        } while (__Thread_syncGetThreadState(thread) != TERMINATED);
+    }
+    else
+    {
+        success = __Thread_waitTimeout(thread, timeout);
+    }
+    Mutex_lock(__Thread_mutex(thread));
+    return success;
+}
+
 void __Thread_releaseLocalStorage()
 {
     CLocalStorage* localStorage = __Thread_getLocalStorage();
@@ -104,7 +126,7 @@ CThreadState __Thread_state(CThread* thread)
     return thread->state;
 }
 
-void* __Thread_mutex(CThread* thread)
+CMutex* __Thread_mutex(CThread* thread)
 {
     return thread->threadLock;
 }
@@ -129,11 +151,32 @@ static __ThreadRunReturnType XCL_API __Thread_run(void* args)
     }
     SingleList_delete(thread->callStack);
     thread->callStack = NULL;
+    __Thread_onFinish(thread);
     __Thread_releaseLocalStorage();
-    __Thread_syncSetThreadState(thread, TERMINATED);
-    __ThreadRunReturnType retVal = 0;
-    __Thread_onFinish(thread, retVal);
-    return retVal;
+    /**
+     * check thread state, if state is ALIVE,
+     * we just set state to TERMINATED, otherwise
+     * thread state must be DETACHED, so we need
+     * to delete thread object
+     */
+    Mutex_lock(__Thread_mutex(thread));
+    CThreadState state = __Thread_state(thread);
+    assert(state == ALIVE || state == DETACHED || state == JOINING);
+    if (state == ALIVE || state == JOINING)
+    {
+        __Thread_setState(thread, TERMINATED);
+    }
+    else
+    {
+        __Thread_detach(thread);
+    }
+    Mutex_unlock(__Thread_mutex(thread));
+    if (state == DETACHED)
+    {
+        Mutex_delete(__Thread_mutex(thread));
+        __Thread_dealloc(thread);
+    }
+    return 0;
 }
 
 XCL_PUBLIC(CThread*)
@@ -141,50 +184,51 @@ Thread_new(bool suspend, Callback cb, void* usr)
 {
     bool success = false;
     CThread* thread = __Thread_alloc();
-    if (thread)
+    if (!thread)
     {
-        memset(thread, 0, sizeof(CThread));
-        thread->state = INVALID;
-        if (__Thread_initThreadLock(thread))
+        return NULL;
+    }
+    memset(thread, 0, sizeof(CThread));
+    thread->state = INVALID;
+    if (__Thread_initThreadLock(thread))
+    {
+        if (__Thread_initThreadCallStack(thread))
         {
-            if (__Thread_initThreadCallStack(thread))
-            {
-                __Thread_beforeCreate(thread);
-                __Thread_setThreadProc(thread, cb, usr);
-                ThreadHandle handle;
-                /**
+            __Thread_beforeCreate(thread);
+            __Thread_setThreadProc(thread, cb, usr);
+            ThreadHandle handle;
+            /**
                  * we set thread state to suspend before create handle
-                 * because if thread create successfully, all cb
-                 * in thread call stack will see all thread's members
+                 * because if thread is running, all thread members
+                 * are initialized
                  * otherwise, thread create failed, and thread
                  * run proc would not be executed, so we set to INVALID
                  */
-                thread->state = SUSPEND;
-                if (__Thread_create(true, __Thread_run, thread, &handle))
-                {
-                    __Thread_setThreadHandle(thread, handle);
-                    success = true;
-                }
-                else
-                {
-                    thread->state = INVALID;
-                }
-                __Thread_afterCreate(thread);
-                if (success)
-                {
-                    if (!suspend)
-                    {
-                        __Thread_resume(thread);
-                    }
-                    return thread;
-                }
-                __Thread_deallocCbNode(SingleList_popFront(thread->callStack));
-                SingleList_delete(thread->callStack);
+            thread->state = SUSPEND;
+            if (__Thread_create(true, __Thread_run, thread, &handle))
+            {
+                __Thread_setThreadHandle(thread, handle);
+                success = true;
             }
-            Mutex_delete(thread->threadLock);
+            else
+            {
+                thread->state = INVALID;
+            }
+            __Thread_afterCreate(thread);
+            if (success)
+            {
+                if (!suspend)
+                {
+                    __Thread_resume(thread);
+                }
+                return thread;
+            }
+            __Thread_deallocCbNode(SingleList_popFront(thread->callStack));
+            SingleList_delete(thread->callStack);
         }
-        __Thread_dealloc(thread);
+        Mutex_delete(thread->threadLock);
     }
+    __Thread_dealloc(thread);
     return NULL;
 }
 
@@ -204,7 +248,7 @@ Thread_addCbFront(CThread* thread, Callback cb, void* usr)
 {
     Mutex_lock(thread->threadLock);
     bool ret = false;
-    if (thread->state != ALIVE)
+    if (thread->state == SUSPEND)
     {
         CallbackObj cbObj = {.cb = cb, .usr = usr};
         CSingleNode* node = __Thread_allocCbNode();
@@ -224,7 +268,7 @@ Thread_addCbBack(CThread* thread, Callback cb, void* usr)
 {
     Mutex_lock(thread->threadLock);
     bool ret = false;
-    if (thread->state != ALIVE)
+    if (thread->state == SUSPEND)
     {
         CallbackObj cbObj = {.cb = cb, .usr = usr};
         CSingleNode* node = __Thread_allocCbNode();
@@ -242,24 +286,39 @@ Thread_addCbBack(CThread* thread, Callback cb, void* usr)
 XCL_PUBLIC(bool)
 Thread_delete(CThread* thread)
 {
-    unsigned tid = __Thread_currentId();
+    unsigned long tid = __Thread_currentId();
     bool success = false;
     if (tid != thread->threadId)
     {
-        CThreadState state = __Thread_syncGetThreadState(thread);
-        if (state == ALIVE || state == SUSPEND)
+        Mutex_lock(__Thread_mutex(thread));
+        CThreadState state = __Thread_state(thread);
+        if (state == SUSPEND)
         {
-            if (state == SUSPEND)
-            {
-                __Thread_resume(thread);
-            }
-            __Thread_wait(thread);
-            __Thread_finalize(thread);
+            __Thread_resume(thread);
         }
-        __Thread_releaseLocalStorage();
-        Mutex_delete(thread->threadLock);
-        __Thread_dealloc(thread);
-        success = true;
+        if (state == ALIVE)
+        {
+            success = __Thread_block(thread, -1);
+            if (success)
+            {
+                assert(__Thread_state(thread) == TERMINATED);
+                __Thread_finalize(thread);
+            }
+        }
+        else if (state == TERMINATED)
+        {
+            success = true;
+        }
+        else
+        {
+            assert(false);
+        }
+        Mutex_unlock(__Thread_mutex(thread));
+        if (success)
+        {
+            Mutex_delete(thread->threadLock);
+            __Thread_dealloc(thread);
+        }
     }
     return success;
 }
@@ -284,44 +343,67 @@ Thread_isAlive(CThread* thread)
     return ret;
 }
 
-XCL_PUBLIC(void)
+XCL_PUBLIC(bool)
 Thread_join(CThread* thread)
 {
-    if (__Thread_syncGetThreadState(thread) == ALIVE)
-    {
-        __Thread_wait(thread);
-        __Thread_finalize(thread);
-    }
+    return Thread_join2(thread, -1);
 }
 
-XCL_PUBLIC(int32_t)
-Thread_join2(CThread* thread, int32_t timeout, bool* terminated)
+XCL_PUBLIC(bool)
+Thread_join2(CThread* thread, int32_t timeout)
 {
-    int32_t ret = -1;
-    if (__Thread_syncGetThreadState(thread) == ALIVE)
+    bool success = false;
+    Mutex_lock(__Thread_mutex(thread));
+    if (__Thread_state(thread) == ALIVE)
     {
-        if (__Thread_waitTimeout(thread, timeout))
+        __Thread_setState(thread, JOINING);
+        if (__Thread_block(thread, timeout))
         {
-            *terminated = true;
+            assert(__Thread_state(thread) == TERMINATED);
             __Thread_finalize(thread);
-            ret = 0;
+            success = true;
         }
     }
-    return ret;
+    Mutex_unlock(__Thread_mutex(thread));
+    return success;
 }
 
-XCL_PUBLIC(void)
-Thread_detach(CThread* thread)
+XCL_PUBLIC(bool) Thread_recycle(CThread* thread)
 {
-    Mutex_lock(thread->threadLock);
-    if (thread->state == ALIVE)
+    bool success = false;
+    /**
+     * check thread state, only apply for ALIVE
+     * or TERMINATED. if state is ALIVE, set thread
+     * state to DETACHED so that thread object will
+     * be deleted in thread run proc;otherwise, if
+     * state is TERMINATED, thread run proc is returned
+     * so we need to delete thread object manually
+     */
+    Mutex_lock(__Thread_mutex(thread));
+    CThreadState state = __Thread_state(thread);
+    if (state == ALIVE)
     {
-        __Thread_detach(thread);
+        success = true;
+        __Thread_setState(thread, DETACHED);
     }
-    Mutex_unlock(thread->threadLock);
+    else if (state == TERMINATED)
+    {
+        success = true;
+        if (__Thread_wait(thread))
+        {
+            __Thread_finalize(thread);
+        }
+    }
+    Mutex_unlock(__Thread_mutex(thread));
+    if (state == TERMINATED)
+    {
+        Mutex_delete(__Thread_mutex(thread));
+        __Thread_dealloc(thread);
+    }
+    return success;
 }
 
-XCL_PUBLIC(unsigned)
+XCL_PUBLIC(unsigned long)
 Thread_currentId()
 {
     return __Thread_currentId();

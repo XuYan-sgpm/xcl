@@ -57,14 +57,14 @@ namespace
             ret = pthread_mutex_init(&mutex_, nullptr);
         }
         if (ret)
-            setErr(ret);
+            Err_set(ret);
     }
 
     __InternalUnixMutex::~__InternalUnixMutex()
     {
         int ret = pthread_mutex_destroy(&mutex_);
         if (ret)
-            setErr(ret);
+            Err_set(ret);
     }
 
     class __InternalUnixTimedMutex : public xcl::TimedLock,

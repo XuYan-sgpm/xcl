@@ -48,7 +48,7 @@ void __regLocalStorage(CLocalStorage* localStorage)
     }
     else
     {
-        setErr(XCL_MEMORY_ERR);
+        Err_set(XCL_MEMORY_ERR);
         assert(false);
     }
     Mutex_unlock(__localStorageRegQueue.mutex);

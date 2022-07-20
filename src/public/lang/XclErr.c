@@ -6,13 +6,13 @@
 #include <xcl/lang/XclErr.h>
 
 XCL_PUBLIC(unsigned)
-error()
+Err_get()
 {
     return errno;
 }
 
 XCL_PUBLIC(void)
-setErr(unsigned errorCode)
+Err_set(unsigned errorCode)
 {
     errno = (int)errorCode;
 }

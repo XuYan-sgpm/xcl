@@ -20,22 +20,22 @@ extern "C" {
 #endif
 
 /**
- * get current thread error code
+ * get current thread Err_get code
  * usually set from system-level api
  * however, if api no return value
  * and some errors has been occurred, you
- * can use error() to check
+ * can use Err_get() to check
  * @return err code
  */
 XCL_PUBLIC(unsigned)
-error();
+Err_get();
 
 /**
- * set global error code
- * @param errorCode error code
+ * set global Err_get code
+ * @param errorCode Err_get code
  */
 XCL_PUBLIC(void)
-setErr(unsigned errorCode);
+Err_set(unsigned errorCode);
 
 #ifdef __cplusplus
 }

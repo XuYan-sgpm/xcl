@@ -26,7 +26,7 @@ void __Thread_beforeCreate(CThread* thread)
 void __Thread_afterCreate(CThread* thread)
 {}
 
-void __Thread_wait(CThread* thread)
+bool __Thread_wait(CThread* thread)
 {
     __Win32_wait(__Thread_handle(thread), INFINITE);
 }

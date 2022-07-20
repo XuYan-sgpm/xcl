@@ -37,7 +37,7 @@ typedef int32_t (*IniReadFunc)(void*, char*, int);
 
 typedef struct {
     /*
-     * when error occurred, continue parse or interrupt
+     * when Err_get occurred, continue parse or interrupt
      */
     const bool allowError;
     /*

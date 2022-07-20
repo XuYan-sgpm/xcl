@@ -67,7 +67,7 @@ static CBlocker* __Blocker_new(CMutex* mutex)
     }
     else
     {
-        setErr(XCL_MEMORY_ERR);
+        Err_set(XCL_MEMORY_ERR);
     }
     return blocker;
 }

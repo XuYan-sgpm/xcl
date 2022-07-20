@@ -73,7 +73,7 @@ static bool __ThreadLocal_setData(CThreadLocal* local, const void* src, int len)
 {
     if (local->id < 0)
     {
-        setErr(XCL_LOCAL_INVALID_ID);
+        Err_set(XCL_LOCAL_INVALID_ID);
         return false;
     }
     CLocalStorage* localStorage = __ThreadLocal_checkoutLocalStorage();
@@ -88,13 +88,13 @@ static void* __ThreadLocal_getData(CThreadLocal* local)
 {
     if (local->id < 0)
     {
-        setErr(XCL_LOCAL_INVALID_ID);
+        Err_set(XCL_LOCAL_INVALID_ID);
         return NULL;
     }
     CLocalStorage* localStorage = __Thread_getLocalStorage();
     if (!localStorage)
     {
-        setErr(XCL_LOCAL_NO_STORAGE);
+        Err_set(XCL_LOCAL_NO_STORAGE);
         return NULL;
     }
     return LocalStorage_get(localStorage, local->id);

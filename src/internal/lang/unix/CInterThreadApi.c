@@ -11,6 +11,7 @@
 #include <signal.h>
 #include <sys/syscall.h>
 #include <unistd.h>
+#include <string.h>
 
 typedef struct {
     CThread base;
@@ -40,11 +41,12 @@ void __Thread_beforeCreate(CThread* thread)
 void __Thread_afterCreate(CThread* thread)
 {}
 
-void __Thread_wait(CThread* thread)
+bool __Thread_wait(CThread* thread)
 {
     int ret = pthread_join(__Thread_handle(thread), NULL);
     if (ret)
         errno = ret;
+    return !ret;
 }
 
 bool __Thread_waitTimeout(CThread* thread, int32_t timeout)
@@ -96,10 +98,12 @@ void __Thread_onStart(CThread* thread)
     Blocker_wait(__UnixThread_blocker(thread));
 }
 
-void __Thread_onFinish(CThread* thread, __ThreadRunReturnType retVal)
-{}
+void __Thread_onFinish(CThread* thread)
+{
+    Blocker_delete(__UnixThread_blocker(thread));
+}
 
-unsigned __Thread_currentId()
+unsigned long __Thread_currentId()
 {
     return syscall(__NR_gettid);
 }
@@ -110,15 +114,19 @@ ThreadHandle __Thread_currentHandle()
 }
 
 void __Thread_finalize(CThread* thread)
-{
-    Blocker_delete(__UnixThread_blocker(thread));
-}
+{}
 
 void __Thread_detach(CThread* thread)
 {
     int ret = pthread_detach(__Thread_handle(thread));
     if (ret)
+    {
         errno = ret;
+    }
+    else
+    {
+        __Thread_setState(thread, DETACHED);
+    }
 }
 
 bool __Thread_isAlive(ThreadHandle handle)

@@ -13,6 +13,7 @@
 
 #include "CLocalStorage.h"
 #include "xcl/util/CSingleList.h"
+#include "xcl/concurrent/CMutex.h"
 #include <stdint.h>
 
 #ifdef __cplusplus
@@ -25,7 +26,12 @@ typedef enum
     ALIVE,
     TERMINATED,
     INVALID,
-    DETACHED
+    DETACHED,
+    /*
+     * mark thread is joining, use for join operation
+     * if state is JOINING, detach operation will skip
+     */
+    JOINING
 } CThreadState;
 
 #if WINDOWS
@@ -50,9 +56,9 @@ typedef struct {
  */
 struct _CThread_st {
     const ThreadHandle handle;
-    void* const threadLock;
+    CMutex* const threadLock;
     CThreadState state;
-    const unsigned threadId;
+    const unsigned long threadId;
     CSingleList* callStack;
 };
 
@@ -92,8 +98,9 @@ void __Thread_afterCreate(CThread* thread);
 /**
  * wait util thread execute finished
  * @param thread thread object
+ * @return true if thread is terminated, otherwise false
  */
-void __Thread_wait(CThread* thread);
+bool __Thread_wait(CThread* thread);
 
 /**
  * wait thread, return if thread finished
@@ -129,17 +136,16 @@ void __Thread_resume(CThread* thread);
 void __Thread_onStart(CThread* thread);
 
 /**
- * called before thread routine return
+ * called before thread run proc is prepared to return
  * @param thread thread object
- * @param retVal thread return code
  */
-void __Thread_onFinish(CThread* thread, __ThreadRunReturnType retVal);
+void __Thread_onFinish(CThread* thread);
 
 /**
  * get current thread id
  * @return current thread id
  */
-unsigned __Thread_currentId();
+unsigned long __Thread_currentId();
 
 /**
  * get current thread handle
@@ -207,7 +213,7 @@ CThreadState __Thread_state(CThread* thread);
  * @param thread CThread object
  * @return mutex lock thread using
  */
-void* __Thread_mutex(CThread* thread);
+CMutex* __Thread_mutex(CThread* thread);
 
 /**
  * get thread handle

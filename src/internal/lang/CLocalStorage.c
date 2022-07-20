@@ -34,7 +34,7 @@ static bool __LocalStorage_reserve(CLocalStorage* localStorage, int n)
             localStorage->cap = newCap;
             return true;
         }
-        setErr(XCL_MEMORY_ERR);
+        Err_set(XCL_MEMORY_ERR);
     }
     else
     {
@@ -74,7 +74,7 @@ CLocalStorage* LocalStorage_new()
     }
     else
     {
-        setErr(XCL_MEMORY_ERR);
+        Err_set(XCL_MEMORY_ERR);
     }
     return localStorage;
 }

@@ -65,7 +65,7 @@ static bool __LocalId_offerQueue(int32_t id)
         }
         else
         {
-            setErr(XCL_MEMORY_ERR);
+            Err_set(XCL_MEMORY_ERR);
         }
     }
     if (__idQueue.size < __idQueue.cap)
