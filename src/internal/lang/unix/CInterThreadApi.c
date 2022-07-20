@@ -73,11 +73,19 @@ bool __Thread_waitTimeout(CThread* thread, int32_t timeout)
     return pthread_kill(handle, 0) == ESRCH;
 }
 
-bool __Thread_create(bool suspend, __ThreadRunProc run, void* usr,
+static void* __Unix_threadRoutine(void* usr)
+{
+    __Thread_run(usr);
+    return 0;
+}
+
+bool __Thread_create(bool suspend,
+                     __ThreadRunProc run,
+                     void* usr,
                      ThreadHandle* handle)
 {
     pthread_t h;
-    int ret = pthread_create(&h, NULL, run, usr);
+    int ret = pthread_create(&h, NULL, __Unix_threadRoutine, usr);
     if (ret == 0)
     {
         *handle = h;

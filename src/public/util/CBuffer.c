@@ -196,7 +196,8 @@ Buffer_writeChar(CBuffer* buffer, int pos, char ch)
     {
         if (pos < buffer->size)
         {
-            memmove(buffer->data + pos + 1, buffer->data + pos,
+            memmove(buffer->data + pos + 1,
+                    buffer->data + pos,
                     buffer->size - pos);
         }
         buffer->data[pos] = ch;
@@ -213,7 +214,8 @@ Buffer_writeChars(CBuffer* buffer, int pos, int n, char ch)
     {
         if (pos < buffer->size)
         {
-            memmove(buffer->data + pos + n, buffer->data + pos,
+            memmove(buffer->data + pos + n,
+                    buffer->data + pos,
                     buffer->size - pos);
         }
         memset(buffer->data + pos, n, ch);
@@ -234,7 +236,8 @@ Buffer_writeRegion(CBuffer* buffer, int pos, const char* src, int len)
     int write = remaining > len ? len : remaining;
     if (pos < buffer->size)
     {
-        memmove(&buffer->data[pos + write], &buffer->data[pos],
+        memmove(&buffer->data[pos + write],
+                &buffer->data[pos],
                 buffer->size - pos);
     }
     memcpy(buffer->data + pos, src, len);
@@ -323,7 +326,8 @@ Buffer_removeRegion(CBuffer* buffer, int pos, int len)
     {
         if (pos + len < buffer->size)
         {
-            memcpy(buffer->data + pos, buffer->data + (pos + len),
+            memcpy(buffer->data + pos,
+                   buffer->data + (pos + len),
                    buffer->size - pos - len);
         }
         buffer->size -= len;

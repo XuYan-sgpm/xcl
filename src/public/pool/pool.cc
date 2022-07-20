@@ -13,8 +13,8 @@ namespace xcl
 
             void dealloc(void* ptr, uint64_t size) override;
 
-            void* realloc(void* ptr, uint64_t oldSize,
-                          uint64_t newSize) override;
+            void*
+            realloc(void* ptr, uint64_t oldSize, uint64_t newSize) override;
 
         public:
             static SysPool* instance();

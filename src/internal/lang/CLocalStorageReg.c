@@ -42,7 +42,8 @@ void __regLocalStorage(CLocalStorage* localStorage)
         regData->localStorage = localStorage;
         regData->handle = __Thread_currentHandle();
         CListIter iter = List_query(__localStorageRegQueue.regList,
-                                    &regData->handle, __cmpThreadHandle);
+                                    &regData->handle,
+                                    __cmpThreadHandle);
         assert(List_iterEquals(iter, List_end(__localStorageRegQueue.regList)));
         List_push(__localStorageRegQueue.regList, node);
     }

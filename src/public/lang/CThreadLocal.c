@@ -24,7 +24,8 @@ bool __ThreadLocal_pollId(int32_t* id);
 
 static int32_t __ThreadLocal_newId()
 {
-    return atomic_fetch_add_explicit(&__localIdGenerator, 1,
+    return atomic_fetch_add_explicit(&__localIdGenerator,
+                                     1,
                                      memory_order_seq_cst);
 }
 

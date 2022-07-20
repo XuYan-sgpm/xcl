@@ -39,7 +39,8 @@ Cond_wait(CMutex* mutex, CCond* cond)
     if (cond)
     {
         return SleepConditionVariableCS(&((CCond*)cond)->conditionVariable,
-                                        (PCRITICAL_SECTION)mutex, INFINITE);
+                                        (PCRITICAL_SECTION)mutex,
+                                        INFINITE);
     }
     else
     {
@@ -57,7 +58,8 @@ Cond_waitFor(CMutex* mutex, CCond* cond, int32_t millis)
         return false;
     }
     bool success = SleepConditionVariableCS(&((CCond*)cond)->conditionVariable,
-                                            (PCRITICAL_SECTION)mutex, millis);
+                                            (PCRITICAL_SECTION)mutex,
+                                            millis);
     if (!success)
     {
         Err_set(GetLastError());

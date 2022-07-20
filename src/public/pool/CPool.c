@@ -15,14 +15,15 @@ static void __Pool_defaultDealloc(CPool* pool, void* ptr, uint64_t size)
     free(ptr);
 }
 
-static void* __Pool_defaultReapply(CPool* pool, void* ptr, uint64_t old,
-                                   uint64_t req)
+static void*
+__Pool_defaultReapply(CPool* pool, void* ptr, uint64_t old, uint64_t req)
 {
     return realloc(ptr, req);
 }
 
-static CPool __Pool_defaultInstance = {
-    __Pool_defaultAlloc, __Pool_defaultDealloc, __Pool_defaultReapply};
+static CPool __Pool_defaultInstance = {__Pool_defaultAlloc,
+                                       __Pool_defaultDealloc,
+                                       __Pool_defaultReapply};
 
 XCL_PUBLIC(CPool*) Pool_def()
 {

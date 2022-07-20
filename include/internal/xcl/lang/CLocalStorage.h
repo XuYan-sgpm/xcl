@@ -53,7 +53,9 @@ bool LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr);
  * @param len buffer size
  * @return true if push buffer successfully, false otherwise
  */
-bool LocalStorage_setTiny(CLocalStorage* localStorage, int idx, const void* src,
+bool LocalStorage_setTiny(CLocalStorage* localStorage,
+                          int idx,
+                          const void* src,
                           int len);
 
 /**

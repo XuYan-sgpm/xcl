@@ -212,7 +212,9 @@ List_query(CList* list, const void* value, int (*cmp)(const void*, const void*))
 }
 
 XCL_PUBLIC(CListIter)
-List_query2(CList* list, CListIter pos, const void* value,
+List_query2(CList* list,
+            CListIter pos,
+            const void* value,
             int (*cmp)(const void*, const void*))
 {
     CListIter it = List_end(list);
@@ -252,7 +254,10 @@ List_empty(CList* list)
 }
 
 XCL_PUBLIC(bool)
-List_spliceRange(CList* list, CListIter pos, CList* other, CListIter first,
+List_spliceRange(CList* list,
+                 CListIter pos,
+                 CList* other,
+                 CListIter first,
                  CListIter last)
 {
     if (pos.terminator != &list->header || first.terminator != &other->header ||
@@ -307,8 +312,8 @@ List_spliceAll(CList* list, CListIter pos, CList* other)
 /*
  * merge list2 into list1 with cmp
  */
-static void __List_merge(CList* list1, CList* list2,
-                         int (*cmp)(const void*, const void*))
+static void
+__List_merge(CList* list1, CList* list2, int (*cmp)(const void*, const void*))
 {
     CListIter it1 = List_begin(list1);
     CListIter it2 = List_begin(list2);

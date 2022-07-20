@@ -25,7 +25,10 @@ Config_newFromStream(void* stream, int32_t (*reader)(void*, char*, int32_t));
  * read value from key under section
  */
 XCL_PUBLIC(int32_t)
-Config_read(Config* config, const char* section, const char* key, char* value,
+Config_read(Config* config,
+            const char* section,
+            const char* key,
+            char* value,
             int* valueLen);
 
 /*
@@ -33,7 +36,9 @@ Config_read(Config* config, const char* section, const char* key, char* value,
  * write to memory and no disk flush
  */
 XCL_PUBLIC(int32_t)
-Config_write(Config* config, const char* section, const char* key,
+Config_write(Config* config,
+             const char* section,
+             const char* key,
              const char* value);
 
 /*
@@ -50,7 +55,8 @@ Config_flushToPath(Config* config, const char* storePath);
  * comment string and useless blank lines
  */
 XCL_PUBLIC(int32_t)
-Config_flush(Config* config, void* stream,
+Config_flush(Config* config,
+             void* stream,
              int32_t (*writer)(void*, const char*, int32_t));
 
 /*

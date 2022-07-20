@@ -125,14 +125,17 @@ List_remove(CList* list, CListIter iter);
  * if found, return node; otherwise return NULL
  */
 XCL_PUBLIC(CListIter)
-List_query(CList* list, const void* value,
+List_query(CList* list,
+           const void* value,
            int (*cmp)(const void*, const void*));
 
 /*
  * similar to List_query, but start find progress at pos
  */
 XCL_PUBLIC(CListIter)
-List_query2(CList* list, CListIter pos, const void* value,
+List_query2(CList* list,
+            CListIter pos,
+            const void* value,
             int (*cmp)(const void*, const void*));
 
 /*
@@ -152,7 +155,10 @@ List_empty(CList* list);
  * before pos
  */
 XCL_PUBLIC(bool)
-List_spliceRange(CList* list, CListIter pos, CList* other, CListIter first,
+List_spliceRange(CList* list,
+                 CListIter pos,
+                 CList* other,
+                 CListIter first,
                  CListIter last);
 
 /*

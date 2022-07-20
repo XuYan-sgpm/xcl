@@ -88,7 +88,8 @@ RingBuffer_pushBack(CRingBuffer* ringBuffer, const void* src, int32_t len);
  * @param len source block len
  */
 XCL_PUBLIC(void)
-RingBuffer_forcePushFront(CRingBuffer* ringBuffer, const void* src,
+RingBuffer_forcePushFront(CRingBuffer* ringBuffer,
+                          const void* src,
                           int32_t len);
 
 /**
@@ -148,7 +149,9 @@ RingBuffer_at(const CRingBuffer* ringBuffer, int32_t idx);
  * @return true if get successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-RingBuffer_get(const CRingBuffer* ringBuffer, int32_t idx, void* dst,
+RingBuffer_get(const CRingBuffer* ringBuffer,
+               int32_t idx,
+               void* dst,
                int32_t* len);
 
 /**
@@ -160,7 +163,9 @@ RingBuffer_get(const CRingBuffer* ringBuffer, int32_t idx, void* dst,
  * @return true if insert successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-RingBuffer_insert(CRingBuffer* ringBuffer, int32_t idx, const void* src,
+RingBuffer_insert(CRingBuffer* ringBuffer,
+                  int32_t idx,
+                  const void* src,
                   int32_t len);
 
 /**
@@ -173,7 +178,9 @@ RingBuffer_insert(CRingBuffer* ringBuffer, int32_t idx, const void* src,
  * @param len source block len
  */
 XCL_PUBLIC(void)
-RingBuffer_forceInsert(CRingBuffer* ringBuffer, int32_t idx, const void* src,
+RingBuffer_forceInsert(CRingBuffer* ringBuffer,
+                       int32_t idx,
+                       const void* src,
                        int32_t len);
 
 /**
@@ -186,8 +193,11 @@ RingBuffer_forceInsert(CRingBuffer* ringBuffer, int32_t idx, const void* src,
  * @return true if insert successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-RingBuffer_insertRepeat(CRingBuffer* ringBuffer, int32_t idx, int32_t count,
-                        const void* src, int32_t len);
+RingBuffer_insertRepeat(CRingBuffer* ringBuffer,
+                        int32_t idx,
+                        int32_t count,
+                        const void* src,
+                        int32_t len);
 
 /**
  * force insert blocks at position idx of ring buffer
@@ -198,8 +208,11 @@ RingBuffer_insertRepeat(CRingBuffer* ringBuffer, int32_t idx, int32_t count,
  * @param len source block len
  */
 XCL_PUBLIC(void)
-RingBuffer_forceInsertRepeat(CRingBuffer* ringBuffer, int32_t idx,
-                             int32_t count, const void* src, int32_t len);
+RingBuffer_forceInsertRepeat(CRingBuffer* ringBuffer,
+                             int32_t idx,
+                             int32_t count,
+                             const void* src,
+                             int32_t len);
 
 /**
  * insert continuous blocks at position idx of ring buffer
@@ -211,8 +224,11 @@ RingBuffer_forceInsertRepeat(CRingBuffer* ringBuffer, int32_t idx,
  * @return true if insert successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-RingBuffer_insertContinuous(CRingBuffer* ringBuffer, int32_t idx,
-                            const void* src, int32_t bs, int32_t count);
+RingBuffer_insertContinuous(CRingBuffer* ringBuffer,
+                            int32_t idx,
+                            const void* src,
+                            int32_t bs,
+                            int32_t count);
 
 /**
  * force insert continuous blocks at position idx of ring buffer
@@ -225,8 +241,11 @@ RingBuffer_insertContinuous(CRingBuffer* ringBuffer, int32_t idx,
  * @param count block count
  */
 XCL_PUBLIC(void)
-RingBuffer_forceInsertContinuous(CRingBuffer* ringBuffer, int32_t idx,
-                                 const void* src, int32_t bs, int32_t count);
+RingBuffer_forceInsertContinuous(CRingBuffer* ringBuffer,
+                                 int32_t idx,
+                                 const void* src,
+                                 int32_t bs,
+                                 int32_t count);
 
 /**
  * assign data blocks to ring buffer
@@ -240,7 +259,9 @@ RingBuffer_forceInsertContinuous(CRingBuffer* ringBuffer, int32_t idx,
  * @return true if assign successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-RingBuffer_assignRepeat(CRingBuffer* ringBuffer, int32_t n, const void* src,
+RingBuffer_assignRepeat(CRingBuffer* ringBuffer,
+                        int32_t n,
+                        const void* src,
                         int32_t len);
 
 /**
@@ -252,8 +273,10 @@ RingBuffer_assignRepeat(CRingBuffer* ringBuffer, int32_t n, const void* src,
  * @return true if assign successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-RingBuffer_assignContinuous(CRingBuffer* ringBuffer, const void* src,
-                            int32_t bs, int32_t count);
+RingBuffer_assignContinuous(CRingBuffer* ringBuffer,
+                            const void* src,
+                            int32_t bs,
+                            int32_t count);
 
 #ifdef __cplusplus
 }

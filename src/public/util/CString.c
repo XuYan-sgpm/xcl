@@ -15,8 +15,8 @@ static inline int __String_getSize(const CString* string)
     return (int)(string->state & __STATE_MASK__);
 }
 
-static inline void __String_setState(CString* string, const int useStack,
-                                     const int size)
+static inline void
+__String_setState(CString* string, const int useStack, const int size)
 {
     string->state = (useStack << 31u) | (size & __STATE_MASK__);
 }
@@ -44,15 +44,15 @@ static inline int __String_cap(const CString* string)
                                      : string->mem.heap.cap;
 }
 
-static inline bool __String_addCheck(const CString* string, const int pos,
-                                     const int len)
+static inline bool
+__String_addCheck(const CString* string, const int pos, const int len)
 {
     return pos >= 0 && pos <= __String_getSize(string) && len >= 0 &&
            len <= __String_cap(string) - __String_getSize(string);
 }
 
-static inline bool __String_removeCheck(const CString* string, const int pos,
-                                        const int len)
+static inline bool
+__String_removeCheck(const CString* string, const int pos, const int len)
 {
     return pos >= 0 && pos < __String_getSize(string) && len > 0 &&
            len <= __String_getSize(string) - pos;
@@ -82,8 +82,8 @@ static void __String_init(CString* string, const int cap)
     }
 }
 
-static char* __String_beforeInsert(CString* string, const int pos,
-                                   const int len)
+static char*
+__String_beforeInsert(CString* string, const int pos, const int len)
 {
     char* insertCursor = NULL;
     char* p = __String_ptr(string, pos);
@@ -117,8 +117,8 @@ static char* __String_beforeInsert(CString* string, const int pos,
     return insertCursor;
 }
 
-static char* __String_beforeAssign(CString* string, const int pos,
-                                   const int len)
+static char*
+__String_beforeAssign(CString* string, const int pos, const int len)
 {
     char* assignCursor = NULL;
     const int cap = __String_cap(string);
@@ -149,8 +149,8 @@ static char* __String_beforeAssign(CString* string, const int pos,
     return assignCursor;
 }
 
-static bool __String_assign(CString* string, const int pos, const char* src,
-                            const int len)
+static bool
+__String_assign(CString* string, const int pos, const char* src, const int len)
 {
     char* assignCursor = __String_beforeAssign(string, pos, len);
     if (assignCursor)
@@ -305,7 +305,9 @@ String_writeChars(CString* string, const int pos, const int n, char ch)
 }
 
 XCL_PUBLIC(bool)
-String_writeRegion(CString* string, const int pos, const char* str,
+String_writeRegion(CString* string,
+                   const int pos,
+                   const char* str,
                    const int len)
 {
     char* cursor = __String_beforeInsert(string, pos, len);
@@ -331,7 +333,9 @@ String_write(CString* string, const int pos, const char* str)
 XCL_PUBLIC(bool)
 String_writeStr(CString* string, const int pos, const CString* src)
 {
-    return String_writeRegion(string, pos, __String_cPtr(src, 0),
+    return String_writeRegion(string,
+                              pos,
+                              __String_cPtr(src, 0),
                               String_size(src));
 }
 
@@ -411,7 +415,8 @@ String_deleteRegion(CString* string, const int pos, const int len)
     }
 }
 
-const char* XCL_API String_queryChar(const CString* string, const bool left,
+const char* XCL_API String_queryChar(const CString* string,
+                                     const bool left,
                                      char ch)
 {
     const char* p = __String_cPtr(string, 0);
@@ -453,8 +458,8 @@ const char* XCL_API String_queryChar(const CString* string, const bool left,
 //   return cursor1;
 // }
 
-static const char* __String_cmpRegion(const char* src, const char* pattern,
-                                      const int len)
+static const char*
+__String_cmpRegion(const char* src, const char* pattern, const int len)
 {
     int i;
     for (i = 0; i < len; i++)
@@ -467,8 +472,8 @@ static const char* __String_cmpRegion(const char* src, const char* pattern,
     return src + i;
 }
 
-static const char* __String_directSearch(const CString* string,
-                                         const char* pattern, const int len)
+static const char*
+__String_directSearch(const CString* string, const char* pattern, const int len)
 {
     for (int i = 0; i < String_size(string) - len; i++)
     {
@@ -509,8 +514,8 @@ static void __String_genNext(const char* pattern, int* next, const int len)
     }
 }
 
-static const char* __String_kmpSearch(const CString* string,
-                                      const char* pattern, const int len)
+static const char*
+__String_kmpSearch(const CString* string, const char* pattern, const int len)
 {
     int next[len];
     __String_genNext(pattern, next, len);
@@ -540,7 +545,8 @@ const char* XCL_API String_query(const CString* string, const char* str)
     return String_queryRegion(string, str, str ? strlen(str) : 0);
 }
 
-const char* XCL_API String_queryRegion(const CString* string, const char* str,
+const char* XCL_API String_queryRegion(const CString* string,
+                                       const char* str,
                                        const int len)
 {
     if (String_size(string) < len)

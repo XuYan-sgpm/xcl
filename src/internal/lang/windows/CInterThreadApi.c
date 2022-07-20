@@ -36,11 +36,13 @@ bool __Thread_waitTimeout(CThread* thread, int32_t timeout)
     return __Win32_wait(__Thread_handle(thread), timeout);
 }
 
-bool __Thread_create(bool suspend, __ThreadRunProc run, void* usr,
+bool __Thread_create(bool suspend,
+                     __ThreadRunProc run,
+                     void* usr,
                      ThreadHandle* handle)
 {
-    ThreadHandle h = (ThreadHandle)_beginthreadex(
-        NULL, 0, run, usr, suspend ? CREATE_SUSPENDED : 0, NULL);
+    ThreadHandle h = (ThreadHandle)
+        _beginthreadex(NULL, 0, run, usr, suspend ? CREATE_SUSPENDED : 0, NULL);
     *handle = h;
     return h != NULL;
 }

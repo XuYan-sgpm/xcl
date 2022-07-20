@@ -62,7 +62,10 @@ extern "C" {
  * parse ini data
  * usr can be a specified object to invoke when cb is called
  */
-bool Ini_parseStream(Ini ini, void* stream, IniReadFunc reader, IniCallback cb,
+bool Ini_parseStream(Ini ini,
+                     void* stream,
+                     IniReadFunc reader,
+                     IniCallback cb,
                      void* usr);
 
 /*

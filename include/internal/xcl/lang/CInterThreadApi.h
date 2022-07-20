@@ -34,14 +34,7 @@ typedef enum
     JOINING
 } CThreadState;
 
-#if WINDOWS
-typedef unsigned __ThreadRunReturnType;
-typedef void* ThreadHandle;
-#elif LINUX || MACOSX
-#include <pthread.h>
-typedef pthread_t ThreadHandle;
-typedef void* __ThreadRunReturnType;
-#endif
+typedef uintptr_t ThreadHandle;
 
 #define INVALID_THREAD_HANDLE (0)
 
@@ -64,7 +57,7 @@ struct _CThread_st {
 
 typedef struct _CThread_st CThread;
 
-typedef __ThreadRunReturnType(XCL_API* __ThreadRunProc)(void*);
+typedef void(XCL_API* __ThreadRunProc)(void*);
 
 /**
  * functions below are strong associated with platform
@@ -116,11 +109,12 @@ bool __Thread_waitTimeout(CThread* thread, int32_t timeout);
  * @param suspend if thread suspended after create
  * @param run thread run proc
  * @param usr pointer store data for run use
- * @param handle output the thread handle
- * @param tid output the thread id
+ * @param handle output pointer store thread handle
  * @return true if create successfully, otherwise false
  */
-bool __Thread_create(bool suspend, __ThreadRunProc run, void* usr,
+bool __Thread_create(bool suspend,
+                     __ThreadRunProc run,
+                     void* usr,
                      ThreadHandle* handle);
 
 /**
@@ -217,10 +211,16 @@ CMutex* __Thread_mutex(CThread* thread);
 
 /**
  * get thread handle
- * @param thread CThread object
- * @return thread handle
+ * @param thread thread object
+ * @return thread native handle
  */
 ThreadHandle __Thread_handle(CThread* thread);
+
+/**
+ * thread run proc
+ * @param args thread run proc args
+ */
+void XCL_API __Thread_run(void* args);
 
 #ifdef __cplusplus
 }

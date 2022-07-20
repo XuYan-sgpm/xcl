@@ -44,7 +44,8 @@ LinkedBlockingQueue_delete(CLinkedBlockingQueue* queue);
  * @return true if offer successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-LinkedBlockingQueue_offer(CLinkedBlockingQueue* queue, const void* src,
+LinkedBlockingQueue_offer(CLinkedBlockingQueue* queue,
+                          const void* src,
                           uint32_t len);
 
 /**

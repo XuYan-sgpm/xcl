@@ -17,8 +17,7 @@
  */
 static CThreadLocal __localThread = {0};
 
-static inline void __Thread_setThreadHandle(CThread* thread,
-                                            ThreadHandle handle)
+static inline void __Thread_setHandle(CThread* thread, ThreadHandle handle)
 {
     memcpy((void*)&thread->handle, (void*)&handle, sizeof(ThreadHandle));
 }
@@ -54,8 +53,8 @@ static inline bool __Thread_initThreadCallStack(CThread* thread)
     return thread->callStack;
 }
 
-static inline bool __Thread_setThreadProc(CThread* thread, Callback proc,
-                                          void* usr)
+static inline bool
+__Thread_setThreadProc(CThread* thread, Callback proc, void* usr)
 {
     CallbackObj callbackObj = {.cb = proc, .usr = usr};
     CSingleNode* node = __Thread_allocCbNode();
@@ -136,7 +135,7 @@ ThreadHandle __Thread_handle(CThread* thread)
     return thread->handle;
 }
 
-static __ThreadRunReturnType XCL_API __Thread_run(void* args)
+void XCL_API __Thread_run(void* args)
 {
     CThread* thread = args;
     __Thread_setThreadId(thread, __Thread_currentId());
@@ -176,7 +175,6 @@ static __ThreadRunReturnType XCL_API __Thread_run(void* args)
         Mutex_delete(__Thread_mutex(thread));
         __Thread_dealloc(thread);
     }
-    return 0;
 }
 
 XCL_PUBLIC(CThread*)
@@ -196,18 +194,18 @@ Thread_new(bool suspend, Callback cb, void* usr)
         {
             __Thread_beforeCreate(thread);
             __Thread_setThreadProc(thread, cb, usr);
-            ThreadHandle handle;
             /**
-                 * we set thread state to suspend before create handle
-                 * because if thread is running, all thread members
-                 * are initialized
-                 * otherwise, thread create failed, and thread
-                 * run proc would not be executed, so we set to INVALID
-                 */
+             * we set thread state to suspend before create handle
+             * because if thread is running, all thread members
+             * are initialized
+             * otherwise, thread create failed, and thread
+             * run proc would not be executed, so we set to INVALID
+             */
             thread->state = SUSPEND;
-            if (__Thread_create(true, __Thread_run, thread, &handle))
+            ThreadHandle h;
+            if (__Thread_create(true, __Thread_run, thread, &h))
             {
-                __Thread_setThreadHandle(thread, handle);
+                __Thread_setHandle(thread, h);
                 success = true;
             }
             else

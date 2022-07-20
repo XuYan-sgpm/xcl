@@ -14,7 +14,9 @@ extern "C" {
 typedef struct _CPool_st {
     void* (*const alloc)(struct _CPool_st* pool, uint64_t size);
     void (*const dealloc)(struct _CPool_st* pool, void* ptr, uint64_t size);
-    void* (*const reapply)(struct _CPool_st* pool, void* ptr, uint64_t old,
+    void* (*const reapply)(struct _CPool_st* pool,
+                           void* ptr,
+                           uint64_t old,
                            uint64_t req);
     char attach[0];
 } CPool;

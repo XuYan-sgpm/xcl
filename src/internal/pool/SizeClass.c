@@ -65,8 +65,10 @@ static int32_t __initSizeClassTabs();
  * initialize single size class tab
  * @return current tab's memory size
  */
-static int32_t __initSizeClassTab(int32_t idx, int32_t log2Group,
-                                  int32_t log2Delta, int32_t nDelta);
+static int32_t __initSizeClassTab(int32_t idx,
+                                  int32_t log2Group,
+                                  int32_t log2Delta,
+                                  int32_t nDelta);
 
 ///**
 // * initialize idx to size tabs
@@ -92,8 +94,9 @@ SizeClass_initialize()
     do
     {
         uint32_t groups = __log2(CHUNK_SIZE) + 1 - LOG2_QUANTUM;
-        sizeClasses = (SizeTab*)Pool_alloc(
-            NULL, sizeof(SizeTab) * (groups << LOG2_GROUP_SIZE));
+        sizeClasses =
+            (SizeTab*)Pool_alloc(NULL,
+                                 sizeof(SizeTab) * (groups << LOG2_GROUP_SIZE));
         if (!sizeClasses)
         {
             break;
@@ -112,7 +115,8 @@ XCL_PUBLIC(void)
 SizeClass_finalize()
 {
     uint32_t groups = __log2(CHUNK_SIZE) + 1 - LOG2_QUANTUM;
-    Pool_dealloc(NULL, sizeClasses,
+    Pool_dealloc(NULL,
+                 sizeClasses,
                  sizeof(SizeTab) * (groups << LOG2_GROUP_SIZE));
     sizeClasses = NULL;
     tabs = 0;
@@ -141,8 +145,8 @@ SizeClass_get(int32_t idx, int32_t* out)
     return true;
 }
 
-static void __SC_getGroupAndDelta(uint32_t size, uint32_t* log2Group,
-                                  uint32_t* log2Delta)
+static void
+__SC_getGroupAndDelta(uint32_t size, uint32_t* log2Group, uint32_t* log2Delta)
 {
     uint32_t log2Size = __log2(size);
     if (size <= (1 << (LOG2_QUANTUM + LOG2_GROUP_SIZE)))
@@ -247,8 +251,10 @@ static int32_t __initSizeClassTabs()
     return idx;
 }
 
-static int32_t __initSizeClassTab(int32_t idx, int32_t log2Group,
-                                  int32_t log2Delta, int32_t nDelta)
+static int32_t __initSizeClassTab(int32_t idx,
+                                  int32_t log2Group,
+                                  int32_t log2Delta,
+                                  int32_t nDelta)
 {
     bool isMultiPage = false;
     int32_t size = (1 << log2Group) + (nDelta << log2Delta);
