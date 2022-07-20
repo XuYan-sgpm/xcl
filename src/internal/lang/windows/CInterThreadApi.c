@@ -36,7 +36,7 @@ bool __Thread_waitTimeout(CThread* thread, int32_t timeout)
     return __Win32_wait((HANDLE)__Thread_handle(thread), timeout);
 }
 
-static unsigned __Win32_threadRunProc(void* usr)
+static unsigned __Win32_threadRoutine(void* usr)
 {
     __Thread_run(usr);
     return 0;
@@ -46,7 +46,7 @@ bool __Thread_create(bool suspend, void* usr, ThreadHandle* handle)
 {
     ThreadHandle h = _beginthreadex(NULL,
                                     0,
-                                    __Win32_threadRunProc,
+                                    __Win32_threadRoutine,
                                     usr,
                                     suspend ? CREATE_SUSPENDED : 0,
                                     NULL);
