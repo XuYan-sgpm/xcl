@@ -79,10 +79,7 @@ static void* __Unix_threadRoutine(void* usr)
     return 0;
 }
 
-bool __Thread_create(bool suspend,
-                     __ThreadRunProc run,
-                     void* usr,
-                     ThreadHandle* handle)
+bool __Thread_create(bool suspend, void* usr, ThreadHandle* handle)
 {
     pthread_t h;
     int ret = pthread_create(&h, NULL, __Unix_threadRoutine, usr);

@@ -203,7 +203,7 @@ Thread_new(bool suspend, Callback cb, void* usr)
              */
             thread->state = SUSPEND;
             ThreadHandle h;
-            if (__Thread_create(true, __Thread_run, thread, &h))
+            if (__Thread_create(true, thread, &h))
             {
                 __Thread_setHandle(thread, h);
                 success = true;

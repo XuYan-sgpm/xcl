@@ -28,29 +28,36 @@ void __Thread_afterCreate(CThread* thread)
 
 bool __Thread_wait(CThread* thread)
 {
-    return __Win32_wait(__Thread_handle(thread), INFINITE);
+    return __Win32_wait((HANDLE)__Thread_handle(thread), INFINITE);
 }
 
 bool __Thread_waitTimeout(CThread* thread, int32_t timeout)
 {
-    return __Win32_wait(__Thread_handle(thread), timeout);
+    return __Win32_wait((HANDLE)__Thread_handle(thread), timeout);
 }
 
-bool __Thread_create(bool suspend,
-                     __ThreadRunProc run,
-                     void* usr,
-                     ThreadHandle* handle)
+static unsigned __Win32_threadRunProc(void* usr)
 {
-    ThreadHandle h = (ThreadHandle)
-        _beginthreadex(NULL, 0, run, usr, suspend ? CREATE_SUSPENDED : 0, NULL);
+    __Thread_run(usr);
+    return 0;
+}
+
+bool __Thread_create(bool suspend, void* usr, ThreadHandle* handle)
+{
+    ThreadHandle h = _beginthreadex(NULL,
+                                    0,
+                                    __Win32_threadRunProc,
+                                    usr,
+                                    suspend ? CREATE_SUSPENDED : 0,
+                                    NULL);
     *handle = h;
-    return h != NULL;
+    return h != 0;
 }
 
 void __Thread_resume(CThread* thread)
 {
     __Thread_setState(thread, ALIVE);
-    DWORD ret = ResumeThread(__Thread_handle(thread));
+    DWORD ret = ResumeThread((HANDLE)__Thread_handle(thread));
     if (ret == -1)
     {
         Err_set(GetLastError());
@@ -70,24 +77,24 @@ unsigned long __Thread_currentId()
 
 ThreadHandle __Thread_currentHandle()
 {
-    return GetCurrentThread();
+    return (ThreadHandle)GetCurrentThread();
 }
 
 void __Thread_closeHandle(CThread* thread)
 {
-    CloseHandle(__Thread_handle(thread));
+    CloseHandle((HANDLE)__Thread_handle(thread));
 }
 
 void __Thread_detach(CThread* thread)
 {
-    CloseHandle(__Thread_handle(thread));
+    CloseHandle((HANDLE)__Thread_handle(thread));
     __Thread_setState(thread, DETACHED);
 }
 
 bool __Thread_isAlive(ThreadHandle handle)
 {
     DWORD exit;
-    if (!GetExitCodeThread(handle, &exit))
+    if (!GetExitCodeThread((HANDLE)handle, &exit))
     {
         Err_set(GetLastError());
         return false;

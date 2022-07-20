@@ -105,17 +105,13 @@ bool __Thread_wait(CThread* thread);
 bool __Thread_waitTimeout(CThread* thread, int32_t timeout);
 
 /**
- * create a thread
+ * create a thread, auto use __Thread_run as main proc
  * @param suspend if thread suspended after create
- * @param run thread run proc
  * @param usr pointer store data for run use
  * @param handle output pointer store thread handle
  * @return true if create successfully, otherwise false
  */
-bool __Thread_create(bool suspend,
-                     __ThreadRunProc run,
-                     void* usr,
-                     ThreadHandle* handle);
+bool __Thread_create(bool suspend, void* usr, ThreadHandle* handle);
 
 /**
  * resume thread if thread in suspend state
