@@ -126,7 +126,6 @@ bool __Thread_setLocalStorage(CLocalStorage* localStorage)
 #elif defined(DYNAMIC)
 
 #include <processthreadsapi.h>
-#include <assert.h>
 
 static DWORD __Win32_storageKey = TLS_OUT_OF_INDEXES;
 

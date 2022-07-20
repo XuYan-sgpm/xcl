@@ -4,21 +4,17 @@
 
 #include <windows.h>
 #include "xcl/concurrent/Lock.h"
-#include <WinBase.h>
-#include <handleapi.h>
-#include <synchapi.h>
-#include <windef.h>
 
 extern "C" bool __Win32_wait(HANDLE handle, DWORD timeout);
 
 namespace
 {
-    class __InternalWinMutex : public xcl::Lock
+    class InternalMutex : public xcl::Lock
     {
     public:
-        ~__InternalWinMutex() override;
+        ~InternalMutex() override;
 
-        __InternalWinMutex();
+        InternalMutex();
 
     private:
         CRITICAL_SECTION criticalSection_;
@@ -31,37 +27,37 @@ namespace
         bool tryLock() override;
     };
 
-    void __InternalWinMutex::lock()
+    void InternalMutex::lock()
     {
         EnterCriticalSection(&criticalSection_);
     }
 
-    void __InternalWinMutex::unlock()
+    void InternalMutex::unlock()
     {
         LeaveCriticalSection(&criticalSection_);
     }
 
-    bool __InternalWinMutex::tryLock()
+    bool InternalMutex::tryLock()
     {
         return TryEnterCriticalSection(&criticalSection_);
     }
 
-    __InternalWinMutex::~__InternalWinMutex()
+    InternalMutex::~InternalMutex()
     {
         DeleteCriticalSection(&criticalSection_);
     }
 
-    __InternalWinMutex::__InternalWinMutex()
+    InternalMutex::InternalMutex()
     {
         InitializeCriticalSection(&criticalSection_);
     }
 
-    class __InternalWinTimedMutex : public xcl::TimedLock
+    class InternalTimedMutex : public xcl::TimedLock
     {
     public:
-        ~__InternalWinTimedMutex() override;
+        ~InternalTimedMutex() override;
 
-        __InternalWinTimedMutex();
+        InternalTimedMutex();
 
     public:
         void lock() override;
@@ -76,32 +72,32 @@ namespace
         HANDLE handle_;
     };
 
-    void __InternalWinTimedMutex::lock()
+    void InternalTimedMutex::lock()
     {
         __Win32_wait(handle_, INFINITE);
     }
 
-    void __InternalWinTimedMutex::unlock()
+    void InternalTimedMutex::unlock()
     {
         ::ReleaseMutex(handle_);
     }
 
-    bool __InternalWinTimedMutex::tryLock()
+    bool InternalTimedMutex::tryLock()
     {
         return __Win32_wait(handle_, 0);
     }
 
-    bool __InternalWinTimedMutex::tryLock(int32_t millis)
+    bool InternalTimedMutex::tryLock(int32_t millis)
     {
         return __Win32_wait(handle_, millis);
     }
 
-    __InternalWinTimedMutex::__InternalWinTimedMutex() : handle_(nullptr)
+    InternalTimedMutex::InternalTimedMutex() : handle_(nullptr)
     {
         handle_ = ::CreateMutex(nullptr, false, nullptr);
     }
 
-    __InternalWinTimedMutex::~__InternalWinTimedMutex()
+    InternalTimedMutex::~InternalTimedMutex()
     {
         if (handle_)
         {
@@ -113,10 +109,10 @@ namespace
 
 xcl::Lock* xcl::Lock::NewLock()
 {
-    return new __InternalWinMutex();
+    return new InternalMutex();
 }
 
 xcl::TimedLock* xcl::TimedLock::NewLock()
 {
-    return new __InternalWinTimedMutex();
+    return new InternalTimedMutex();
 }

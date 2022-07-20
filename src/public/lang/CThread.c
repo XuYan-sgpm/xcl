@@ -360,7 +360,6 @@ Thread_join2(CThread* thread, int32_t timeout)
         if (__Thread_block(thread, timeout))
         {
             assert(__Thread_state(thread) == TERMINATED);
-            //            __Thread_closeHandle(thread);
             success = true;
         }
     }
