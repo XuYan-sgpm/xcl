@@ -28,7 +28,7 @@ void __Thread_afterCreate(CThread* thread)
 
 bool __Thread_wait(CThread* thread)
 {
-    __Win32_wait(__Thread_handle(thread), INFINITE);
+    return __Win32_wait(__Thread_handle(thread), INFINITE);
 }
 
 bool __Thread_waitTimeout(CThread* thread, int32_t timeout)
@@ -51,19 +51,17 @@ void __Thread_resume(CThread* thread)
     DWORD ret = ResumeThread(__Thread_handle(thread));
     if (ret == -1)
     {
-        setErr(GetLastError());
+        Err_set(GetLastError());
     }
 }
 
 void __Thread_onStart(CThread* thread)
 {}
 
-void __Thread_onFinish(CThread* thread, __ThreadRunReturnType retVal)
-{
-    _endthreadex(retVal);
-}
+void __Thread_onFinish(CThread* thread)
+{}
 
-unsigned __Thread_currentId()
+unsigned long __Thread_currentId()
 {
     return GetCurrentThreadId();
 }
@@ -89,7 +87,7 @@ bool __Thread_isAlive(ThreadHandle handle)
     DWORD exit;
     if (!GetExitCodeThread(handle, &exit))
     {
-        setErr(GetLastError());
+        Err_set(GetLastError());
         return false;
     }
     return exit == STILL_ACTIVE;
@@ -141,7 +139,7 @@ void __allocTls()
     }
     else
     {
-        setErr(GetLastError());
+        Err_set(GetLastError());
     }
 }
 
@@ -162,7 +160,7 @@ bool __Thread_setLocalStorage(CLocalStorage* localStorage)
     {
         if (!success)
         {
-            setErr(GetLastError());
+            Err_set(GetLastError());
         }
         else
         {

@@ -21,7 +21,7 @@ Cond_new()
     }
     else
     {
-        setErr(XCL_MEMORY_ERR);
+        Err_set(XCL_MEMORY_ERR);
     }
     return cond;
 }
@@ -43,7 +43,7 @@ Cond_wait(CMutex* mutex, CCond* cond)
     }
     else
     {
-        setErr(XCL_INVALID_PARAM);
+        Err_set(XCL_INVALID_PARAM);
     }
     return false;
 }
@@ -53,14 +53,14 @@ Cond_waitFor(CMutex* mutex, CCond* cond, int32_t millis)
 {
     if (!cond || !mutex)
     {
-        setErr(XCL_INVALID_PARAM);
+        Err_set(XCL_INVALID_PARAM);
         return false;
     }
     bool success = SleepConditionVariableCS(&((CCond*)cond)->conditionVariable,
                                             (PCRITICAL_SECTION)mutex, millis);
     if (!success)
     {
-        setErr(GetLastError());
+        Err_set(GetLastError());
     }
     return success;
 }
@@ -75,7 +75,7 @@ Cond_signal(CCond* cond)
     }
     else
     {
-        setErr(XCL_INVALID_PARAM);
+        Err_set(XCL_INVALID_PARAM);
         return false;
     }
 }
@@ -90,7 +90,7 @@ Cond_signalAll(CCond* cond)
     }
     else
     {
-        setErr(XCL_INVALID_PARAM);
+        Err_set(XCL_INVALID_PARAM);
         return false;
     }
 }

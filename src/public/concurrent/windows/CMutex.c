@@ -22,7 +22,7 @@ Mutex_new()
     }
     else
     {
-        setErr(XCL_MEMORY_ERR);
+        Err_set(XCL_MEMORY_ERR);
     }
     return mutex;
 }
@@ -38,7 +38,7 @@ Mutex_delete(CMutex* mutex)
     }
     else
     {
-        setErr(XCL_INVALID_PARAM);
+        Err_set(XCL_INVALID_PARAM);
         return false;
     }
 }
@@ -53,7 +53,7 @@ Mutex_lock(CMutex* mutex)
     }
     else
     {
-        setErr(XCL_INVALID_PARAM);
+        Err_set(XCL_INVALID_PARAM);
         return false;
     }
 }
@@ -68,7 +68,7 @@ Mutex_unlock(CMutex* mutex)
     }
     else
     {
-        setErr(XCL_INVALID_PARAM);
+        Err_set(XCL_INVALID_PARAM);
         return false;
     }
 }
@@ -78,7 +78,7 @@ Mutex_tryLock(CMutex* mutex)
 {
     if (!mutex)
     {
-        setErr(XCL_INVALID_PARAM);
+        Err_set(XCL_INVALID_PARAM);
         return false;
     }
     else
@@ -92,7 +92,7 @@ Mutex_tryLock2(CMutex* mutex, int32_t millis)
 {
     if (!mutex)
     {
-        setErr(XCL_INVALID_PARAM);
+        Err_set(XCL_INVALID_PARAM);
         return false;
     }
     int64_t st = nanos();

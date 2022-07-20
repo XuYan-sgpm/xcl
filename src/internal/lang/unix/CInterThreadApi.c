@@ -198,7 +198,7 @@ bool __Thread_setLocalStorage(CLocalStorage* localStorage)
     {
         if (!success)
         {
-            setErr(ret);
+            Err_set(ret);
         }
         else
         {
@@ -217,7 +217,7 @@ void __initializeLocalStorageAccess()
     int ret = pthread_key_create(&__Unix_storageKey, __releaseLocalStorage);
     if (ret)
     {
-        setErr(ret);
+        Err_set(ret);
     }
     assert(ret == 0);
 #endif

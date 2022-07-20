@@ -61,11 +61,11 @@ bool __Win32_wait(HANDLE handle, DWORD timeout)
     {
         if (ret == WAIT_FAILED)
         {
-            setErr(GetLastError());
+            Err_set(GetLastError());
         }
         else
         {
-            setErr(ret);
+            Err_set(ret);
         }
         return false;
     }
