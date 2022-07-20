@@ -9,12 +9,12 @@
 
 namespace
 {
-    class __InternalUnixMutex : public xcl::Lock
+    class InternalMutex : public xcl::Lock
     {
     public:
-        explicit __InternalUnixMutex(bool recursive = true);
+        explicit InternalMutex(bool recursive = true);
 
-        ~__InternalUnixMutex() override;
+        ~InternalMutex() override;
 
     public:
         void lock() override;
@@ -27,22 +27,22 @@ namespace
         pthread_mutex_t mutex_;
     };
 
-    void __InternalUnixMutex::lock()
+    void InternalMutex::lock()
     {
         Mutex_lock((CMutex*)&mutex_);
     }
 
-    void __InternalUnixMutex::unlock()
+    void InternalMutex::unlock()
     {
         Mutex_unlock((CMutex*)&mutex_);
     }
 
-    bool __InternalUnixMutex::tryLock()
+    bool InternalMutex::tryLock()
     {
         return Mutex_tryLock((CMutex*)&mutex_);
     }
 
-    __InternalUnixMutex::__InternalUnixMutex(bool recursive) : mutex_()
+    InternalMutex::InternalMutex(bool recursive) : mutex_()
     {
         int ret;
         if (recursive)
@@ -60,18 +60,17 @@ namespace
             Err_set(ret);
     }
 
-    __InternalUnixMutex::~__InternalUnixMutex()
+    InternalMutex::~InternalMutex()
     {
         int ret = pthread_mutex_destroy(&mutex_);
         if (ret)
             Err_set(ret);
     }
 
-    class __InternalUnixTimedMutex : public xcl::TimedLock,
-                                     public __InternalUnixMutex
+    class InternalTimedMutex : public xcl::TimedLock, public InternalMutex
     {
     public:
-        explicit __InternalUnixTimedMutex(bool recursive = true);
+        explicit InternalTimedMutex(bool recursive = true);
 
     public:
         bool tryLock(int32_t timeout) override;
@@ -83,37 +82,37 @@ namespace
         bool tryLock() override;
     };
 
-    bool __InternalUnixTimedMutex::tryLock(int32_t timeout)
+    bool InternalTimedMutex::tryLock(int32_t timeout)
     {
         return Mutex_tryLock2((CMutex*)&mutex_, timeout);
     }
 
-    __InternalUnixTimedMutex::__InternalUnixTimedMutex(bool recursive)
-        : __InternalUnixMutex(recursive)
+    InternalTimedMutex::InternalTimedMutex(bool recursive)
+        : InternalMutex(recursive)
     {}
 
-    void __InternalUnixTimedMutex::lock()
+    void InternalTimedMutex::lock()
     {
-        __InternalUnixMutex::lock();
+        InternalMutex::lock();
     }
 
-    void __InternalUnixTimedMutex::unlock()
+    void InternalTimedMutex::unlock()
     {
-        __InternalUnixMutex::unlock();
+        InternalMutex::unlock();
     }
 
-    bool __InternalUnixTimedMutex::tryLock()
+    bool InternalTimedMutex::tryLock()
     {
-        return __InternalUnixMutex::tryLock();
+        return InternalMutex::tryLock();
     }
 }// namespace
 
 xcl::Lock* xcl::Lock::NewLock()
 {
-    return new __InternalUnixMutex();
+    return new InternalMutex();
 }
 
 xcl::TimedLock* xcl::TimedLock::NewLock()
 {
-    return new __InternalUnixTimedMutex();
+    return new InternalTimedMutex();
 }
