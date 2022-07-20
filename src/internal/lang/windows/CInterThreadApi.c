@@ -73,7 +73,7 @@ ThreadHandle __Thread_currentHandle()
     return GetCurrentThread();
 }
 
-void __Thread_finalize(CThread* thread)
+void __Thread_closeHandle(CThread* thread)
 {
     CloseHandle(__Thread_handle(thread));
 }

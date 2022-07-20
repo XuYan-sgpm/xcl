@@ -37,7 +37,7 @@ typedef enum
 #if WINDOWS
 typedef unsigned __ThreadRunReturnType;
 typedef void* ThreadHandle;
-#else
+#elif LINUX || MACOSX
 #include <pthread.h>
 typedef pthread_t ThreadHandle;
 typedef void* __ThreadRunReturnType;
@@ -155,11 +155,11 @@ unsigned long __Thread_currentId();
 ThreadHandle __Thread_currentHandle();
 
 /**
- * release thread resource when thread routine
- * is returned
+ * called after waiting thread finished
+ * to close thread native handle
  * @param thread thread object
  */
-void __Thread_finalize(CThread* thread);
+void __Thread_closeHandle(CThread* thread);
 
 /**
  * detach thread

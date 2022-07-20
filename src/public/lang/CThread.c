@@ -302,7 +302,7 @@ Thread_delete(CThread* thread)
             if (success)
             {
                 assert(__Thread_state(thread) == TERMINATED);
-                __Thread_finalize(thread);
+                __Thread_closeHandle(thread);
             }
         }
         else if (state == TERMINATED)
@@ -360,7 +360,7 @@ Thread_join2(CThread* thread, int32_t timeout)
         if (__Thread_block(thread, timeout))
         {
             assert(__Thread_state(thread) == TERMINATED);
-            __Thread_finalize(thread);
+//            __Thread_closeHandle(thread);
             success = true;
         }
     }
@@ -391,7 +391,7 @@ XCL_PUBLIC(bool) Thread_recycle(CThread* thread)
         success = true;
         if (__Thread_wait(thread))
         {
-            __Thread_finalize(thread);
+            __Thread_closeHandle(thread);
         }
     }
     Mutex_unlock(__Thread_mutex(thread));

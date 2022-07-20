@@ -113,7 +113,10 @@ ThreadHandle __Thread_currentHandle()
     return pthread_self();
 }
 
-void __Thread_finalize(CThread* thread)
+/*
+ * there is no need to close handle for posix thread
+ */
+void __Thread_closeHandle(CThread* thread)
 {}
 
 void __Thread_detach(CThread* thread)
