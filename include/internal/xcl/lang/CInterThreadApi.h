@@ -22,16 +22,38 @@ extern "C" {
 
 typedef enum
 {
-    SUSPEND,
-    ALIVE,
-    TERMINATED,
-    INVALID,
-    DETACHED,
     /*
-     * mark thread is joining, use for join operation
-     * if state is JOINING, detach operation will skip
+     * thread handle is created but thread is not running
      */
-    JOINING
+    SUSPEND = 1,
+    /*
+     * thread is executing run proc, without join or detach operations
+     * when run proc is finished, thread will execute clean callbacks
+     */
+    NORMAL = 1 << 1,
+    /*
+     * thread run proc is returned
+     */
+    TERMINATED = 1 << 2,
+    /*
+     * create thread handle failed
+     */
+    INVALID = 1 << 3,
+    /*
+     * thread is detached, thread handle and associated native resources
+     * will be released by system
+     */
+    DETACHED = 1 << 4,
+    /*
+     * thread is in join progress, when join finished thread object will
+     * be deleted
+     */
+    WAITING = 1 << 5,
+    /*
+     * thread is calling clean callbacks and release resources
+     * this state set when thread routine
+     */
+    CLEANING = 1 << 6
 } CThreadState;
 
 typedef uintptr_t ThreadHandle;
@@ -50,9 +72,10 @@ typedef struct {
 struct _CThread_st {
     const ThreadHandle handle;
     CMutex* const threadLock;
-    CThreadState state;
+    uint32_t state;
     const unsigned long threadId;
-    CSingleList* callStack;
+    const CallbackObj run;
+    CSingleList* cleanStack;
 };
 
 typedef struct _CThread_st CThread;
@@ -89,20 +112,20 @@ void __Thread_beforeCreate(CThread* thread);
 void __Thread_afterCreate(CThread* thread);
 
 /**
- * wait util thread execute finished
+ * wait util thread execute finished and release thread handle
  * @param thread thread object
  * @return true if thread is terminated, otherwise false
  */
-bool __Thread_wait(CThread* thread);
+bool __Thread_join(CThread* thread);
 
 /**
- * wait thread, return if thread finished
- * or timeout expired
+ * wait thread until thread terminated or timeout expired
+ * if thread terminated, release thread handle
  * @param thread thread object
  * @param timeout wait milliseconds
- * @return true if thread finished, otherwise false
+ * @return true if thread terminated, otherwise false
  */
-bool __Thread_waitTimeout(CThread* thread, int32_t timeout);
+bool __Thread_joinTimeout(CThread* thread, int32_t timeout);
 
 /**
  * create a thread, auto use __Thread_run as main proc
@@ -145,13 +168,6 @@ unsigned long __Thread_currentId();
 ThreadHandle __Thread_currentHandle();
 
 /**
- * called after waiting thread finished
- * to close thread native handle
- * @param thread thread object
- */
-void __Thread_closeHandle(CThread* thread);
-
-/**
  * detach thread
  * @param thread thread object
  */
@@ -192,11 +208,26 @@ bool __Thread_isAlive(ThreadHandle handle);
 void __Thread_setState(CThread* thread, CThreadState state);
 
 /**
- * get thread current state
- * @param thread CThread object
- * @return current thread state
+ * get if thread is in specified thread state
+ * @param thread thread object
+ * @param state thread state
+ * @return true if thread is in specified thread state, otherwise false
  */
-CThreadState __Thread_state(CThread* thread);
+bool __Thread_inState(CThread* thread, CThreadState state);
+
+/**
+ * clean all thread states set before, and reset current thread state
+ * @param thread thread object
+ * @param state specified thread state
+ */
+void __Thread_resetState(CThread* thread, CThreadState state);
+
+/**
+ * remote specified thread state
+ * @param thread thread object
+ * @param state thread state
+ */
+void __Thread_rmState(CThread* thread, CThreadState state);
 
 /**
  * get thread mutex

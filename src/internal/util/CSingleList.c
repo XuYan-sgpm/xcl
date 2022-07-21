@@ -150,8 +150,16 @@ SingleList_sort(CSingleList* list, int (*cmp)(const void*, const void*))
     //
 }
 
-XCL_PUBLIC(void)
+XCL_PUBLIC(bool)
 SingleList_delete(CSingleList* list)
 {
-    Pool_dealloc(list->pool, list, sizeof(CSingleList));
+    if (SingleList_empty(list))
+    {
+        Pool_dealloc(list->pool, list, sizeof(CSingleList));
+        return true;
+    }
+    else
+    {
+        return false;
+    }
 }

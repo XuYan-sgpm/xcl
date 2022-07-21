@@ -26,14 +26,19 @@ void __Thread_beforeCreate(CThread* thread)
 void __Thread_afterCreate(CThread* thread)
 {}
 
-bool __Thread_wait(CThread* thread)
+bool __Thread_join(CThread* thread)
 {
-    return __Win32_wait((HANDLE)__Thread_handle(thread), INFINITE);
+    return __Thread_joinTimeout(thread, INFINITE);
 }
 
-bool __Thread_waitTimeout(CThread* thread, int32_t timeout)
+bool __Thread_joinTimeout(CThread* thread, int32_t timeout)
 {
-    return __Win32_wait((HANDLE)__Thread_handle(thread), timeout);
+    bool ret = __Win32_wait((HANDLE)__Thread_handle(thread), timeout);
+    if (ret)
+    {
+        CloseHandle((HANDLE)__Thread_handle(thread));
+    }
+    return ret;
 }
 
 static unsigned __Win32_threadRoutine(void* usr)
@@ -56,11 +61,14 @@ bool __Thread_create(bool suspend, void* usr, ThreadHandle* handle)
 
 void __Thread_resume(CThread* thread)
 {
-    __Thread_setState(thread, ALIVE);
     DWORD ret = ResumeThread((HANDLE)__Thread_handle(thread));
     if (ret == -1)
     {
         Err_set(GetLastError());
+    }
+    else
+    {
+        __Thread_setState(thread, NORMAL);
     }
 }
 
@@ -80,15 +88,16 @@ ThreadHandle __Thread_currentHandle()
     return (ThreadHandle)GetCurrentThread();
 }
 
-void __Thread_closeHandle(CThread* thread)
-{
-    CloseHandle((HANDLE)__Thread_handle(thread));
-}
-
 void __Thread_detach(CThread* thread)
 {
-    CloseHandle((HANDLE)__Thread_handle(thread));
-    __Thread_setState(thread, DETACHED);
+    if (CloseHandle((HANDLE)__Thread_handle(thread)))
+    {
+        __Thread_setState(thread, DETACHED);
+    }
+    else
+    {
+        Err_set(GetLastError());
+    }
 }
 
 bool __Thread_isAlive(ThreadHandle handle)

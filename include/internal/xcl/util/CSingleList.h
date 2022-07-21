@@ -47,8 +47,10 @@ SingleList_new2(CPool* pool);
 /**
  * delete list object
  * @param list single list object
+ * @return true if list is empty and delete successfully,
+ * otherwise false
  */
-XCL_PUBLIC(void)
+XCL_PUBLIC(bool)
 SingleList_delete(CSingleList* list);
 
 /**

@@ -53,39 +53,17 @@ XCL_PUBLIC(unsigned long)
 Thread_currentId();
 
 /**
- * add cb for front call, cb will called first if no any other
- * cb added to the front
- * @param thread thread object
- * @param cb callback
- * @param usr callback parameter
- * @return true if add cb successfully, otherwise false
- */
-XCL_PUBLIC(bool)
-Thread_addCbFront(CThread* thread, Callback cb, void* usr);
-
-/**
- * add cb for back call, cb will called last if no any other
- * cb added to the back
+ * add clean callback, even if thread is started
+ * however, if thread run proc is not returned,
+ * you can post clean cb successfully, the clean cb
+ * will be executed after thread run proc finished
  * @param thread thread object
  * @param cb callback
  * @param usr callback parameter
  * @return true if cb added successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-Thread_addCbBack(CThread* thread, Callback cb, void* usr);
-
-/**
- * delete thread object
- * note that this function can only called once,
- * and after Thread_delete, thread object will be invalidate
- * @param thread thread object
- * @return true if delete successfully, otherwise false
- * Thread_delete return false only when delete current
- * thread object, you must delete one thread object in
- * another thread
- */
-XCL_PUBLIC(bool)
-Thread_delete(CThread* thread);
+Thread_postClean(CThread* thread, Callback cb, void* usr);
 
 /**
  * start a thread if thread is suspended
@@ -104,10 +82,8 @@ XCL_PUBLIC(bool)
 Thread_isAlive(CThread* thread);
 
 /**
- * wait util thread is terminated
- * if Thread_join invoked by multi-threads
- * join will only applied for first thread
- * other invoke threads will return false
+ * wait util thread is terminated and delete thread object
+ * thread join must be called at last and can only apple once
  * @param thread thread object
  * @return true if join successfully, otherwise false
  */
@@ -115,10 +91,10 @@ XCL_PUBLIC(bool)
 Thread_join(CThread* thread);
 
 /**
- * as same as Thread_join, can only called once at a time
- * wait thread for terminated during timeout milliseconds
- * if thread was already terminated, function succeed and
- * set terminated to true
+ * as same as Thread_join, can only called once and must
+ * be called at last
+ * wait thread util thread terminated during timeout milliseconds
+ * if thread was already terminated, delete thread object
  * @param thread thread object
  * @param timeout milliseconds
  * @return true if thread is terminated, otherwise false
@@ -138,7 +114,8 @@ Thread_join2(CThread* thread, int32_t timeout);
  * @param thread thread object
  * @return true if successfully, otherwise false
  */
-XCL_PUBLIC(bool) Thread_recycle(CThread* thread);
+XCL_PUBLIC(bool)
+Thread_recycle(CThread* thread);
 
 #ifdef __cplusplus
 }
