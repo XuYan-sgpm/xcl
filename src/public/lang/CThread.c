@@ -62,28 +62,6 @@ __Thread_setRunProc(CThread* thread, Callback proc, void* usr)
     return true;
 }
 
-static inline bool __Thread_syncCheckState(CThread* thread, CThreadState state)
-{
-    Mutex_lock(thread->threadLock);
-    bool ret = __Thread_inState(thread, state);
-    Mutex_unlock(thread->threadLock);
-    return ret;
-}
-
-static inline void __Thread_syncSetState(CThread* thread, CThreadState state)
-{
-    Mutex_lock(thread->threadLock);
-    __Thread_setState(thread, state);
-    Mutex_unlock(thread->threadLock);
-}
-
-static inline void __Thread_syncResetState(CThread* thread, CThreadState state)
-{
-    Mutex_lock(thread->threadLock);
-    __Thread_resetState(thread, state);
-    Mutex_unlock(thread->threadLock);
-}
-
 static bool __Thread_wait(CThread* thread, int32_t timeout)
 {
     bool success = true;
