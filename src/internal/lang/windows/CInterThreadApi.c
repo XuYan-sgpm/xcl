@@ -76,8 +76,6 @@ bool __Thread_closeHandle(uintptr_t handle)
 
 #ifdef STATIC
 
-#include <assert.h>
-
 #ifdef _MSC_VER
 static __declspec(thread) CLocalStorage* __Win32_Thread_localStorage = NULL;
 #elif GNUC || CLANG
