@@ -1,106 +1,49 @@
 //
-// Created by xuyan on 2022/7/6.
+// Created by xuyan on 2022/7/21.
 //
 
-#include <Windows.h>
-#include <process.h>
 #include "xcl/lang/CInterThreadApi.h"
 #include "xcl/lang/XclErr.h"
-#include <xcl/lang/CLocalStorageReg.h>
+#include "xcl/lang/CLocalStorageReg.h"
+#include <windows.h>
+#include <process.h>
+#include <assert.h>
 
 bool __Win32_wait(HANDLE handle, DWORD timeout);
 
-CThread* __Thread_alloc()
+static unsigned __stdcall __Win32_threadRoutine(void* args)
 {
-    return Pool_alloc(NULL, sizeof(CThread));
-}
-
-void __Thread_dealloc(CThread* thread)
-{
-    Pool_dealloc(NULL, thread, sizeof(CThread));
-}
-
-void __Thread_beforeCreate(CThread* thread)
-{}
-
-void __Thread_afterCreate(CThread* thread)
-{}
-
-bool __Thread_join(CThread* thread)
-{
-    return __Thread_joinTimeout(thread, INFINITE);
-}
-
-bool __Thread_joinTimeout(CThread* thread, int32_t timeout)
-{
-    bool ret = __Win32_wait((HANDLE)__Thread_handle(thread), timeout);
-    if (ret)
-    {
-        CloseHandle((HANDLE)__Thread_handle(thread));
-    }
-    return ret;
-}
-
-static unsigned __Win32_threadRoutine(void* usr)
-{
-    __Thread_run(usr);
+    __Thread_run(args);
     return 0;
 }
 
-bool __Thread_create(bool suspend, void* usr, ThreadHandle* handle)
+bool __Thread_createHandle(void* args, CThread* thread)
 {
-    ThreadHandle h = _beginthreadex(NULL,
-                                    0,
-                                    __Win32_threadRoutine,
-                                    usr,
-                                    suspend ? CREATE_SUSPENDED : 0,
-                                    NULL);
-    *handle = h;
-    return h != 0;
-}
-
-void __Thread_resume(CThread* thread)
-{
-    DWORD ret = ResumeThread((HANDLE)__Thread_handle(thread));
-    if (ret == -1)
+    uintptr_t h = _beginthreadex(NULL,
+                                 0,
+                                 __Win32_threadRoutine,
+                                 args,
+                                 CREATE_SUSPENDED,
+                                 NULL);
+    thread->handle = h;
+    if (h)
     {
-        Err_set(GetLastError());
+        assert(ResumeThread((HANDLE)h) != -1);
     }
-    else
-    {
-        __Thread_setState(thread, NORMAL);
-    }
+    return h;
 }
 
-void __Thread_onStart(CThread* thread)
-{}
-
-void __Thread_onFinish(CThread* thread)
-{}
-
-unsigned long __Thread_currentId()
+bool __Thread_wait(uintptr_t handle, int32_t timeout)
 {
-    return GetCurrentThreadId();
+    return __Win32_wait((HANDLE)handle, timeout > 0 ? timeout : INFINITE);
 }
 
-ThreadHandle __Thread_currentHandle()
+bool __Thread_detach(uintptr_t handle)
 {
-    return (ThreadHandle)GetCurrentThread();
+    return __Thread_closeHandle(handle);
 }
 
-void __Thread_detach(CThread* thread)
-{
-    if (CloseHandle((HANDLE)__Thread_handle(thread)))
-    {
-        __Thread_setState(thread, DETACHED);
-    }
-    else
-    {
-        Err_set(GetLastError());
-    }
-}
-
-bool __Thread_isAlive(ThreadHandle handle)
+bool __Thread_alive(uintptr_t handle)
 {
     DWORD exit;
     if (!GetExitCodeThread((HANDLE)handle, &exit))
@@ -111,9 +54,28 @@ bool __Thread_isAlive(ThreadHandle handle)
     return exit == STILL_ACTIVE;
 }
 
+unsigned long __Thread_currentId()
+{
+    return GetCurrentThreadId();
+}
+
+uintptr_t __Thread_currentHandle()
+{
+    return (uintptr_t)GetCurrentThread();
+}
+
+bool __Thread_closeHandle(uintptr_t handle)
+{
+    bool ret = CloseHandle((HANDLE)handle);
+    if (!ret)
+    {
+        Err_set(GetLastError());
+    }
+    return ret;
+}
+
 #ifdef STATIC
 
-#include <processthreadsapi.h>
 #include <assert.h>
 
 #ifdef _MSC_VER
@@ -143,8 +105,6 @@ bool __Thread_setLocalStorage(CLocalStorage* localStorage)
 
 #elif defined(DYNAMIC)
 
-#include <processthreadsapi.h>
-
 static DWORD __Win32_storageKey = TLS_OUT_OF_INDEXES;
 
 void __allocTls()
@@ -171,7 +131,7 @@ bool __Thread_setLocalStorage(CLocalStorage* localStorage)
     if (!localStorage)
     {
         if (success)
-            __deregisterLocalStorage(__Thread_currentHandle());
+            __deregisterLocalStorage(Thread_currentHandle());
     }
     else
     {

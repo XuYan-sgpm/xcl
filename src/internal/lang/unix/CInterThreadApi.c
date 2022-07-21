@@ -92,7 +92,7 @@ bool __Thread_create(bool suspend, void* usr, ThreadHandle* handle)
     return false;
 }
 
-void __Thread_resume(CThread* thread)
+bool __Thread_resume(CThread* thread)
 {
     __Thread_setState(thread, ALIVE);
     Blocker_cancel(__UnixThread_blocker(thread));

@@ -6,7 +6,7 @@
 
 #include <xcl/lang/CLocalStorage.h>
 #include <xcl/lang/XclDef.h>
-#include <xcl/lang/CInterThreadApi.h>
+#include <xcl/lang/CThread.h>
 
 #ifdef __cplusplus
 extern "C" {

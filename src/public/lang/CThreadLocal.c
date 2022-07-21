@@ -4,7 +4,6 @@
 
 #include "xcl/lang/CThreadLocal.h"
 #include "xcl/lang/CLocalStorage.h"
-#include "xcl/lang/CInterThreadApi.h"
 #include <stdatomic.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,6 +20,10 @@ static atomic_int_fast32_t __localIdGenerator = 1;
 bool __ThreadLocal_offerId(int32_t id);
 
 bool __ThreadLocal_pollId(int32_t* id);
+
+CLocalStorage* __Thread_getLocalStorage();
+
+bool __Thread_setLocalStorage(CLocalStorage* localStorage);
 
 static int32_t __ThreadLocal_newId()
 {

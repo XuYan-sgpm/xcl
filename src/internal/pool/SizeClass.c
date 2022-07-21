@@ -5,10 +5,10 @@
 #include "xcl/pool/SizeClass.h"
 #include "xcl/pool/PoolDef.h"
 #include "xcl/pool/CPool.h"
+#include "xcl/util/algo.h"
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <stdlib.h>
 
 typedef struct {
     int32_t log2Group;
@@ -19,37 +19,6 @@ typedef struct {
     //   int32_t log2DeltaLookup;
     int32_t size;
 } SizeTab;
-
-static uint32_t __log2(uint32_t i)
-{
-    if (i == 0)
-    {
-        return 32;
-    }
-    uint32_t n = 1;
-    if ((i >> 16) == 0)
-    {
-        n += 16;
-        i <<= 16;
-    }
-    if ((i >> 24) == 0)
-    {
-        n += 8;
-        i <<= 8;
-    }
-    if ((i >> 28) == 0)
-    {
-        n += 4;
-        i <<= 4;
-    }
-    if ((i >> 30) == 0)
-    {
-        n += 2;
-        i <<= 2;
-    }
-    n -= (i >> 31u);
-    return 31u - n;
-}
 
 static SizeTab* sizeClasses = NULL;
 
@@ -93,7 +62,7 @@ SizeClass_initialize()
     bool success = false;
     do
     {
-        uint32_t groups = __log2(CHUNK_SIZE) + 1 - LOG2_QUANTUM;
+        uint32_t groups = _log2(CHUNK_SIZE) + 1 - LOG2_QUANTUM;
         sizeClasses =
             (SizeTab*)Pool_alloc(NULL,
                                  sizeof(SizeTab) * (groups << LOG2_GROUP_SIZE));
@@ -114,7 +83,7 @@ SizeClass_initialize()
 XCL_PUBLIC(void)
 SizeClass_finalize()
 {
-    uint32_t groups = __log2(CHUNK_SIZE) + 1 - LOG2_QUANTUM;
+    uint32_t groups = _log2(CHUNK_SIZE) + 1 - LOG2_QUANTUM;
     Pool_dealloc(NULL,
                  sizeClasses,
                  sizeof(SizeTab) * (groups << LOG2_GROUP_SIZE));
@@ -148,7 +117,7 @@ SizeClass_get(int32_t idx, int32_t* out)
 static void
 __SC_getGroupAndDelta(uint32_t size, uint32_t* log2Group, uint32_t* log2Delta)
 {
-    uint32_t log2Size = __log2(size);
+    uint32_t log2Size = _log2(size);
     if (size <= (1 << (LOG2_QUANTUM + LOG2_GROUP_SIZE)))
     {
         *log2Group = LOG2_QUANTUM;

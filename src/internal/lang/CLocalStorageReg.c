@@ -8,7 +8,6 @@
 #include "xcl/util/CList.h"
 #include "xcl/concurrent/CMutex.h"
 #include "xcl/lang/XclErr.h"
-#include "xcl/pool/CPool.h"
 
 typedef CList __RegList;
 
@@ -40,7 +39,7 @@ void __regLocalStorage(CLocalStorage* localStorage)
     {
         __RegData* regData = (__RegData*)(node->data);
         regData->localStorage = localStorage;
-        regData->handle = __Thread_currentHandle();
+        regData->handle = Thread_currentHandle();
         CListIter iter = List_query(__localStorageRegQueue.regList,
                                     &regData->handle,
                                     __cmpThreadHandle);
@@ -79,7 +78,8 @@ void __clearObsoleteStorages()
     while (!List_iterEquals(iter, List_end(__localStorageRegQueue.regList)))
     {
         __RegData* data = (__RegData*)iter.cur->data;
-        if (!__Thread_isAlive(data->handle))
+        CThread thread = {data->handle};
+        if (!Thread_alive(&thread))
         {
             CListIter next = List_remove(__localStorageRegQueue.regList, iter);
             LocalStorage_delete(data->localStorage);

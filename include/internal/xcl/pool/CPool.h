@@ -22,14 +22,14 @@ typedef struct _CPool_st {
 } CPool;
 
 /**
- * using malloc, free and realloc for default pool invoke
+ * xcl default pool, may be use jemalloc algorithm
  * @return default pool object
  */
 XCL_PUBLIC(CPool*) Pool_def();
 
 /**
  * all functions below can passing NULL as pool object
- * if pool object is NULL, using xcl default pool
+ * if pool object is NULL, using system default pool
  * to manage memory
  */
 
