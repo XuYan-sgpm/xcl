@@ -3,8 +3,8 @@
 //
 
 #include <stdlib.h>
-#include <xcl/lang/XclErr.h>
-#include <xcl/util/CBlocker.h>
+#include "xcl/lang/XclErr.h"
+#include "xcl/util/CBlocker.h"
 #include "xcl/concurrent/CCond.h"
 #include "xcl/pool/CPool.h"
 

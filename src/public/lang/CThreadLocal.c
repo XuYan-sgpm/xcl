@@ -4,48 +4,17 @@
 
 #include "xcl/lang/CThreadLocal.h"
 #include "xcl/lang/CLocalStorage.h"
-#include <stdatomic.h>
-#include <stdlib.h>
 #include <string.h>
 #include <xcl/lang/XclDef.h>
 #include <xcl/lang/XclErr.h>
 
-/**
- * thread local id starts from 1 not 0, because
- * position 0 is token by CThread to store current
- * thread object
- */
-static atomic_int_fast32_t __localIdGenerator = 1;
+int32_t __LocalId_get();
 
-bool __ThreadLocal_offerId(int32_t id);
-
-bool __ThreadLocal_pollId(int32_t* id);
+void __LocalId_recycle(int32_t id);
 
 CLocalStorage* __Thread_getLocalStorage();
 
 bool __Thread_setLocalStorage(CLocalStorage* localStorage);
-
-static int32_t __ThreadLocal_newId()
-{
-    return atomic_fetch_add_explicit(&__localIdGenerator,
-                                     1,
-                                     memory_order_seq_cst);
-}
-
-static int32_t __ThreadLocal_getId()
-{
-    int32_t id;
-    if (!__ThreadLocal_pollId(&id))
-    {
-        id = __ThreadLocal_newId();
-    }
-    return id;
-}
-
-static void __ThreadLocal_recycleId(int32_t id)
-{
-    __ThreadLocal_offerId(id);
-}
 
 static CLocalStorage* __ThreadLocal_newLocalStorage()
 {
@@ -108,7 +77,7 @@ XCL_PUBLIC(CThreadLocal)
 Local_make()
 {
     CThreadLocal result;
-    result.id = __ThreadLocal_getId();
+    result.id = __LocalId_get();
     return result;
 }
 
@@ -117,7 +86,7 @@ Local_discard(CThreadLocal* local)
 {
     if (local->id != -1)
     {
-        __ThreadLocal_recycleId(local->id);
+        __LocalId_recycle(local->id);
         local->id = -1;
     }
 }
@@ -312,35 +281,3 @@ Local_getDouble(CThreadLocal* local, double* result)
     }
     return data;
 }
-
-void __LocalId_initQueue();
-
-void __initializeLocalStorageAccess();
-
-XCL_PUBLIC(bool)
-Local_initEnv()
-{
-    static bool initDone = false;
-    if (!initDone)
-    {
-        __LocalId_initQueue();
-        __initializeLocalStorageAccess();
-        initDone = true;
-    }
-    return initDone;
-}
-
-void __clearObsoleteStorages();
-
-XCL_PUBLIC(void)
-Local_recycleStorages()
-{
-    __clearObsoleteStorages();
-}
-
-#if GNUC || CLANG
-static __attribute__((constructor)) void __Local_globalInitialize()
-{
-    Local_initEnv();
-}
-#endif

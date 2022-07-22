@@ -4,20 +4,16 @@
 
 #include "xcl/lang/CThread.h"
 #include "xcl/lang/XclErr.h"
-#include "xcl/lang/CThreadLocal.h"
 #include "xcl/lang/CLocalStorage.h"
 #include "xcl/lang/CInterThreadApi.h"
 #include "xcl/pool/CPool.h"
 #include <assert.h>
 
-static CThreadLocal __Thread_localObject = {0};
-
 void __Thread_run(void* args)
 {
-    Local_set(&__Thread_localObject, (void*)((uintptr_t*)args)[0]);
     typedef void (*Proc)(void*);
-    Proc run = (Proc)((uintptr_t*)args)[1];
-    void* usr = (void*)((uintptr_t*)args)[2];
+    Proc run = (Proc)((uintptr_t*)args)[0];
+    void* usr = (void*)((uintptr_t*)args)[1];
     run(usr);
     CLocalStorage* localStorage = __Thread_getLocalStorage();
     if (localStorage)
@@ -28,19 +24,19 @@ void __Thread_run(void* args)
     Pool_dealloc(Pool_def(), args, sizeof(uintptr_t) << 1);
 }
 
-XCL_PUBLIC(bool)
-Thread_create(void (*proc)(void*), void* usr, CThread* thread)
+XCL_PUBLIC(CThread)
+Thread_create(void (*proc)(void*), void* usr)
 {
-    uintptr_t* args = Pool_alloc(Pool_def(), sizeof(uintptr_t) * 3);
+    uintptr_t* args = Pool_alloc(Pool_def(), sizeof(uintptr_t) << 1);
     if (!args)
     {
         Err_set(XCL_MEMORY_ERR);
-        return false;
+        return (CThread){0};
     }
-    args[0] = (uintptr_t)thread;
-    args[1] = (uintptr_t)proc;
-    args[2] = (uintptr_t)usr;
-    return __Thread_createHandle(args, thread);
+    args[0] = (uintptr_t)proc;
+    args[1] = (uintptr_t)usr;
+    uintptr_t handle = __Thread_createHandle(args);
+    return (CThread){handle};
 }
 
 bool Thread_valid(CThread thread)
@@ -75,15 +71,7 @@ Thread_detach(CThread* thread)
 XCL_PUBLIC(CThread)
 Thread_current()
 {
-    void* ptr;
-    if (Local_get(&__Thread_localObject, &ptr))
-    {
-        return *(CThread*)ptr;
-    }
-    else
-    {
-        return (CThread){0};
-    }
+    return (CThread){__Thread_currentHandle()};
 }
 
 XCL_PUBLIC(unsigned long)

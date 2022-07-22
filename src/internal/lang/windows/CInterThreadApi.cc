@@ -2,12 +2,14 @@
 // Created by xuyan on 2022/7/21.
 //
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "xcl/lang/CInterThreadApi.h"
 #include "xcl/lang/XclErr.h"
-#include "xcl/lang/CLocalStorageReg.h"
 #include <windows.h>
 #include <process.h>
-#include <assert.h>
 
 bool __Win32_wait(HANDLE handle, DWORD timeout);
 
@@ -17,19 +19,9 @@ static unsigned __stdcall __Win32_threadRoutine(void* args)
     return 0;
 }
 
-bool __Thread_createHandle(void* args, CThread* thread)
+uintptr_t __Thread_createHandle(void* args)
 {
-    uintptr_t h = _beginthreadex(NULL,
-                                 0,
-                                 __Win32_threadRoutine,
-                                 args,
-                                 CREATE_SUSPENDED,
-                                 NULL);
-    thread->handle = h;
-    if (h)
-    {
-        assert(ResumeThread((HANDLE)h) != -1);
-    }
+    uintptr_t h = _beginthreadex(NULL, 0, __Win32_threadRoutine, args, 0, NULL);
     return h;
 }
 
@@ -74,6 +66,10 @@ bool __Thread_closeHandle(uintptr_t handle)
     return ret;
 }
 
+#ifdef __cplusplus
+}
+#endif
+
 #ifdef STATIC
 
 #ifdef _MSC_VER
@@ -90,14 +86,6 @@ CLocalStorage* __Thread_getLocalStorage()
 bool __Thread_setLocalStorage(CLocalStorage* localStorage)
 {
     __Win32_Thread_localStorage = localStorage;
-    if (!localStorage)
-    {
-        __deregisterLocalStorage(__Thread_currentHandle());
-    }
-    else
-    {
-        __regLocalStorage(localStorage);
-    }
     return true;
 }
 
@@ -105,7 +93,7 @@ bool __Thread_setLocalStorage(CLocalStorage* localStorage)
 
 static DWORD __Win32_storageKey = TLS_OUT_OF_INDEXES;
 
-void __allocTls()
+extern "C" void __allocTls()
 {
     DWORD idx = TlsAlloc();
     if (idx != TLS_OUT_OF_INDEXES)
@@ -118,39 +106,50 @@ void __allocTls()
     }
 }
 
-CLocalStorage* __Thread_getLocalStorage()
+extern "C" CLocalStorage* __Thread_getLocalStorage()
 {
     return (CLocalStorage*)TlsGetValue(__Win32_storageKey);
 }
 
-bool __Thread_setLocalStorage(CLocalStorage* localStorage)
+extern "C" bool __Thread_setLocalStorage(CLocalStorage* localStorage)
 {
     bool success = TlsSetValue(__Win32_storageKey, localStorage);
-    if (!localStorage)
+    if (!success)
     {
-        if (success)
-            __deregisterLocalStorage(Thread_currentHandle());
-    }
-    else
-    {
-        if (!success)
-        {
-            Err_set(GetLastError());
-        }
-        else
-        {
-            __regLocalStorage(localStorage);
-        }
+        Err_set(GetLastError());
     }
     return success;
 }
 
+#ifdef ENABLE_CXX
+
+namespace xcl
+{
+    namespace
+    {
+        class Win32TlsInitializer
+        {
+        public:
+            Win32TlsInitializer();
+        };
+
+        xcl::Win32TlsInitializer::Win32TlsInitializer()
+        {
+            __allocTls();
+        }
+    }// namespace
+    static Win32TlsInitializer __win32TlsInitializer;
+}// namespace xcl
+
+#elif GNUC || CLANG
+
+static __attribute__((constructor)) void __Win32_initializeStorageKey()
+{
+    __allocTls();
+}
+
+#else
+#error "unsupported environment"
 #endif
 
-void __initializeLocalStorageAccess()
-{
-    __initializeRegQueue();
-#if DYNAMIC
-    __allocTls();
 #endif
-}

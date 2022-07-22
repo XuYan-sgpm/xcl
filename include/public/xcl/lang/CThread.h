@@ -24,11 +24,10 @@ typedef struct {
  * create a thread object
  * @param proc thread run proc
  * @param usr thread run args
- * @param output pointer store thread object
- * @return true if create successfully, otherwise false
+ * @return thread object
  */
-XCL_PUBLIC(bool)
-Thread_create(void (*proc)(void*), void* usr, CThread* thread);
+XCL_PUBLIC(CThread)
+Thread_create(void (*proc)(void*), void* usr);
 
 /**
  * check whether thread object returned by Thread_create is valid

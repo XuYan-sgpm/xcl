@@ -17,7 +17,7 @@ CLocalStorage* __Thread_getLocalStorage();
 
 bool __Thread_setLocalStorage(CLocalStorage* localStorage);
 
-bool __Thread_createHandle(void* args, CThread* thread);
+uintptr_t __Thread_createHandle(void* args);
 
 bool __Thread_wait(uintptr_t handle, int32_t timeout);
 
