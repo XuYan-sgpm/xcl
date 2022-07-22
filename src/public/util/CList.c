@@ -353,7 +353,8 @@ List_sort(CList* list, int (*cmp)(const void*, const void*))
         return;
     }
     CList carry;
-    CList tmp[64];
+    char data[64 * sizeof(CList)];
+    CList* tmp = (CList*)data;
     for (int i = 0; i < 64; i++)
     {
         __List_init(&tmp[i]);

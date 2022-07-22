@@ -415,9 +415,8 @@ String_deleteRegion(CString* string, const int pos, const int len)
     }
 }
 
-const char* XCL_API String_queryChar(const CString* string,
-                                     const bool left,
-                                     char ch)
+XCL_PUBLIC(const char*)
+String_queryChar(const CString* string, const bool left, char ch)
 {
     const char* p = __String_cPtr(string, 0);
     const int size = String_size(string);
@@ -458,103 +457,92 @@ const char* XCL_API String_queryChar(const CString* string,
 //   return cursor1;
 // }
 
-static const char*
-__String_cmpRegion(const char* src, const char* pattern, const int len)
-{
-    int i;
-    for (i = 0; i < len; i++)
-    {
-        if (src[i] != pattern[i])
-        {
-            break;
-        }
-    }
-    return src + i;
-}
+// static const char*
+//__String_cmpRegion(const char* src, const char* pattern, const int len)
+//{
+//     int i;
+//     for (i = 0; i < len; i++)
+//     {
+//         if (src[i] != pattern[i])
+//         {
+//             break;
+//         }
+//     }
+//     return src + i;
+// }
+//
+// static const char*
+//__String_directSearch(const CString* string, const char* pattern, const int
+//len)
+//{
+//     for (int i = 0; i < String_size(string) - len; i++)
+//     {
+//         const char* start = __String_cPtr(string, i);
+//         const char* cursor = __String_cmpRegion(start, pattern, len);
+//         if (cursor - start == len)
+//         {
+//             return start;
+//         }
+//     }
+//     return NULL;
+// }
+//
+// const static int STR_QUERY_THRESHOLD = 32;
+//
+// static void __String_genNext(const char* pattern, int* next, const int len)
+//{
+//     next[0] = -1;
+//     int idx = 0;
+//     int val = -1;
+//     while (idx < len - 1)
+//     {
+//         if (val == -1 || pattern[idx] == pattern[val])
+//         {
+//             if (pattern[++idx] == pattern[++val])
+//             {
+//                 next[idx] = next[val];
+//             }
+//             else
+//             {
+//                 next[idx] = val;
+//             }
+//         }
+//         else
+//         {
+//             val = next[val];
+//         }
+//     }
+// }
+//
+// static const char*
+//__String_kmpSearch(const CString* string, const char* pattern, const int len)
+//{
+//     int next[len];
+//     __String_genNext(pattern, next, len);
+//     int i, j;
+//     const char* start = __String_cPtr(string, 0);
+//     for (i = 0, j = 0; i < String_size(string) && j < len; i++, j++)
+//     {
+//         if (j == -1 || start[i] == pattern[j])
+//         {
+//             ++i;
+//             ++j;
+//         }
+//         else
+//         {
+//             j = next[j];
+//         }
+//     }
+//     if (j == len)
+//     {
+//         return &start[i - len];
+//     }
+//     return NULL;
+// }
 
-static const char*
-__String_directSearch(const CString* string, const char* pattern, const int len)
+XCL_PUBLIC(const char*) String_query(const CString* string, const char* str)
 {
-    for (int i = 0; i < String_size(string) - len; i++)
-    {
-        const char* start = __String_cPtr(string, i);
-        const char* cursor = __String_cmpRegion(start, pattern, len);
-        if (cursor - start == len)
-        {
-            return start;
-        }
-    }
-    return NULL;
-}
-
-const static int STR_QUERY_THRESHOLD = 32;
-
-static void __String_genNext(const char* pattern, int* next, const int len)
-{
-    next[0] = -1;
-    int idx = 0;
-    int val = -1;
-    while (idx < len - 1)
-    {
-        if (val == -1 || pattern[idx] == pattern[val])
-        {
-            if (pattern[++idx] == pattern[++val])
-            {
-                next[idx] = next[val];
-            }
-            else
-            {
-                next[idx] = val;
-            }
-        }
-        else
-        {
-            val = next[val];
-        }
-    }
-}
-
-static const char*
-__String_kmpSearch(const CString* string, const char* pattern, const int len)
-{
-    int next[len];
-    __String_genNext(pattern, next, len);
-    int i, j;
-    const char* start = __String_cPtr(string, 0);
-    for (i = 0, j = 0; i < String_size(string) && j < len; i++, j++)
-    {
-        if (j == -1 || start[i] == pattern[j])
-        {
-            ++i;
-            ++j;
-        }
-        else
-        {
-            j = next[j];
-        }
-    }
-    if (j == len)
-    {
-        return &start[i - len];
-    }
-    return NULL;
-}
-
-const char* XCL_API String_query(const CString* string, const char* str)
-{
-    return String_queryRegion(string, str, str ? strlen(str) : 0);
-}
-
-const char* XCL_API String_queryRegion(const CString* string,
-                                       const char* str,
-                                       const int len)
-{
-    if (String_size(string) < len)
-    {
-        return NULL;
-    }
-    return len <= STR_QUERY_THRESHOLD ? __String_directSearch(string, str, len)
-                                      : __String_kmpSearch(string, str, len);
+    return strstr(__String_cPtr(string, 0), str);
 }
 
 XCL_PUBLIC(char)

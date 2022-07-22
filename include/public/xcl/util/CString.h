@@ -112,9 +112,6 @@ String_queryChar(const CString* string, bool left, char ch);
 XCL_PUBLIC(const char*)
 String_query(const CString* string, const char* str);
 
-XCL_PUBLIC(const char*)
-String_queryRegion(const CString* string, const char* str, int len);
-
 XCL_PUBLIC(char)
 String_at(const CString* string, int pos);
 

@@ -8,9 +8,9 @@
 #include <string.h>
 
 struct _CSingleList_st {
+    CPool* pool;
     CSingleNode* tail;
     CSingleNode header;
-    CPool* pool;
 };
 
 XCL_PUBLIC(CSingleList*)
