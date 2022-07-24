@@ -4,10 +4,6 @@ project(xcl C CXX)
 
 set(BUILD_LIB_TYPE dynamic)
 
-if (NOT DEFINED BUILD_TESTS)
-    set(BUILD_TESTS true)
-endif ()
-
 include(cmake/util.cmake)
 
 check_c_cxx_compiler(MSVC Clang GNU AppleClang)
@@ -51,17 +47,12 @@ set(CMAKE_C_FLAGS "${wall} ${hidden}")
 set(CMAKE_CXX_FLAGS "${wall} ${hidden}")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    message(STATUS "Debug")
     set(build_type debug)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
-    message(STATUS "Release")
     set(build_type release)
 endif ()
 
 set(LIBRARY_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/lib/${xcl_lib_type}/${build_type})
-
-message(STATUS "C FLAGS:${CMAKE_C_FLAGS}")
-message(STATUS "CXX FLAGS:${CMAKE_CXX_FLAGS}")
 
 set(xcl_inc_dir include/public include/internal)
 set(xcl_lib_dir ${LIBRARY_OUTPUT_PATH})
@@ -115,7 +106,3 @@ add_custom_command(TARGET ${xcl_lib_name} PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBRARY_OUTPUT_PATH}
         COMMAND ${CMAKE_COMMAND} -E echo "make library directories ${LIBRARY_OUTPUT_PATH}"
         VERBATIM)
-
-if (${BUILD_TESTS})
-    add_subdirectory(UnitTest)
-endif ()
