@@ -62,7 +62,10 @@ Cond_waitFor(CMutex* mutex, CCond* cond, int32_t millis)
 {
     if (mutex && cond)
     {
-        struct timespec ts = {0, millis * 1000000};
+        struct timespec ts = {0, 0};
+        ts.tv_sec = millis / 1000;
+        int64_t remaining = millis % 1000;
+        ts.tv_nsec = remaining * 1000000;
         int ret =
             pthread_cond_timedwait(&cond->handle, (pthread_mutex_t*)mutex, &ts);
         if (ret)
