@@ -29,8 +29,6 @@ unsigned long __Thread_currentId();
 
 uintptr_t __Thread_currentHandle();
 
-bool __Thread_closeHandle(uintptr_t handle);
-
 void __Thread_run(void* args);
 
 #ifdef __cplusplus

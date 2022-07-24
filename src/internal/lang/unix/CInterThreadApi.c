@@ -88,8 +88,3 @@ uintptr_t __Thread_currentHandle()
 {
     return (uintptr_t)pthread_self();
 }
-
-bool __Thread_closeHandle(uintptr_t handle)
-{
-    return true;
-}

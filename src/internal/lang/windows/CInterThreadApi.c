@@ -53,16 +53,6 @@ uintptr_t __Thread_currentHandle()
     return (uintptr_t)GetCurrentThread();
 }
 
-bool __Thread_closeHandle(uintptr_t handle)
-{
-    bool ret = CloseHandle((HANDLE)handle);
-    if (!ret)
-    {
-        Err_set(GetLastError());
-    }
-    return ret;
-}
-
 #ifdef STATIC
 
 #ifdef _MSC_VER
