@@ -76,14 +76,14 @@ bool __Thread_setLocalStorage(CLocalStorage* localStorage)
 
 #include <xcl/concurrent/GlobalLock.h>
 
-static DWORD __Win32_storageKey = TLS_OUT_OF_INDEXES;
+static DWORD __Win32_Thread_storageKey = TLS_OUT_OF_INDEXES;
 
 void __allocTls()
 {
     DWORD idx = TlsAlloc();
     if (idx != TLS_OUT_OF_INDEXES)
     {
-        __Win32_storageKey = idx;
+        __Win32_Thread_storageKey = idx;
     }
     else
     {
@@ -94,13 +94,13 @@ void __allocTls()
 CLocalStorage* __Thread_getLocalStorage()
 {
     __Thread_ensureTlsKey();
-    return (CLocalStorage*)TlsGetValue(__Win32_storageKey);
+    return (CLocalStorage*)TlsGetValue(__Win32_Thread_storageKey);
 }
 
 bool __Thread_setLocalStorage(CLocalStorage* localStorage)
 {
     __Thread_ensureTlsKey();
-    bool success = TlsSetValue(__Win32_storageKey, localStorage);
+    bool success = TlsSetValue(__Win32_Thread_storageKey, localStorage);
     if (!success)
     {
         Err_set(GetLastError());

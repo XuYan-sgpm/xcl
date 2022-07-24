@@ -88,3 +88,62 @@ uintptr_t __Thread_currentHandle()
 {
     return (uintptr_t)pthread_self();
 }
+
+#ifdef STATIC
+static __thread CLocalStorage* __Unix_Thread_localStorage = NULL;
+
+CLocalStorage* __Thread_getLocalStorage()
+{
+    return __Unix_Thread_localStorage;
+}
+
+bool __Thread_setLocalStorage(CLocalStorage* localStorage)
+{
+    __Unix_Thread_localStorage = localStorage;
+    return true;
+}
+#elif defined(DYNAMIC)
+#include <xcl/concurrent/GlobalLock.h>
+#include <assert.h>
+
+static pthread_key_t __Unix_Thread_localStorageKey;
+
+static void __destroyLocalStorage(void* args)
+{
+    LocalStorage_delete(args);
+}
+
+static void __Thread_ensureLocalStorageKey()
+{
+    static bool done = false;
+    if (!done)
+    {
+        __acquireGlobalLock();
+        if (!done)
+        {
+            int ret = pthread_key_create(&__Unix_Thread_localStorageKey,
+                                         __destroyLocalStorage);
+            assert(ret == 0);
+            done = true;
+        }
+        __releaseGlobalLock();
+    }
+}
+
+CLocalStorage* __Thread_getLocalStorage()
+{
+    __Thread_ensureLocalStorageKey();
+    return pthread_getspecific(__Unix_Thread_localStorageKey);
+}
+
+bool __Thread_setLocalStorage(CLocalStorage* localStorage)
+{
+    __Thread_ensureLocalStorageKey();
+    int ret = pthread_setspecific(__Unix_Thread_localStorageKey, localStorage);
+    if (ret)
+    {
+        Err_set(ret);
+    }
+    return !ret;
+}
+#endif
