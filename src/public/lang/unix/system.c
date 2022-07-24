@@ -35,7 +35,7 @@ nanos()
 }
 
 XCL_PUBLIC(void)
-sleepMillis(int32_t timeout)
+mSleep(int32_t timeout)
 {
 #if _POSIX_C_SOURCE >= 199309L
     struct timespec ts = {0, 0};

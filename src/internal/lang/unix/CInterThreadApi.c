@@ -50,7 +50,7 @@ bool __Thread_joinFor(uintptr_t handle, int32_t timeout)
         int64_t st = nanos();
         do
         {
-            sleepMillis(1);
+            mSleep(1);
             alive = __Thread_alive(handle);
             totalWait = nanos() - st;
         } while (alive && totalWait < require);

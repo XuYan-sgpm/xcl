@@ -2,6 +2,14 @@ cmake_minimum_required(VERSION 3.15)
 
 project(UnitTest)
 
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    set(build_type debug)
+    set(xcl_lib_name xcld)
+elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
+    set(build_type release)
+    set(xcl_lib_name xcl)
+endif ()
+
 set(CMAKE_CXX_STANDARD 11)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/bin/${build_type})
@@ -11,14 +19,6 @@ if (WIN32)
     set(third_party)
 else ()
     set(third_party /usr/local)
-endif ()
-
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(build_type debug)
-    set(xcl_lib_name xcld)
-elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
-    set(build_type release)
-    set(xcl_lib_name xcl)
 endif ()
 
 set(xcl_lib_type dynamic)
