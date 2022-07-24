@@ -94,15 +94,6 @@ Thread_currentId();
 XCL_PUBLIC(uintptr_t)
 Thread_currentHandle();
 
-/**
- * release thread resource
- * if thread is still running, wait util thread terminated
- * after Thread_release, thread object will be invalid
- * @param thread thread object
- */
-XCL_PUBLIC(void)
-Thread_release(CThread* thread);
-
 #ifdef __cplusplus
 }
 #endif

@@ -15,10 +15,9 @@ struct _CMutex_st {
     pthread_mutex_t handle;
 };
 
-XCL_PUBLIC(CMutex*)
-Mutex_new()
+CMutex* __Mutex_newByPool(CPool* pool)
 {
-    CMutex* mutex = Pool_alloc(NULL, sizeof(CMutex));
+    CMutex* mutex = Pool_alloc(pool, sizeof(CMutex));
     if (mutex)
     {
         memset(mutex, 0, sizeof(CMutex));
@@ -31,23 +30,34 @@ Mutex_new()
             return mutex;
         }
         errno = err;
-        Pool_dealloc(NULL, mutex, sizeof(CMutex));
+        Pool_dealloc(pool, mutex, sizeof(CMutex));
     }
     return NULL;
 }
 
-XCL_PUBLIC(bool)
-Mutex_delete(CMutex* mutex)
+bool __Mutex_deleteByPool(CMutex* mutex, CPool* pool)
 {
     if (mutex)
     {
         int ret = pthread_mutex_destroy(&mutex->handle);
-        Pool_dealloc(NULL, mutex, sizeof(CMutex));
+        Pool_dealloc(pool, mutex, sizeof(CMutex));
         if (ret != 0)
             errno = ret;
         return !ret;
     }
     return false;
+}
+
+XCL_PUBLIC(CMutex*)
+Mutex_new()
+{
+    return __Mutex_newByPool(Pool_def());
+}
+
+XCL_PUBLIC(bool)
+Mutex_delete(CMutex* mutex)
+{
+    return __Mutex_deleteByPool(mutex, Pool_def());
 }
 
 XCL_PUBLIC(bool)

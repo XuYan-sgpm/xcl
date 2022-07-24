@@ -18,13 +18,13 @@ static inline void __Buffer_setState(CBuffer* buffer, int cap, const bool flag)
 static inline void __Buffer_dealloc(CBuffer* buffer)
 {
     if (buffer->data)
-        Pool_dealloc(NULL, buffer->data, Buffer_cap(buffer));
+        Pool_dealloc(Pool_def(), buffer->data, Buffer_cap(buffer));
     memset(buffer, 0, sizeof(CBuffer));
 }
 
 static inline bool __Buffer_alloc(CBuffer* buffer, int32_t cap)
 {
-    buffer->data = Pool_alloc(NULL, cap);
+    buffer->data = Pool_alloc(Pool_def(), cap);
     if (buffer->data)
     {
         buffer->size = 0;
@@ -35,7 +35,7 @@ static inline bool __Buffer_alloc(CBuffer* buffer, int32_t cap)
 
 static inline bool __Buffer_reapply(CBuffer* buffer, int32_t req)
 {
-    void* p = Pool_reapply(NULL, buffer->data, Buffer_cap(buffer), req);
+    void* p = Pool_reapply(Pool_def(), buffer->data, Buffer_cap(buffer), req);
     if (p)
     {
         buffer->data = p;

@@ -72,7 +72,7 @@ static void __String_init(CString* string, const int cap)
     }
     else
     {
-        char* p = (char*)Pool_alloc(NULL, cap);
+        char* p = (char*)Pool_alloc(Pool_def(), cap);
         if (p)
         {
             string->mem.heap.ptr = p;
@@ -98,7 +98,7 @@ __String_beforeInsert(CString* string, const int pos, const int len)
     else
     {
         int newCap = __String_grow(cap, size + len - cap);
-        char* newPtr = (char*)Pool_alloc(NULL, newCap);
+        char* newPtr = (char*)Pool_alloc(Pool_def(), newCap);
         if (!newPtr)
         {
             return NULL;
@@ -107,7 +107,9 @@ __String_beforeInsert(CString* string, const int pos, const int len)
         memcpy(newPtr + pos + len, p, size - pos);
         if (!__String_useStack(string))
         {
-            Pool_dealloc(NULL, string->mem.heap.ptr, string->mem.heap.cap);
+            Pool_dealloc(Pool_def(),
+                         string->mem.heap.ptr,
+                         string->mem.heap.cap);
         }
         string->mem.heap.ptr = newPtr;
         string->mem.heap.cap = newCap;
@@ -131,7 +133,7 @@ __String_beforeAssign(CString* string, const int pos, const int len)
     else
     {
         int newCap = __String_grow(cap, pos + len - cap);
-        char* newPtr = (char*)Pool_alloc(NULL, newCap);
+        char* newPtr = (char*)Pool_alloc(Pool_def(), newCap);
         if (!newPtr)
         {
             return NULL;
@@ -139,7 +141,9 @@ __String_beforeAssign(CString* string, const int pos, const int len)
         memcpy(newPtr, __String_ptr(string, 0), pos);
         if (!__String_useStack(string))
         {
-            Pool_dealloc(NULL, string->mem.heap.ptr, string->mem.heap.cap);
+            Pool_dealloc(Pool_def(),
+                         string->mem.heap.ptr,
+                         string->mem.heap.cap);
         }
         string->mem.heap.ptr = newPtr;
         string->mem.heap.cap = newCap;
@@ -190,7 +194,7 @@ String_release(CString* string)
 {
     if (!__String_useStack(string))
     {
-        Pool_dealloc(NULL, string->mem.heap.ptr, string->mem.heap.cap);
+        Pool_dealloc(Pool_def(), string->mem.heap.ptr, string->mem.heap.cap);
     }
     __String_setState(string, true, 0);
 }
@@ -473,7 +477,7 @@ String_queryChar(const CString* string, const bool left, char ch)
 //
 // static const char*
 //__String_directSearch(const CString* string, const char* pattern, const int
-//len)
+// len)
 //{
 //     for (int i = 0; i < String_size(string) - len; i++)
 //     {

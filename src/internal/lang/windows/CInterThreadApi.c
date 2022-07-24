@@ -2,10 +2,6 @@
 // Created by xuyan on 2022/7/21.
 //
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 #include "xcl/lang/CInterThreadApi.h"
 #include "xcl/lang/XclErr.h"
 #include <windows.h>
@@ -25,9 +21,10 @@ uintptr_t __Thread_createHandle(void* args)
     return h;
 }
 
-bool __Thread_wait(uintptr_t handle, int32_t timeout)
+bool __Thread_joinFor(uintptr_t handle, int32_t timeout)
 {
-    return __Win32_wait((HANDLE)handle, timeout > 0 ? timeout : INFINITE);
+    return __Win32_wait((HANDLE)handle, timeout > 0 ? timeout : INFINITE) &&
+           __Thread_closeHandle(handle);
 }
 
 bool __Thread_detach(uintptr_t handle)
@@ -66,10 +63,6 @@ bool __Thread_closeHandle(uintptr_t handle)
     return ret;
 }
 
-#ifdef __cplusplus
-}
-#endif
-
 #ifdef STATIC
 
 #ifdef _MSC_VER
@@ -91,9 +84,11 @@ bool __Thread_setLocalStorage(CLocalStorage* localStorage)
 
 #elif defined(DYNAMIC)
 
+#include <xcl/concurrent/GlobalLock.h>
+
 static DWORD __Win32_storageKey = TLS_OUT_OF_INDEXES;
 
-extern "C" void __allocTls()
+void __allocTls()
 {
     DWORD idx = TlsAlloc();
     if (idx != TLS_OUT_OF_INDEXES)
@@ -106,13 +101,15 @@ extern "C" void __allocTls()
     }
 }
 
-extern "C" CLocalStorage* __Thread_getLocalStorage()
+CLocalStorage* __Thread_getLocalStorage()
 {
+    __Thread_ensureTlsKey();
     return (CLocalStorage*)TlsGetValue(__Win32_storageKey);
 }
 
-extern "C" bool __Thread_setLocalStorage(CLocalStorage* localStorage)
+bool __Thread_setLocalStorage(CLocalStorage* localStorage)
 {
+    __Thread_ensureTlsKey();
     bool success = TlsSetValue(__Win32_storageKey, localStorage);
     if (!success)
     {
@@ -121,35 +118,18 @@ extern "C" bool __Thread_setLocalStorage(CLocalStorage* localStorage)
     return success;
 }
 
-#ifdef ENABLE_CXX
-
-namespace xcl
+static void __Thread_ensureTlsKey()
 {
-    namespace
+    static bool done = false;
+    if (!done)
     {
-        class Win32TlsInitializer
-        {
-        public:
-            Win32TlsInitializer();
-        };
-
-        xcl::Win32TlsInitializer::Win32TlsInitializer()
+        __acquireGlobalLock();
+        if (!done)
         {
             __allocTls();
         }
-    }// namespace
-    static Win32TlsInitializer __win32TlsInitializer;
-}// namespace xcl
-
-#elif GNUC || CLANG
-
-static __attribute__((constructor)) void __Win32_initializeStorageKey()
-{
-    __allocTls();
+        __releaseGlobalLock();
+    }
 }
-
-#else
-#error "unsupported environment"
-#endif
 
 #endif

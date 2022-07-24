@@ -7,7 +7,6 @@
 #include "xcl/lang/CLocalStorage.h"
 #include "xcl/lang/CInterThreadApi.h"
 #include "xcl/pool/CPool.h"
-#include <assert.h>
 
 void __Thread_run(void* args)
 {
@@ -18,7 +17,7 @@ void __Thread_run(void* args)
     CLocalStorage* localStorage = __Thread_getLocalStorage();
     if (localStorage)
     {
-        __Thread_setLocalStorage(NULL);
+        __Thread_setLocalStorage(0);
         LocalStorage_delete(localStorage);
     }
     Pool_dealloc(Pool_def(), args, sizeof(uintptr_t) << 1);
@@ -53,7 +52,7 @@ Thread_join(CThread* thread)
 XCL_PUBLIC(bool)
 Thread_join2(CThread* thread, int32_t timeout)
 {
-    return __Thread_wait(thread->handle, timeout);
+    return __Thread_joinFor(thread->handle, timeout);
 }
 
 XCL_PUBLIC(bool)
@@ -84,14 +83,4 @@ XCL_PUBLIC(uintptr_t)
 Thread_currentHandle()
 {
     return __Thread_currentHandle();
-}
-
-XCL_PUBLIC(void)
-Thread_release(CThread* thread)
-{
-    if (Thread_join(thread))
-    {
-        __Thread_closeHandle(thread->handle);
-        thread->handle = INVALID_THREAD_HANDLE;
-    }
 }

@@ -56,12 +56,12 @@ static bool __Blocker_init(CBlocker* blocker, CMutex* mutex)
 
 static CBlocker* __Blocker_new(CMutex* mutex)
 {
-    CBlocker* blocker = Pool_alloc(NULL, sizeof(CBlocker));
+    CBlocker* blocker = Pool_alloc(Pool_def(), sizeof(CBlocker));
     if (blocker)
     {
         if (!__Blocker_init(blocker, mutex))
         {
-            Pool_dealloc(NULL, blocker, sizeof(CBlocker));
+            Pool_dealloc(Pool_def(), blocker, sizeof(CBlocker));
             blocker = 0;
         }
     }
@@ -104,7 +104,7 @@ Blocker_delete(CBlocker* blocker)
             Mutex_delete(blocker->mutex);
         }
         Cond_delete(blocker->cond);
-        Pool_dealloc(NULL, blocker, sizeof(CBlocker));
+        Pool_dealloc(Pool_def(), blocker, sizeof(CBlocker));
     }
     return allow;
 }

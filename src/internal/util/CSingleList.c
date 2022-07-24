@@ -8,7 +8,6 @@
 #include <string.h>
 
 struct _CSingleList_st {
-    CPool* pool;
     CSingleNode* tail;
     CSingleNode header;
 };
@@ -16,23 +15,9 @@ struct _CSingleList_st {
 XCL_PUBLIC(CSingleList*)
 SingleList_new()
 {
-    CSingleList* list = Pool_alloc(NULL, sizeof(CSingleList));
+    CSingleList* list = Pool_alloc(Pool_def(), sizeof(CSingleList));
     if (list)
     {
-        list->pool = NULL;
-        list->header.next = NULL;
-        list->tail = &list->header;
-    }
-    return list;
-}
-
-XCL_PUBLIC(CSingleList*)
-SingleList_new2(CPool* pool)
-{
-    CSingleList* list = Pool_alloc(pool, sizeof(CSingleList));
-    if (list)
-    {
-        list->pool = pool;
         list->header.next = NULL;
         list->tail = &list->header;
     }
@@ -155,7 +140,7 @@ SingleList_delete(CSingleList* list)
 {
     if (SingleList_empty(list))
     {
-        Pool_dealloc(list->pool, list, sizeof(CSingleList));
+        Pool_dealloc(Pool_def(), list, sizeof(CSingleList));
         return true;
     }
     else

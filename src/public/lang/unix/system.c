@@ -43,6 +43,7 @@ sleepMillis(int32_t timeout)
     ts.tv_nsec = (int64_t)(timeout - ts.tv_sec * 1000) * 1000000L;
     nanosleep(&ts, NULL);
 #else
+#include <unistd.h>
     usleep((int64_t)timeout * 1000);
 #endif
 }

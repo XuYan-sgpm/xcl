@@ -33,7 +33,7 @@ Mutex_delete(CMutex* mutex)
     if (mutex)
     {
         DeleteCriticalSection(&mutex->criticalSection);
-        Pool_dealloc(NULL, mutex, sizeof(CMutex));
+        Pool_dealloc(Pool_def(), mutex, sizeof(CMutex));
         return true;
     }
     else

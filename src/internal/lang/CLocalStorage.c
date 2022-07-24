@@ -25,7 +25,7 @@ static bool __LocalStorage_reserve(CLocalStorage* localStorage, int n)
     {
         int32_t newCap = __LocalStorage_grow(localStorage, n);
         CStorageBlock* newBlocks = (CStorageBlock*)Pool_reapply(
-            NULL,
+            Pool_def(),
             localStorage->blocks,
             localStorage->cap * sizeof(CStorageBlock),
             newCap * sizeof(CStorageBlock));
@@ -93,10 +93,10 @@ void* LocalStorage_get(CLocalStorage* localStorage, int idx)
 void LocalStorage_delete(CLocalStorage* localStorage)
 {
     if (localStorage->blocks)
-        Pool_dealloc(NULL,
+        Pool_dealloc(Pool_def(),
                      localStorage->blocks,
                      sizeof(CStorageBlock) * localStorage->cap);
-    Pool_dealloc(NULL, localStorage, sizeof(CLocalStorage));
+    Pool_dealloc(Pool_def(), localStorage, sizeof(CLocalStorage));
 }
 
 bool LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr)

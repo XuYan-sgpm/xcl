@@ -64,7 +64,7 @@ SizeClass_initialize()
     {
         uint32_t groups = _log2(CHUNK_SIZE) + 1 - LOG2_QUANTUM;
         sizeClasses =
-            (SizeTab*)Pool_alloc(NULL,
+            (SizeTab*)Pool_alloc(Pool_def(),
                                  sizeof(SizeTab) * (groups << LOG2_GROUP_SIZE));
         if (!sizeClasses)
         {
@@ -84,7 +84,7 @@ XCL_PUBLIC(void)
 SizeClass_finalize()
 {
     uint32_t groups = _log2(CHUNK_SIZE) + 1 - LOG2_QUANTUM;
-    Pool_dealloc(NULL,
+    Pool_dealloc(Pool_def(),
                  sizeClasses,
                  sizeof(SizeTab) * (groups << LOG2_GROUP_SIZE));
     sizeClasses = NULL;

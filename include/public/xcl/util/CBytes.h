@@ -6,7 +6,7 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include <xcl/lang/XclDef.h>
+#include "xcl/lang/XclDef.h"
 
 #ifdef __cplusplus
 extern "C" {

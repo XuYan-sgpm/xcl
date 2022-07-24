@@ -50,7 +50,7 @@ static void __List_init(CList* list)
 XCL_PUBLIC(CList*)
 List_new()
 {
-    CList* list = (CList*)Pool_alloc(NULL, sizeof(CList));
+    CList* list = (CList*)Pool_alloc(Pool_def(), sizeof(CList));
     if (list)
     {
         __List_init(list);
@@ -65,7 +65,7 @@ List_delete(CList* list)
     {
         return false;
     }
-    Pool_dealloc(NULL, list, sizeof(CList));
+    Pool_dealloc(Pool_def(), list, sizeof(CList));
     return true;
 }
 

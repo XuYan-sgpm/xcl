@@ -37,14 +37,6 @@ XCL_PUBLIC(CSingleList*)
 SingleList_new();
 
 /**
- * new a single list object using specified pool
- * @param pool pool object
- * @return single list object
- */
-XCL_PUBLIC(CSingleList*)
-SingleList_new2(CPool* pool);
-
-/**
  * delete list object
  * @param list single list object
  * @return true if list is empty and delete successfully,

@@ -2,6 +2,7 @@
 // Created by xuyan on 2022/7/8.
 //
 
+#include "xcl/concurrent/GlobalLock.h"
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -95,8 +96,24 @@ static bool __LocalId_pollQueue(int32_t* id)
     return *id != -1;
 }
 
+static void __LocalId_ensureQueue()
+{
+    static bool done = false;
+    if (!done)
+    {
+        __acquireGlobalLock();
+        if (!done)
+        {
+            __LocalId_initQueue();
+            done = true;
+        }
+        __releaseGlobalLock();
+    }
+}
+
 int32_t __LocalId_get()
 {
+    __LocalId_ensureQueue();
     int32_t id;
     if (__LocalId_pollQueue(&id))
     {
@@ -107,6 +124,7 @@ int32_t __LocalId_get()
 
 void __LocalId_recycle(int32_t id)
 {
+    __LocalId_ensureQueue();
     __LocalId_offerQueue(id);
 }
 
@@ -114,40 +132,17 @@ void __LocalId_recycle(int32_t id)
 }
 #endif
 
-#ifdef ENABLE_CXX
+/*
+ * we start gen thread local id from 1
+ * because id 0 is reserved to store
+ * thread handle
+ */
 
-#include <atomic>
-
-static std::atomic<int32_t> __localIdGenerator(0);
-
-namespace xcl
-{
-    namespace
-    {
-        class LocalIdInitializer
-        {
-        public:
-            LocalIdInitializer();
-        };
-
-        xcl::LocalIdInitializer::LocalIdInitializer()
-        {
-            __LocalId_initQueue();
-        }
-    }// namespace
-    static LocalIdInitializer __localIdInitializer;
-}// namespace xcl
-
-extern "C" int32_t __LocalId_genId()
-{
-    return __localIdGenerator.fetch_add(1, std::memory_order_seq_cst);
-}
-
-#elif GNUC || CLANG
+#if GNUC || CLANG
 
 #include <stdatomic.h>
 
-static atomic_int_fast32_t __localIdGenerator = 0;
+static atomic_int_fast32_t __localIdGenerator = 1;
 
 extern "C" int32_t __LocalId_genId()
 {
@@ -156,9 +151,15 @@ extern "C" int32_t __LocalId_genId()
                                      memory_order_seq_cst);
 }
 
-static __attribute__((constructor)) void __LocalId_initialize()
+#elif defined(ENABLE_CXX)
+
+#include <atomic>
+
+static std::atomic<int32_t> __localIdGenerator(1);
+
+extern "C" int32_t __LocalId_genId()
 {
-    __LocalId_initQueue();
+    return __localIdGenerator.fetch_add(1, std::memory_order_seq_cst);
 }
 
 #else

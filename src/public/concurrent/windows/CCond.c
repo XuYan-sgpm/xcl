@@ -14,7 +14,7 @@ struct _CCond_st {
 XCL_PUBLIC(CCond*)
 Cond_new()
 {
-    CCond* cond = (CCond*)Pool_alloc(NULL, sizeof(CCond));
+    CCond* cond = (CCond*)Pool_alloc(Pool_def(), sizeof(CCond));
     if (cond)
     {
         InitializeConditionVariable(&cond->conditionVariable);
@@ -29,7 +29,7 @@ Cond_new()
 XCL_PUBLIC(bool)
 Cond_delete(CCond* cond)
 {
-    Pool_dealloc(0, cond, sizeof(CCond));
+    Pool_dealloc(Pool_def(), cond, sizeof(CCond));
     return true;
 }
 

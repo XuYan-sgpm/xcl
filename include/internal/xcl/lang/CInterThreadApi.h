@@ -19,7 +19,7 @@ bool __Thread_setLocalStorage(CLocalStorage* localStorage);
 
 uintptr_t __Thread_createHandle(void* args);
 
-bool __Thread_wait(uintptr_t handle, int32_t timeout);
+bool __Thread_joinFor(uintptr_t handle, int32_t timeout);
 
 bool __Thread_detach(uintptr_t handle);
 

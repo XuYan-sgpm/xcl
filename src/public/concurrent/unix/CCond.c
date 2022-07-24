@@ -15,7 +15,7 @@ struct _CCond_st {
 XCL_PUBLIC(CCond*)
 Cond_new()
 {
-    CCond* cond = Pool_alloc(NULL, sizeof(CCond));
+    CCond* cond = Pool_alloc(Pool_def(), sizeof(CCond));
     if (cond)
     {
         memset(cond, 0, sizeof(CCond));
@@ -25,7 +25,7 @@ Cond_new()
             return cond;
         }
         errno = ret;
-        Pool_dealloc(NULL, cond, sizeof(CCond));
+        Pool_dealloc(Pool_def(), cond, sizeof(CCond));
     }
     return NULL;
 }
@@ -36,7 +36,7 @@ Cond_delete(CCond* cond)
     if (cond)
     {
         int ret = pthread_cond_destroy(&((CCond*)cond)->handle);
-        Pool_dealloc(NULL, cond, sizeof(CCond));
+        Pool_dealloc(Pool_def(), cond, sizeof(CCond));
         if (ret)
             errno = ret;
         return !ret;

@@ -25,7 +25,7 @@ Bits_new(int32_t size)
     {
         size = ((size >> 3) + 1) << 3;
     }
-    CBits* bits = Pool_alloc(NULL, (size >> 3) + sizeof(CBits));
+    CBits* bits = Pool_alloc(Pool_def(), (size >> 3) + sizeof(CBits));
     if (!bits)
     {
         return NULL;
@@ -38,7 +38,7 @@ Bits_new(int32_t size)
 XCL_PUBLIC(void)
 Bits_delete(CBits* bits)
 {
-    Pool_dealloc(NULL, bits, sizeof(CBits) + (bits->nBits >> 3));
+    Pool_dealloc(Pool_def(), bits, sizeof(CBits) + (bits->nBits >> 3));
 }
 
 XCL_PUBLIC(void)
