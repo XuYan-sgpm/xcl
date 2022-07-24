@@ -9,7 +9,13 @@
 
 static CMutex* __Global_mutex = nullptr;
 
-#ifdef ENABLE_CXX
+#if CLANG || GNUC
+static __attribute__((constructor)) void __initializeGlobalMutex()
+{
+    __Global_mutex = Mutex_new();
+    assert(__Global_mutex);
+}
+#elif defined(ENABLE_CXX)
 namespace xcl
 {
     namespace
@@ -28,12 +34,6 @@ namespace xcl
     }// namespace
     static GlobalMutexInitializer __globalMutexInitializer;
 }// namespace xcl
-#elif CLANG || GNUC
-static __attribute__((constructor)) void __initializeGlobalMutex()
-{
-    __Global_mutex = Mutex_new();
-    assert(__Global_mutex);
-}
 #else
 #error "invalid environment"
 #endif
