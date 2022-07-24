@@ -10,7 +10,7 @@ using namespace std;
 
 void __threadProc(void*)
 {
-    sleepMillis(2000);
+    mSleep(2000);
     cout << "in thread proc" << endl;
 }
 

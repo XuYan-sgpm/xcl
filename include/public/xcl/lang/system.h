@@ -32,7 +32,7 @@ nanos();
  * @param timeout milliseconds timeout
  */
 XCL_PUBLIC(void)
-sleepMillis(int32_t timeout);
+mSleep(int32_t timeout);
 
 #ifdef __cplusplus
 }
