@@ -5,3 +5,4 @@ lib
 *.sh
 *.bat
 bin
+build

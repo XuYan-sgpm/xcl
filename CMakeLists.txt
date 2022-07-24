@@ -2,6 +2,12 @@ cmake_minimum_required(VERSION 3.15)
 
 project(xcl C CXX)
 
+set(BUILD_LIB_TYPE dynamic)
+
+if (NOT DEFINED BUILD_TESTS)
+    set(BUILD_TESTS true)
+endif ()
+
 include(cmake/util.cmake)
 
 check_c_cxx_compiler(MSVC Clang GNU AppleClang)
@@ -109,3 +115,7 @@ add_custom_command(TARGET ${xcl_lib_name} PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBRARY_OUTPUT_PATH}
         COMMAND ${CMAKE_COMMAND} -E echo "make library directories ${LIBRARY_OUTPUT_PATH}"
         VERBATIM)
+
+if (${BUILD_TESTS})
+    add_subdirectory(UnitTest)
+endif ()
