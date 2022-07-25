@@ -64,10 +64,9 @@ static void* __ThreadLocal_getData(CThreadLocal* local)
         Err_set(XCL_LOCAL_INVALID_ID);
         return NULL;
     }
-    CLocalStorage* localStorage = __Thread_getLocalStorage();
+    CLocalStorage* localStorage = __ThreadLocal_checkoutLocalStorage();
     if (!localStorage)
     {
-        Err_set(XCL_LOCAL_NO_STORAGE);
         return NULL;
     }
     return LocalStorage_get(localStorage, local->id);
