@@ -14,16 +14,16 @@ extern "C" {
 
 typedef struct {
     char* buf;
-    int32_t beg, end;
+    int32_t beg, size;
     int32_t cap;
-    int32_t blockSize;
+    int32_t eleSize;
 } CRingBuffer;
 
 /**
  * initialize a ring buffer
  * @param ringBuffer ring buffer object
- * @param cap max size of data block
- * @param bs data block size
+ * @param cap max size of data element
+ * @param bs data element size
  * @return ring buffer object if successfully, otherwise false
  */
 XCL_PUBLIC(CRingBuffer)
@@ -37,17 +37,17 @@ XCL_PUBLIC(void)
 RingBuffer_release(CRingBuffer* ringBuffer);
 
 /**
- * get ring buffer available block count
+ * get ring buffer available element count
  * @param ringBuffer ring buffer object
- * @return buffer current available block count
+ * @return buffer current available element count
  */
 XCL_PUBLIC(int32_t)
 RingBuffer_size(const CRingBuffer* ringBuffer);
 
 /**
- * get ring buffer max block count
+ * get ring buffer max element count
  * @param ringBuffer ring buffer object
- * @return max blocks that ring buffer can hold
+ * @return max elements that ring buffer can hold
  */
 XCL_PUBLIC(int32_t)
 RingBuffer_capacity(const CRingBuffer* ringBuffer);
@@ -61,67 +61,46 @@ XCL_PUBLIC(bool)
 RingBuffer_empty(const CRingBuffer* ringBuffer);
 
 /**
- * push block front into ring buffer
+ * push element front into ring buffer
  * @param ringBuffer ring buffer object
- * @param src source block data
- * @param len source block len
+ * @param src source element data
+ * @param force whether overwrite if ring buffer is full
  * @return true if push successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-RingBuffer_pushFront(CRingBuffer* ringBuffer, const void* src, int32_t len);
+RingBuffer_pushFront(CRingBuffer* ringBuffer, const void* src, bool force);
 
 /**
- * push block back into ring buffer
+ * push element back into ring buffer
  * @param ringBuffer ring buffer object
- * @param src source block data
- * @param len source block len
+ * @param src source element data
+ * @param force whether overwrite if ring buffer is full
  * @return true if push successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-RingBuffer_pushBack(CRingBuffer* ringBuffer, const void* src, int32_t len);
+RingBuffer_pushBack(CRingBuffer* ringBuffer, const void* src, bool force);
 
 /**
- * force push data block front into ring buffer, if
- * ring buffer is full, first data block will be overwritten
- * @param ringBuffer ring buffer
- * @param src source data block
- * @param len source block len
- */
-XCL_PUBLIC(void)
-RingBuffer_forcePushFront(CRingBuffer* ringBuffer,
-                          const void* src,
-                          int32_t len);
-
-/**
- * force push data block back into ring buffer
+ * pop data element front from ring buffer
  * @param ringBuffer ring buffer object
- * @param src source data block
- * @param len source block len
- */
-XCL_PUBLIC(void)
-RingBuffer_forcePushBack(CRingBuffer* ringBuffer, const void* src, int32_t len);
-
-/**
- * pop data block front from ring buffer
- * @param ringBuffer ring buffer object
- * @param dst pointer store block data from ring buffer
+ * @param dst pointer store element data from ring buffer
  * @param len for input, indicates memory size
- * of dst; for output, indicates block size
+ * of dst; for output, indicates element size
  * @return true if pop successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-RingBuffer_popFront(CRingBuffer* ringBuffer, void* dst, int32_t* len);
+RingBuffer_popFront(CRingBuffer* ringBuffer, void* dst);
 
 /**
- * pop data block back from ring buffer
+ * pop data element back from ring buffer
  * @param ringBuffer ring buffer object
- * @param dst pointer store block data from ring buffer
+ * @param dst pointer store element data from ring buffer
  * @param len for input, indicates memory size
- * of dst; for output, indicates block size
+ * of dst; for output, indicates element size
  * @return true if pop successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-RingBuffer_popBack(CRingBuffer* ringBuffer, void* dst, int32_t* len);
+RingBuffer_popBack(CRingBuffer* ringBuffer, void* dst);
 
 /**
  * clear ring buffer
@@ -140,56 +119,36 @@ XCL_PUBLIC(void*)
 RingBuffer_at(CRingBuffer* ringBuffer, int32_t idx);
 
 /**
- * get data block at position idx of ring buffer
+ * get data element at position idx of ring buffer
  * @param ringBuffer ring buffer object
  * @param idx position of get
- * @param dst pointer store output block data
- * @param len for input, indicates memory size of dst;
- * for output, indicates block len
+ * @param dst pointer store output element data
  * @return true if get successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-RingBuffer_get(const CRingBuffer* ringBuffer,
-               int32_t idx,
-               void* dst,
-               int32_t* len);
+RingBuffer_get(const CRingBuffer* ringBuffer, int32_t idx, void* dst);
 
 /**
- * insert a data block at position idx of ring buffer
+ * insert a data element at position idx of ring buffer
  * @param ringBuffer ring buffer object
  * @param idx position of insert
- * @param src source data block
- * @param len source block len
+ * @param src source data element
+ * @param force whether overwrite if ring buffer is full
  * @return true if insert successfully, otherwise false
  */
 XCL_PUBLIC(bool)
 RingBuffer_insert(CRingBuffer* ringBuffer,
                   int32_t idx,
                   const void* src,
-                  int32_t len);
+                  bool force);
 
 /**
- * force insert a data block at position idx of ring buffer
- * note that if ring buffer is full, first block of ring
- * buffer will be overwritten
+ * repeat insert elements at position idx of ring buffer
  * @param ringBuffer ring buffer object
  * @param idx position of insert
- * @param src source data block
- * @param len source block len
- */
-XCL_PUBLIC(void)
-RingBuffer_forceInsert(CRingBuffer* ringBuffer,
-                       int32_t idx,
-                       const void* src,
-                       int32_t len);
-
-/**
- * repeat insert blocks at position idx of ring buffer
- * @param ringBuffer ring buffer object
- * @param idx position of insert
- * @param count block count
- * @param src source data block
- * @param len source block len
+ * @param count element count
+ * @param src source data element
+ * @param force whether overwrite if ring buffer is full
  * @return true if insert successfully, otherwise false
  */
 XCL_PUBLIC(bool)
@@ -197,86 +156,141 @@ RingBuffer_insertRepeat(CRingBuffer* ringBuffer,
                         int32_t idx,
                         int32_t count,
                         const void* src,
-                        int32_t len);
+                        bool force);
 
 /**
- * force insert blocks at position idx of ring buffer
- * @param ringBuffer ring buffer object
- * @param idx position of insert
- * @param count block count
- * @param src source data block
- * @param len source block len
- */
-XCL_PUBLIC(void)
-RingBuffer_forceInsertRepeat(CRingBuffer* ringBuffer,
-                             int32_t idx,
-                             int32_t count,
-                             const void* src,
-                             int32_t len);
-
-/**
- * insert continuous blocks at position idx of ring buffer
+ * insert continuous elements at position idx of ring buffer
  * @param ringBuffer ring buffer object
  * @param idx insert position
- * @param src source data block
- * @param bs block size
- * @param count block count
+ * @param src source data element
+ * @param bs element size
+ * @param count element count
+ * @param force whether overwrite if ring buffer is full
  * @return true if insert successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-RingBuffer_insertContinuous(CRingBuffer* ringBuffer,
-                            int32_t idx,
-                            const void* src,
-                            int32_t bs,
-                            int32_t count);
+RingBuffer_insertRegion(CRingBuffer* ringBuffer,
+                        int32_t idx,
+                        const void* src,
+                        int32_t bs,
+                        int32_t count,
+                        bool force);
 
 /**
- * force insert continuous blocks at position idx of ring buffer
- * if ring buffer is full, blocks from start pos of ring buffer
- * will be overwritten
- * @param ringBuffer ring buffer object
- * @param idx insert position
- * @param src source data block
- * @param bs block size
- * @param count block count
- */
-XCL_PUBLIC(void)
-RingBuffer_forceInsertContinuous(CRingBuffer* ringBuffer,
-                                 int32_t idx,
-                                 const void* src,
-                                 int32_t bs,
-                                 int32_t count);
-
-/**
- * assign data blocks to ring buffer
+ * assign data elements to ring buffer
  * if ring buffer is not empty before invoked
  * all data available in ring buffer will be
  * overwritten
  * @param ringBuffer ring buffer object
- * @param n data block count
- * @param src source data block
- * @param len source block len
+ * @param n data element count
+ * @param src source data element
  * @return true if assign successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-RingBuffer_assignRepeat(CRingBuffer* ringBuffer,
-                        int32_t n,
-                        const void* src,
-                        int32_t len);
+RingBuffer_assignRepeat(CRingBuffer* ringBuffer, int32_t n, const void* src);
 
 /**
- * assign continuous blocks to ring buffer
+ * assign continuous elements to ring buffer
  * @param ringBuffer ring buffer object
- * @param src pointer store continuous blocks
- * @param bs block size
- * @param count block count
+ * @param src pointer store continuous elements
+ * @param bs element size
+ * @param count element count
  * @return true if assign successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-RingBuffer_assignContinuous(CRingBuffer* ringBuffer,
-                            const void* src,
-                            int32_t bs,
-                            int32_t count);
+RingBuffer_assignRegion(CRingBuffer* ringBuffer,
+                        const void* src,
+                        int32_t bs,
+                        int32_t count);
+
+/**
+ * replace ring buffer elements at [pos,pos+count)
+ * with data element src
+ * @param ringBuffer ring buffer object
+ * @param pos replace position
+ * @param count replace element count
+ * @param src source data element
+ * @return true if replace successfully, otherwise false
+ */
+XCL_PUBLIC(bool)
+RingBuffer_replaceRepeat(CRingBuffer* ringBuffer,
+                         int32_t pos,
+                         int32_t count,
+                         const void* src);
+
+/**
+ * replace ring buffer elements at [pos,pos+count)
+ * with source data region [src,src+bs*count)
+ * @param ringBuffer ring buffer object
+ * @param pos replace position
+ * @param src source data region
+ * @param bs source element size
+ * @param count source element count
+ * @return true if successfully, otherwise false
+ */
+XCL_PUBLIC(bool)
+RingBuffer_replaceRegion(CRingBuffer* ringBuffer,
+                         int32_t pos,
+                         const void* src,
+                         int32_t bs,
+                         int32_t count);
+
+/**
+ * assign from source ring buffer
+ * @param ringBuffer dest ring buffer
+ * @param src source ring buffer
+ * @param first source first element position
+ * @param last source last element position
+ * @return true if assign successfully, otherwise false
+ */
+XCL_PUBLIC(bool)
+RingBuffer_assignBufRegion(CRingBuffer* ringBuffer,
+                           const CRingBuffer* src,
+                           int32_t first,
+                           int32_t last);
+
+/**
+ * assign from source ring buffer
+ * @param ringBuffer dest ring buffer
+ * @param src source ring buffer
+ * @return true if assign successfully, otherwise false
+ */
+XCL_PUBLIC(bool)
+RingBuffer_assignBuf(CRingBuffer* ringBuffer, const CRingBuffer* src);
+
+/**
+ * insert source region [first,last) from ring buffer
+ * @param ringBuffer dest ring buffer
+ * @param pos insert position
+ * @param src source ring buffer
+ * @param first first source element position
+ * @param last last source element position
+ * @param force whether overwrite if ring buffer is overflow
+ * @return true if insert successfully, otherwise false
+ */
+XCL_PUBLIC(bool)
+RingBuffer_insertBufRegion(CRingBuffer* ringBuffer,
+                           int32_t pos,
+                           const CRingBuffer* src,
+                           int32_t first,
+                           int32_t last,
+                           bool force);
+
+/**
+ * replace elements from pos with buffer src region [first,last)
+ * @param ringBuffer dest ring buffer
+ * @param pos replace position
+ * @param src source ring buffer
+ * @param first first source element position
+ * @param last last source element position
+ * @return true if replace successfully, otherwise false
+ */
+XCL_PUBLIC(bool)
+RingBuffer_replaceBufRegion(CRingBuffer* ringBuffer,
+                            int32_t pos,
+                            const CRingBuffer* src,
+                            int32_t first,
+                            int32_t last);
 
 #ifdef __cplusplus
 }

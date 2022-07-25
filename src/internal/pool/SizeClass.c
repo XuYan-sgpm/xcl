@@ -63,9 +63,9 @@ SizeClass_initialize()
     do
     {
         uint32_t groups = _log2(CHUNK_SIZE) + 1 - LOG2_QUANTUM;
-        sizeClasses =
-            (SizeTab*)Pool_alloc(Pool_def(),
-                                 sizeof(SizeTab) * (groups << LOG2_GROUP_SIZE));
+        sizeClasses = (SizeTab*)Pool_alloc(Pool_def(),
+                                           sizeof(SizeTab)
+                                               * (groups << LOG2_GROUP_SIZE));
         if (!sizeClasses)
         {
             break;

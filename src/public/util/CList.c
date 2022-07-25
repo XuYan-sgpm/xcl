@@ -260,8 +260,8 @@ List_spliceRange(CList* list,
                  CListIter first,
                  CListIter last)
 {
-    if (pos.terminator != &list->header || first.terminator != &other->header ||
-        last.terminator != &other->header)
+    if (pos.terminator != &list->header || first.terminator != &other->header
+        || last.terminator != &other->header)
     {
         return false;
     }
@@ -279,8 +279,8 @@ List_spliceRange(CList* list,
 XCL_PUBLIC(bool)
 List_splice(CList* list, CListIter pos, CList* other, CListIter it)
 {
-    if (it.terminator != &other->header || pos.terminator != &list->header ||
-        it.cur == it.terminator)
+    if (it.terminator != &other->header || pos.terminator != &list->header
+        || it.cur == it.terminator)
     {
         return false;
     }

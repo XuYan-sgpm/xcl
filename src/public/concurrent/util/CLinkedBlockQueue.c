@@ -11,7 +11,7 @@
 //    void* popLock;
 //    void* notEmpty;
 //    void* notFull;
-//    const uint32_t blockSize;
+//    const uint32_t eleSize;
 //    void* blocks;
 //    atomic_int_fast32_t blockCount;
 //    const uint32_t queueCap;

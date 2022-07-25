@@ -66,8 +66,9 @@ Cond_waitFor(CMutex* mutex, CCond* cond, int32_t millis)
         ts.tv_sec = millis / 1000;
         int64_t remaining = millis % 1000;
         ts.tv_nsec = remaining * 1000000;
-        int ret =
-            pthread_cond_timedwait(&cond->handle, (pthread_mutex_t*)mutex, &ts);
+        int ret = pthread_cond_timedwait(&cond->handle,
+                                         (pthread_mutex_t*)mutex,
+                                         &ts);
         if (ret)
             errno = ret;
         return !ret;

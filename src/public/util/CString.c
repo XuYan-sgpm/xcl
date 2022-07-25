@@ -47,15 +47,15 @@ static inline int __String_cap(const CString* string)
 static inline bool
 __String_addCheck(const CString* string, const int pos, const int len)
 {
-    return pos >= 0 && pos <= __String_getSize(string) && len >= 0 &&
-           len <= __String_cap(string) - __String_getSize(string);
+    return pos >= 0 && pos <= __String_getSize(string) && len >= 0
+           && len <= __String_cap(string) - __String_getSize(string);
 }
 
 static inline bool
 __String_removeCheck(const CString* string, const int pos, const int len)
 {
-    return pos >= 0 && pos < __String_getSize(string) && len > 0 &&
-           len <= __String_getSize(string) - pos;
+    return pos >= 0 && pos < __String_getSize(string) && len > 0
+           && len <= __String_getSize(string) - pos;
 }
 
 static inline int __String_grow(const int cap, const int add)

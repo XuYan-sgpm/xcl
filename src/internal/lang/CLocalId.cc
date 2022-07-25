@@ -63,8 +63,8 @@ static bool __LocalId_offerQueue(int32_t id)
     if (__idQueue.size == __idQueue.cap)
     {
         int32_t newCap = __idQueue.cap << 1;
-        int32_t* newIdList =
-            (int32_t*)(realloc(__idQueue.freeIdList, newCap * sizeof(int32_t)));
+        int32_t* newIdList = (int32_t*)(realloc(__idQueue.freeIdList,
+                                                newCap * sizeof(int32_t)));
         if (newIdList)
         {
             __idQueue.cap = newCap;

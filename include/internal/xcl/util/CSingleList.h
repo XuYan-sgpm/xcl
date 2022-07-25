@@ -70,7 +70,7 @@ XCL_PUBLIC(CSingleListIter)
 SingleList_begin(CSingleList* list);
 
 /**
- * end iter of single list
+ * size iter of single list
  * @param list single list object
  * @return iter of last position of single list,
  * without list data

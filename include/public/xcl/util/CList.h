@@ -47,7 +47,7 @@ XCL_PUBLIC(CListIter)
 List_begin(CList* list);
 
 /*
- * return end iter of list
+ * return size iter of list
  */
 XCL_PUBLIC(CListIter)
 List_end(CList* list);

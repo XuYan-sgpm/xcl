@@ -23,8 +23,8 @@ uintptr_t __Thread_createHandle(void* args)
 
 bool __Thread_joinFor(uintptr_t handle, int32_t timeout)
 {
-    return __Win32_wait((HANDLE)handle, timeout >= 0 ? timeout : INFINITE) &&
-           CloseHandle((HANDLE)handle);
+    return __Win32_wait((HANDLE)handle, timeout >= 0 ? timeout : INFINITE)
+           && CloseHandle((HANDLE)handle);
 }
 
 bool __Thread_detach(uintptr_t handle)

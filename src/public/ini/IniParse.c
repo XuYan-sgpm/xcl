@@ -165,12 +165,12 @@ static bool __parseSectionLine(const char* line,
      * if :or= found, value start at sep+1
      * otherwise, key is empty and treat line as value
      */
-    const char* valueStart =
-        sep ? __skipLeftSpace(sep + 1, end - sep - 1) : start;
+    const char* valueStart
+        = sep ? __skipLeftSpace(sep + 1, end - sep - 1) : start;
     if (valueStart)
     {
-        const char* valueFinish =
-            __skipRightSpace(valueStart, end - valueStart) + 1;
+        const char* valueFinish
+            = __skipRightSpace(valueStart, end - valueStart) + 1;
         valueRegion = __region(valueStart, valueFinish - valueStart);
     }
     if (cb)
@@ -193,8 +193,8 @@ static bool __Ini_processLine(Ini ini,
          * find a section hint, process section
          * hasSection will be used in future calls
          */
-        *hasSection =
-            __parseSection(line, region.len, cb, usr, ini.allowInlineComment);
+        *hasSection
+            = __parseSection(line, region.len, cb, usr, ini.allowInlineComment);
         if (!*hasSection)
         {
             return false;
