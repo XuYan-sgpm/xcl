@@ -16,12 +16,16 @@ set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/bin/${build_type})
 file(GLOB test_src_files src/*.cc)
 
 if (WIN32)
-    set(third_party)
+    set(third_party "D:\\third_party\\clang\\debug")
 else ()
     set(third_party /usr/local)
 endif ()
 
 set(xcl_lib_type dynamic)
+
+if (xcl_lib_type STREQUAL "dynamic")
+    add_definitions(-DDYNAMIC)
+endif ()
 
 set(xcl_project_dir ${CMAKE_CURRENT_LIST_DIR}/..)
 set(xcl_inc_dir ${xcl_project_dir}/include/public ${xcl_project_dir}/include/internal)

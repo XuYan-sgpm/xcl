@@ -68,7 +68,7 @@ static CLocalStorage* __LocalStorage_checkMemory(CLocalStorage* localStorage,
 
 CLocalStorage* LocalStorage_new()
 {
-    CLocalStorage* localStorage = Pool_alloc(NULL, sizeof(CLocalStorage));
+    CLocalStorage* localStorage = Pool_alloc(Pool_def(), sizeof(CLocalStorage));
     if (localStorage)
     {
         memset(localStorage, 0, sizeof(CLocalStorage));

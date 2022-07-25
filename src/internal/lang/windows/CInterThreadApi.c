@@ -23,13 +23,18 @@ uintptr_t __Thread_createHandle(void* args)
 
 bool __Thread_joinFor(uintptr_t handle, int32_t timeout)
 {
-    return __Win32_wait((HANDLE)handle, timeout > 0 ? timeout : INFINITE) &&
-           __Thread_closeHandle(handle);
+    return __Win32_wait((HANDLE)handle, timeout >= 0 ? timeout : INFINITE) &&
+           CloseHandle((HANDLE)handle);
 }
 
 bool __Thread_detach(uintptr_t handle)
 {
-    return __Thread_closeHandle(handle);
+    bool ret = CloseHandle((HANDLE)handle);
+    if (ret)
+    {
+        Err_set(GetLastError());
+    }
+    return ret;
 }
 
 bool __Thread_alive(uintptr_t handle)
@@ -91,6 +96,21 @@ void __allocTls()
     }
 }
 
+static void __Thread_ensureTlsKey()
+{
+    static bool initTlsDone = false;
+    if (!initTlsDone)
+    {
+        __acquireGlobalLock();
+        if (!initTlsDone)
+        {
+            __allocTls();
+            initTlsDone = true;
+        }
+        __releaseGlobalLock();
+    }
+}
+
 CLocalStorage* __Thread_getLocalStorage()
 {
     __Thread_ensureTlsKey();
@@ -106,20 +126,6 @@ bool __Thread_setLocalStorage(CLocalStorage* localStorage)
         Err_set(GetLastError());
     }
     return success;
-}
-
-static void __Thread_ensureTlsKey()
-{
-    static bool done = false;
-    if (!done)
-    {
-        __acquireGlobalLock();
-        if (!done)
-        {
-            __allocTls();
-        }
-        __releaseGlobalLock();
-    }
 }
 
 #endif

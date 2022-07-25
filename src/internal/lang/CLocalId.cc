@@ -98,14 +98,14 @@ static bool __LocalId_pollQueue(int32_t* id)
 
 static void __LocalId_ensureQueue()
 {
-    static bool done = false;
-    if (!done)
+    static bool initIdQueueDone = false;
+    if (!initIdQueueDone)
     {
         __acquireGlobalLock();
-        if (!done)
+        if (!initIdQueueDone)
         {
             __LocalId_initQueue();
-            done = true;
+            initIdQueueDone = true;
         }
         __releaseGlobalLock();
     }
