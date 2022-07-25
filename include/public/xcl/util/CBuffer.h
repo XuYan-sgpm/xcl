@@ -1,11 +1,11 @@
 #pragma once
 
-#include <stdbool.h>
-#include <xcl/lang/XclDef.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <stdbool.h>
+#include <xcl/lang/XclDef.h>
 
 typedef struct {
     char* data;

@@ -4,14 +4,14 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "xcl/lang/XclDef.h"
 #include "xcl/pool/CPool.h"
 #include <stdbool.h>
 #include <stdint.h>
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 typedef struct _CSingleNode {
     struct _CSingleNode* next;

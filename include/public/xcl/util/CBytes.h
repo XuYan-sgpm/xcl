@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include <stdbool.h>
-#include <stdint.h>
-#include "xcl/lang/XclDef.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <stdbool.h>
+#include <stdint.h>
+#include "xcl/lang/XclDef.h"
 
 /**
  * translate int16_t to bytes

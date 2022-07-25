@@ -5,13 +5,14 @@
  * time: 2022/05/09
  * a simple generic bidirectional list implementation
  */
-#include <stdbool.h>
-#include <stdint.h>
-#include <xcl/lang/XclDef.h>
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <stdbool.h>
+#include <stdint.h>
+#include <xcl/lang/XclDef.h>
 
 typedef struct _CListNode {
     struct _CListNode* next;

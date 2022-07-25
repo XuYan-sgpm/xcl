@@ -4,12 +4,11 @@
 
 #pragma once
 
-#include "xcl/lang/XclDef.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
+#include "xcl/lang/XclDef.h"
 #include <stdbool.h>
 #include <stdint.h>
 

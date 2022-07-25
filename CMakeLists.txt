@@ -31,15 +31,16 @@ elseif (BUILD_LIB_TYPE STREQUAL "dynamic")
 else ()
     message(FATAL_ERROR "invalid library type:${BUILD_LIB_TYPE}")
 endif ()
+
 add_definitions(-DBUILD_LIBRARY)
+add_definitions(-DENABLE_CXX)
+message(STATUS "enable cxx compile")
 
 set(xcl_lib_type "${BUILD_LIB_TYPE}")
 
 if ("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
     set(wall "/Wall")
     set(hidden)
-    add_definitions(-DENABLE_CXX)
-    message(STATUS "detect msvc compiler, enable cxx")
 else ()
     set(wall "-Wall")
     set(hidden "-fvisibility=hidden")

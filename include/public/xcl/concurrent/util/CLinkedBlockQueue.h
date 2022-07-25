@@ -12,11 +12,11 @@
 
 #pragma once
 
-typedef struct CLinkedBlockingQueue_st CLinkedBlockingQueue;
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+typedef struct _CLinkedBlockingQueue_st CLinkedBlockingQueue;
 
 #include "xcl/lang/XclDef.h"
 #include <stdbool.h>

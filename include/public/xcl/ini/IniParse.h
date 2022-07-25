@@ -1,5 +1,9 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * author: xuyan
  * a strong ini parse implementation
@@ -53,10 +57,6 @@ typedef struct {
      */
     char* const buf;
 } Ini;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /*
  * parse ini data

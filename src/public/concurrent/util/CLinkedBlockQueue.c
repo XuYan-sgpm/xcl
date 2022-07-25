@@ -6,7 +6,7 @@
 #include "xcl/concurrent/CMutex.h"
 //#include <stdatomic.h>
 //
-// struct CLinkedBlockingQueue_st {
+// struct _CLinkedBlockingQueue_st {
 //    void* putLock;
 //    void* popLock;
 //    void* notEmpty;

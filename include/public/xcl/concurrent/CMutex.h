@@ -4,14 +4,13 @@
 
 #pragma once
 
-#include "xcl/lang/XclDef.h"
-
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct _CMutex_st CMutex;
 
+#include "xcl/lang/XclDef.h"
 #include <stdbool.h>
 #include <stdint.h>
 

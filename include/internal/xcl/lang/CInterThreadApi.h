@@ -4,14 +4,14 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <stdbool.h>
 #include "xcl/lang/CLocalStorage.h"
 #include "xcl/lang/CThread.h"
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 CLocalStorage* __Thread_getLocalStorage();
 

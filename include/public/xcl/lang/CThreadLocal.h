@@ -12,13 +12,13 @@
 
 #pragma once
 
-#include "XclDef.h"
-#include <stdbool.h>
-#include <stdint.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "XclDef.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 typedef struct {
     int32_t id;

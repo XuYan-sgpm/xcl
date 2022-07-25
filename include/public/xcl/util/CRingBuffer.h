@@ -4,30 +4,30 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdbool.h>
 #include <stdint.h>
 #include <xcl/lang/XclDef.h>
 
 typedef struct {
-    char* const buf;
+    char* buf;
     int32_t beg, end;
-    const int32_t cap;
-    const int32_t blockSize;
+    int32_t cap;
+    int32_t blockSize;
 } CRingBuffer;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * initialize a ring buffer
  * @param ringBuffer ring buffer object
  * @param cap max size of data block
  * @param bs data block size
- * @return true if init successfully, otherwise false
+ * @return ring buffer object if successfully, otherwise false
  */
-XCL_PUBLIC(bool)
-RingBuffer_init(CRingBuffer* ringBuffer, int32_t cap, int32_t bs);
+XCL_PUBLIC(CRingBuffer)
+RingBuffer_make(int32_t cap, int32_t bs);
 
 /**
  * release ring buffer memory
@@ -137,7 +137,7 @@ RingBuffer_clear(CRingBuffer* ringBuffer);
  * @return pointer if idx available, otherwise NULL
  */
 XCL_PUBLIC(void*)
-RingBuffer_at(const CRingBuffer* ringBuffer, int32_t idx);
+RingBuffer_at(CRingBuffer* ringBuffer, int32_t idx);
 
 /**
  * get data block at position idx of ring buffer

@@ -1,15 +1,12 @@
-// #include <stdint.h>
-// #include <util/CBuffer.h>
-
-#include <stdbool.h>
-#include <stdint.h>
-#include <xcl/lang/XclDef.h>
-
 #pragma once
 
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include <stdbool.h>
+#include <stdint.h>
+#include <xcl/lang/XclDef.h>
 
 typedef struct {
     union

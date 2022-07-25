@@ -4,13 +4,13 @@
 
 #pragma once
 
-#include "xcl/lang/XclDef.h"
-#include <stdbool.h>
-#include <stdint.h>
-
 #ifdef __cplusplus
 extern "C" {
 #endif
+
+#include "xcl/lang/XclDef.h"
+#include <stdbool.h>
+#include <stdint.h>
 
 /*
  * local storage is not responsible for object

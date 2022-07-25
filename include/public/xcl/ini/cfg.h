@@ -1,13 +1,13 @@
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <stdint.h>
 #include <xcl/lang/XclDef.h>
 
 typedef struct _CConfig_st Config;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /*
  * create config from specified ini path

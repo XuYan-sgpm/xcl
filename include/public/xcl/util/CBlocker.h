@@ -10,15 +10,15 @@
 
 #pragma once
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "xcl/lang/XclDef.h"
 #include "xcl/concurrent/CMutex.h"
 #include <stdbool.h>
 
 typedef struct _CBlocker_st CBlocker;
-
-#ifdef __cplusplus
-extern "C" {
-#endif
 
 /**
  * new a blocker object
