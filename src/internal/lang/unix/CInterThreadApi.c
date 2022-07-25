@@ -115,16 +115,16 @@ static void __destroyLocalStorage(void* args)
 
 static void __Thread_ensureLocalStorageKey()
 {
-    static bool done = false;
-    if (!done)
+    static bool initStorageKey = false;
+    if (!initStorageKey)
     {
         __acquireGlobalLock();
-        if (!done)
+        if (!initStorageKey)
         {
             int ret = pthread_key_create(&__Unix_Thread_localStorageKey,
                                          __destroyLocalStorage);
             assert(ret == 0);
-            done = true;
+            initStorageKey = true;
         }
         __releaseGlobalLock();
     }
