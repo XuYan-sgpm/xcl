@@ -79,11 +79,11 @@ static void __runLockThreads(Callback cb, void* args)
     }
 }
 
-TEST(TestLock, func1)
-{
-    xcl::TimedLock* lock = xcl::TimedLock::NewLock();
-    __runLockThreads(__testLock, lock);
-}
+// TEST(TestLock, func1)
+//{
+//     xcl::TimedLock* lock = xcl::TimedLock::NewLock();
+//     __runLockThreads(__testLock, lock);
+// }
 
 TEST(TestLock, func2)
 {
