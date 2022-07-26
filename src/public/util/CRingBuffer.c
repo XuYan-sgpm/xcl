@@ -298,20 +298,20 @@ RingBuffer_clear(CRingBuffer* ringBuffer)
 }
 
 XCL_PUBLIC(void*)
-RingBuffer_at(CRingBuffer* ringBuffer, int32_t idx)
+RingBuffer_at(CRingBuffer* ringBuffer, int32_t pos)
 {
     return ringBuffer->buf
-           + __RingBuffer_map(ringBuffer, idx) * ringBuffer->eleSize;
+           + __RingBuffer_map(ringBuffer, pos) * ringBuffer->eleSize;
 }
 
 XCL_PUBLIC(bool)
-RingBuffer_get(const CRingBuffer* ringBuffer, int32_t idx, void* dst)
+RingBuffer_get(const CRingBuffer* ringBuffer, int32_t pos, void* dst)
 {
-    if (!__RingBuffer_checkPosition(ringBuffer, false, idx))
+    if (!__RingBuffer_checkPosition(ringBuffer, false, pos))
     {
         return false;
     }
-    int32_t from = __RingBuffer_map(ringBuffer, idx);
+    int32_t from = __RingBuffer_map(ringBuffer, pos);
     memcpy(dst,
            ringBuffer->buf + from * ringBuffer->eleSize,
            ringBuffer->eleSize);
@@ -349,13 +349,13 @@ __RingBuffer_beforeInsert(CRingBuffer* ringBuffer,
 
 XCL_PUBLIC(bool)
 RingBuffer_insert(CRingBuffer* ringBuffer,
-                  int32_t idx,
+                  int32_t pos,
                   const void* src,
                   bool force)
 {
-    if (__RingBuffer_beforeInsert(ringBuffer, idx, 1, force))
+    if (__RingBuffer_beforeInsert(ringBuffer, pos, 1, force))
     {
-        memcpy(RingBuffer_at(ringBuffer, idx), src, ringBuffer->eleSize);
+        memcpy(RingBuffer_at(ringBuffer, pos), src, ringBuffer->eleSize);
         return true;
     }
     else
@@ -366,16 +366,16 @@ RingBuffer_insert(CRingBuffer* ringBuffer,
 
 XCL_PUBLIC(bool)
 RingBuffer_insertRepeat(CRingBuffer* ringBuffer,
-                        int32_t idx,
+                        int32_t pos,
                         int32_t count,
                         const void* src,
                         bool force)
 {
-    if (__RingBuffer_beforeInsert(ringBuffer, idx, count, force))
+    if (__RingBuffer_beforeInsert(ringBuffer, pos, count, force))
     {
         for (int i = 0; i < count; i++)
         {
-            memcpy(RingBuffer_at(ringBuffer, idx + i),
+            memcpy(RingBuffer_at(ringBuffer, pos + i),
                    src,
                    ringBuffer->eleSize);
         }
@@ -389,16 +389,16 @@ RingBuffer_insertRepeat(CRingBuffer* ringBuffer,
 
 XCL_PUBLIC(bool)
 RingBuffer_insertRegion(CRingBuffer* ringBuffer,
-                        int32_t idx,
+                        int32_t pos,
                         const void* src,
                         int32_t es,
                         int32_t count,
                         bool force)
 {
     if (es == ringBuffer->eleSize
-        && __RingBuffer_beforeInsert(ringBuffer, idx, count, force))
+        && __RingBuffer_beforeInsert(ringBuffer, pos, count, force))
     {
-        __RingBuffer_copyExternalData(ringBuffer, idx, src, count);
+        __RingBuffer_copyExternalData(ringBuffer, pos, src, count);
         return true;
     }
     else
@@ -410,7 +410,7 @@ RingBuffer_insertRegion(CRingBuffer* ringBuffer,
 bool
 __RingBuffer_beforeWrite(CRingBuffer* ringBuffer, int32_t pos, int32_t n)
 {
-    if (!__RingBuffer_checkPosition(ringBuffer, false, pos))
+    if (n < 0 || !__RingBuffer_checkPosition(ringBuffer, false, pos))
     {
         return false;
     }
@@ -494,14 +494,24 @@ __RingBuffer_beforeRep(CRingBuffer* ringBuffer,
 }
 
 XCL_PUBLIC(bool)
+RingBuffer_replace(CRingBuffer* ringBuffer,
+                   int32_t pos,
+                   int32_t n,
+                   const void* src)
+{
+    return RingBuffer_replaceRepeat(ringBuffer, pos, n, 1, src);
+}
+
+XCL_PUBLIC(bool)
 RingBuffer_replaceRepeat(CRingBuffer* ringBuffer,
                          int32_t pos,
                          int32_t n,
+                         int32_t count,
                          const void* src)
 {
-    if (__RingBuffer_beforeRep(ringBuffer, pos, n, 1))
+    if (__RingBuffer_beforeRep(ringBuffer, pos, n, count))
     {
-        for (int i = 0; i < n; i++)
+        for (int i = 0; i < count; i++)
         {
             memcpy(RingBuffer_at(ringBuffer, pos + i),
                    src,

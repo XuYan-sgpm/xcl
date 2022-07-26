@@ -110,42 +110,42 @@ XCL_PUBLIC(void)
 RingBuffer_clear(CRingBuffer* ringBuffer);
 
 /**
- * get pointer at position idx of ring buffer
+ * get pointer at position pos of ring buffer
  * @param ringBuffer ring buffer object
- * @param idx index
- * @return pointer if idx available, otherwise NULL
+ * @param pos index
+ * @return pointer if pos available, otherwise NULL
  */
 XCL_PUBLIC(void*)
-RingBuffer_at(CRingBuffer* ringBuffer, int32_t idx);
+RingBuffer_at(CRingBuffer* ringBuffer, int32_t pos);
 
 /**
- * get data element at position idx of ring buffer
+ * get data element at position pos of ring buffer
  * @param ringBuffer ring buffer object
- * @param idx position of get
+ * @param pos position of get
  * @param dst pointer store output element data
  * @return true if get successfully, otherwise false
  */
 XCL_PUBLIC(bool)
-RingBuffer_get(const CRingBuffer* ringBuffer, int32_t idx, void* dst);
+RingBuffer_get(const CRingBuffer* ringBuffer, int32_t pos, void* dst);
 
 /**
- * insert a data element at position idx of ring buffer
+ * insert a data element at position pos of ring buffer
  * @param ringBuffer ring buffer object
- * @param idx position of insert
+ * @param pos position of insert
  * @param src source data element
  * @param force whether overwrite if ring buffer is full
  * @return true if insert successfully, otherwise false
  */
 XCL_PUBLIC(bool)
 RingBuffer_insert(CRingBuffer* ringBuffer,
-                  int32_t idx,
+                  int32_t pos,
                   const void* src,
                   bool force);
 
 /**
- * repeat insert elements at position idx of ring buffer
+ * repeat insert elements at position pos of ring buffer
  * @param ringBuffer ring buffer object
- * @param idx position of insert
+ * @param pos position of insert
  * @param count element count
  * @param src source data element
  * @param force whether overwrite if ring buffer is full
@@ -153,15 +153,15 @@ RingBuffer_insert(CRingBuffer* ringBuffer,
  */
 XCL_PUBLIC(bool)
 RingBuffer_insertRepeat(CRingBuffer* ringBuffer,
-                        int32_t idx,
+                        int32_t pos,
                         int32_t count,
                         const void* src,
                         bool force);
 
 /**
- * insert continuous elements at position idx of ring buffer
+ * insert continuous elements at position pos of ring buffer
  * @param ringBuffer ring buffer object
- * @param idx insert position
+ * @param pos insert position
  * @param src source data element
  * @param es element size
  * @param count element count
@@ -170,7 +170,7 @@ RingBuffer_insertRepeat(CRingBuffer* ringBuffer,
  */
 XCL_PUBLIC(bool)
 RingBuffer_insertRegion(CRingBuffer* ringBuffer,
-                        int32_t idx,
+                        int32_t pos,
                         const void* src,
                         int32_t es,
                         int32_t count,
@@ -204,12 +204,27 @@ RingBuffer_assignRegion(CRingBuffer* ringBuffer,
                         int32_t count);
 
 /**
+ * replace element at position pos of ring buffer with element
+ * store at src
+ * @param ringBuffer ring buffer
+ * @param pos replace position
+ * @param src source element
+ * @return true if replace successfully, otherwise false
+ */
+XCL_PUBLIC(bool)
+RingBuffer_replace(CRingBuffer* ringBuffer,
+                   int32_t pos,
+                   int32_t n,
+                   const void* src);
+
+/**
  * replace ring buffer elements at [pos,pos+n)
- * with source element at src
+ * with count source elements stored at src
  * replace will be cancelled if ring buffer is overflow after replace
  * @param ringBuffer ring buffer object
  * @param pos replace position
  * @param n replaced elements count
+ * @param count source element count
  * @param src source data element
  * @return true if replace successfully, otherwise false
  */
@@ -217,6 +232,7 @@ XCL_PUBLIC(bool)
 RingBuffer_replaceRepeat(CRingBuffer* ringBuffer,
                          int32_t pos,
                          int32_t n,
+                         int32_t count,
                          const void* src);
 
 /**

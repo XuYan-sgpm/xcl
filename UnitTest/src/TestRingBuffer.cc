@@ -37,3 +37,31 @@ TEST(TestRingBuffer, func1)
     }
     ASSERT_TRUE(RingBuffer_empty(&rb));
 }
+
+TEST(TestRingBuffer, func2)
+{
+    CRingBuffer rb = RingBuffer_make(245, 4);
+    ASSERT_NE(rb.buf, nullptr);
+    int val;
+    for (int i = 0; i < RingBuffer_capacity(&rb); i++)
+    {
+        val = rand();
+        ASSERT_TRUE(RingBuffer_insert(&rb, 0, &val, false));
+        ASSERT_EQ(RingBuffer_size(&rb), i + 1);
+    }
+    for (int i = 0; i < RingBuffer_size(&rb); i++)
+    {
+        ASSERT_TRUE(RingBuffer_get(&rb, i, &val));
+        cout << val << ' ';
+    }
+    cout << endl;
+    val = 97;
+    ASSERT_TRUE(RingBuffer_replaceRepeat(&rb, 56, 12, 3, &val));
+    ASSERT_EQ(RingBuffer_size(&rb), 236);
+    for (int i = 0; i < RingBuffer_size(&rb); i++)
+    {
+        ASSERT_TRUE(RingBuffer_get(&rb, i, &val));
+        cout << val << ' ';
+    }
+    cout << endl;
+}
