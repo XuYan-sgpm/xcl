@@ -8,6 +8,8 @@
 extern "C" {
 #endif
 
+#include <stdbool.h>
+
 bool __acquireGlobalLock();
 
 void __releaseGlobalLock();

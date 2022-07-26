@@ -3,9 +3,7 @@
 //
 
 #include "xcl/concurrent/GlobalLock.h"
-#ifdef __cplusplus
-extern "C" {
-#endif
+#include <xcl/concurrent/InternalAtomic.h>
 
 #include "xcl/concurrent/CMutex.h"
 #include "xcl/lang/XclErr.h"
@@ -128,40 +126,13 @@ void __LocalId_recycle(int32_t id)
     __LocalId_offerQueue(id);
 }
 
-#ifdef __cplusplus
-}
-#endif
-
 /*
  * we start gen thread local id from 1
  * because id 0 is reserved to store
  * thread handle
  */
-
-#if GNUC || CLANG
-
-#include <stdatomic.h>
-
-static atomic_int_fast32_t __localIdGenerator = 1;
-
-extern "C" int32_t __LocalId_genId()
+static ATOMIC(int32_t) __LocalId_generator = 1;
+int32_t __LocalId_genId()
 {
-    return atomic_fetch_add_explicit(&__localIdGenerator,
-                                     1,
-                                     memory_order_seq_cst);
+    return ATOMIC_INCREMENT(&__LocalId_generator, memory_order_seq_cst);
 }
-
-#elif defined(ENABLE_CXX)
-
-#include <atomic>
-
-static std::atomic<int32_t> __localIdGenerator(1);
-
-extern "C" int32_t __LocalId_genId()
-{
-    return __localIdGenerator.fetch_add(1, std::memory_order_seq_cst);
-}
-
-#else
-#error "unsupported environment"
-#endif

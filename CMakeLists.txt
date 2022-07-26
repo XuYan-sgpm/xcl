@@ -2,14 +2,23 @@ cmake_minimum_required(VERSION 3.15)
 
 project(xcl C CXX)
 
-set(BUILD_LIB_TYPE dynamic)
-
 include(cmake/util.cmake)
 
 check_c_cxx_compiler(MSVC Clang GNU AppleClang)
 
-set(CMAKE_CXX_STANDARD 11)
-set(CMAKE_C_STANDARD 11)
+if (ENABLE_C11)
+    set(CMAKE_C_STANDARD 11)
+else ()
+    set(CMAKE_C_STANDARD 99)
+endif ()
+if (ENABLE_CXX11)
+    set(CMAKE_CXX_STANDARD 11)
+else ()
+    set(CMAKE_CXX_STANDARD 03)
+endif ()
+if (ENABLE_CXX_COMPILE)
+    add_definitions(-DENABLE_CXX)
+endif ()
 
 set(CMAKE_DEBUG_POSTFIX "d")
 set(xcl_lib_name xcl)
@@ -20,7 +29,7 @@ if (NOT DEFINED CMAKE_BUILD_TYPE)
 endif ()
 
 if (NOT DEFINED BUILD_LIB_TYPE)
-    set(BUILD_LIB_TYPE static)
+    set(BUILD_LIB_TYPE dynamic)
 endif ()
 if (BUILD_LIB_TYPE STREQUAL "static")
     add_definitions(-DSTATIC)
@@ -33,8 +42,6 @@ else ()
 endif ()
 
 add_definitions(-DBUILD_LIBRARY)
-add_definitions(-DENABLE_CXX)
-message(STATUS "enable cxx compile")
 
 set(xcl_lib_type "${BUILD_LIB_TYPE}")
 

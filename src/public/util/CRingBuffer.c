@@ -112,8 +112,7 @@ static inline int32_t __RingBuffer_mappedNext(const CRingBuffer* ringBuffer,
 
 static inline void __RingBuffer_nextBeg(CRingBuffer* ringBuffer, int32_t step)
 {
-    ringBuffer->beg
-        = __RingBuffer_map(ringBuffer, __RingBuffer_offset(ringBuffer, step));
+    ringBuffer->beg = __RingBuffer_map(ringBuffer, step);
 }
 
 static void __RingBuffer_move(CRingBuffer* ringBuffer,

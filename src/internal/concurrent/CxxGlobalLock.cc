@@ -1,16 +1,18 @@
 //
-// Created by 徐琰 on 2022/7/24.
+// Created by xuyan on 2022/7/26.
 //
 
 #include <cassert>
-#include "xcl/concurrent/GlobalLock.h"
-#include "xcl/lang/XclDef.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "xcl/concurrent/CMutex.h"
 #include "xcl/pool/CPool.h"
 
 static CMutex* __XCL_globalMutex = nullptr;
 
-extern "C" {
 CMutex* __Mutex_newByPool(CPool* pool);
 
 bool __acquireGlobalLock()
@@ -22,15 +24,10 @@ void __releaseGlobalLock()
 {
     Mutex_unlock(__XCL_globalMutex);
 }
-}
 
-#if CLANG || GNUC
-static __attribute__((constructor)) void __initXclGlobalMutex()
-{
-    __XCL_globalMutex = __Mutex_newByPool(NULL);
-    assert(__XCL_globalMutex);
+#ifdef __cplusplus
 }
-#elif defined(ENABLE_CXX)
+#endif
 namespace xcl
 {
     namespace
@@ -49,6 +46,3 @@ namespace xcl
     }// namespace
     static GlobalMutexInitializer __globalMutexInitializer;
 }// namespace xcl
-#else
-#error "invalid environment"
-#endif
