@@ -3,7 +3,7 @@
 //
 
 #include "xcl/concurrent/GlobalLock.h"
-#include <xcl/concurrent/InternalAtomic.h>
+#include <xcl/concurrent/CInternalAtomic.h>
 
 #include "xcl/concurrent/CMutex.h"
 #include "xcl/lang/XclErr.h"

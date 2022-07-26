@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.15)
 
 project(UnitTest)
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(build_type debug)
     set(xcl_lib_name xcld)
@@ -14,14 +16,15 @@ set(CMAKE_CXX_STANDARD 11)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/bin/${build_type})
 file(GLOB test_src_files src/*.cc)
+#set(test_src_files)
 
 if (WIN32)
-    set(third_party "D:\\third_party\\clang\\debug")
+    set(third_party "D:\\third_party\\mingw64\\debug")
 else ()
     set(third_party /usr/local)
 endif ()
 
-set(xcl_lib_type dynamic)
+set(xcl_lib_type static)
 
 if (xcl_lib_type STREQUAL "dynamic")
     add_definitions(-DDYNAMIC)

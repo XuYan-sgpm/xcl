@@ -2,6 +2,8 @@ cmake_minimum_required(VERSION 3.15)
 
 project(xcl C CXX)
 
+set(CMAKE_VERBOSE_MAKEFILE ON)
+
 include(cmake/util.cmake)
 
 check_c_cxx_compiler(MSVC Clang GNU AppleClang)
@@ -14,10 +16,15 @@ endif ()
 if (ENABLE_CXX11)
     set(CMAKE_CXX_STANDARD 11)
 else ()
-    set(CMAKE_CXX_STANDARD 03)
+    set(CMAKE_CXX_STANDARD 98)
 endif ()
+
+message(STATUS "CMAKE_C_STANDARD:${CMAKE_C_STANDARD}")
+message(STATUS "CMAKE_CXX_STANDARD:${CMAKE_CXX_STANDARD}")
+
 if (ENABLE_CXX_COMPILE)
     add_definitions(-DENABLE_CXX)
+    message(STATUS "enable cxx compile")
 endif ()
 
 set(CMAKE_DEBUG_POSTFIX "d")

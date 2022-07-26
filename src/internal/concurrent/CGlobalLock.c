@@ -3,7 +3,7 @@
 //
 
 #ifndef ENABLE_CXX
-#include <cassert>
+#include <assert.h>
 #include "xcl/concurrent/GlobalLock.h"
 #include "xcl/lang/XclDef.h"
 #include "xcl/concurrent/CMutex.h"
