@@ -34,6 +34,7 @@ __initXclGlobalMutex()
     assert(__XCL_globalMutex);
 }
 #else
-#error "global lock can not be initialized"
+#error \
+    "global lock can not be initialized, try add -DENABLE_CXX_COMPILE=ON to cmake command"
 #endif
 #endif

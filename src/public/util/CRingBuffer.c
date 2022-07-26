@@ -324,8 +324,7 @@ __RingBuffer_beforeInsert(CRingBuffer* ringBuffer,
                           int32_t len,
                           bool force)
 {
-    if (!__RingBuffer_checkPosition(ringBuffer, true, pos)
-        || (!__RingBuffer_checkRegion(ringBuffer, true, pos, len) && !force))
+    if ((!__RingBuffer_checkRegion(ringBuffer, true, pos, len) && !force))
     {
         return false;
     }

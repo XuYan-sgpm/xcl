@@ -70,4 +70,4 @@ SpacesInSquareBrackets: false
 SortIncludes: Never
 TabWidth: 4
 UseTab: Never
-TypenameMacros: [ 'XCL_PUBLIC' ]
+TypenameMacros: [ 'XCL_PUBLIC','ATOMIC' ]
