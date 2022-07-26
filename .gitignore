@@ -8,4 +8,4 @@ bin
 build
 .vs
 out
-*.json
+CMakeSettings.json
