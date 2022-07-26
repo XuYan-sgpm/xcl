@@ -21,4 +21,4 @@ namespace xcl
             lock_->unlock();
         }
     }
-}// namespace xcl
+} // namespace xcl

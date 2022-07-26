@@ -8,13 +8,15 @@ static const char* COMMENT_PREFIX = ";#";
 
 static const char* ASSIGN_OPERATORS = "=:";
 
-static Region __region(const char* const str, int len)
+static Region
+__region(const char* const str, int len)
 {
     Region region = {str, len};
     return region;
 }
 
-static const char* __skipLeftSpace(const char* str, int len)
+static const char*
+__skipLeftSpace(const char* str, int len)
 {
     for (int i = 0; i < len; i++)
     {
@@ -26,7 +28,8 @@ static const char* __skipLeftSpace(const char* str, int len)
     return NULL;
 }
 
-static const char* __skipRightSpace(const char* str, int len)
+static const char*
+__skipRightSpace(const char* str, int len)
 {
     for (int i = len - 1; i >= 0; --i)
     {
@@ -38,7 +41,8 @@ static const char* __skipRightSpace(const char* str, int len)
     return NULL;
 }
 
-static const char* __strQuery(const char* str, int len, char ch)
+static const char*
+__strQuery(const char* str, int len, char ch)
 {
     for (int i = 0; i < len; i++)
     {
@@ -54,7 +58,8 @@ static const char* __strQuery(const char* str, int len, char ch)
  * find a pos in range[str,str+len) which value
  * contained in str
  */
-static const char* __strQuery2(const char* str, int len, const char* chars)
+static const char*
+__strQuery2(const char* str, int len, const char* chars)
 {
     const char* p = chars;
     while (*p)
@@ -69,11 +74,12 @@ static const char* __strQuery2(const char* str, int len, const char* chars)
     return NULL;
 }
 
-static bool __parseSection(const char* line,
-                           int len,
-                           IniCallback cb,
-                           void* usr,
-                           bool allowInlineComment)
+static bool
+__parseSection(const char* line,
+               int len,
+               IniCallback cb,
+               void* usr,
+               bool allowInlineComment)
 {
     const char* end = line + len;
     const char* start = __skipLeftSpace(line + 1, end - line - 1);
@@ -111,11 +117,12 @@ static bool __parseSection(const char* line,
 /*
  * section is always empty in here
  */
-static bool __parseSectionLine(const char* line,
-                               int len,
-                               IniCallback cb,
-                               void* usr,
-                               bool allowInlineComment)
+static bool
+__parseSectionLine(const char* line,
+                   int len,
+                   IniCallback cb,
+                   void* usr,
+                   bool allowInlineComment)
 {
     const char* end = line + len;
     const char* start = __skipLeftSpace(line, end - line);
@@ -180,11 +187,12 @@ static bool __parseSectionLine(const char* line,
     return true;
 }
 
-static bool __Ini_processLine(Ini ini,
-                              Region region,
-                              IniCallback cb,
-                              void* usr,
-                              bool* hasSection)
+static bool
+__Ini_processLine(Ini ini,
+                  Region region,
+                  IniCallback cb,
+                  void* usr,
+                  bool* hasSection)
 {
     const char* line = region.str;
     if (line[0] == '[')
@@ -239,11 +247,12 @@ static bool __Ini_processLine(Ini ini,
  * return last progress start pos
  * or NULL if Err_get can not be ignored
  */
-static const char* __Ini_processRegion(Ini ini,
-                                       Region region,
-                                       IniCallback cb,
-                                       void* usr,
-                                       bool* hasSection)
+static const char*
+__Ini_processRegion(Ini ini,
+                    Region region,
+                    IniCallback cb,
+                    void* usr,
+                    bool* hasSection)
 {
     const char* buf = region.str;
     const char* bufEnd = buf + region.len;
@@ -276,11 +285,12 @@ static const char* __Ini_processRegion(Ini ini,
     return bufEnd;
 }
 
-static bool __Ini_parseFromReader(Ini ini,
-                                  void* stream,
-                                  IniReadFunc reader,
-                                  IniCallback cb,
-                                  void* usr)
+static bool
+__Ini_parseFromReader(Ini ini,
+                      void* stream,
+                      IniReadFunc reader,
+                      IniCallback cb,
+                      void* usr)
 {
     int off = 0;
     bool hasSection = false;
@@ -324,7 +334,8 @@ static bool __Ini_parseFromReader(Ini ini,
     return true;
 }
 
-static int32_t __readFromStr(void* stream, char* buf, int len)
+static int32_t
+__readFromStr(void* stream, char* buf, int len)
 {
     Region* region = (Region*)stream;
     int total = region->len;
@@ -338,18 +349,21 @@ static int32_t __readFromStr(void* stream, char* buf, int len)
     return ret;
 }
 
-static int32_t __readFromFile(void* stream, char* buf, int len)
+static int32_t
+__readFromFile(void* stream, char* buf, int len)
 {
     return fread(buf, 1, len, (FILE*)stream);
 }
 
-bool Ini_parseStr(Ini ini, const char* str, IniCallback cb, void* usr)
+bool
+Ini_parseStr(Ini ini, const char* str, IniCallback cb, void* usr)
 {
     Region region = {str, strlen(str)};
     return __Ini_parseFromReader(ini, &region, __readFromStr, cb, usr);
 }
 
-bool Ini_parse(Ini ini, const char* filePath, IniCallback cb, void* usr)
+bool
+Ini_parse(Ini ini, const char* filePath, IniCallback cb, void* usr)
 {
     FILE* fp = fopen(filePath, "r");
     if (!fp)
@@ -361,11 +375,12 @@ bool Ini_parse(Ini ini, const char* filePath, IniCallback cb, void* usr)
     return ret;
 }
 
-bool Ini_parseStream(Ini ini,
-                     void* stream,
-                     IniReadFunc reader,
-                     IniCallback cb,
-                     void* usr)
+bool
+Ini_parseStream(Ini ini,
+                void* stream,
+                IniReadFunc reader,
+                IniCallback cb,
+                void* usr)
 {
     return __Ini_parseFromReader(ini, stream, reader, cb, usr);
 }

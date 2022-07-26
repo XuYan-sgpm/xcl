@@ -11,7 +11,8 @@ extern "C" {
 #include <stdint.h>
 #include <xcl/lang/XclDef.h>
 
-XCL_PUBLIC(uint32_t) _log2(uint64_t val);
+XCL_PUBLIC(uint32_t)
+_log2(uint64_t val);
 
 #ifdef __cplusplus
 }

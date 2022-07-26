@@ -24,7 +24,8 @@ assertIf(bool cond, const char* msg)
     }
 }
 
-XCL_EXPORT void assertMessage(bool cond, const char* fmt, ...)
+XCL_EXPORT void
+assertMessage(bool cond, const char* fmt, ...)
 {
     if (!cond)
     {

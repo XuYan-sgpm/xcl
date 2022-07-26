@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include <stdint.h>
+#include <stddef.h>
 
 #ifdef __APPLE__
 #define MACOSX 1

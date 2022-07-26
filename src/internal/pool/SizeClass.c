@@ -28,16 +28,18 @@ static int32_t tabs = 0;
  * initialize all size class tabs
  * @return available tabs count
  */
-static int32_t __initSizeClassTabs();
+static int32_t
+__initSizeClassTabs();
 
 /**
  * initialize single size class tab
  * @return current tab's memory size
  */
-static int32_t __initSizeClassTab(int32_t idx,
-                                  int32_t log2Group,
-                                  int32_t log2Delta,
-                                  int32_t nDelta);
+static int32_t
+__initSizeClassTab(int32_t idx,
+                   int32_t log2Group,
+                   int32_t log2Delta,
+                   int32_t nDelta);
 
 ///**
 // * initialize idx to size tabs
@@ -191,7 +193,8 @@ SizeClass_size2pages(uint32_t size)
     return pages + 1;
 }
 
-static int32_t __initSizeClassTabs()
+static int32_t
+__initSizeClassTabs()
 {
     int32_t idx = 0;
     int32_t size = 0;
@@ -220,10 +223,11 @@ static int32_t __initSizeClassTabs()
     return idx;
 }
 
-static int32_t __initSizeClassTab(int32_t idx,
-                                  int32_t log2Group,
-                                  int32_t log2Delta,
-                                  int32_t nDelta)
+static int32_t
+__initSizeClassTab(int32_t idx,
+                   int32_t log2Group,
+                   int32_t log2Delta,
+                   int32_t nDelta)
 {
     bool isMultiPage = false;
     int32_t size = (1 << log2Group) + (nDelta << log2Delta);

@@ -7,7 +7,8 @@
 #include <windows.h>
 #include <process.h>
 
-bool __Win32_wait(HANDLE handle, DWORD timeout);
+bool
+__Win32_wait(HANDLE handle, DWORD timeout);
 
 static unsigned __stdcall __Win32_threadRoutine(void* args)
 {
@@ -15,19 +16,22 @@ static unsigned __stdcall __Win32_threadRoutine(void* args)
     return 0;
 }
 
-uintptr_t __Thread_createHandle(void* args)
+uintptr_t
+__Thread_createHandle(void* args)
 {
     uintptr_t h = _beginthreadex(NULL, 0, __Win32_threadRoutine, args, 0, NULL);
     return h;
 }
 
-bool __Thread_joinFor(uintptr_t handle, int32_t timeout)
+bool
+__Thread_joinFor(uintptr_t handle, int32_t timeout)
 {
     return __Win32_wait((HANDLE)handle, timeout >= 0 ? timeout : INFINITE)
            && CloseHandle((HANDLE)handle);
 }
 
-bool __Thread_detach(uintptr_t handle)
+bool
+__Thread_detach(uintptr_t handle)
 {
     bool ret = CloseHandle((HANDLE)handle);
     if (ret)
@@ -37,7 +41,8 @@ bool __Thread_detach(uintptr_t handle)
     return ret;
 }
 
-bool __Thread_alive(uintptr_t handle)
+bool
+__Thread_alive(uintptr_t handle)
 {
     DWORD exit;
     if (!GetExitCodeThread((HANDLE)handle, &exit))
@@ -48,12 +53,14 @@ bool __Thread_alive(uintptr_t handle)
     return exit == STILL_ACTIVE;
 }
 
-unsigned long __Thread_currentId()
+unsigned long
+__Thread_currentId()
 {
     return GetCurrentThreadId();
 }
 
-uintptr_t __Thread_currentHandle()
+uintptr_t
+__Thread_currentHandle()
 {
     return (uintptr_t)GetCurrentThread();
 }
@@ -66,12 +73,14 @@ static __declspec(thread) CLocalStorage* __Win32_Thread_localStorage = NULL;
 static __thread CLocalStorage* __Win32_Thread_localStorage = NULL;
 #endif
 
-CLocalStorage* __Thread_getLocalStorage()
+CLocalStorage*
+__Thread_getLocalStorage()
 {
     return __Win32_Thread_localStorage;
 }
 
-bool __Thread_setLocalStorage(CLocalStorage* localStorage)
+bool
+__Thread_setLocalStorage(CLocalStorage* localStorage)
 {
     __Win32_Thread_localStorage = localStorage;
     return true;
@@ -83,7 +92,8 @@ bool __Thread_setLocalStorage(CLocalStorage* localStorage)
 
 static DWORD __Win32_Thread_storageKey = TLS_OUT_OF_INDEXES;
 
-void __allocTls()
+void
+__allocTls()
 {
     DWORD idx = TlsAlloc();
     if (idx != TLS_OUT_OF_INDEXES)
@@ -96,7 +106,8 @@ void __allocTls()
     }
 }
 
-static void __Thread_ensureTlsKey()
+static void
+__Thread_ensureTlsKey()
 {
     static bool initTlsDone = false;
     if (!initTlsDone)
@@ -111,13 +122,15 @@ static void __Thread_ensureTlsKey()
     }
 }
 
-CLocalStorage* __Thread_getLocalStorage()
+CLocalStorage*
+__Thread_getLocalStorage()
 {
     __Thread_ensureTlsKey();
     return (CLocalStorage*)TlsGetValue(__Win32_Thread_storageKey);
 }
 
-bool __Thread_setLocalStorage(CLocalStorage* localStorage)
+bool
+__Thread_setLocalStorage(CLocalStorage* localStorage)
 {
     __Thread_ensureTlsKey();
     bool success = TlsSetValue(__Win32_Thread_storageKey, localStorage);

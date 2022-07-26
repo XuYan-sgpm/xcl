@@ -13,14 +13,17 @@ extern "C" {
 
 static CMutex* __XCL_globalMutex = nullptr;
 
-CMutex* __Mutex_newByPool(CPool* pool);
+CMutex*
+__Mutex_newByPool(CPool* pool);
 
-bool __acquireGlobalLock()
+bool
+__acquireGlobalLock()
 {
     return Mutex_lock(__XCL_globalMutex);
 }
 
-void __releaseGlobalLock()
+void
+__releaseGlobalLock()
 {
     Mutex_unlock(__XCL_globalMutex);
 }
@@ -43,6 +46,6 @@ namespace xcl
             __XCL_globalMutex = __Mutex_newByPool(NULL);
             assert(__XCL_globalMutex);
         }
-    }// namespace
+    } // namespace
     static GlobalMutexInitializer __globalMutexInitializer;
-}// namespace xcl
+} // namespace xcl

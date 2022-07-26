@@ -12,7 +12,8 @@
 
 using namespace std;
 
-static void __testThreadLocal(CThreadLocal* local)
+static void
+__testThreadLocal(CThreadLocal* local)
 {
     const char* p = "hello world";
     assert(Local_set(local, (void*)p));
@@ -29,7 +30,8 @@ static void __testThreadLocal(CThreadLocal* local)
     assert(val2 == 3.1415926f);
 }
 
-void threadProc(void* args)
+void
+threadProc(void* args)
 {
     CThreadLocal locals[10];
     for (int i = 0; i < 10; i++)
@@ -75,7 +77,8 @@ typedef struct {
     int32_t val;
 } __TestLocalParameter;
 
-static void __threadProc2(void* args)
+static void
+__threadProc2(void* args)
 {
     cout << "in thread proc:" << Thread_currentId() << endl;
     __TestLocalParameter* parameter = static_cast<__TestLocalParameter*>(args);

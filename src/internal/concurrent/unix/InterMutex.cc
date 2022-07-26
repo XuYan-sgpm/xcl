@@ -17,27 +17,33 @@ namespace
         ~InternalMutex() override;
 
     public:
-        void lock() override;
+        void
+        lock() override;
 
-        void unlock() override;
+        void
+        unlock() override;
 
-        bool tryLock() override;
+        bool
+        tryLock() override;
 
     protected:
         pthread_mutex_t mutex_;
     };
 
-    void InternalMutex::lock()
+    void
+    InternalMutex::lock()
     {
         Mutex_lock((CMutex*)&mutex_);
     }
 
-    void InternalMutex::unlock()
+    void
+    InternalMutex::unlock()
     {
         Mutex_unlock((CMutex*)&mutex_);
     }
 
-    bool InternalMutex::tryLock()
+    bool
+    InternalMutex::tryLock()
     {
         return Mutex_tryLock((CMutex*)&mutex_);
     }
@@ -73,16 +79,21 @@ namespace
         explicit InternalTimedMutex(bool recursive = true);
 
     public:
-        bool tryLock(int32_t timeout) override;
+        bool
+        tryLock(int32_t timeout) override;
 
-        void lock() override;
+        void
+        lock() override;
 
-        void unlock() override;
+        void
+        unlock() override;
 
-        bool tryLock() override;
+        bool
+        tryLock() override;
     };
 
-    bool InternalTimedMutex::tryLock(int32_t timeout)
+    bool
+    InternalTimedMutex::tryLock(int32_t timeout)
     {
         return Mutex_tryLock2((CMutex*)&mutex_, timeout);
     }
@@ -91,28 +102,33 @@ namespace
         : InternalMutex(recursive)
     {}
 
-    void InternalTimedMutex::lock()
+    void
+    InternalTimedMutex::lock()
     {
         InternalMutex::lock();
     }
 
-    void InternalTimedMutex::unlock()
+    void
+    InternalTimedMutex::unlock()
     {
         InternalMutex::unlock();
     }
 
-    bool InternalTimedMutex::tryLock()
+    bool
+    InternalTimedMutex::tryLock()
     {
         return InternalMutex::tryLock();
     }
-}// namespace
+} // namespace
 
-xcl::Lock* xcl::Lock::NewLock()
+xcl::Lock*
+xcl::Lock::NewLock()
 {
     return new InternalMutex();
 }
 
-xcl::TimedLock* xcl::TimedLock::NewLock()
+xcl::TimedLock*
+xcl::TimedLock::NewLock()
 {
     return new InternalTimedMutex();
 }

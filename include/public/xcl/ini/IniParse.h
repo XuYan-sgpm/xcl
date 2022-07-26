@@ -62,21 +62,24 @@ typedef struct {
  * parse ini data
  * usr can be a specified object to invoke when cb is called
  */
-bool Ini_parseStream(Ini ini,
-                     void* stream,
-                     IniReadFunc reader,
-                     IniCallback cb,
-                     void* usr);
+bool
+Ini_parseStream(Ini ini,
+                void* stream,
+                IniReadFunc reader,
+                IniCallback cb,
+                void* usr);
 
 /*
  * parse ini data from file
  */
-bool Ini_parse(Ini ini, const char* filePath, IniCallback cb, void* usr);
+bool
+Ini_parse(Ini ini, const char* filePath, IniCallback cb, void* usr);
 
 /*
  * parse ini data from str
  */
-bool Ini_parseStr(Ini ini, const char* str, IniCallback cb, void* usr);
+bool
+Ini_parseStr(Ini ini, const char* str, IniCallback cb, void* usr);
 
 #ifdef __cplusplus
 }

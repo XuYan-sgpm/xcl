@@ -5,12 +5,14 @@
 
 const static unsigned __STATE_MASK__ = 0x7fffffff;
 
-static inline bool __String_useStack(const CString* string)
+static inline bool
+__String_useStack(const CString* string)
 {
     return string->state >> 31;
 }
 
-static inline int __String_getSize(const CString* string)
+static inline int
+__String_getSize(const CString* string)
 {
     return (int)(string->state & __STATE_MASK__);
 }
@@ -21,24 +23,28 @@ __String_setState(CString* string, const int useStack, const int size)
     string->state = (useStack << 31u) | (size & __STATE_MASK__);
 }
 
-static inline void __String_setSize(CString* string, const int size)
+static inline void
+__String_setSize(CString* string, const int size)
 {
     __String_setState(string, __String_useStack(string), size);
 }
 
-static inline char* __String_ptr(CString* string, const int pos)
+static inline char*
+__String_ptr(CString* string, const int pos)
 {
     return __String_useStack(string) ? string->mem.stack.data + pos
                                      : string->mem.heap.ptr + pos;
 }
 
-static inline const char* __String_cPtr(const CString* string, const int pos)
+static inline const char*
+__String_cPtr(const CString* string, const int pos)
 {
     return __String_useStack(string) ? string->mem.stack.data + pos
                                      : string->mem.heap.ptr + pos;
 }
 
-static inline int __String_cap(const CString* string)
+static inline int
+__String_cap(const CString* string)
 {
     return __String_useStack(string) ? (int)sizeof(string->mem.stack)
                                      : string->mem.heap.cap;
@@ -58,12 +64,14 @@ __String_removeCheck(const CString* string, const int pos, const int len)
            && len <= __String_getSize(string) - pos;
 }
 
-static inline int __String_grow(const int cap, const int add)
+static inline int
+__String_grow(const int cap, const int add)
 {
     return cap + (cap > add ? cap : add);
 }
 
-static void __String_init(CString* string, const int cap)
+static void
+__String_init(CString* string, const int cap)
 {
     memset(&string->mem, 0, sizeof(string->mem));
     if (cap <= sizeof(string->mem.stack.data))
@@ -544,7 +552,8 @@ String_queryChar(const CString* string, const bool left, char ch)
 //     return NULL;
 // }
 
-XCL_PUBLIC(const char*) String_query(const CString* string, const char* str)
+XCL_PUBLIC(const char*)
+String_query(const CString* string, const char* str)
 {
     return strstr(__String_cPtr(string, 0), str);
 }

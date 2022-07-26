@@ -6,13 +6,15 @@
 #include "xcl/lang/XclErr.h"
 #include "xcl/lang/system.h"
 
-static void* __Unix_threadRoutine(void* args)
+static void*
+__Unix_threadRoutine(void* args)
 {
     __Thread_run(args);
     return NULL;
 }
 
-uintptr_t __Thread_createHandle(void* args)
+uintptr_t
+__Thread_createHandle(void* args)
 {
     pthread_t handle;
     int ret = pthread_create(&handle, NULL, __Unix_threadRoutine, args);
@@ -27,7 +29,8 @@ uintptr_t __Thread_createHandle(void* args)
     }
 }
 
-bool __Thread_joinFor(uintptr_t handle, int32_t timeout)
+bool
+__Thread_joinFor(uintptr_t handle, int32_t timeout)
 {
     if (timeout < 0)
     {
@@ -62,7 +65,8 @@ bool __Thread_joinFor(uintptr_t handle, int32_t timeout)
     }
 }
 
-bool __Thread_detach(uintptr_t handle)
+bool
+__Thread_detach(uintptr_t handle)
 {
     int ret = pthread_detach((pthread_t)handle);
     if (ret)
@@ -70,12 +74,14 @@ bool __Thread_detach(uintptr_t handle)
     return !ret;
 }
 
-bool __Thread_alive(uintptr_t handle)
+bool
+__Thread_alive(uintptr_t handle)
 {
     return pthread_kill((pthread_t)handle, 0) != ESRCH;
 }
 
-unsigned long __Thread_currentId()
+unsigned long
+__Thread_currentId()
 {
 #if LINUX
     return syscall(__NR_gettid);
@@ -84,7 +90,8 @@ unsigned long __Thread_currentId()
 #endif
 }
 
-uintptr_t __Thread_currentHandle()
+uintptr_t
+__Thread_currentHandle()
 {
     return (uintptr_t)pthread_self();
 }
@@ -92,12 +99,14 @@ uintptr_t __Thread_currentHandle()
 #ifdef STATIC
 static __thread CLocalStorage* __Unix_Thread_localStorage = NULL;
 
-CLocalStorage* __Thread_getLocalStorage()
+CLocalStorage*
+__Thread_getLocalStorage()
 {
     return __Unix_Thread_localStorage;
 }
 
-bool __Thread_setLocalStorage(CLocalStorage* localStorage)
+bool
+__Thread_setLocalStorage(CLocalStorage* localStorage)
 {
     __Unix_Thread_localStorage = localStorage;
     return true;
@@ -108,12 +117,14 @@ bool __Thread_setLocalStorage(CLocalStorage* localStorage)
 
 static pthread_key_t __Unix_Thread_localStorageKey;
 
-static void __destroyLocalStorage(void* args)
+static void
+__destroyLocalStorage(void* args)
 {
     LocalStorage_delete(args);
 }
 
-static void __Thread_ensureLocalStorageKey()
+static void
+__Thread_ensureLocalStorageKey()
 {
     static bool initStorageKey = false;
     if (!initStorageKey)
@@ -130,13 +141,15 @@ static void __Thread_ensureLocalStorageKey()
     }
 }
 
-CLocalStorage* __Thread_getLocalStorage()
+CLocalStorage*
+__Thread_getLocalStorage()
 {
     __Thread_ensureLocalStorageKey();
     return pthread_getspecific(__Unix_Thread_localStorageKey);
 }
 
-bool __Thread_setLocalStorage(CLocalStorage* localStorage)
+bool
+__Thread_setLocalStorage(CLocalStorage* localStorage)
 {
     __Thread_ensureLocalStorageKey();
     int ret = pthread_setspecific(__Unix_Thread_localStorageKey, localStorage);

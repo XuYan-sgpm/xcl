@@ -8,12 +8,14 @@
 #include <stdlib.h>
 #include <string.h>
 
-static inline void __Bits_setLen(CBits* bits, const int32_t category)
+static inline void
+__Bits_setLen(CBits* bits, const int32_t category)
 {
     memcpy((void*)&bits->nBits, &category, sizeof(category));
 }
 
-static inline char* __Bits_getValPtr(CBits* bits)
+static inline char*
+__Bits_getValPtr(CBits* bits)
 {
     return ((CBitsSet*)bits)->ctx;
 }

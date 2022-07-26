@@ -12,7 +12,8 @@ struct _CMutex_st {
     CRITICAL_SECTION criticalSection;
 };
 
-CMutex* __Mutex_newByPool(CPool* pool)
+CMutex*
+__Mutex_newByPool(CPool* pool)
 {
     CMutex* mutex = (CMutex*)Pool_alloc(pool, sizeof(CMutex));
     if (mutex)

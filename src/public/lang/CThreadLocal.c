@@ -8,15 +8,20 @@
 #include <xcl/lang/XclDef.h>
 #include <xcl/lang/XclErr.h>
 
-int32_t __LocalId_get();
+int32_t
+__LocalId_get();
 
-void __LocalId_recycle(int32_t id);
+void
+__LocalId_recycle(int32_t id);
 
-CLocalStorage* __Thread_getLocalStorage();
+CLocalStorage*
+__Thread_getLocalStorage();
 
-bool __Thread_setLocalStorage(CLocalStorage* localStorage);
+bool
+__Thread_setLocalStorage(CLocalStorage* localStorage);
 
-static CLocalStorage* __ThreadLocal_newLocalStorage()
+static CLocalStorage*
+__ThreadLocal_newLocalStorage()
 {
     CLocalStorage* localStorage = LocalStorage_new();
     if (!localStorage)
@@ -27,7 +32,8 @@ static CLocalStorage* __ThreadLocal_newLocalStorage()
     return localStorage;
 }
 
-static CLocalStorage* __ThreadLocal_checkoutLocalStorage()
+static CLocalStorage*
+__ThreadLocal_checkoutLocalStorage()
 {
     CLocalStorage* localStorage = __Thread_getLocalStorage();
     if (!localStorage)
@@ -42,7 +48,8 @@ static CLocalStorage* __ThreadLocal_checkoutLocalStorage()
     return localStorage;
 }
 
-static bool __ThreadLocal_setData(CThreadLocal* local, const void* src, int len)
+static bool
+__ThreadLocal_setData(CThreadLocal* local, const void* src, int len)
 {
     if (local->id < 0)
     {
@@ -57,7 +64,8 @@ static bool __ThreadLocal_setData(CThreadLocal* local, const void* src, int len)
     return LocalStorage_setTiny(localStorage, local->id, src, len);
 }
 
-static void* __ThreadLocal_getData(CThreadLocal* local)
+static void*
+__ThreadLocal_getData(CThreadLocal* local)
 {
     if (local->id < 0)
     {

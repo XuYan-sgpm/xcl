@@ -6,6 +6,7 @@ extern "C" {
 
 #include <stdbool.h>
 #include <xcl/lang/XclDef.h>
+#include <stdint.h>
 
 typedef struct {
     char* data;

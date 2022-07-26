@@ -11,7 +11,8 @@
 
 static int64_t __NANO_FREQ_PER_SEC = -1;
 
-static void __SYS_initNanoFreq()
+static void
+__SYS_initNanoFreq()
 {
     LARGE_INTEGER freq;
     if (QueryPerformanceFrequency(&freq))
@@ -54,7 +55,8 @@ mSleep(int32_t timeout)
     timeEndPeriod(1);
 }
 
-bool __Win32_wait(HANDLE handle, DWORD timeout)
+bool
+__Win32_wait(HANDLE handle, DWORD timeout)
 {
     DWORD ret = WaitForSingleObject(handle, timeout);
     if (ret != WAIT_OBJECT_0)

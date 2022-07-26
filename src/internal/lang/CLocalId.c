@@ -12,7 +12,8 @@
 #include <stdlib.h>
 #include <string.h>
 
-int32_t __LocalId_genId();
+int32_t
+__LocalId_genId();
 
 typedef struct {
     int32_t* freeIdList;
@@ -23,7 +24,8 @@ typedef struct {
 
 static __LocalIdQueue __idQueue;
 
-static void __LocalId_initQueue()
+static void
+__LocalId_initQueue()
 {
     memset(&__idQueue, 0, sizeof(__idQueue));
     __idQueue.cap = 8;
@@ -44,7 +46,8 @@ static void __LocalId_initQueue()
     assert(false);
 }
 
-static void __LocalId_releaseQueue()
+static void
+__LocalId_releaseQueue()
 {
     if (__idQueue.freeIdList)
     {
@@ -54,7 +57,8 @@ static void __LocalId_releaseQueue()
     memset(&__idQueue, 0, sizeof(__idQueue));
 }
 
-static bool __LocalId_offerQueue(int32_t id)
+static bool
+__LocalId_offerQueue(int32_t id)
 {
     bool success = false;
     Mutex_lock(__idQueue.freeIdLock);
@@ -82,7 +86,8 @@ static bool __LocalId_offerQueue(int32_t id)
     return success;
 }
 
-static bool __LocalId_pollQueue(int32_t* id)
+static bool
+__LocalId_pollQueue(int32_t* id)
 {
     *id = -1;
     Mutex_lock(__idQueue.freeIdLock);
@@ -94,7 +99,8 @@ static bool __LocalId_pollQueue(int32_t* id)
     return *id != -1;
 }
 
-static void __LocalId_ensureQueue()
+static void
+__LocalId_ensureQueue()
 {
     static bool initIdQueueDone = false;
     if (!initIdQueueDone)
@@ -109,7 +115,8 @@ static void __LocalId_ensureQueue()
     }
 }
 
-int32_t __LocalId_get()
+int32_t
+__LocalId_get()
 {
     __LocalId_ensureQueue();
     int32_t id;
@@ -120,7 +127,8 @@ int32_t __LocalId_get()
     return __LocalId_genId();
 }
 
-void __LocalId_recycle(int32_t id)
+void
+__LocalId_recycle(int32_t id)
 {
     __LocalId_ensureQueue();
     __LocalId_offerQueue(id);
@@ -132,7 +140,8 @@ void __LocalId_recycle(int32_t id)
  * thread handle
  */
 static ATOMIC(int32_t) __LocalId_generator = 1;
-int32_t __LocalId_genId()
+int32_t
+__LocalId_genId()
 {
     return ATOMIC_INCREMENT(&__LocalId_generator, memory_order_seq_cst);
 }

@@ -50,19 +50,21 @@ RingBuffer_empty(const CRingBuffer* ringBuffer)
     return ringBuffer->size == 0;
 }
 
-static bool __RingBuffer_checkPosition(const CRingBuffer* ringBuffer,
-                                       bool insert,
-                                       int32_t pos)
+static bool
+__RingBuffer_checkPosition(const CRingBuffer* ringBuffer,
+                           bool insert,
+                           int32_t pos)
 {
     return pos >= 0
            && (!insert ? pos < RingBuffer_size(ringBuffer)
                        : pos <= RingBuffer_size(ringBuffer));
 }
 
-static bool __RingBuffer_checkRegion(const CRingBuffer* ringBuffer,
-                                     bool insert,
-                                     int32_t pos,
-                                     int32_t len)
+static bool
+__RingBuffer_checkRegion(const CRingBuffer* ringBuffer,
+                         bool insert,
+                         int32_t pos,
+                         int32_t len)
 {
     int32_t size = RingBuffer_size(ringBuffer);
     if (insert)
@@ -86,39 +88,42 @@ static bool __RingBuffer_checkRegion(const CRingBuffer* ringBuffer,
     return true;
 }
 
-static inline int32_t __RingBuffer_offset(const CRingBuffer* ringBuffer,
-                                          int32_t off)
+static inline int32_t
+__RingBuffer_offset(const CRingBuffer* ringBuffer, int32_t off)
 {
     off = off >= 0 ? off % ringBuffer->cap : -((-off) % ringBuffer->cap);
     return off;
 }
 
-static inline int32_t __RingBuffer_map(const CRingBuffer* ringBuffer,
-                                       int32_t pos)
+static inline int32_t
+__RingBuffer_map(const CRingBuffer* ringBuffer, int32_t pos)
 {
     return (ringBuffer->beg + ringBuffer->cap
             + __RingBuffer_offset(ringBuffer, pos))
            % ringBuffer->cap;
 }
 
-static inline int32_t __RingBuffer_mappedNext(const CRingBuffer* ringBuffer,
-                                              int32_t mappedPos,
-                                              int32_t step)
+static inline int32_t
+__RingBuffer_mappedNext(const CRingBuffer* ringBuffer,
+                        int32_t mappedPos,
+                        int32_t step)
 {
 
     return (mappedPos + __RingBuffer_offset(ringBuffer, step))
            % (ringBuffer->cap);
 }
 
-static inline void __RingBuffer_nextBeg(CRingBuffer* ringBuffer, int32_t step)
+static inline void
+__RingBuffer_nextBeg(CRingBuffer* ringBuffer, int32_t step)
 {
     ringBuffer->beg = __RingBuffer_map(ringBuffer, step);
 }
 
-static void __RingBuffer_move(CRingBuffer* ringBuffer,
-                              int32_t dstIdx,
-                              int32_t srcIdx,
-                              int32_t len)
+static void
+__RingBuffer_move(CRingBuffer* ringBuffer,
+                  int32_t dstIdx,
+                  int32_t srcIdx,
+                  int32_t len)
 {
     if (dstIdx == srcIdx || len == 0)
     {
@@ -165,10 +170,11 @@ static void __RingBuffer_move(CRingBuffer* ringBuffer,
     }
 }
 
-static void __RingBuffer_copyExternalData(CRingBuffer* ringBuffer,
-                                          int32_t dstIdx,
-                                          const void* src,
-                                          int32_t len)
+static void
+__RingBuffer_copyExternalData(CRingBuffer* ringBuffer,
+                              int32_t dstIdx,
+                              const void* src,
+                              int32_t len)
 {
     if (len == 0)
     {
@@ -190,11 +196,12 @@ static void __RingBuffer_copyExternalData(CRingBuffer* ringBuffer,
     }
 }
 
-static void __RingBuffer_copyExternalBuf(CRingBuffer* ringBuffer,
-                                         int32_t dstIdx,
-                                         const CRingBuffer* src,
-                                         int32_t srcIdx,
-                                         int32_t len)
+static void
+__RingBuffer_copyExternalBuf(CRingBuffer* ringBuffer,
+                             int32_t dstIdx,
+                             const CRingBuffer* src,
+                             int32_t srcIdx,
+                             int32_t len)
 {
     if (len == 0)
     {
@@ -311,10 +318,11 @@ RingBuffer_get(const CRingBuffer* ringBuffer, int32_t idx, void* dst)
     return true;
 }
 
-bool __RingBuffer_beforeInsert(CRingBuffer* ringBuffer,
-                               int32_t pos,
-                               int32_t len,
-                               bool force)
+bool
+__RingBuffer_beforeInsert(CRingBuffer* ringBuffer,
+                          int32_t pos,
+                          int32_t len,
+                          bool force)
 {
     if (!__RingBuffer_checkPosition(ringBuffer, true, pos)
         || (!__RingBuffer_checkRegion(ringBuffer, true, pos, len) && !force))
@@ -400,7 +408,8 @@ RingBuffer_insertRegion(CRingBuffer* ringBuffer,
     }
 }
 
-bool __RingBuffer_beforeWrite(CRingBuffer* ringBuffer, int32_t pos, int32_t n)
+bool
+__RingBuffer_beforeWrite(CRingBuffer* ringBuffer, int32_t pos, int32_t n)
 {
     if (!__RingBuffer_checkPosition(ringBuffer, false, pos))
     {
@@ -454,10 +463,11 @@ RingBuffer_assignRegion(CRingBuffer* ringBuffer,
     }
 }
 
-bool __RingBuffer_beforeRep(CRingBuffer* ringBuffer,
-                            int32_t pos,
-                            int32_t n,
-                            int32_t len)
+bool
+__RingBuffer_beforeRep(CRingBuffer* ringBuffer,
+                       int32_t pos,
+                       int32_t n,
+                       int32_t len)
 {
     if (!__RingBuffer_checkRegion(ringBuffer, false, pos, n))
     {

@@ -14,7 +14,8 @@ typedef void (*Callback)(void*);
 
 using namespace std;
 
-static void __testLock(void* args)
+static void
+__testLock(void* args)
 {
     auto* lock = (xcl::TimedLock*)args;
     for (;;)
@@ -38,7 +39,8 @@ static void __testLock(void* args)
     cout << "unlock successfully" << endl;
 }
 
-static void __testCMutex(void* args)
+static void
+__testCMutex(void* args)
 {
     for (;;)
     {
@@ -64,7 +66,8 @@ static void __testCMutex(void* args)
     cout << "unlock successfully" << endl;
 }
 
-static void __runLockThreads(Callback cb, void* args)
+static void
+__runLockThreads(Callback cb, void* args)
 {
     int32_t nThreads = 8;
     CThread threads[nThreads];

@@ -6,7 +6,8 @@
 /*
  * link prev and next
  */
-static inline void __List_link(CListNode* prev, CListNode* next)
+static inline void
+__List_link(CListNode* prev, CListNode* next)
 {
     if (prev)
     {
@@ -22,7 +23,8 @@ static inline void __List_link(CListNode* prev, CListNode* next)
  * unlink node from node's prev and its next
  * but not free
  */
-static inline void __List_unlink(CListNode* node)
+static inline void
+__List_unlink(CListNode* node)
 {
     if (node)
     {
@@ -42,7 +44,8 @@ struct _CList {
     CListNode header;
 };
 
-static void __List_init(CList* list)
+static void
+__List_init(CList* list)
 {
     __List_link(&list->header, &list->header);
 }

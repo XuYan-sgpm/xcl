@@ -5,7 +5,8 @@
 #include <windows.h>
 #include "xcl/concurrent/Lock.h"
 
-extern "C" bool __Win32_wait(HANDLE handle, DWORD timeout);
+extern "C" bool
+__Win32_wait(HANDLE handle, DWORD timeout);
 
 namespace
 {
@@ -20,24 +21,30 @@ namespace
         CRITICAL_SECTION criticalSection_;
 
     public:
-        void lock() override;
+        void
+        lock() override;
 
-        void unlock() override;
+        void
+        unlock() override;
 
-        bool tryLock() override;
+        bool
+        tryLock() override;
     };
 
-    void InternalMutex::lock()
+    void
+    InternalMutex::lock()
     {
         EnterCriticalSection(&criticalSection_);
     }
 
-    void InternalMutex::unlock()
+    void
+    InternalMutex::unlock()
     {
         LeaveCriticalSection(&criticalSection_);
     }
 
-    bool InternalMutex::tryLock()
+    bool
+    InternalMutex::tryLock()
     {
         return TryEnterCriticalSection(&criticalSection_);
     }
@@ -60,34 +67,42 @@ namespace
         InternalTimedMutex();
 
     public:
-        void lock() override;
+        void
+        lock() override;
 
-        void unlock() override;
+        void
+        unlock() override;
 
-        bool tryLock() override;
+        bool
+        tryLock() override;
 
-        bool tryLock(int32_t millis) override;
+        bool
+        tryLock(int32_t millis) override;
 
     private:
         HANDLE handle_;
     };
 
-    void InternalTimedMutex::lock()
+    void
+    InternalTimedMutex::lock()
     {
         __Win32_wait(handle_, INFINITE);
     }
 
-    void InternalTimedMutex::unlock()
+    void
+    InternalTimedMutex::unlock()
     {
         ::ReleaseMutex(handle_);
     }
 
-    bool InternalTimedMutex::tryLock()
+    bool
+    InternalTimedMutex::tryLock()
     {
         return __Win32_wait(handle_, 0);
     }
 
-    bool InternalTimedMutex::tryLock(int32_t millis)
+    bool
+    InternalTimedMutex::tryLock(int32_t millis)
     {
         return __Win32_wait(handle_, millis);
     }
@@ -105,14 +120,16 @@ namespace
             handle_ = nullptr;
         }
     }
-}// namespace
+} // namespace
 
-xcl::Lock* xcl::Lock::NewLock()
+xcl::Lock*
+xcl::Lock::NewLock()
 {
     return new InternalMutex();
 }
 
-xcl::TimedLock* xcl::TimedLock::NewLock()
+xcl::TimedLock*
+xcl::TimedLock::NewLock()
 {
     return new InternalTimedMutex();
 }

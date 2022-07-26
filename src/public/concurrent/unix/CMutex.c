@@ -15,7 +15,8 @@ struct _CMutex_st {
     pthread_mutex_t handle;
 };
 
-CMutex* __Mutex_newByPool(CPool* pool)
+CMutex*
+__Mutex_newByPool(CPool* pool)
 {
     CMutex* mutex = Pool_alloc(pool, sizeof(CMutex));
     if (mutex)
@@ -35,7 +36,8 @@ CMutex* __Mutex_newByPool(CPool* pool)
     return NULL;
 }
 
-bool __Mutex_deleteByPool(CMutex* mutex, CPool* pool)
+bool
+__Mutex_deleteByPool(CMutex* mutex, CPool* pool)
 {
     if (mutex)
     {

@@ -8,7 +8,8 @@
 #include "xcl/lang/CInterThreadApi.h"
 #include "xcl/pool/CPool.h"
 
-void __Thread_run(void* args)
+void
+__Thread_run(void* args)
 {
     typedef void (*Proc)(void*);
     Proc run = (Proc)((uintptr_t*)args)[0];
@@ -38,7 +39,8 @@ Thread_create(void (*proc)(void*), void* usr)
     return (CThread){handle};
 }
 
-bool Thread_valid(CThread thread)
+bool
+Thread_valid(CThread thread)
 {
     return thread.handle;
 }

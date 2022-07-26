@@ -5,12 +5,14 @@
 #include <stdlib.h>
 #include "xcl/pool/CPool.h"
 
-XCL_PUBLIC(CPool*) Pool_def()
+XCL_PUBLIC(CPool*)
+Pool_def()
 {
     return NULL;
 }
 
-XCL_PUBLIC(void*) Pool_alloc(CPool* pool, uint64_t size)
+XCL_PUBLIC(void*)
+Pool_alloc(CPool* pool, uint64_t size)
 {
     if (pool && pool->alloc)
     {
@@ -22,7 +24,8 @@ XCL_PUBLIC(void*) Pool_alloc(CPool* pool, uint64_t size)
     }
 }
 
-XCL_PUBLIC(void) Pool_dealloc(CPool* pool, void* ptr, uint64_t size)
+XCL_PUBLIC(void)
+Pool_dealloc(CPool* pool, void* ptr, uint64_t size)
 {
     if (pool && pool->dealloc)
     {

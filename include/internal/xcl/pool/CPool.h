@@ -25,7 +25,8 @@ typedef struct _CPool_st {
  * xcl default pool, may be use jemalloc algorithm
  * @return default pool object
  */
-XCL_PUBLIC(CPool*) Pool_def();
+XCL_PUBLIC(CPool*)
+Pool_def();
 
 /**
  * all functions below can passing NULL as pool object
@@ -39,7 +40,8 @@ XCL_PUBLIC(CPool*) Pool_def();
  * @param size memory size
  * @return pointer if successfully, otherwise NULL
  */
-XCL_PUBLIC(void*) Pool_alloc(CPool* pool, uint64_t size);
+XCL_PUBLIC(void*)
+Pool_alloc(CPool* pool, uint64_t size);
 
 /**
  * dealloc allocated memory, must be allocated
@@ -48,7 +50,8 @@ XCL_PUBLIC(void*) Pool_alloc(CPool* pool, uint64_t size);
  * @param ptr pointer to dealloc
  * @param size allocated memory size
  */
-XCL_PUBLIC(void) Pool_dealloc(CPool* pool, void* ptr, uint64_t size);
+XCL_PUBLIC(void)
+Pool_dealloc(CPool* pool, void* ptr, uint64_t size);
 
 /**
  * recycle old memory and alloc new size of memory

@@ -4,7 +4,8 @@
 
 #include "xcl/util/algo.h"
 
-XCL_PUBLIC(uint32_t) _log2(uint64_t val)
+XCL_PUBLIC(uint32_t)
+_log2(uint64_t val)
 {
     if (val == 0)
     {

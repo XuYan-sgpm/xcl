@@ -3,6 +3,7 @@ BasedOnStyle: LLVM
 AccessModifierOffset: -4
 AlignAfterOpenBracket: Align
 AlignConsecutiveAssignments: None
+AlignConsecutiveMacros: Consecutive
 AlignOperands: Align
 AlignEscapedNewlines: Left
 AllowAllArgumentsOnNextLine: false
@@ -14,7 +15,7 @@ AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLambdasOnASingleLine: None
 AllowShortLoopsOnASingleLine: false
-AlwaysBreakAfterReturnType: None
+AlwaysBreakAfterReturnType: All
 AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
 BinPackParameters: false
@@ -36,6 +37,7 @@ BreakBeforeBinaryOperators: All
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeColon
 BreakInheritanceList: BeforeColon
+BreakStringLiterals: true
 ColumnLimit: 80
 CompactNamespaces: false
 ContinuationIndentWidth: 4
@@ -59,7 +61,7 @@ SpaceBeforeInheritanceColon: true
 SpaceBeforeParens: ControlStatements
 SpaceBeforeRangeBasedForLoopColon: true
 SpaceInEmptyParentheses: false
-SpacesBeforeTrailingComments: 0
+SpacesBeforeTrailingComments: 1
 SpacesInAngles: false
 SpacesInCStyleCastParentheses: false
 SpacesInContainerLiterals: true
@@ -68,3 +70,4 @@ SpacesInSquareBrackets: false
 SortIncludes: Never
 TabWidth: 4
 UseTab: Never
+TypenameMacros: [ 'XCL_PUBLIC' ]

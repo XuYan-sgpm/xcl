@@ -10,7 +10,8 @@
 
 const static int __initialLocalStorageSize = 8;
 
-static inline int __LocalStorage_grow(CLocalStorage* localStorage, int n)
+static inline int
+__LocalStorage_grow(CLocalStorage* localStorage, int n)
 {
     int32_t cap = localStorage->cap;
     return cap + (cap > n - cap ? cap : n - cap);
@@ -19,7 +20,8 @@ static inline int __LocalStorage_grow(CLocalStorage* localStorage, int n)
 /*
  * reserve n blocks for passing local storage
  */
-static bool __LocalStorage_reserve(CLocalStorage* localStorage, int n)
+static bool
+__LocalStorage_reserve(CLocalStorage* localStorage, int n)
 {
     if (n > localStorage->cap)
     {
@@ -44,8 +46,8 @@ static bool __LocalStorage_reserve(CLocalStorage* localStorage, int n)
     return false;
 }
 
-static CLocalStorage* __LocalStorage_checkMemory(CLocalStorage* localStorage,
-                                                 int idx)
+static CLocalStorage*
+__LocalStorage_checkMemory(CLocalStorage* localStorage, int idx)
 {
     if (!localStorage->cap)
     {
@@ -66,7 +68,8 @@ static CLocalStorage* __LocalStorage_checkMemory(CLocalStorage* localStorage,
     return localStorage;
 }
 
-CLocalStorage* LocalStorage_new()
+CLocalStorage*
+LocalStorage_new()
 {
     CLocalStorage* localStorage = Pool_alloc(Pool_def(), sizeof(CLocalStorage));
     if (localStorage)
@@ -80,7 +83,8 @@ CLocalStorage* LocalStorage_new()
     return localStorage;
 }
 
-void* LocalStorage_get(CLocalStorage* localStorage, int idx)
+void*
+LocalStorage_get(CLocalStorage* localStorage, int idx)
 {
     if (!__LocalStorage_checkMemory(localStorage, idx))
     {
@@ -90,7 +94,8 @@ void* LocalStorage_get(CLocalStorage* localStorage, int idx)
     return p;
 }
 
-void LocalStorage_delete(CLocalStorage* localStorage)
+void
+LocalStorage_delete(CLocalStorage* localStorage)
 {
     if (localStorage->blocks)
         Pool_dealloc(Pool_def(),
@@ -99,7 +104,8 @@ void LocalStorage_delete(CLocalStorage* localStorage)
     Pool_dealloc(Pool_def(), localStorage, sizeof(CLocalStorage));
 }
 
-bool LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr)
+bool
+LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr)
 {
     localStorage = __LocalStorage_checkMemory(localStorage, idx);
     if (!localStorage)
@@ -111,10 +117,11 @@ bool LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr)
     return true;
 }
 
-bool LocalStorage_setTiny(CLocalStorage* localStorage,
-                          int idx,
-                          const void* src,
-                          int len)
+bool
+LocalStorage_setTiny(CLocalStorage* localStorage,
+                     int idx,
+                     const void* src,
+                     int len)
 {
     localStorage = __LocalStorage_checkMemory(localStorage, idx);
     if (!localStorage)

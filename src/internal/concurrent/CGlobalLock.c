@@ -11,20 +11,24 @@
 
 static CMutex* __XCL_globalMutex = NULL;
 
-CMutex* __Mutex_newByPool(CPool* pool);
+CMutex*
+__Mutex_newByPool(CPool* pool);
 
-bool __acquireGlobalLock()
+bool
+__acquireGlobalLock()
 {
     return Mutex_lock(__XCL_globalMutex);
 }
 
-void __releaseGlobalLock()
+void
+__releaseGlobalLock()
 {
     Mutex_unlock(__XCL_globalMutex);
 }
 
 #if CLANG || GNUC
-static __attribute__((constructor)) void __initXclGlobalMutex()
+static __attribute__((constructor)) void
+__initXclGlobalMutex()
 {
     __XCL_globalMutex = __Mutex_newByPool(NULL);
     assert(__XCL_globalMutex);

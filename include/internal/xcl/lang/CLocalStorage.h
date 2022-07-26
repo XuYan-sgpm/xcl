@@ -33,7 +33,8 @@ typedef struct {
  * create a thread local storage
  * @return local storage
  */
-CLocalStorage* LocalStorage_new();
+CLocalStorage*
+LocalStorage_new();
 
 /**
  * set ptr to local storage, treat ptr address as data
@@ -43,7 +44,8 @@ CLocalStorage* LocalStorage_new();
  * @param ptr pushed pointer
  * @return true if set successfully, false otherwise
  */
-bool LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr);
+bool
+LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr);
 
 /**
  * copy buffer to local storage if buffer size less than 8
@@ -53,10 +55,11 @@ bool LocalStorage_setPtr(CLocalStorage* localStorage, int idx, intptr_t ptr);
  * @param len buffer size
  * @return true if push buffer successfully, false otherwise
  */
-bool LocalStorage_setTiny(CLocalStorage* localStorage,
-                          int idx,
-                          const void* src,
-                          int len);
+bool
+LocalStorage_setTiny(CLocalStorage* localStorage,
+                     int idx,
+                     const void* src,
+                     int len);
 
 /**
  * get data address at position idx of local storage
@@ -64,14 +67,16 @@ bool LocalStorage_setTiny(CLocalStorage* localStorage,
  * @param idx data position
  * @return local data address if successfully, otherwise false
  */
-void* LocalStorage_get(CLocalStorage* localStorage, int idx);
+void*
+LocalStorage_get(CLocalStorage* localStorage, int idx);
 
 /**
  * release local storage memory, not include
  * memory pointer to ptr which stored in local storage
  * @param localStorage local storage object
  */
-void LocalStorage_delete(CLocalStorage* localStorage);
+void
+LocalStorage_delete(CLocalStorage* localStorage);
 
 #ifdef __cplusplus
 }

@@ -5,7 +5,8 @@
 #include "xcl/util/CBytes.h"
 #include <string.h>
 
-static bool __isCPUBigEndian()
+static bool
+__isCPUBigEndian()
 {
     union
     {
@@ -16,7 +17,8 @@ static bool __isCPUBigEndian()
     return unit.data[1] == 1;
 }
 
-static void __translate(const void* src, void* dst, int size, bool big)
+static void
+__translate(const void* src, void* dst, int size, bool big)
 {
     if (big == __isCPUBigEndian())
     {

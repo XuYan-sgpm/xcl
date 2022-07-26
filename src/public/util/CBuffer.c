@@ -4,25 +4,29 @@
 
 const static unsigned __BUF_MASK__ = 0x7fffffff;
 
-static inline bool __Buffer_isReleasable(CBuffer* buffer)
+static inline bool
+__Buffer_isReleasable(CBuffer* buffer)
 {
     return (buffer->state & ~__BUF_MASK__) >> 31;
 }
 
-static inline void __Buffer_setState(CBuffer* buffer, int cap, const bool flag)
+static inline void
+__Buffer_setState(CBuffer* buffer, int cap, const bool flag)
 {
     int val = flag;
     buffer->state = (cap & __BUF_MASK__) | (val << 31);
 }
 
-static inline void __Buffer_dealloc(CBuffer* buffer)
+static inline void
+__Buffer_dealloc(CBuffer* buffer)
 {
     if (buffer->data)
         Pool_dealloc(Pool_def(), buffer->data, Buffer_cap(buffer));
     memset(buffer, 0, sizeof(CBuffer));
 }
 
-static inline bool __Buffer_alloc(CBuffer* buffer, int32_t cap)
+static inline bool
+__Buffer_alloc(CBuffer* buffer, int32_t cap)
 {
     buffer->data = Pool_alloc(Pool_def(), cap);
     if (buffer->data)
@@ -33,7 +37,8 @@ static inline bool __Buffer_alloc(CBuffer* buffer, int32_t cap)
     return buffer->data;
 }
 
-static inline bool __Buffer_reapply(CBuffer* buffer, int32_t req)
+static inline bool
+__Buffer_reapply(CBuffer* buffer, int32_t req)
 {
     void* p = Pool_reapply(Pool_def(), buffer->data, Buffer_cap(buffer), req);
     if (p)

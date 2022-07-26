@@ -22,12 +22,14 @@ struct _CBlocker_st {
  * @param blocker CBlocker object
  * @return blocker current state
  */
-static inline int32_t __Blocker_state(CBlocker* blocker)
+static inline int32_t
+__Blocker_state(CBlocker* blocker)
 {
     return blocker->wait - blocker->notify;
 }
 
-static bool __Blocker_init(CBlocker* blocker, CMutex* mutex)
+static bool
+__Blocker_init(CBlocker* blocker, CMutex* mutex)
 {
     blocker->wait = blocker->notify = 0;
     blocker->externalLock = mutex;
@@ -54,7 +56,8 @@ static bool __Blocker_init(CBlocker* blocker, CMutex* mutex)
     return false;
 }
 
-static CBlocker* __Blocker_new(CMutex* mutex)
+static CBlocker*
+__Blocker_new(CMutex* mutex)
 {
     CBlocker* blocker = Pool_alloc(Pool_def(), sizeof(CBlocker));
     if (blocker)
