@@ -50,21 +50,22 @@ RingBuffer_empty(const CRingBuffer* ringBuffer)
     return ringBuffer->size == 0;
 }
 
-static bool
-__RingBuffer_checkPosition(const CRingBuffer* ringBuffer, bool add, int32_t pos)
+static bool __RingBuffer_checkPosition(const CRingBuffer* ringBuffer,
+                                       bool insert,
+                                       int32_t pos)
 {
     return pos >= 0
-           && (!add ? pos < RingBuffer_size(ringBuffer)
-                    : pos <= RingBuffer_size(ringBuffer));
+           && (!insert ? pos < RingBuffer_size(ringBuffer)
+                       : pos <= RingBuffer_size(ringBuffer));
 }
 
 static bool __RingBuffer_checkRegion(const CRingBuffer* ringBuffer,
-                                     bool add,
+                                     bool insert,
                                      int32_t pos,
                                      int32_t len)
 {
     int32_t size = RingBuffer_size(ringBuffer);
-    if (add)
+    if (insert)
     {
         if (pos < 0 || len < 0 || pos > size)
         {
@@ -454,15 +455,45 @@ RingBuffer_assignRegion(CRingBuffer* ringBuffer,
     }
 }
 
+bool __RingBuffer_beforeRep(CRingBuffer* ringBuffer,
+                            int32_t pos,
+                            int32_t n,
+                            int32_t len)
+{
+    if (!__RingBuffer_checkRegion(ringBuffer, false, pos, n))
+    {
+        return false;
+    }
+    if (len < 0)
+    {
+        return false;
+    }
+    int32_t size = ringBuffer->size;
+    if (len != n)
+    {
+        if (pos < size - pos - n)
+        {
+            __RingBuffer_move(ringBuffer, n - len, 0, pos);
+            __RingBuffer_nextBeg(ringBuffer, n - len);
+        }
+        else
+        {
+            __RingBuffer_move(ringBuffer, pos + len, pos + n, size - pos - n);
+        }
+        ringBuffer->size -= (n - len);
+    }
+    return true;
+}
+
 XCL_PUBLIC(bool)
 RingBuffer_replaceRepeat(CRingBuffer* ringBuffer,
                          int32_t pos,
-                         int32_t count,
+                         int32_t n,
                          const void* src)
 {
-    if (__RingBuffer_beforeWrite(ringBuffer, pos, count))
+    if (__RingBuffer_beforeRep(ringBuffer, pos, n, 1))
     {
-        for (int i = 0; i < count; i++)
+        for (int i = 0; i < n; i++)
         {
             memcpy(RingBuffer_at(ringBuffer, pos + i),
                    src,
@@ -479,17 +510,18 @@ RingBuffer_replaceRepeat(CRingBuffer* ringBuffer,
 XCL_PUBLIC(bool)
 RingBuffer_replaceRegion(CRingBuffer* ringBuffer,
                          int32_t pos,
+                         int32_t n,
                          const void* src,
                          int32_t es,
-                         int32_t count)
+                         int32_t len)
 {
     if (es != ringBuffer->eleSize)
     {
         return false;
     }
-    if (__RingBuffer_beforeWrite(ringBuffer, pos, count))
+    if (__RingBuffer_beforeRep(ringBuffer, pos, n, len))
     {
-        __RingBuffer_copyExternalData(ringBuffer, pos, src, count);
+        __RingBuffer_copyExternalData(ringBuffer, pos, src, len);
         return true;
     }
     else
@@ -551,6 +583,7 @@ RingBuffer_insertBufRegion(CRingBuffer* ringBuffer,
 XCL_PUBLIC(bool)
 RingBuffer_replaceBufRegion(CRingBuffer* ringBuffer,
                             int32_t pos,
+                            int32_t n,
                             const CRingBuffer* src,
                             int32_t first,
                             int32_t last)
@@ -559,7 +592,7 @@ RingBuffer_replaceBufRegion(CRingBuffer* ringBuffer,
     {
         return false;
     }
-    if (__RingBuffer_beforeWrite(ringBuffer, pos, last - first))
+    if (__RingBuffer_beforeRep(ringBuffer, pos, n, last - first))
     {
         __RingBuffer_copyExternalBuf(ringBuffer, pos, src, first, last - first);
         return true;

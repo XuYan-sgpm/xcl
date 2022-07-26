@@ -23,11 +23,11 @@ typedef struct {
  * initialize a ring buffer
  * @param ringBuffer ring buffer object
  * @param cap max size of data element
- * @param bs data element size
+ * @param es data element size
  * @return ring buffer object if successfully, otherwise false
  */
 XCL_PUBLIC(CRingBuffer)
-RingBuffer_make(int32_t cap, int32_t bs);
+RingBuffer_make(int32_t cap, int32_t es);
 
 /**
  * release ring buffer memory
@@ -163,7 +163,7 @@ RingBuffer_insertRepeat(CRingBuffer* ringBuffer,
  * @param ringBuffer ring buffer object
  * @param idx insert position
  * @param src source data element
- * @param bs element size
+ * @param es element size
  * @param count element count
  * @param force whether overwrite if ring buffer is full
  * @return true if insert successfully, otherwise false
@@ -172,7 +172,7 @@ XCL_PUBLIC(bool)
 RingBuffer_insertRegion(CRingBuffer* ringBuffer,
                         int32_t idx,
                         const void* src,
-                        int32_t bs,
+                        int32_t es,
                         int32_t count,
                         bool force);
 
@@ -193,47 +193,51 @@ RingBuffer_assignRepeat(CRingBuffer* ringBuffer, int32_t n, const void* src);
  * assign continuous elements to ring buffer
  * @param ringBuffer ring buffer object
  * @param src pointer store continuous elements
- * @param bs element size
+ * @param es element size
  * @param count element count
  * @return true if assign successfully, otherwise false
  */
 XCL_PUBLIC(bool)
 RingBuffer_assignRegion(CRingBuffer* ringBuffer,
                         const void* src,
-                        int32_t bs,
+                        int32_t es,
                         int32_t count);
 
 /**
- * replace ring buffer elements at [pos,pos+count)
- * with data element src
+ * replace ring buffer elements at [pos,pos+n)
+ * with source element at src
+ * replace will be cancelled if ring buffer is overflow after replace
  * @param ringBuffer ring buffer object
  * @param pos replace position
- * @param count replace element count
+ * @param n replaced elements count
  * @param src source data element
  * @return true if replace successfully, otherwise false
  */
 XCL_PUBLIC(bool)
 RingBuffer_replaceRepeat(CRingBuffer* ringBuffer,
                          int32_t pos,
-                         int32_t count,
+                         int32_t n,
                          const void* src);
 
 /**
- * replace ring buffer elements at [pos,pos+count)
- * with source data region [src,src+bs*count)
+ * replace ring buffer elements at [pos,pos+n)
+ * with source data region [src,src+es*len)
+ * replace will be cancelled if ring buffer is overflow after replace
  * @param ringBuffer ring buffer object
  * @param pos replace position
- * @param src source data region
- * @param bs source element size
- * @param count source element count
+ * @param n replaced elements count
+ * @param src source element pointer
+ * @param es source element size
+ * @param len source element count
  * @return true if successfully, otherwise false
  */
 XCL_PUBLIC(bool)
 RingBuffer_replaceRegion(CRingBuffer* ringBuffer,
                          int32_t pos,
+                         int32_t n,
                          const void* src,
-                         int32_t bs,
-                         int32_t count);
+                         int32_t es,
+                         int32_t len);
 
 /**
  * assign from source ring buffer
@@ -277,7 +281,9 @@ RingBuffer_insertBufRegion(CRingBuffer* ringBuffer,
                            bool force);
 
 /**
- * replace elements from pos with buffer src region [first,last)
+ * replace elements at [pos,pos+n) with source ring buffer
+ * region at [first,last)
+ * replace will be cancelled if ring buffer is overflow after replace
  * @param ringBuffer dest ring buffer
  * @param pos replace position
  * @param src source ring buffer
@@ -288,6 +294,7 @@ RingBuffer_insertBufRegion(CRingBuffer* ringBuffer,
 XCL_PUBLIC(bool)
 RingBuffer_replaceBufRegion(CRingBuffer* ringBuffer,
                             int32_t pos,
+                            int32_t n,
                             const CRingBuffer* src,
                             int32_t first,
                             int32_t last);

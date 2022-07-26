@@ -20,7 +20,7 @@ static void __testLock(void* args)
     for (;;)
     {
         auto st = chrono::steady_clock::now();
-        if (!lock->tryLock(2000))
+        if (!lock->tryLock(500))
         {
             auto et = chrono::steady_clock::now();
             auto duration = chrono::duration<double, milli>(et - st).count();
@@ -33,7 +33,7 @@ static void __testLock(void* args)
     }
     //  lock->lock();
     cout << "lock successfully" << endl;
-    mSleep(3000);
+    mSleep(800);
     lock->unlock();
     cout << "unlock successfully" << endl;
 }
