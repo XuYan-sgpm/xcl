@@ -27,6 +27,12 @@ __Mutex_newByPool(CPool* pool)
     return mutex;
 }
 
+void
+__Mutex_init(CMutex* mutex)
+{
+    InitializeCriticalSection(&mutex->criticalSection);
+}
+
 XCL_PUBLIC(CMutex*)
 Mutex_new()
 {

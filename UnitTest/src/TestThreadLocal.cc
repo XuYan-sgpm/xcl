@@ -51,8 +51,8 @@ threadProc(void* args)
 TEST(ThreadLocal, func1)
 {
     int n = 4;
-    CThread threads[n];
-    int code[n];
+    CThread threads[4];
+    int code[4];
     for (int i = 0; i < n; i++)
     {
         code[i] = -1;
@@ -92,9 +92,9 @@ __threadProc2(void* args)
 
 TEST(ThreadLocal, func2)
 {
-    int n = 1;
-    CThread threads[n];
-    __TestLocalParameter parameters[n];
+    int n = 8;
+    CThread threads[8];
+    __TestLocalParameter parameters[8];
     CThreadLocal local = Local_make();
     for (int i = 0; i < n; i++)
     {

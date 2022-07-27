@@ -2,17 +2,21 @@
 // Created by 徐琰 on 2022/7/24.
 //
 
-#include <stdio.h>
-#include <assert.h>
 #include "xcl/concurrent/GlobalLock.h"
 #include "xcl/lang/XclDef.h"
 #include "xcl/concurrent/CMutex.h"
-#include "xcl/pool/CPool.h"
 
 static CMutex* __XCL_globalMutex = NULL;
 
-CMutex*
-__Mutex_newByPool(CPool* pool);
+/*
+ * static storage for CMutex initialization
+ * in msvc tls callback, malloc has some problems,
+ * so we use static memory to prevent this case
+ */
+static char __XCL_globalMutexCtx[1024];
+
+void
+__Mutex_init(CMutex* mutex);
 
 bool
 __acquireGlobalLock()
@@ -30,8 +34,8 @@ __releaseGlobalLock()
 static __attribute__((constructor)) void
 __initXclGlobalMutex()
 {
-    __XCL_globalMutex = __Mutex_newByPool(NULL);
-    assert(__XCL_globalMutex);
+    __XCL_globalMutex = (CMutex*)__XCL_globalMutexCtx;
+    __Mutex_init(__XCL_globalMutex);
 }
 #elif defined(_MSC_VER)
 #include <windows.h>
@@ -41,8 +45,8 @@ __TlsCb(PVOID DllHandle, DWORD dwReason, PVOID _)
 {
     if (dwReason == DLL_PROCESS_ATTACH)
     {
-        __XCL_globalMutex = __Mutex_newByPool(NULL);
-        assert(__XCL_globalMutex);
+        __XCL_globalMutex = (CMutex*)__XCL_globalMutexCtx;
+        __Mutex_init(__XCL_globalMutex);
     }
 }
 

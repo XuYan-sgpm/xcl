@@ -70,7 +70,7 @@ static void
 __runLockThreads(Callback cb, void* args)
 {
     int32_t nThreads = 8;
-    CThread threads[nThreads];
+    CThread threads[8];
     for (int i = 0; i < nThreads; i++)
     {
         threads[i] = Thread_create(cb, args);
