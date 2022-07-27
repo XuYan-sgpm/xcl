@@ -12,25 +12,26 @@ struct _CMutex_st {
     CRITICAL_SECTION criticalSection;
 };
 
+bool
+__Mutex_init(CMutex* mutex)
+{
+    InitializeCriticalSection(&mutex->criticalSection);
+    return true;
+}
+
 CMutex*
 __Mutex_newByPool(CPool* pool)
 {
     CMutex* mutex = (CMutex*)Pool_alloc(pool, sizeof(CMutex));
     if (mutex)
     {
-        InitializeCriticalSection(&mutex->criticalSection);
+        __Mutex_init(mutex);
     }
     else
     {
         Err_set(XCL_MEMORY_ERR);
     }
     return mutex;
-}
-
-void
-__Mutex_init(CMutex* mutex)
-{
-    InitializeCriticalSection(&mutex->criticalSection);
 }
 
 XCL_PUBLIC(CMutex*)

@@ -2,6 +2,7 @@
 // Created by 徐琰 on 2022/7/24.
 //
 
+#include <assert.h>
 #include "xcl/concurrent/GlobalLock.h"
 #include "xcl/lang/XclDef.h"
 #include "xcl/concurrent/CMutex.h"
@@ -15,7 +16,7 @@ static CMutex* __XCL_globalMutex = NULL;
  */
 static char __XCL_globalMutexCtx[1024];
 
-void
+bool
 __Mutex_init(CMutex* mutex);
 
 bool
@@ -35,7 +36,7 @@ static __attribute__((constructor)) void
 __initXclGlobalMutex()
 {
     __XCL_globalMutex = (CMutex*)__XCL_globalMutexCtx;
-    __Mutex_init(__XCL_globalMutex);
+    assert(__Mutex_init(__XCL_globalMutex));
 }
 #elif defined(_MSC_VER)
 #include <windows.h>
@@ -46,7 +47,7 @@ __TlsCb(PVOID DllHandle, DWORD dwReason, PVOID _)
     if (dwReason == DLL_PROCESS_ATTACH)
     {
         __XCL_globalMutex = (CMutex*)__XCL_globalMutexCtx;
-        __Mutex_init(__XCL_globalMutex);
+        assert(__Mutex_init(__XCL_globalMutex));
     }
 }
 
