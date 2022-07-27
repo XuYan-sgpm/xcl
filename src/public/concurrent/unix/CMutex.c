@@ -15,23 +15,36 @@ struct _CMutex_st {
     pthread_mutex_t handle;
 };
 
+bool
+__Mutex_init(CMutex* mutex)
+{
+    memset(mutex, 0, sizeof(CMutex));
+    pthread_mutexattr_t attr;
+    pthread_mutexattr_init(&attr);
+    pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
+    int err;
+    if ((err = pthread_mutex_init(&mutex->handle, &attr) == 0))
+    {
+        return true;
+    }
+    errno = err;
+    return false;
+}
+
 CMutex*
 __Mutex_newByPool(CPool* pool)
 {
     CMutex* mutex = Pool_alloc(pool, sizeof(CMutex));
     if (mutex)
     {
-        memset(mutex, 0, sizeof(CMutex));
-        pthread_mutexattr_t attr;
-        pthread_mutexattr_init(&attr);
-        pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
-        int err;
-        if ((err = pthread_mutex_init(&mutex->handle, &attr) == 0))
+        if (!__Mutex_init(mutex))
+        {
+            Pool_dealloc(pool, mutex, sizeof(CMutex));
+        }
+        else
         {
             return mutex;
         }
-        errno = err;
-        Pool_dealloc(pool, mutex, sizeof(CMutex));
     }
     return NULL;
 }
