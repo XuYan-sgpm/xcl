@@ -2,7 +2,7 @@
 // Created by 徐琰 on 2022/7/24.
 //
 
-#ifndef ENABLE_CXX
+#include <stdio.h>
 #include <assert.h>
 #include "xcl/concurrent/GlobalLock.h"
 #include "xcl/lang/XclDef.h"
@@ -33,8 +33,41 @@ __initXclGlobalMutex()
     __XCL_globalMutex = __Mutex_newByPool(NULL);
     assert(__XCL_globalMutex);
 }
+#elif defined(_MSC_VER)
+#include <windows.h>
+
+void NTAPI
+__TlsCb(PVOID DllHandle, DWORD dwReason, PVOID _)
+{
+    if (dwReason == DLL_PROCESS_ATTACH)
+    {
+        __XCL_globalMutex = __Mutex_newByPool(NULL);
+        assert(__XCL_globalMutex);
+    }
+}
+
+#ifdef _WIN64
+#pragma comment(linker, "/INCLUDE:_tls_used")
+#pragma comment(linker, "/INCLUDE:tls_callback_func")
 #else
-#error \
-    "global lock can not be initialized, try add -DENABLE_CXX_COMPILE=ON to cmake command"
+#pragma comment(linker, "/INCLUDE:__tls_used")
+#pragma comment(linker, "/INCLUDE:_tls_callback_func")
 #endif
+
+#ifdef _WIN64
+#pragma const_seg(".CRT$XLF")
+EXTERN_C const
+#else
+#pragma data_seg(".CRT$XLF")
+EXTERN_C
+#endif
+    PIMAGE_TLS_CALLBACK tls_callback_func
+    = __TlsCb;
+#ifdef _WIN64
+#pragma const_seg()
+#else
+#pragma data_seg()
+#endif //_WIN64
+#else
+#error "global lock can not be initialized"
 #endif

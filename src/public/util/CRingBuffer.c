@@ -392,13 +392,13 @@ RingBuffer_insertRegion(CRingBuffer* ringBuffer,
                         int32_t pos,
                         const void* src,
                         int32_t es,
-                        int32_t count,
+                        int32_t len,
                         bool force)
 {
     if (es == ringBuffer->eleSize
-        && __RingBuffer_beforeInsert(ringBuffer, pos, count, force))
+        && __RingBuffer_beforeInsert(ringBuffer, pos, len, force))
     {
-        __RingBuffer_copyExternalData(ringBuffer, pos, src, count);
+        __RingBuffer_copyExternalData(ringBuffer, pos, src, len);
         return true;
     }
     else
@@ -445,15 +445,15 @@ XCL_PUBLIC(bool)
 RingBuffer_assignRegion(CRingBuffer* ringBuffer,
                         const void* src,
                         int32_t es,
-                        int32_t count)
+                        int32_t len)
 {
     if (es != ringBuffer->eleSize)
     {
         return false;
     }
-    if (__RingBuffer_beforeWrite(ringBuffer, 0, count))
+    if (__RingBuffer_beforeWrite(ringBuffer, 0, len))
     {
-        __RingBuffer_copyExternalData(ringBuffer, 0, src, count);
+        __RingBuffer_copyExternalData(ringBuffer, 0, src, len);
         return true;
     }
     else

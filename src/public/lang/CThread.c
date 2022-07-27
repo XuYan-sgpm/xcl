@@ -39,7 +39,7 @@ Thread_create(void (*proc)(void*), void* usr)
     return (CThread){handle};
 }
 
-bool
+XCL_PUBLIC(bool)
 Thread_valid(CThread thread)
 {
     return thread.handle;

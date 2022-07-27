@@ -111,7 +111,7 @@ endif ()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_compile_definitions(_WIN32_WINNT=0x0A00)
-    target_link_libraries(${xcl_lib_name} winmm)
+    target_link_libraries(${xcl_lib_name} winmm ntdll)
 else ()
     target_link_libraries(${xcl_lib_name} pthread)
 endif ()
@@ -121,3 +121,6 @@ add_custom_command(TARGET ${xcl_lib_name} PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBRARY_OUTPUT_PATH}
         COMMAND ${CMAKE_COMMAND} -E echo "make library directories ${LIBRARY_OUTPUT_PATH}"
         VERBATIM)
+
+add_executable(test test.c)
+target_link_libraries(test xcl)

@@ -65,3 +65,25 @@ TEST(TestRingBuffer, func2)
     }
     cout << endl;
 }
+
+TEST(TestRingBuffer, func3)
+{
+    CRingBuffer rb = RingBuffer_make(100, 8);
+    ASSERT_NE(rb.buf, nullptr);
+    double values[100] = {0};
+    for (int i = 0; i < 100; i++)
+    {
+        values[i] = 3.12 * 7.32 * (rand());
+    }
+    ASSERT_TRUE(RingBuffer_insertRegion(&rb, 0, values, 8, 100, false));
+    for (int i = 0; i < 100; i++)
+    {
+        double d;
+        ASSERT_TRUE(RingBuffer_get(&rb, i, &d));
+        ASSERT_EQ(d, values[i]);
+    }
+    ASSERT_EQ(RingBuffer_size(&rb), 100);
+    RingBuffer_clear(&rb);
+    ASSERT_EQ(rb.size, 0);
+    ASSERT_FALSE(RingBuffer_get(&rb, 0, nullptr));
+}

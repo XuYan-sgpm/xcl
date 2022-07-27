@@ -164,7 +164,7 @@ RingBuffer_insertRepeat(CRingBuffer* ringBuffer,
  * @param pos insert position
  * @param src source data element
  * @param es element size
- * @param count element count
+ * @param len element count
  * @param force whether overwrite if ring buffer is full
  * @return true if insert successfully, otherwise false
  */
@@ -173,7 +173,7 @@ RingBuffer_insertRegion(CRingBuffer* ringBuffer,
                         int32_t pos,
                         const void* src,
                         int32_t es,
-                        int32_t count,
+                        int32_t len,
                         bool force);
 
 /**
@@ -194,14 +194,14 @@ RingBuffer_assignRepeat(CRingBuffer* ringBuffer, int32_t n, const void* src);
  * @param ringBuffer ring buffer object
  * @param src pointer store continuous elements
  * @param es element size
- * @param count element count
+ * @param len element count
  * @return true if assign successfully, otherwise false
  */
 XCL_PUBLIC(bool)
 RingBuffer_assignRegion(CRingBuffer* ringBuffer,
                         const void* src,
                         int32_t es,
-                        int32_t count);
+                        int32_t len);
 
 /**
  * replace element at position pos of ring buffer with element

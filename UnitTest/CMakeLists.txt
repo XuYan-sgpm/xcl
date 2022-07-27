@@ -24,7 +24,7 @@ else ()
     set(third_party /usr/local)
 endif ()
 
-set(xcl_lib_type dynamic)
+set(xcl_lib_type static)
 
 if (xcl_lib_type STREQUAL "dynamic")
     add_definitions(-DDYNAMIC)
