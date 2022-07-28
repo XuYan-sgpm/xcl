@@ -41,7 +41,7 @@ BreakStringLiterals: true
 ColumnLimit: 80
 CompactNamespaces: false
 ContinuationIndentWidth: 4
-IndentCaseLabels: true
+IndentCaseLabels: false
 IndentPPDirectives: None
 IndentWidth: 4
 KeepEmptyLinesAtTheStartOfBlocks: true

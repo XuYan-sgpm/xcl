@@ -3,12 +3,52 @@
 //
 
 #include <stdlib.h>
+#include <assert.h>
 #include "xcl/pool/CPool.h"
+#include "xcl/concurrent/GlobalLock.h"
+
+typedef enum
+{
+    UNINITIALIZED,
+    INITIALIZING,
+    INITIALIZED
+} CPoolState;
+
+static CPool* __XCL_defaultPool = NULL;
+
+static CPool*
+__implInitXclDefPool()
+{
+    return NULL;
+}
 
 XCL_PUBLIC(CPool*)
 Pool_def()
 {
-    return NULL;
+    static volatile CPoolState state = UNINITIALIZED;
+    CPool* pool = NULL;
+    if (state == INITIALIZED)
+    {
+        return __XCL_defaultPool;
+    }
+    __acquireGlobalLock();
+    if (state == INITIALIZING)
+    {
+        assert(false);
+    }
+    else if (state == UNINITIALIZED)
+    {
+        state = INITIALIZING;
+        __XCL_defaultPool = __implInitXclDefPool();
+        pool = __XCL_defaultPool;
+        state = INITIALIZED;
+    }
+    else
+    {
+        pool = __XCL_defaultPool;
+    }
+    __releaseGlobalLock();
+    return pool;
 }
 
 XCL_PUBLIC(void*)

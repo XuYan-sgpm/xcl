@@ -4,15 +4,16 @@
 
 #include "xcl/concurrent/util/CLinkedBlockQueue.h"
 #include "xcl/concurrent/CMutex.h"
-// #include <stdatomic.h>
-//
-//  struct _CLinkedBlockingQueue_st {
-//     void* putLock;
-//     void* popLock;
-//     void* notEmpty;
-//     void* notFull;
-//     const uint32_t eleSize;
-//     void* blocks;
-//     atomic_int_fast32_t blockCount;
-//     const uint32_t queueCap;
-// };
+#include "xcl/concurrent/CCond.h"
+#include "xcl/concurrent/CInternalAtomic.h"
+
+struct _CLinkedBlockingQueue_st {
+    CMutex* putLock;
+    CMutex* popLock;
+    CCond* notEmpty;
+    CCond* notFull;
+    const uint32_t eleSize;
+    void* blocks;
+    ATOMIC(int32_t) blockCount;
+    const uint32_t queueCap;
+};
