@@ -18,88 +18,84 @@ extern "C" {
 #else
 #define ATOMIC(type) _Atomic(type)
 #endif
-#define ATOMIC_INCREMENT(object, result, memoryOrder) \
-    (result = atomic_fetch_add_explicit(object, 1, memoryOrder))
-#define ATOMIC_LOAD(object, result, memoryOrder) \
-    (result = atomic_load_explicit(object, memoryOrder))
-#define ATOMIC_STORE(object, val, memoryOrder) \
-    atomic_store_explicit(object, val, memoryOrder)
-#define ATOMIC_DECREMENT(object, result, memoryOrder) \
-    (result = atomic_fetch_sub_explicit(object, 1, memoryOrder))
-#define CAS(object, expect, exchange, memoryOrder)       \
-    atomic_compare_exchange_strong_explicit(object,      \
-                                            expect,      \
-                                            exchange,    \
-                                            memoryOrder, \
-                                            memoryOrder)
-#define CAS_WEAK(object, expect, exchange, memoryOrder) \
-    atomic_compare_exchange_weak_explicit(object,       \
-                                          expect,       \
-                                          exchange,     \
-                                          memoryOrder,  \
-                                          memoryOrder)
-#define ATOMIC_ADD(object, delta, result, memoryOrder) \
-    (result = atomic_fetch_add_explicit(object, delta, memoryOrder))
-#define ATOMIC_EXCHANGE(object, val, result, memoryOrder) \
-    (result = atomic_exchange_explicit(object, val, memoryOrder))
-
 #elif defined(_MSC_VER)
-#include <windows.h>
-
-/*
- * msvc compiler atomic operation auto ignore memory order
- * some operation may not support 8-bits value
- */
-
-bool
-__Msvc_atomic_inc(volatile void* object, void* result, int size);
-
-bool
-__Msvc_atomic_dec(volatile void* object, void* result, int size);
-
-bool
-__Msvc_atomic_add(volatile void* object,
-                  const void* value,
-                  void* result,
-                  int size);
-
-bool
-__Msvc_atomic_load(volatile void* object, void* result, int size);
-
-bool
-__Msvc_atomic_store(volatile void* object, const void* value, int size);
-
-bool
-__Msvc_atomic_exchange(volatile void* object,
-                       const void* value,
-                       void* result,
-                       int size);
-
-bool
-__Msvc_atomic_compare_exchange(volatile void* object,
-                               void* expect,
-                               const void* exchange,
-                               int size);
-
 #define ATOMIC(type) volatile type
+typedef enum
+{
+    memory_order_relaxed,
+    memory_order_consume,
+    memory_order_acquire,
+    memory_order_release,
+    memory_order_acq_rel,
+    memory_order_seq_cst
+} memory_order;
+#endif
+
+bool
+__XCL_atomic_inc(void* object,
+                 void* result,
+                 int size,
+                 memory_order memoryOrder);
+
+bool
+__XCL_atomic_dec(void* object,
+                 void* result,
+                 int size,
+                 memory_order memoryOrder);
+
+bool
+__XCL_atomic_add(void* object,
+                 const void* value,
+                 void* result,
+                 int size,
+                 memory_order memoryOrder);
+
+bool
+__XCL_atomic_load(void* object,
+                  void* result,
+                  int size,
+                  memory_order memoryOrder);
+
+bool
+__XCL_atomic_store(void* object,
+                   const void* value,
+                   int size,
+                   memory_order memoryOrder);
+
+bool
+__XCL_atomic_exchange(void* object,
+                      const void* value,
+                      void* result,
+                      int size,
+                      memory_order memoryOrder);
+
+bool
+__XCL_atomic_compare_exchange(void* object,
+                              void* expect,
+                              const void* exchange,
+                              int size,
+                              memory_order memoryOrder);
+
 #define ATOMIC_INCREMENT(object, result, memoryOrder) \
-    __Msvc_atomic_inc(object, &result, sizeof(*object))
+    __XCL_atomic_inc(object, &result, sizeof(*object), memoryOrder)
 #define ATOMIC_DECREMENT(object, result, memoryOrder) \
-    __Msvc_atomic_dec(object, &result, sizeof(*object))
+    __XCL_atomic_dec(object, &result, sizeof(*object), memoryOrder)
 #define ATOMIC_LOAD(object, result, memoryOrder) \
-    __Msvc_atomic_load(object, &result, sizeof(*object))
+    __XCL_atomic_load(object, &result, sizeof(*object), memoryOrder)
 #define ATOMIC_STORE(object, val, memoryOrder) \
-    __Msvc_atomic_store(object, &val, sizeof(*object))
+    __XCL_atomic_store(object, &val, sizeof(*object), memoryOrder)
 #define ATOMIC_ADD(object, delta, result, memoryOrder) \
-    __Msvc_atomic_add(object, &delta, &result, sizeof(*object))
+    __XCL_atomic_add(object, &delta, &result, sizeof(*object), memoryOrder)
 #define ATOMIC_EXCHANGE(object, val, result, memoryOrder) \
-    __Msvc_atomic_exchange(object, &val, &result, sizeof(*object))
+    __XCL_atomic_exchange(object, &val, &result, sizeof(*object), memoryOrder)
 #define CAS(object, expect, exchange, memoryOrder) \
-    __Msvc_atomic_compare_exchange(object, &expect, &exchange, sizeof(*object))
+    __XCL_atomic_compare_exchange(object,          \
+                                  &expect,         \
+                                  &exchange,       \
+                                  sizeof(*object), \
+                                  memoryOrder)
 #define CAS_WEAK(object, expect, exchange, memoryOrder) \
     CAS(object, expect, exchange, memoryOrder)
-
-#endif
 
 #ifdef __cplusplus
 }

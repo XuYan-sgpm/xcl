@@ -4,13 +4,14 @@
 
 #include "xcl/concurrent/CInternalAtomic.h"
 #include "xcl/lang/XclDef.h"
+#include <windows.h>
 
-#if defined(_MSC_VER) && !CLANG && !GNUC
+#if defined(_MSC_VER)
 
 #include <stdbool.h>
 
 bool
-__Msvc_atomic_inc(volatile void* object, void* result, int size)
+__XCL_atomic_inc(void* object, void* result, int size, memory_order memoryOrder)
 {
     switch (size)
     {
@@ -30,7 +31,7 @@ __Msvc_atomic_inc(volatile void* object, void* result, int size)
 }
 
 bool
-__Msvc_atomic_dec(volatile void* object, void* result, int size)
+__XCL_atomic_dec(void* object, void* result, int size, memory_order memoryOrder)
 {
     switch (size)
     {
@@ -50,10 +51,11 @@ __Msvc_atomic_dec(volatile void* object, void* result, int size)
 }
 
 bool
-__Msvc_atomic_add(volatile void* object,
-                  const void* value,
-                  void* result,
-                  int size)
+__XCL_atomic_add(void* object,
+                 const void* value,
+                 void* result,
+                 int size,
+                 memory_order memoryOrder)
 {
     switch (size)
     {
@@ -71,7 +73,10 @@ __Msvc_atomic_add(volatile void* object,
 }
 
 bool
-__Msvc_atomic_load(volatile void* object, void* result, int size)
+__XCL_atomic_load(void* object,
+                  void* result,
+                  int size,
+                  memory_order memoryOrder)
 {
     switch (size)
     {
@@ -94,7 +99,10 @@ __Msvc_atomic_load(volatile void* object, void* result, int size)
 }
 
 bool
-__Msvc_atomic_store(volatile void* object, const void* value, int size)
+__XCL_atomic_store(void* object,
+                   const void* value,
+                   int size,
+                   memory_order memoryOrder)
 {
     switch (size)
     {
@@ -117,10 +125,11 @@ __Msvc_atomic_store(volatile void* object, const void* value, int size)
 }
 
 bool
-__Msvc_atomic_exchange(volatile void* object,
-                       const void* value,
-                       void* result,
-                       int size)
+__XCL_atomic_exchange(void* object,
+                      const void* value,
+                      void* result,
+                      int size,
+                      memory_order memoryOrder)
 {
     switch (size)
     {
@@ -147,10 +156,11 @@ __Msvc_atomic_exchange(volatile void* object,
 }
 
 bool
-__Msvc_atomic_compare_exchange(volatile void* object,
-                               void* expect,
-                               const void* exchange,
-                               int size)
+__XCL_atomic_compare_exchange(void* object,
+                              void* expect,
+                              const void* exchange,
+                              int size,
+                              memory_order memoryOrder)
 {
     bool ret = true;
     switch (size)

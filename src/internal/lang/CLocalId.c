@@ -143,5 +143,7 @@ static ATOMIC(int32_t) __LocalId_generator = 1;
 int32_t
 __LocalId_genId()
 {
-    return ATOMIC_INCREMENT(&__LocalId_generator, memory_order_seq_cst);
+    int32_t id;
+    ATOMIC_INCREMENT(&__LocalId_generator, id, memory_order_seq_cst);
+    return id;
 }
