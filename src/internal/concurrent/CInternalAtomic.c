@@ -339,7 +339,6 @@ __XCL_atomic_add(void* object,
     return true;
 }
 
-#ifdef _MSC_VER
 static char
 __Msvc_atomicLoad8Relaxed(volatile char* object)
 {
@@ -403,7 +402,6 @@ static short (*__MsvcAtomicLoad16Funcs[])(volatile short*)
        __Msvc_atomicLoad16Rel,
        __Msvc_atomicLoad16,
        __Msvc_atomicLoad16};
-#endif
 
 static LONG
 __Msvc_atomicLoad32Relaxed(volatile LONG* object)
@@ -477,27 +475,38 @@ __XCL_atomic_load(void* object,
 {
     switch (size)
     {
-#ifdef _MSC_VER
     case 1:
         *(char*)result = __MsvcAtomicLoad8Funcs[memoryOrder](object);
         break;
     case 2:
         *(short*)result = __MsvcAtomicLoad16Funcs[memoryOrder](object);
         break;
-#endif
     case 4:
         *(LONG*)result = __MsvcAtomicLoad32Funcs[memoryOrder](object);
         break;
     case 8:
         *(LONG64*)result = __MsvcAtomicLoad64Funcs[memoryOrder](object);
         break;
+#if X64
+    case 16:
+        __Int128 tmp = *(__Int128*)object;
+        bool ret
+            = InterlockedCompareExchange128(((volatile __Int128*)object)->pair,
+                                            tmp.pair[1],
+                                            tmp.pair[0],
+                                            tmp.pair);
+        if (ret)
+        {
+            *(__Int128*)result = tmp;
+        }
+        return ret;
+#endif
     default:
         return false;
     }
     return true;
 }
 
-#if defined(_MSC_VER)
 static char
 __Msvc_atomicExchange8Relaxed(volatile char* object, char val)
 {
@@ -561,7 +570,6 @@ static short (*__MsvcAtomicExchange16Funcs[])(volatile short*, short)
        __Msvc_atomicExchange16Rel,
        __Msvc_atomicExchange16,
        __Msvc_atomicExchange16};
-#endif
 
 static LONG
 __Msvc_atomicExchange32Relaxed(volatile LONG* object, LONG val)
@@ -635,20 +643,28 @@ __XCL_atomic_store(void* object,
 {
     switch (size)
     {
-#ifdef _MSC_VER
     case 1:
         __MsvcAtomicExchange8Funcs[memoryOrder](object, *(char*)value);
         break;
     case 2:
         __MsvcAtomicExchange16Funcs[memoryOrder](object, *(short*)value);
         break;
-#endif
     case 4:
         __MsvcAtomicExchange32Funcs[memoryOrder](object, *(LONG*)value);
         break;
     case 8:
         __MsvcAtomicExchange64Funcs[memoryOrder](object, *(LONG64*)value);
         break;
+#if X64
+    case 16:
+        __Int128 tmp = *(__Int128*)object;
+        bool ret
+            = InterlockedCompareExchange128(((volatile __Int128*)object)->pair,
+                                            ((__Int128*)value)->pair[1],
+                                            ((__Int128*)value)->pair[0],
+                                            tmp.pair);
+        return ret;
+#endif
     default:
         return false;
     }
@@ -664,7 +680,6 @@ __XCL_atomic_exchange(void* object,
 {
     switch (size)
     {
-#ifdef _MSC_VER
     case 1:
         *(char*)result
             = __MsvcAtomicExchange8Funcs[memoryOrder](object, *(char*)value);
@@ -673,7 +688,6 @@ __XCL_atomic_exchange(void* object,
         *(short*)result
             = __MsvcAtomicExchange16Funcs[memoryOrder](object, *(short*)value);
         break;
-#endif
     case 4:
         *(LONG*)result
             = __MsvcAtomicExchange32Funcs[memoryOrder](object, *(LONG*)value);
@@ -682,6 +696,21 @@ __XCL_atomic_exchange(void* object,
         *(LONG64*)result
             = __MsvcAtomicExchange64Funcs[memoryOrder](object, *(LONG64*)value);
         break;
+#if X64
+    case 16:
+        __Int128 src = *(__Int128*)value;
+        __Int128 tmp = *(__Int128*)object;
+        bool ret
+            = InterlockedCompareExchange128(((volatile __Int128*)object)->pair,
+                                            src.pair[1],
+                                            src.pair[0],
+                                            tmp.pair);
+        if (ret)
+        {
+            *(__Int128*)result = tmp;
+        }
+        return ret;
+#endif
     default:
         return false;
     }
@@ -802,7 +831,7 @@ static LONG64 (*__MsvcCas64Funcs[])(volatile LONG64*,
        __Msvc_cas64,
        __Msvc_cas64};
 
-#if defined(_MSC_VER) && X64
+#if X64
 static __Int128
 __Msvc_cas128(volatile __Int128* object, __Int128 expect, __Int128 exchange);
 
@@ -881,7 +910,7 @@ __XCL_atomic_cas(void* object,
                                             *(LONG64*)expect,
                                             *(const LONG64*)exchange);
         break;
-#if X64 && defined(_MSC_VER)
+#if X64
     case 16: {
         *(__Int128*)expect
             = __MsvcCas128Funcs[memoryOrder](object,

@@ -72,7 +72,7 @@ else ()
     set(link_libs ${xcl_lib_name} gtest gtest_main pthread)
 endif ()
 
-if (NOT ENABLE_CXX_COMPILE)
+if (NOT ENABLE_CXX_COMPILE AND NOT WIN32)
     set(link_libs ${link_libs} atomic)
 endif ()
 
