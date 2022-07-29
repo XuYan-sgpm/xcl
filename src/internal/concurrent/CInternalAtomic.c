@@ -6,6 +6,12 @@
 #include "xcl/lang/XclDef.h"
 #include <stdbool.h>
 
+#if X64
+typedef struct {
+    int64_t pair[2];
+} __Int128;
+#endif
+
 #if defined(_MSC_VER)
 #if !CLANG && !GNUC
 #include <windows.h>
@@ -789,10 +795,6 @@ const static LONG64 (*__MsvcCas64Funcs[])(volatile LONG64*,
        __Msvc_cas64};
 
 #if X64
-typedef struct {
-    LONG64 pair[2];
-} __Int128;
-
 static __Int128
 __Msvc_cas128(volatile __Int128* object, __Int128 expect, __Int128 exchange);
 
@@ -845,11 +847,11 @@ const static __Int128 (*__MsvcCas128Funcs[])(volatile __Int128*,
 #endif
 
 bool
-__XCL_atomic_compare_exchange(void* object,
-                              void* expect,
-                              const void* exchange,
-                              int size,
-                              memory_order memoryOrder)
+__XCL_atomic_cas(void* object,
+                 void* expect,
+                 const void* exchange,
+                 int size,
+                 memory_order memoryOrder)
 {
     bool ret = true;
     switch (size)
@@ -886,72 +888,42 @@ __XCL_atomic_compare_exchange(void* object,
     }
     return ret;
 }
+
+bool
+__XCL_atomic_casWeak(void* object,
+                     void* expect,
+                     const void* exchange,
+                     int size,
+                     memory_order memoryOrder)
+{
+    return __XCL_atomic_cas(object, expect, exchange, size, memoryOrder);
+}
 #else
-typedef char __Int1;
-typedef short __Int2;
-typedef int32_t __Int4;
-typedef int64_t __Int8;
-typedef struct {
-    int64_t pair[2];
-} __Int16;
-#define __GEN_VAR(name, size, val) __Int##size name = val;
-#define __XCL_atomic_io(api, object, result, value, size, memoryOrder) \
-    (*(__Int##size*)result = api((ATOMIC(__Int##size)*)object,         \
-                                 *(const __Int##size*)value,           \
-                                 memoryOrder))
-#define __XCL_atomic_i(api, object, value, size, memoryOrder) \
-    (api((ATOMIC(__Int##size)*)object, *(const __Int##size*)value, memoryOrder))
-#define __XCL_atomic_o(api, object, result, size, memoryOrder) \
-    (*(__Int##size*)result = api((ATOMIC(__Int##size)*)object, memoryOrder))
-#define __XCL_atomic_cmp(api, object, expect, exchange, size, memoryOrder) \
-    (api((ATOMIC(__Int##size)*)object,                                     \
-         (__Int##size*)expect,                                             \
-         *(const __Int##size*)exchange,                                    \
-         memoryOrder,                                                      \
-         memoryOrder))
 bool
 __XCL_atomic_inc(void* object, void* result, int size, memory_order memoryOrder)
 {
     switch (size)
     {
     case 1: {
-        __GEN_VAR(value, 1, 1);
-        __XCL_atomic_io(atomic_fetch_add_explicit,
-                        object,
-                        result,
-                        &value,
-                        1,
-                        memoryOrder);
+        *(char*)result
+            = atomic_fetch_add_explicit((ATOMIC(char)*)object, 1, memoryOrder);
         break;
     }
     case 2: {
-        __GEN_VAR(value, 2, 1);
-        __XCL_atomic_io(atomic_fetch_add_explicit,
-                        object,
-                        result,
-                        &value,
-                        2,
-                        memoryOrder);
+        *(short*)result
+            = atomic_fetch_add_explicit((ATOMIC(short)*)object, 1, memoryOrder);
         break;
     }
     case 4: {
-        __GEN_VAR(value, 4, 1);
-        __XCL_atomic_io(atomic_fetch_add_explicit,
-                        object,
-                        result,
-                        &value,
-                        4,
-                        memoryOrder);
+        *(int32_t*)result = atomic_fetch_add_explicit((ATOMIC(int32_t)*)object,
+                                                      1,
+                                                      memoryOrder);
         break;
     }
     case 8: {
-        __GEN_VAR(value, 8, 1);
-        __XCL_atomic_io(atomic_fetch_add_explicit,
-                        object,
-                        result,
-                        &value,
-                        8,
-                        memoryOrder);
+        *(int64_t*)result = atomic_fetch_add_explicit((ATOMIC(int64_t)*)object,
+                                                      1,
+                                                      memoryOrder);
         break;
     }
     default:
@@ -966,43 +938,26 @@ __XCL_atomic_dec(void* object, void* result, int size, memory_order memoryOrder)
     switch (size)
     {
     case 1: {
-        __GEN_VAR(value, 1, -1);
-        __XCL_atomic_io(atomic_fetch_add_explicit,
-                        object,
-                        result,
-                        &value,
-                        1,
-                        memoryOrder);
+        *(char*)result
+            = atomic_fetch_add_explicit((ATOMIC(char)*)object, -1, memoryOrder);
         break;
     }
     case 2: {
-        __GEN_VAR(value, 2, -1);
-        __XCL_atomic_io(atomic_fetch_add_explicit,
-                        object,
-                        result,
-                        &value,
-                        2,
-                        memoryOrder);
+        *(short*)result = atomic_fetch_add_explicit((ATOMIC(short)*)object,
+                                                    -1,
+                                                    memoryOrder);
         break;
     }
     case 4: {
-        __GEN_VAR(value, 4, -1);
-        __XCL_atomic_io(atomic_fetch_add_explicit,
-                        object,
-                        result,
-                        &value,
-                        4,
-                        memoryOrder);
+        *(int32_t*)result = atomic_fetch_add_explicit((ATOMIC(int32_t)*)object,
+                                                      -1,
+                                                      memoryOrder);
         break;
     }
     case 8: {
-        __GEN_VAR(value, 8, -1);
-        __XCL_atomic_io(atomic_fetch_add_explicit,
-                        object,
-                        result,
-                        &value,
-                        8,
-                        memoryOrder);
+        *(int64_t*)result = atomic_fetch_add_explicit((ATOMIC(int64_t)*)object,
+                                                      -1,
+                                                      memoryOrder);
         break;
     }
     default:
@@ -1021,39 +976,27 @@ __XCL_atomic_add(void* object,
     switch (size)
     {
     case 1: {
-        __XCL_atomic_io(atomic_fetch_add_explicit,
-                        object,
-                        result,
-                        &value,
-                        1,
-                        memoryOrder);
+        *(char*)result = atomic_fetch_add_explicit((ATOMIC(char)*)object,
+                                                   *(const char*)value,
+                                                   memoryOrder);
         break;
     }
     case 2: {
-        __XCL_atomic_io(atomic_fetch_add_explicit,
-                        object,
-                        result,
-                        &value,
-                        2,
-                        memoryOrder);
+        *(short*)result = atomic_fetch_add_explicit((ATOMIC(short)*)object,
+                                                    *(const short*)value,
+                                                    memoryOrder);
         break;
     }
     case 4: {
-        __XCL_atomic_io(atomic_fetch_add_explicit,
-                        object,
-                        result,
-                        &value,
-                        4,
-                        memoryOrder);
+        *(int32_t*)result = atomic_fetch_add_explicit((ATOMIC(int32_t)*)object,
+                                                      *(const int32_t*)value,
+                                                      memoryOrder);
         break;
     }
     case 8: {
-        __XCL_atomic_io(atomic_fetch_add_explicit,
-                        object,
-                        result,
-                        &value,
-                        8,
-                        memoryOrder);
+        *(int64_t*)result = atomic_fetch_add_explicit((ATOMIC(int64_t)*)object,
+                                                      *(const int64_t*)value,
+                                                      memoryOrder);
         break;
     }
     default:
@@ -1071,25 +1014,32 @@ __XCL_atomic_load(void* object,
     switch (size)
     {
     case 1: {
-        __XCL_atomic_o(atomic_load_explicit, object, result, 1, memoryOrder);
+        *(char*)result
+            = atomic_load_explicit((ATOMIC(char)*)object, memoryOrder);
         break;
     }
     case 2: {
-        __XCL_atomic_o(atomic_load_explicit, object, result, 2, memoryOrder);
+        *(short*)result
+            = atomic_load_explicit((ATOMIC(short)*)object, memoryOrder);
         break;
     }
     case 4: {
-        __XCL_atomic_o(atomic_load_explicit, object, result, 4, memoryOrder);
+        *(int32_t*)result
+            = atomic_load_explicit((ATOMIC(int32_t)*)object, memoryOrder);
         break;
     }
     case 8: {
-        __XCL_atomic_o(atomic_load_explicit, object, result, 8, memoryOrder);
+        *(int64_t*)result
+            = atomic_load_explicit((ATOMIC(int64_t)*)object, memoryOrder);
         break;
     }
+#if X64
     case 16: {
-        __XCL_atomic_o(atomic_load_explicit, object, result, 16, memoryOrder);
+        *(__Int128*)result
+            = atomic_load_explicit((ATOMIC(__Int128)*)object, memoryOrder);
         break;
     }
+#endif
     default:
         return false;
     }
@@ -1105,25 +1055,37 @@ __XCL_atomic_store(void* object,
     switch (size)
     {
     case 1: {
-        __XCL_atomic_i(atomic_store_explicit, object, value, 1, memoryOrder);
+        atomic_store_explicit((ATOMIC(char)*)object,
+                              *(const char*)value,
+                              memoryOrder);
         break;
     }
     case 2: {
-        __XCL_atomic_i(atomic_store_explicit, object, value, 2, memoryOrder);
+        atomic_store_explicit((ATOMIC(short)*)object,
+                              *(const short*)value,
+                              memoryOrder);
         break;
     }
     case 4: {
-        __XCL_atomic_i(atomic_store_explicit, object, value, 4, memoryOrder);
+        atomic_store_explicit((ATOMIC(int32_t)*)object,
+                              *(const int32_t*)value,
+                              memoryOrder);
         break;
     }
     case 8: {
-        __XCL_atomic_i(atomic_store_explicit, object, value, 8, memoryOrder);
+        atomic_store_explicit((ATOMIC(int64_t)*)object,
+                              *(const int64_t*)value,
+                              memoryOrder);
         break;
     }
+#if X64
     case 16: {
-        __XCL_atomic_i(atomic_store_explicit, object, value, 16, memoryOrder);
+        atomic_store_explicit((ATOMIC(__Int128)*)object,
+                              *(const __Int128*)value,
+                              memoryOrder);
         break;
     }
+#endif
     default:
         return false;
     }
@@ -1140,50 +1102,37 @@ __XCL_atomic_exchange(void* object,
     switch (size)
     {
     case 1: {
-        __XCL_atomic_io(atomic_exchange_explicit,
-                        object,
-                        result,
-                        value,
-                        1,
-                        memoryOrder);
+        *(char*)result = atomic_exchange_explicit((ATOMIC(char)*)object,
+                                                  *(const char*)value,
+                                                  memoryOrder);
         break;
     }
     case 2: {
-        __XCL_atomic_io(atomic_exchange_explicit,
-                        object,
-                        result,
-                        value,
-                        2,
-                        memoryOrder);
+        *(short*)result = atomic_exchange_explicit((ATOMIC(short)*)object,
+                                                   *(const short*)value,
+                                                   memoryOrder);
         break;
     }
     case 4: {
-        __XCL_atomic_io(atomic_exchange_explicit,
-                        object,
-                        result,
-                        value,
-                        4,
-                        memoryOrder);
+        *(int32_t*)result = atomic_exchange_explicit((ATOMIC(int32_t)*)object,
+                                                     *(const int32_t*)value,
+                                                     memoryOrder);
         break;
     }
     case 8: {
-        __XCL_atomic_io(atomic_exchange_explicit,
-                        object,
-                        result,
-                        value,
-                        8,
-                        memoryOrder);
+        *(int64_t*)result = atomic_exchange_explicit((ATOMIC(int64_t)*)object,
+                                                     *(const int64_t*)value,
+                                                     memoryOrder);
         break;
     }
+#if X64
     case 16: {
-        __XCL_atomic_io(atomic_exchange_explicit,
-                        object,
-                        result,
-                        value,
-                        16,
-                        memoryOrder);
+        *(__Int128*)result = atomic_exchange_explicit((ATOMIC(__Int128)*)object,
+                                                      *(const __Int128*)value,
+                                                      memoryOrder);
         break;
     }
+#endif
     default:
         return false;
     }
@@ -1200,48 +1149,55 @@ __XCL_atomic_cas(void* object,
     switch (size)
     {
     case 1: {
-        return __XCL_atomic_cmp(atomic_compare_exchange_strong_explicit,
-                                object,
-                                expect,
-                                exchange,
-                                1,
-                                memoryOrder);
+        *(char*)expect
+            = atomic_compare_exchange_strong_explicit((ATOMIC(char)*)object,
+                                                      (char*)expect,
+                                                      *(const char*)exchange,
+                                                      memoryOrder,
+                                                      memoryOrder);
+        break;
     }
     case 2: {
-        return __XCL_atomic_cmp(atomic_compare_exchange_strong_explicit,
-                                object,
-                                expect,
-                                exchange,
-                                2,
-                                memoryOrder);
+        *(short*)expect
+            = atomic_compare_exchange_strong_explicit((ATOMIC(short)*)object,
+                                                      (short*)expect,
+                                                      *(const short*)exchange,
+                                                      memoryOrder,
+                                                      memoryOrder);
+        break;
     }
     case 4: {
-        return __XCL_atomic_cmp(atomic_compare_exchange_strong_explicit,
-                                object,
-                                expect,
-                                exchange,
-                                4,
-                                memoryOrder);
+        *(int32_t*)expect
+            = atomic_compare_exchange_strong_explicit((ATOMIC(int32_t)*)object,
+                                                      (int32_t*)expect,
+                                                      *(const int32_t*)exchange,
+                                                      memoryOrder,
+                                                      memoryOrder);
+        break;
     }
     case 8: {
-        return __XCL_atomic_cmp(atomic_compare_exchange_strong_explicit,
-                                object,
-                                expect,
-                                exchange,
-                                8,
-                                memoryOrder);
+        *(int64_t*)expect
+            = atomic_compare_exchange_strong_explicit((ATOMIC(int64_t)*)object,
+                                                      (int64_t*)expect,
+                                                      *(const int64_t*)exchange,
+                                                      memoryOrder,
+                                                      memoryOrder);
+        break;
     }
+#if X64
     case 16: {
-        return __XCL_atomic_cmp(atomic_compare_exchange_strong_explicit,
-                                object,
-                                expect,
-                                exchange,
-                                16,
-                                memoryOrder);
+        atomic_compare_exchange_strong_explicit((ATOMIC(__Int128)*)object,
+                                                (__Int128*)expect,
+                                                *(const __Int128*)exchange,
+                                                memoryOrder,
+                                                memoryOrder);
+        break;
     }
+#endif
     default:
         return false;
     }
+    return true;
 }
 
 bool
@@ -1254,48 +1210,55 @@ __XCL_atomic_casWeak(void* object,
     switch (size)
     {
     case 1: {
-        return __XCL_atomic_cmp(atomic_compare_exchange_weak_explicit,
-                                object,
-                                expect,
-                                exchange,
-                                1,
-                                memoryOrder);
+        *(char*)expect
+            = atomic_compare_exchange_weak_explicit((ATOMIC(char)*)object,
+                                                    (char*)expect,
+                                                    *(const char*)exchange,
+                                                    memoryOrder,
+                                                    memoryOrder);
+        break;
     }
     case 2: {
-        return __XCL_atomic_cmp(atomic_compare_exchange_weak_explicit,
-                                object,
-                                expect,
-                                exchange,
-                                2,
-                                memoryOrder);
+        *(short*)expect
+            = atomic_compare_exchange_weak_explicit((ATOMIC(short)*)object,
+                                                    (short*)expect,
+                                                    *(const short*)exchange,
+                                                    memoryOrder,
+                                                    memoryOrder);
+        break;
     }
     case 4: {
-        return __XCL_atomic_cmp(atomic_compare_exchange_weak_explicit,
-                                object,
-                                expect,
-                                exchange,
-                                4,
-                                memoryOrder);
+        *(int32_t*)expect
+            = atomic_compare_exchange_weak_explicit((ATOMIC(int32_t)*)object,
+                                                    (int32_t*)expect,
+                                                    *(const int32_t*)exchange,
+                                                    memoryOrder,
+                                                    memoryOrder);
+        break;
     }
     case 8: {
-        return __XCL_atomic_cmp(atomic_compare_exchange_weak_explicit,
-                                object,
-                                expect,
-                                exchange,
-                                8,
-                                memoryOrder);
+        *(int64_t*)expect
+            = atomic_compare_exchange_weak_explicit((ATOMIC(int64_t)*)object,
+                                                    (int64_t*)expect,
+                                                    *(const int64_t*)exchange,
+                                                    memoryOrder,
+                                                    memoryOrder);
+        break;
     }
+#if X64
     case 16: {
-        return __XCL_atomic_cmp(atomic_compare_exchange_weak_explicit,
-                                object,
-                                expect,
-                                exchange,
-                                16,
-                                memoryOrder);
+        atomic_compare_exchange_weak_explicit((ATOMIC(__Int128)*)object,
+                                              (__Int128*)expect,
+                                              *(const __Int128*)exchange,
+                                              memoryOrder,
+                                              memoryOrder);
+        break;
     }
+#endif
     default:
         return false;
     }
+    return true;
 }
 #endif
 
