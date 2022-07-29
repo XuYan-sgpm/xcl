@@ -15,7 +15,7 @@ endif ()
 set(CMAKE_CXX_STANDARD 11)
 
 set(EXECUTABLE_OUTPUT_PATH ${CMAKE_CURRENT_LIST_DIR}/bin/${build_type})
-file(GLOB test_src_files src/*.cc)
+file(GLOB test_src_files src/*.c)
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(compiler_id msvc)

@@ -5,6 +5,7 @@
 #include "xcl/concurrent/CInternalAtomic.h"
 #include "xcl/lang/XclDef.h"
 #include <stdbool.h>
+#include <stdint.h>
 
 #if X64
 typedef struct {
@@ -13,25 +14,24 @@ typedef struct {
 #endif
 
 #if defined(_MSC_VER)
-#if !CLANG && !GNUC
 #include <windows.h>
 
 static short
 __Msvc_atomicInc16Relaxed(volatile short* object)
 {
-    return InterlockedIncrementNoFence16(object);
+    return InterlockedIncrement16(object);
 }
 
 static short
 __Msvc_atomicInc16Acq(volatile short* object)
 {
-    return InterlockedIncrementAcquire16(object);
+    return InterlockedIncrement16(object);
 }
 
 static short
 __Msvc_atomicInc16Rel(volatile short* object)
 {
-    return InterlockedIncrementRelease16(object);
+    return InterlockedIncrement16(object);
 }
 
 static short
@@ -40,7 +40,7 @@ __Msvc_atomicInc16(volatile short* object)
     return InterlockedIncrement16(object);
 }
 
-const static short (*__MsvcAtomicInc16Funcs[])(volatile short*)
+static short (*__MsvcAtomicInc16Funcs[])(volatile short*)
     = {__Msvc_atomicInc16Relaxed,
        __Msvc_atomicInc16Acq,
        __Msvc_atomicInc16Acq,
@@ -51,19 +51,19 @@ const static short (*__MsvcAtomicInc16Funcs[])(volatile short*)
 static LONG
 __Msvc_atomicInc32Relaxed(volatile LONG* object)
 {
-    return InterlockedIncrementNoFence(object);
+    return InterlockedIncrement(object);
 }
 
 static LONG
 __Msvc_atomicInc32Acq(volatile LONG* object)
 {
-    return InterlockedIncrementAcquire(object);
+    return InterlockedIncrement(object);
 }
 
 static LONG
 __Msvc_atomicInc32Rel(volatile LONG* object)
 {
-    return InterlockedIncrementRelease(object);
+    return InterlockedIncrement(object);
 }
 
 static LONG
@@ -72,7 +72,7 @@ __Msvc_atomicInc32(volatile LONG* object)
     return InterlockedIncrement(object);
 }
 
-const static LONG (*__MsvcAtomicInc32Funcs[])(volatile LONG*)
+static LONG (*__MsvcAtomicInc32Funcs[])(volatile LONG*)
     = {__Msvc_atomicInc32Relaxed,
        __Msvc_atomicInc32Acq,
        __Msvc_atomicInc32Acq,
@@ -83,19 +83,19 @@ const static LONG (*__MsvcAtomicInc32Funcs[])(volatile LONG*)
 static LONG64
 __Msvc_atomicInc64Relaxed(volatile LONG64* object)
 {
-    return InterlockedIncrementNoFence64(object);
+    return InterlockedIncrement64(object);
 }
 
 static LONG64
 __Msvc_atomicInc64Acq(volatile LONG64* object)
 {
-    return InterlockedIncrementAcquire64(object);
+    return InterlockedIncrement64(object);
 }
 
 static LONG64
 __Msvc_atomicInc64Rel(volatile LONG64* object)
 {
-    return InterlockedIncrementRelease64(object);
+    return InterlockedIncrement64(object);
 }
 
 static LONG64
@@ -104,7 +104,7 @@ __Msvc_atomicInc64(volatile LONG64* object)
     return InterlockedIncrement64(object);
 }
 
-const static LONG64 (*__MsvcAtomicInc64Funcs[])(volatile LONG64*)
+static LONG64 (*__MsvcAtomicInc64Funcs[])(volatile LONG64*)
     = {__Msvc_atomicInc64Relaxed,
        __Msvc_atomicInc64Acq,
        __Msvc_atomicInc64Acq,
@@ -138,19 +138,19 @@ __XCL_atomic_inc(void* object, void* result, int size, memory_order memoryOrder)
 static short
 __Msvc_atomicDec16Relaxed(volatile short* object)
 {
-    return InterlockedDecrementNoFence16(object);
+    return InterlockedDecrement16(object);
 }
 
 static short
 __Msvc_atomicDec16Acq(volatile short* object)
 {
-    return InterlockedDecrementAcquire16(object);
+    return InterlockedDecrement16(object);
 }
 
 static short
 __Msvc_atomicDec16Rel(volatile short* object)
 {
-    return InterlockedDecrementRelease16(object);
+    return InterlockedDecrement16(object);
 }
 
 static short
@@ -159,7 +159,7 @@ __Msvc_atomicDec16(volatile short* object)
     return InterlockedDecrement16(object);
 }
 
-const static short (*__MsvcAtomicDec16Funcs[])(volatile short*)
+static short (*__MsvcAtomicDec16Funcs[])(volatile short*)
     = {__Msvc_atomicDec16Relaxed,
        __Msvc_atomicDec16Acq,
        __Msvc_atomicDec16Acq,
@@ -170,19 +170,19 @@ const static short (*__MsvcAtomicDec16Funcs[])(volatile short*)
 static LONG
 __Msvc_atomicDec32Relaxed(volatile LONG* object)
 {
-    return InterlockedDecrementNoFence(object);
+    return InterlockedDecrement(object);
 }
 
 static LONG
 __Msvc_atomicDec32Acq(volatile LONG* object)
 {
-    return InterlockedDecrementAcquire(object);
+    return InterlockedDecrement(object);
 }
 
 static LONG
 __Msvc_atomicDec32Rel(volatile LONG* object)
 {
-    return InterlockedDecrementRelease(object);
+    return InterlockedDecrement(object);
 }
 
 static LONG
@@ -191,7 +191,7 @@ __Msvc_atomicDec32(volatile LONG* object)
     return InterlockedDecrement(object);
 }
 
-const static LONG (*__MsvcAtomicDec32Funcs[])(volatile LONG*)
+static LONG (*__MsvcAtomicDec32Funcs[])(volatile LONG*)
     = {__Msvc_atomicDec32Relaxed,
        __Msvc_atomicDec32Acq,
        __Msvc_atomicDec32Acq,
@@ -202,19 +202,19 @@ const static LONG (*__MsvcAtomicDec32Funcs[])(volatile LONG*)
 static LONG64
 __Msvc_atomicDec64Relaxed(volatile LONG64* object)
 {
-    return InterlockedDecrementNoFence64(object);
+    return InterlockedDecrement64(object);
 }
 
 static LONG64
 __Msvc_atomicDec64Acq(volatile LONG64* object)
 {
-    return InterlockedDecrementAcquire64(object);
+    return InterlockedDecrement64(object);
 }
 
 static LONG64
 __Msvc_atomicDec64Rel(volatile LONG64* object)
 {
-    return InterlockedDecrementRelease64(object);
+    return InterlockedDecrement64(object);
 }
 
 static LONG64
@@ -223,7 +223,7 @@ __Msvc_atomicDec64(volatile LONG64* object)
     return InterlockedDecrement64(object);
 }
 
-const static LONG64 (*__MsvcAtomicDec64Funcs[])(volatile LONG64*)
+static LONG64 (*__MsvcAtomicDec64Funcs[])(volatile LONG64*)
     = {__Msvc_atomicDec64Relaxed,
        __Msvc_atomicDec64Acq,
        __Msvc_atomicDec64Acq,
@@ -254,19 +254,19 @@ __XCL_atomic_dec(void* object, void* result, int size, memory_order memoryOrder)
 static LONG
 __Msvc_atomicAdd32Relaxed(volatile LONG* object, LONG delta)
 {
-    return InterlockedAddNoFence(object, delta);
+    return InterlockedAdd(object, delta);
 }
 
 static LONG
 __Msvc_atomicAdd32Acq(volatile LONG* object, LONG delta)
 {
-    return InterlockedAddAcquire(object, delta);
+    return InterlockedAdd(object, delta);
 }
 
 static LONG
 __Msvc_atomicAdd32Rel(volatile LONG* object, LONG delta)
 {
-    return InterlockedAddRelease(object, delta);
+    return InterlockedAdd(object, delta);
 }
 
 static LONG
@@ -275,7 +275,7 @@ __Msvc_atomicAdd32(volatile LONG* object, LONG delta)
     return InterlockedAdd(object, delta);
 }
 
-const static LONG (*__MsvcAtomicAdd32Funcs[])(volatile LONG*, LONG)
+static LONG (*__MsvcAtomicAdd32Funcs[])(volatile LONG*, LONG)
     = {__Msvc_atomicAdd32Relaxed,
        __Msvc_atomicAdd32Acq,
        __Msvc_atomicAdd32Acq,
@@ -286,19 +286,19 @@ const static LONG (*__MsvcAtomicAdd32Funcs[])(volatile LONG*, LONG)
 static LONG64
 __Msvc_atomicAdd64Relaxed(volatile LONG64* object, LONG64 delta)
 {
-    return InterlockedAddNoFence64(object, delta);
+    return InterlockedAdd64(object, delta);
 }
 
 static LONG64
 __Msvc_atomicAdd64Acq(volatile LONG64* object, LONG64 delta)
 {
-    return InterlockedAddAcquire64(object, delta);
+    return InterlockedAdd64(object, delta);
 }
 
 static LONG64
 __Msvc_atomicAdd64Rel(volatile LONG64* object, LONG64 delta)
 {
-    return InterlockedAddRelease64(object, delta);
+    return InterlockedAdd64(object, delta);
 }
 
 static LONG64
@@ -307,7 +307,7 @@ __Msvc_atomicAdd64(volatile LONG64* object, LONG64 delta)
     return InterlockedAdd64(object, delta);
 }
 
-const static LONG64 (*__MsvcAtomicAdd64Funcs[])(volatile LONG64*, LONG64)
+static LONG64 (*__MsvcAtomicAdd64Funcs[])(volatile LONG64*, LONG64)
     = {__Msvc_atomicAdd64Relaxed,
        __Msvc_atomicAdd64Acq,
        __Msvc_atomicAdd64Acq,
@@ -339,6 +339,7 @@ __XCL_atomic_add(void* object,
     return true;
 }
 
+#ifdef _MSC_VER
 static char
 __Msvc_atomicLoad8Relaxed(volatile char* object)
 {
@@ -363,7 +364,7 @@ __Msvc_atomicLoad8(volatile char* object)
     return InterlockedOr8(object, 0);
 }
 
-const static char (*__MsvcAtomicLoad8Funcs[])(volatile char*)
+static char (*__MsvcAtomicLoad8Funcs[])(volatile char*)
     = {__Msvc_atomicLoad8Relaxed,
        __Msvc_atomicLoad8Acq,
        __Msvc_atomicLoad8Acq,
@@ -395,30 +396,31 @@ __Msvc_atomicLoad16(volatile short* object)
     return InterlockedOr16(object, 0);
 }
 
-const static short (*__MsvcAtomicLoad16Funcs[])(volatile short*)
+static short (*__MsvcAtomicLoad16Funcs[])(volatile short*)
     = {__Msvc_atomicLoad16Relaxed,
        __Msvc_atomicLoad16Acq,
        __Msvc_atomicLoad16Acq,
        __Msvc_atomicLoad16Rel,
        __Msvc_atomicLoad16,
        __Msvc_atomicLoad16};
+#endif
 
 static LONG
 __Msvc_atomicLoad32Relaxed(volatile LONG* object)
 {
-    return InterlockedOrNoFence(object, 0);
+    return InterlockedOr(object, 0);
 }
 
 static LONG
 __Msvc_atomicLoad32Acq(volatile LONG* object)
 {
-    return InterlockedOrAcquire(object, 0);
+    return InterlockedOr(object, 0);
 }
 
 static LONG
 __Msvc_atomicLoad32Rel(volatile LONG* object)
 {
-    return InterlockedOrRelease(object, 0);
+    return InterlockedOr(object, 0);
 }
 
 static LONG
@@ -427,7 +429,7 @@ __Msvc_atomicLoad32(volatile LONG* object)
     return InterlockedOr(object, 0);
 }
 
-const static LONG (*__MsvcAtomicLoad32Funcs[])(volatile LONG*)
+static LONG (*__MsvcAtomicLoad32Funcs[])(volatile LONG*)
     = {__Msvc_atomicLoad32Relaxed,
        __Msvc_atomicLoad32Acq,
        __Msvc_atomicLoad32Acq,
@@ -438,19 +440,19 @@ const static LONG (*__MsvcAtomicLoad32Funcs[])(volatile LONG*)
 static LONG64
 __Msvc_atomicLoad64Relaxed(volatile LONG64* object)
 {
-    return InterlockedOr64NoFence(object, 0);
+    return InterlockedOr64(object, 0);
 }
 
 static LONG64
 __Msvc_atomicLoad64Acq(volatile LONG64* object)
 {
-    return InterlockedOr64Acquire(object, 0);
+    return InterlockedOr64(object, 0);
 }
 
 static LONG64
 __Msvc_atomicLoad64Rel(volatile LONG64* object)
 {
-    return InterlockedOr64Release(object, 0);
+    return InterlockedOr64(object, 0);
 }
 
 static LONG64
@@ -459,7 +461,7 @@ __Msvc_atomicLoad64(volatile LONG64* object)
     return InterlockedOr64(object, 0);
 }
 
-const static LONG64 (*__MsvcAtomicLoad64Funcs[])(volatile LONG64*)
+static LONG64 (*__MsvcAtomicLoad64Funcs[])(volatile LONG64*)
     = {__Msvc_atomicLoad64Relaxed,
        __Msvc_atomicLoad64Acq,
        __Msvc_atomicLoad64Acq,
@@ -475,12 +477,14 @@ __XCL_atomic_load(void* object,
 {
     switch (size)
     {
+#ifdef _MSC_VER
     case 1:
         *(char*)result = __MsvcAtomicLoad8Funcs[memoryOrder](object);
         break;
     case 2:
         *(short*)result = __MsvcAtomicLoad16Funcs[memoryOrder](object);
         break;
+#endif
     case 4:
         *(LONG*)result = __MsvcAtomicLoad32Funcs[memoryOrder](object);
         break;
@@ -493,6 +497,7 @@ __XCL_atomic_load(void* object,
     return true;
 }
 
+#if defined(_MSC_VER)
 static char
 __Msvc_atomicExchange8Relaxed(volatile char* object, char val)
 {
@@ -517,7 +522,7 @@ __Msvc_atomicExchange8(volatile char* object, char val)
     return InterlockedExchange8(object, val);
 }
 
-const static char (*__MsvcAtomicExchange8Funcs[])(volatile char*, char)
+static char (*__MsvcAtomicExchange8Funcs[])(volatile char*, char)
     = {__Msvc_atomicExchange8Relaxed,
        __Msvc_atomicExchange8Acq,
        __Msvc_atomicExchange8Acq,
@@ -549,24 +554,25 @@ __Msvc_atomicExchange16(volatile short* object, short val)
     return InterlockedExchange16(object, val);
 }
 
-const static short (*__MsvcAtomicExchange16Funcs[])(volatile short*, short)
+static short (*__MsvcAtomicExchange16Funcs[])(volatile short*, short)
     = {__Msvc_atomicExchange16Relaxed,
        __Msvc_atomicExchange16Acq,
        __Msvc_atomicExchange16Acq,
        __Msvc_atomicExchange16Rel,
        __Msvc_atomicExchange16,
        __Msvc_atomicExchange16};
+#endif
 
 static LONG
 __Msvc_atomicExchange32Relaxed(volatile LONG* object, LONG val)
 {
-    return InterlockedExchangeNoFence(object, val);
+    return InterlockedExchange(object, val);
 }
 
 static LONG
 __Msvc_atomicExchange32Acq(volatile LONG* object, LONG val)
 {
-    return InterlockedExchangeAcquire(object, val);
+    return InterlockedExchange(object, val);
 }
 
 static LONG
@@ -581,7 +587,7 @@ __Msvc_atomicExchange32(volatile LONG* object, LONG val)
     return InterlockedExchange(object, val);
 }
 
-const static LONG (*__MsvcAtomicExchange32Funcs[])(volatile LONG*, LONG)
+static LONG (*__MsvcAtomicExchange32Funcs[])(volatile LONG*, LONG)
     = {__Msvc_atomicExchange32Relaxed,
        __Msvc_atomicExchange32Acq,
        __Msvc_atomicExchange32Acq,
@@ -592,13 +598,13 @@ const static LONG (*__MsvcAtomicExchange32Funcs[])(volatile LONG*, LONG)
 static LONG64
 __Msvc_atomicExchange64Relaxed(volatile LONG64* object, LONG64 val)
 {
-    return InterlockedExchangeNoFence64(object, val);
+    return InterlockedExchange64(object, val);
 }
 
 static LONG64
 __Msvc_atomicExchange64Acq(volatile LONG64* object, LONG64 val)
 {
-    return InterlockedExchangeAcquire64(object, val);
+    return InterlockedExchange64(object, val);
 }
 
 static LONG64
@@ -613,7 +619,7 @@ __Msvc_atomicExchange64(volatile LONG64* object, LONG64 val)
     return InterlockedExchange64(object, val);
 }
 
-const static LONG64 (*__MsvcAtomicExchange64Funcs[])(volatile LONG64*, LONG64)
+static LONG64 (*__MsvcAtomicExchange64Funcs[])(volatile LONG64*, LONG64)
     = {__Msvc_atomicExchange64Relaxed,
        __Msvc_atomicExchange64Acq,
        __Msvc_atomicExchange64Acq,
@@ -629,12 +635,14 @@ __XCL_atomic_store(void* object,
 {
     switch (size)
     {
+#ifdef _MSC_VER
     case 1:
         __MsvcAtomicExchange8Funcs[memoryOrder](object, *(char*)value);
         break;
     case 2:
         __MsvcAtomicExchange16Funcs[memoryOrder](object, *(short*)value);
         break;
+#endif
     case 4:
         __MsvcAtomicExchange32Funcs[memoryOrder](object, *(LONG*)value);
         break;
@@ -656,6 +664,7 @@ __XCL_atomic_exchange(void* object,
 {
     switch (size)
     {
+#ifdef _MSC_VER
     case 1:
         *(char*)result
             = __MsvcAtomicExchange8Funcs[memoryOrder](object, *(char*)value);
@@ -664,6 +673,7 @@ __XCL_atomic_exchange(void* object,
         *(short*)result
             = __MsvcAtomicExchange16Funcs[memoryOrder](object, *(short*)value);
         break;
+#endif
     case 4:
         *(LONG*)result
             = __MsvcAtomicExchange32Funcs[memoryOrder](object, *(LONG*)value);
@@ -683,7 +693,7 @@ __Msvc_cas16Relaxed(volatile short* object,
                     const short expect,
                     const short exchange)
 {
-    return InterlockedCompareExchangeNoFence16(object, exchange, expect);
+    return InterlockedCompareExchange16(object, exchange, expect);
 }
 
 static short
@@ -691,7 +701,7 @@ __Msvc_cas16Acq(volatile short* object,
                 const short expect,
                 const short exchange)
 {
-    return InterlockedCompareExchangeAcquire16(object, exchange, expect);
+    return InterlockedCompareExchange16(object, exchange, expect);
 }
 
 static short
@@ -699,7 +709,7 @@ __Msvc_cas16Rel(volatile short* object,
                 const short expect,
                 const short exchange)
 {
-    return InterlockedCompareExchangeRelease16(object, exchange, expect);
+    return InterlockedCompareExchange16(object, exchange, expect);
 }
 
 static short
@@ -708,9 +718,7 @@ __Msvc_cas16(volatile short* object, const short expect, const short exchange)
     return InterlockedCompareExchange16(object, exchange, expect);
 }
 
-const static short (*__MsvcCas16Funcs[])(volatile short*,
-                                         const short,
-                                         const short)
+static short (*__MsvcCas16Funcs[])(volatile short*, const short, const short)
     = {__Msvc_cas16Relaxed,
        __Msvc_cas16Acq,
        __Msvc_cas16Acq,
@@ -723,19 +731,19 @@ __Msvc_cas32Relaxed(volatile LONG* object,
                     const LONG expect,
                     const LONG exchange)
 {
-    return InterlockedCompareExchangeNoFence(object, exchange, expect);
+    return InterlockedCompareExchange(object, exchange, expect);
 }
 
 static LONG
 __Msvc_cas32Acq(volatile LONG* object, const LONG expect, const LONG exchange)
 {
-    return InterlockedCompareExchangeAcquire(object, exchange, expect);
+    return InterlockedCompareExchange(object, exchange, expect);
 }
 
 static LONG
 __Msvc_cas32Rel(volatile LONG* object, const LONG expect, const LONG exchange)
 {
-    return InterlockedCompareExchangeRelease(object, exchange, expect);
+    return InterlockedCompareExchange(object, exchange, expect);
 }
 
 static LONG
@@ -744,7 +752,7 @@ __Msvc_cas32(volatile LONG* object, const LONG expect, const LONG exchange)
     return InterlockedCompareExchange(object, exchange, expect);
 }
 
-const static LONG (*__MsvcCas32Funcs[])(volatile LONG*, const LONG, const LONG)
+static LONG (*__MsvcCas32Funcs[])(volatile LONG*, const LONG, const LONG)
     = {__Msvc_cas32Relaxed,
        __Msvc_cas32Acq,
        __Msvc_cas32Acq,
@@ -757,7 +765,7 @@ __Msvc_cas64Relaxed(volatile LONG64* object,
                     const LONG64 expect,
                     const LONG64 exchange)
 {
-    return InterlockedCompareExchangeNoFence64(object, exchange, expect);
+    return InterlockedCompareExchange64(object, exchange, expect);
 }
 
 static LONG64
@@ -765,7 +773,7 @@ __Msvc_cas64Acq(volatile LONG64* object,
                 const LONG64 expect,
                 const LONG64 exchange)
 {
-    return InterlockedCompareExchangeAcquire64(object, exchange, expect);
+    return InterlockedCompareExchange64(object, exchange, expect);
 }
 
 static LONG64
@@ -773,7 +781,7 @@ __Msvc_cas64Rel(volatile LONG64* object,
                 const LONG64 expect,
                 const LONG64 exchange)
 {
-    return InterlockedCompareExchangeRelease64(object, exchange, expect);
+    return InterlockedCompareExchange64(object, exchange, expect);
 }
 
 static LONG64
@@ -784,9 +792,9 @@ __Msvc_cas64(volatile LONG64* object,
     return InterlockedCompareExchange64(object, exchange, expect);
 }
 
-const static LONG64 (*__MsvcCas64Funcs[])(volatile LONG64*,
-                                          const LONG64,
-                                          const LONG64)
+static LONG64 (*__MsvcCas64Funcs[])(volatile LONG64*,
+                                    const LONG64,
+                                    const LONG64)
     = {__Msvc_cas64Relaxed,
        __Msvc_cas64Acq,
        __Msvc_cas64Acq,
@@ -794,7 +802,7 @@ const static LONG64 (*__MsvcCas64Funcs[])(volatile LONG64*,
        __Msvc_cas64,
        __Msvc_cas64};
 
-#if X64
+#if defined(_MSC_VER) && X64
 static __Int128
 __Msvc_cas128(volatile __Int128* object, __Int128 expect, __Int128 exchange);
 
@@ -835,9 +843,9 @@ __Msvc_cas128(volatile __Int128* object,
     return compare;
 }
 
-const static __Int128 (*__MsvcCas128Funcs[])(volatile __Int128*,
-                                             const __Int128,
-                                             const __Int128)
+static __Int128 (*__MsvcCas128Funcs[])(volatile __Int128*,
+                                       const __Int128,
+                                       const __Int128)
     = {__Msvc_cas128Relaxed,
        __Msvc_cas128Acq,
        __Msvc_cas128Acq,
@@ -873,7 +881,7 @@ __XCL_atomic_cas(void* object,
                                             *(LONG64*)expect,
                                             *(const LONG64*)exchange);
         break;
-#if X64
+#if X64 && defined(_MSC_VER)
     case 16: {
         *(__Int128*)expect
             = __MsvcCas128Funcs[memoryOrder](object,
@@ -1260,6 +1268,4 @@ __XCL_atomic_casWeak(void* object,
     }
     return true;
 }
-#endif
-
 #endif

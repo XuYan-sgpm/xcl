@@ -63,6 +63,10 @@ endif ()
 set(CMAKE_C_FLAGS "${wall} ${hidden}")
 set(CMAKE_CXX_FLAGS "${wall} ${hidden}")
 
+if (CMAKE_CXX_COMPILER_ID STREQUAL Clang AND WIN32)
+    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=skylake")
+endif ()
+
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(build_type debug)
 elseif (CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -111,9 +115,9 @@ endif ()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_compile_definitions(_WIN32_WINNT=0x0A00)
-    target_link_libraries(${xcl_lib_name} winmm ntdll)
+    target_link_libraries(${xcl_lib_name} winmm ntdll atomic)
 else ()
-    target_link_libraries(${xcl_lib_name} pthread)
+    target_link_libraries(${xcl_lib_name} pthread atomic)
 endif ()
 
 add_custom_command(TARGET ${xcl_lib_name} PRE_BUILD
