@@ -4,14 +4,13 @@
 
 #pragma once
 
-#ifdef __cplusplus
-extern "C" {
-#endif
+#ifndef __cplusplus
 
 #include <xcl/lang/XclDef.h>
 #include <stdbool.h>
 
 #if CLANG || GNUC
+#define ALIGNED(x) __attribute__((aligned(x)))
 #include <stdatomic.h>
 #if GNUC
 #define ATOMIC(type) _Atomic type
@@ -19,6 +18,7 @@ extern "C" {
 #define ATOMIC(type) _Atomic(type)
 #endif
 #elif defined(_MSC_VER)
+#define ALIGNED(x)   __declspec(align(x))
 #define ATOMIC(type) volatile type
 typedef enum
 {
@@ -70,11 +70,18 @@ __XCL_atomic_exchange(void* object,
                       memory_order memoryOrder);
 
 bool
-__XCL_atomic_compare_exchange(void* object,
-                              void* expect,
-                              const void* exchange,
-                              int size,
-                              memory_order memoryOrder);
+__XCL_atomic_cas(void* object,
+                 void* expect,
+                 const void* exchange,
+                 int size,
+                 memory_order memoryOrder);
+
+bool
+__XCL_atomic_casWeak(void* object,
+                     void* expect,
+                     const void* exchange,
+                     int size,
+                     memory_order memoryOrder);
 
 #define ATOMIC_INCREMENT(object, result, memoryOrder) \
     __XCL_atomic_inc(object, &result, sizeof(*object), memoryOrder)
@@ -89,14 +96,12 @@ __XCL_atomic_compare_exchange(void* object,
 #define ATOMIC_EXCHANGE(object, val, result, memoryOrder) \
     __XCL_atomic_exchange(object, &val, &result, sizeof(*object), memoryOrder)
 #define CAS(object, expect, exchange, memoryOrder) \
-    __XCL_atomic_compare_exchange(object,          \
-                                  &expect,         \
-                                  &exchange,       \
-                                  sizeof(*object), \
-                                  memoryOrder)
+    __XCL_atomic_cas(object, &expect, &exchange, sizeof(*object), memoryOrder)
 #define CAS_WEAK(object, expect, exchange, memoryOrder) \
-    CAS(object, expect, exchange, memoryOrder)
+    __XCL_atomic_casWeak(object,                        \
+                         &expect,                       \
+                         &exchange,                     \
+                         sizeof(*object),               \
+                         memoryOrder)
 
-#ifdef __cplusplus
-}
 #endif

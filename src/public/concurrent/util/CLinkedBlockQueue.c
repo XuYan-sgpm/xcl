@@ -14,6 +14,6 @@ struct _CLinkedBlockingQueue_st {
     CCond* notFull;
     const uint32_t eleSize;
     void* blocks;
-    ATOMIC(int32_t) blockCount;
+    ALIGNED(4) ATOMIC(int32_t) blockCount;
     const uint32_t queueCap;
 };
