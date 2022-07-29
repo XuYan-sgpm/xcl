@@ -16,11 +16,11 @@ __testAtomic()
     ATOMIC(TaggedPtr) x;
     TaggedPtr ptr1 = {0, 98};
     ATOMIC_STORE(&x, ptr1, memory_order_relaxed);
+    TaggedPtr ptr = {0, 10086};
+    CAS(&x, ptr1, ptr, memory_order_acq_rel);
     TaggedPtr data;
     ATOMIC_LOAD(&x, data, memory_order_relaxed);
     printf("%lld\n", data.tag);
-    TaggedPtr ptr = {0, 98};
-    CAS(&x, ptr, ptr, memory_order_acq_rel);
 }
 
 int

@@ -62,14 +62,23 @@ include_directories(${xcl_inc_dir} ${third_party}/googletest/include)
 add_executable(unit_test main.cc ${test_src_files})
 
 if (WIN32)
-    if (CMAKE_C_COMPILER_ID STREQUAL GNU)
-        target_link_libraries(unit_test ${xcl_lib_name} gtest gtest_main winmm atomic)
-    else ()
-        target_link_libraries(unit_test ${xcl_lib_name} gtest gtest_main winmm)
-    endif ()
+    set(link_libs ${xcl_lib_name} gtest gtest_main winmm)
+    #    if (CMAKE_C_COMPILER_ID STREQUAL GNU)
+    #        target_link_libraries(unit_test ${xcl_lib_name} gtest gtest_main winmm atomic)
+    #    else ()
+    #        target_link_libraries(unit_test ${xcl_lib_name} gtest gtest_main winmm)
+    #    endif ()
 else ()
-    target_link_libraries(unit_test ${xcl_lib_name} gtest gtest_main pthread)
+    set(link_libs ${xcl_lib_name} gtest gtest_main pthread)
 endif ()
+
+if (NOT ENABLE_CXX_COMPILE)
+    set(link_libs ${link_libs} atomic)
+endif ()
+
+message(STATUS ${link_libs})
+
+target_link_libraries(unit_test ${link_libs})
 
 add_custom_command(TARGET unit_test PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${EXECUTABLE_OUTPUT_PATH}

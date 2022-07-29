@@ -115,10 +115,16 @@ endif ()
 
 if (CMAKE_SYSTEM_NAME STREQUAL "Windows")
     add_compile_definitions(_WIN32_WINNT=0x0A00)
-    target_link_libraries(${xcl_lib_name} winmm ntdll atomic)
+    set(link_libs winmm ntdll)
 else ()
-    target_link_libraries(${xcl_lib_name} pthread atomic)
+    set(link_libs pthread)
 endif ()
+
+if (NOT ENABLE_CXX_COMPILE)
+    set(link_libs ${link_libs} atomic)
+endif ()
+
+target_link_libraries(${xcl_lib_name} ${link_libs})
 
 add_custom_command(TARGET ${xcl_lib_name} PRE_BUILD
         COMMAND ${CMAKE_COMMAND} -E remove_directory ${LIBRARY_OUTPUT_PATH}
