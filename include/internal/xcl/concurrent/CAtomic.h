@@ -10,7 +10,15 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#if defined(_MSC_VER)
+#if CLANG || GNUC
+#define ALIGNED(x) __attribute__((aligned(x)))
+#include <stdatomic.h>
+#if GNUC
+#define ATOMIC(type) _Atomic type
+#else
+#define ATOMIC(type) _Atomic(type)
+#endif
+#elif defined(_MSC_VER)
 #define ALIGNED(x)   __declspec(align(x))
 #define ATOMIC(type) volatile type
 typedef enum
@@ -22,14 +30,6 @@ typedef enum
     memory_order_acq_rel,
     memory_order_seq_cst
 } memory_order;
-#elif CLANG || GNUC
-#define ALIGNED(x) __attribute__((aligned(x)))
-#include <stdatomic.h>
-#if GNUC
-#define ATOMIC(type) _Atomic type
-#else
-#define ATOMIC(type) _Atomic(type)
-#endif
 #endif
 
 #endif

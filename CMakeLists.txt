@@ -63,10 +63,6 @@ endif()
 set(CMAKE_C_FLAGS "${wall} ${hidden}")
 set(CMAKE_CXX_FLAGS "${wall} ${hidden}")
 
-if(CMAKE_CXX_COMPILER_ID STREQUAL Clang AND WIN32)
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=skylake")
-endif()
-
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   set(build_type debug)
 elseif(CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -121,7 +117,7 @@ else()
   set(link_libs pthread)
 endif()
 
-if(NOT ENABLE_CXX_COMPILE)
+if(NOT ENABLE_CXX_COMPILE AND NOT CMAKE_CXX_COMPILER_ID STREQUAL Clang)
   set(link_libs ${link_libs} atomic)
 endif()
 

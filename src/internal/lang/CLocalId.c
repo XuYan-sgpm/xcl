@@ -140,10 +140,23 @@ __LocalId_recycle(int32_t id)
  * thread handle
  */
 static ATOMIC(int32_t) __LocalId_generator = 1;
+#if CLANG || GNUC
 int32_t
 __LocalId_genId()
 {
     int32_t id;
-    ATOMIC_INCREMENT(&__LocalId_generator, id, memory_order_seq_cst);
+    id = atomic_fetch_add_explicit(&__LocalId_generator,
+                                   1,
+                                   memory_order_seq_cst);
     return id;
 }
+#elif defined(_MSC_VER)
+#include <windows.h>
+int32_t
+__LocalId_genId()
+{
+    int32_t id;
+    id = InterlockedAdd(&__LocalId_generator, 1);
+    return id;
+}
+#endif
