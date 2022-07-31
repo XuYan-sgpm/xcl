@@ -23,7 +23,7 @@ message(STATUS "CMAKE_C_STANDARD:${CMAKE_C_STANDARD}")
 message(STATUS "CMAKE_CXX_STANDARD:${CMAKE_CXX_STANDARD}")
 
 if(ENABLE_CXX_COMPILE)
-add_definitions(-DENABLE_CXX)
+  add_definitions(-DENABLE_CXX)
   message(STATUS "enable cxx compile")
 endif()
 
