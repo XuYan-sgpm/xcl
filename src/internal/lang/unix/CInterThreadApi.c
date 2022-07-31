@@ -4,7 +4,7 @@
 #include <unistd.h>
 #include <sys/syscall.h>
 #include "xcl/lang/XclErr.h"
-#include "xcl/lang/system.h"
+#include "xcl/lang/CSys.h"
 
 static void*
 __Unix_threadRoutine(void* args)

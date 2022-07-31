@@ -5,7 +5,7 @@
 #include "xcl/concurrent/util/CLinkedBlockQueue.h"
 #include "xcl/concurrent/CMutex.h"
 #include "xcl/concurrent/CCond.h"
-#include "xcl/concurrent/CInternalAtomic.h"
+#include "xcl/concurrent/CAtomic.h"
 
 struct _CLinkedBlockingQueue_st {
     CMutex* putLock;

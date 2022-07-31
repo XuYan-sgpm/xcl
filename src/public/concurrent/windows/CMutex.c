@@ -4,7 +4,7 @@
 
 #include "xcl/concurrent/CMutex.h"
 #include "xcl/lang/XclErr.h"
-#include "xcl/lang/system.h"
+#include "xcl/lang/CSys.h"
 #include "xcl/pool/CPool.h"
 #include <Windows.h>
 

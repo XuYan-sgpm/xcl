@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <sys/time.h>
 #include <time.h>
-#include <xcl/lang/system.h>
+#include <xcl/lang/CSys.h>
 
 XCL_PUBLIC(int64_t)
 currentMillis()

@@ -10,6 +10,7 @@ extern "C" {
 
 #include "XclDef.h"
 #include <stdint.h>
+#include <stdbool.h>
 
 const static int64_t NANOS_PER_SEC = 1000000000;
 
@@ -33,6 +34,13 @@ nanos();
  */
 XCL_PUBLIC(void)
 mSleep(int32_t timeout);
+
+/**
+ * get if cpu byte order is big-endian
+ * @return true if byte order of current cpu is big-endian, otherwise false
+ */
+XCL_PUBLIC(bool)
+isCpuBigEndian();
 
 #ifdef __cplusplus
 }

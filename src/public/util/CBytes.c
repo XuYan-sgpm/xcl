@@ -3,24 +3,13 @@
 //
 
 #include "xcl/util/CBytes.h"
+#include "xcl/lang/CSys.h"
 #include <string.h>
-
-static bool
-__isCPUBigEndian()
-{
-    union
-    {
-        short val;
-        char data[2];
-    } unit;
-    unit.val = 0x0001;
-    return unit.data[1] == 1;
-}
 
 static void
 __translate(const void* src, void* dst, int size, bool big)
 {
-    if (big == __isCPUBigEndian())
+    if (big == isCpuBigEndian())
     {
         memcpy(dst, src, size);
     }
