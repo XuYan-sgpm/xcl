@@ -290,7 +290,8 @@ XCL_PUBLIC(bool)
 Buffer_expand(CBuffer* buffer, int cap)
 {
     if (cap <= Buffer_cap(buffer))
-    {}
+    {
+    }
     else
     {
         if (!buffer->data || !__Buffer_isReleasable(buffer))
