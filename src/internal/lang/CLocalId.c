@@ -141,6 +141,7 @@ __LocalId_recycle(int32_t id)
  */
 static ATOMIC(int32_t) __LocalId_generator = 1;
 #if CLANG || GNUC
+#include <stdatomic.h>
 int32_t
 __LocalId_genId()
 {

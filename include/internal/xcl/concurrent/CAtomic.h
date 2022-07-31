@@ -12,24 +12,15 @@
 
 #if CLANG || GNUC
 #define ALIGNED(x) __attribute__((aligned(x)))
-#include <stdatomic.h>
 #if GNUC
 #define ATOMIC(type) _Atomic type
 #else
 #define ATOMIC(type) _Atomic(type)
 #endif
+
 #elif defined(_MSC_VER)
 #define ALIGNED(x)   __declspec(align(x))
 #define ATOMIC(type) volatile type
-typedef enum
-{
-    memory_order_relaxed,
-    memory_order_consume,
-    memory_order_acquire,
-    memory_order_release,
-    memory_order_acq_rel,
-    memory_order_seq_cst
-} memory_order;
 #endif
 
 #endif
