@@ -117,7 +117,10 @@ else()
   set(link_libs pthread)
 endif()
 
-if(NOT ENABLE_CXX_COMPILE AND NOT CMAKE_CXX_COMPILER_ID STREQUAL Clang)
+if(CMAKE_C_COMPILER_ID STREQUAL AppleClang OR CMAKE_C_COMPILER_ID STREQUAL
+                                              Clang)
+  message(STATUS "Clang compiler")
+elseif(NOT ENABLE_CXX_COMPILE)
   set(link_libs ${link_libs} atomic)
 endif()
 

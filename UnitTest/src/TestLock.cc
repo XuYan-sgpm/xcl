@@ -6,7 +6,7 @@
 #include "xcl/concurrent/Lock.h"
 #include "xcl/lang/CThread.h"
 #include "xcl/lang/XclErr.h"
-#include "xcl/lang/system.h"
+#include "xcl/lang/CSys.h"
 #include <gtest/gtest.h>
 #include <iostream>
 

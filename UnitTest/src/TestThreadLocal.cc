@@ -8,7 +8,7 @@
 #include <gtest/gtest.h>
 
 #include <iostream>
-#include <xcl/lang/system.h>
+#include <xcl/lang/CSys.h>
 
 using namespace std;
 
