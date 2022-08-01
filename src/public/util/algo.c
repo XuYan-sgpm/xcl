@@ -4,7 +4,7 @@
 
 #include "xcl/util/algo.h"
 
-XCL_PUBLIC(uint32_t)
+XCL_EXPORT uint32_t XCL_API
 _log2(uint64_t val)
 {
     if (val == 0)

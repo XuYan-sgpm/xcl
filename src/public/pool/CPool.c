@@ -22,7 +22,7 @@ __implInitXclDefPool()
     return NULL;
 }
 
-XCL_PUBLIC(CPool*)
+XCL_EXPORT CPool* XCL_API
 Pool_def()
 {
     static volatile CPoolState state = UNINITIALIZED;
@@ -51,7 +51,7 @@ Pool_def()
     return pool;
 }
 
-XCL_PUBLIC(void*)
+XCL_EXPORT void* XCL_API
 Pool_alloc(CPool* pool, uint64_t size)
 {
     if (pool && pool->alloc)
@@ -64,7 +64,7 @@ Pool_alloc(CPool* pool, uint64_t size)
     }
 }
 
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 Pool_dealloc(CPool* pool, void* ptr, uint64_t size)
 {
     if (pool && pool->dealloc)
@@ -77,7 +77,7 @@ Pool_dealloc(CPool* pool, void* ptr, uint64_t size)
     }
 }
 
-XCL_PUBLIC(void*)
+XCL_EXPORT void* XCL_API
 Pool_reapply(CPool* pool, void* ptr, uint64_t old, uint64_t req)
 {
     if (pool && pool->reapply)

@@ -18,7 +18,7 @@ extern "C" {
  * @param dst pointer store bytes
  * @param big big ending
  */
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 int16ToBytes(int16_t val, void* dst, bool big);
 
 /**
@@ -27,7 +27,7 @@ int16ToBytes(int16_t val, void* dst, bool big);
  * @param big big ending
  * @return int16_t value
  */
-XCL_PUBLIC(int16_t)
+XCL_EXPORT int16_t XCL_API
 bytes2Int16(const void* src, bool big);
 
 /**
@@ -36,7 +36,7 @@ bytes2Int16(const void* src, bool big);
  * @param dst pointer store bytes
  * @param big big endian
  */
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 int32ToBytes(int val, void* dst, bool big);
 
 /**
@@ -45,7 +45,7 @@ int32ToBytes(int val, void* dst, bool big);
  * @param big big endian
  * @return int32 value
  */
-XCL_PUBLIC(int32_t)
+XCL_EXPORT int32_t XCL_API
 bytesToInt32(const void* src, bool big);
 
 /**
@@ -54,7 +54,7 @@ bytesToInt32(const void* src, bool big);
  * @param dst pointer store bytes
  * @param big big endian
  */
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 floatToBytes(float val, void* dst, bool big);
 
 /**
@@ -63,7 +63,7 @@ floatToBytes(float val, void* dst, bool big);
  * @param big big endian
  * @return float value
  */
-XCL_PUBLIC(float)
+XCL_EXPORT float XCL_API
 bytesToFloat(const void* src, bool big);
 
 /**
@@ -72,7 +72,7 @@ bytesToFloat(const void* src, bool big);
  * @param dst pointer store bytes
  * @param big big endian
  */
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 int64ToBytes(int64_t val, void* dst, bool big);
 
 /**
@@ -81,7 +81,7 @@ int64ToBytes(int64_t val, void* dst, bool big);
  * @param big big endian
  * @return int64 value
  */
-XCL_PUBLIC(int64_t)
+XCL_EXPORT int64_t XCL_API
 bytesToInt64(const void* src, bool big);
 
 /**
@@ -90,7 +90,7 @@ bytesToInt64(const void* src, bool big);
  * @param dst pointer store data
  * @param big big endian
  */
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 doubleToBytes(double val, void* dst, bool big);
 
 /**
@@ -99,7 +99,7 @@ doubleToBytes(double val, void* dst, bool big);
  * @param big big endian
  * @return double value
  */
-XCL_PUBLIC(double)
+XCL_EXPORT double XCL_API
 bytesToDouble(const void* src, bool big);
 
 /**
@@ -109,7 +109,7 @@ bytesToDouble(const void* src, bool big);
  * @param len source bytes length
  * @param big big endian
  */
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 bytesCopy(const void* src, void* dst, int len, bool big);
 
 #ifdef __cplusplus

@@ -26,14 +26,14 @@ typedef struct {
  * @param es data element size
  * @return ring buffer object if successfully, otherwise false
  */
-XCL_PUBLIC(CRingBuffer)
+XCL_EXPORT CRingBuffer XCL_API
 RingBuffer_make(int32_t cap, int32_t es);
 
 /**
  * release ring buffer memory
  * @param ringBuffer ring buffer object
  */
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 RingBuffer_release(CRingBuffer* ringBuffer);
 
 /**
@@ -41,7 +41,7 @@ RingBuffer_release(CRingBuffer* ringBuffer);
  * @param ringBuffer ring buffer object
  * @return buffer current available element count
  */
-XCL_PUBLIC(int32_t)
+XCL_EXPORT int32_t XCL_API
 RingBuffer_size(const CRingBuffer* ringBuffer);
 
 /**
@@ -49,7 +49,7 @@ RingBuffer_size(const CRingBuffer* ringBuffer);
  * @param ringBuffer ring buffer object
  * @return max elements that ring buffer can hold
  */
-XCL_PUBLIC(int32_t)
+XCL_EXPORT int32_t XCL_API
 RingBuffer_capacity(const CRingBuffer* ringBuffer);
 
 /**
@@ -57,7 +57,7 @@ RingBuffer_capacity(const CRingBuffer* ringBuffer);
  * @param ringBuffer ring buffer object
  * @return true if ring buffer is empty, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_empty(const CRingBuffer* ringBuffer);
 
 /**
@@ -67,7 +67,7 @@ RingBuffer_empty(const CRingBuffer* ringBuffer);
  * @param force whether overwrite if ring buffer is full
  * @return true if push successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_pushFront(CRingBuffer* ringBuffer, const void* src, bool force);
 
 /**
@@ -77,7 +77,7 @@ RingBuffer_pushFront(CRingBuffer* ringBuffer, const void* src, bool force);
  * @param force whether overwrite if ring buffer is full
  * @return true if push successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_pushBack(CRingBuffer* ringBuffer, const void* src, bool force);
 
 /**
@@ -88,7 +88,7 @@ RingBuffer_pushBack(CRingBuffer* ringBuffer, const void* src, bool force);
  * of dst; for output, indicates element size
  * @return true if pop successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_popFront(CRingBuffer* ringBuffer, void* dst);
 
 /**
@@ -99,14 +99,14 @@ RingBuffer_popFront(CRingBuffer* ringBuffer, void* dst);
  * of dst; for output, indicates element size
  * @return true if pop successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_popBack(CRingBuffer* ringBuffer, void* dst);
 
 /**
  * clear ring buffer
  * @param ringBuffer ring buffer object
  */
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 RingBuffer_clear(CRingBuffer* ringBuffer);
 
 /**
@@ -115,7 +115,7 @@ RingBuffer_clear(CRingBuffer* ringBuffer);
  * @param pos index
  * @return pointer if pos available, otherwise NULL
  */
-XCL_PUBLIC(void*)
+XCL_EXPORT void* XCL_API
 RingBuffer_at(CRingBuffer* ringBuffer, int32_t pos);
 
 /**
@@ -125,7 +125,7 @@ RingBuffer_at(CRingBuffer* ringBuffer, int32_t pos);
  * @param dst pointer store output element data
  * @return true if get successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_get(const CRingBuffer* ringBuffer, int32_t pos, void* dst);
 
 /**
@@ -136,7 +136,7 @@ RingBuffer_get(const CRingBuffer* ringBuffer, int32_t pos, void* dst);
  * @param force whether overwrite if ring buffer is full
  * @return true if insert successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_insert(CRingBuffer* ringBuffer,
                   int32_t pos,
                   const void* src,
@@ -151,7 +151,7 @@ RingBuffer_insert(CRingBuffer* ringBuffer,
  * @param force whether overwrite if ring buffer is full
  * @return true if insert successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_insertRepeat(CRingBuffer* ringBuffer,
                         int32_t pos,
                         int32_t count,
@@ -168,7 +168,7 @@ RingBuffer_insertRepeat(CRingBuffer* ringBuffer,
  * @param force whether overwrite if ring buffer is full
  * @return true if insert successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_insertRegion(CRingBuffer* ringBuffer,
                         int32_t pos,
                         const void* src,
@@ -186,7 +186,7 @@ RingBuffer_insertRegion(CRingBuffer* ringBuffer,
  * @param src source data element
  * @return true if assign successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_assignRepeat(CRingBuffer* ringBuffer, int32_t n, const void* src);
 
 /**
@@ -197,7 +197,7 @@ RingBuffer_assignRepeat(CRingBuffer* ringBuffer, int32_t n, const void* src);
  * @param len element count
  * @return true if assign successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_assignRegion(CRingBuffer* ringBuffer,
                         const void* src,
                         int32_t es,
@@ -211,7 +211,7 @@ RingBuffer_assignRegion(CRingBuffer* ringBuffer,
  * @param src source element
  * @return true if replace successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_replace(CRingBuffer* ringBuffer,
                    int32_t pos,
                    int32_t n,
@@ -228,7 +228,7 @@ RingBuffer_replace(CRingBuffer* ringBuffer,
  * @param src source data element
  * @return true if replace successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_replaceRepeat(CRingBuffer* ringBuffer,
                          int32_t pos,
                          int32_t n,
@@ -247,7 +247,7 @@ RingBuffer_replaceRepeat(CRingBuffer* ringBuffer,
  * @param len source element count
  * @return true if successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_replaceRegion(CRingBuffer* ringBuffer,
                          int32_t pos,
                          int32_t n,
@@ -263,7 +263,7 @@ RingBuffer_replaceRegion(CRingBuffer* ringBuffer,
  * @param last source last element position
  * @return true if assign successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_assignBufRegion(CRingBuffer* ringBuffer,
                            const CRingBuffer* src,
                            int32_t first,
@@ -275,7 +275,7 @@ RingBuffer_assignBufRegion(CRingBuffer* ringBuffer,
  * @param src source ring buffer
  * @return true if assign successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_assignBuf(CRingBuffer* ringBuffer, const CRingBuffer* src);
 
 /**
@@ -288,7 +288,7 @@ RingBuffer_assignBuf(CRingBuffer* ringBuffer, const CRingBuffer* src);
  * @param force whether overwrite if ring buffer is overflow
  * @return true if insert successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_insertBufRegion(CRingBuffer* ringBuffer,
                            int32_t pos,
                            const CRingBuffer* src,
@@ -307,7 +307,7 @@ RingBuffer_insertBufRegion(CRingBuffer* ringBuffer,
  * @param last last source element position
  * @return true if replace successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_replaceBufRegion(CRingBuffer* ringBuffer,
                             int32_t pos,
                             int32_t n,

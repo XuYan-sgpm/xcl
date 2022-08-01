@@ -19,7 +19,7 @@ typedef struct _CMutex_st CMutex;
  * default is a recursive mutex
  * @return mutex object if succeed, otherwise return NULL
  */
-XCL_PUBLIC(CMutex*)
+XCL_EXPORT CMutex* XCL_API
 Mutex_new();
 
 /**
@@ -27,7 +27,7 @@ Mutex_new();
  * @param mutex mutex object
  * @return true if delete successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Mutex_delete(CMutex* mutex);
 
 /**
@@ -35,7 +35,7 @@ Mutex_delete(CMutex* mutex);
  * @param mutex mutex object
  * @return true if lock successfully
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Mutex_lock(CMutex* mutex);
 
 /**
@@ -43,7 +43,7 @@ Mutex_lock(CMutex* mutex);
  * @param mutex mutex object
  * @return true if unlock successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Mutex_unlock(CMutex* mutex);
 
 /**
@@ -51,7 +51,7 @@ Mutex_unlock(CMutex* mutex);
  * @param mutex mutex object
  * @return true if acquire mutex object successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Mutex_tryLock(CMutex* mutex);
 
 /**
@@ -61,7 +61,7 @@ Mutex_tryLock(CMutex* mutex);
  * @param timeout timeout milliseconds
  * @return true if lock mutex object during timeout, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Mutex_tryLock2(CMutex* mutex, int32_t timeout);
 
 #ifdef __cplusplus

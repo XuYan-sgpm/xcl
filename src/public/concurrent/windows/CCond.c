@@ -11,7 +11,7 @@ struct _CCond_st {
     CONDITION_VARIABLE conditionVariable;
 };
 
-XCL_PUBLIC(CCond*)
+XCL_EXPORT CCond* XCL_API
 Cond_new()
 {
     CCond* cond = (CCond*)Pool_alloc(Pool_def(), sizeof(CCond));
@@ -26,14 +26,14 @@ Cond_new()
     return cond;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Cond_delete(CCond* cond)
 {
     Pool_dealloc(Pool_def(), cond, sizeof(CCond));
     return true;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Cond_wait(CMutex* mutex, CCond* cond)
 {
     if (cond)
@@ -49,7 +49,7 @@ Cond_wait(CMutex* mutex, CCond* cond)
     return false;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Cond_waitFor(CMutex* mutex, CCond* cond, int32_t millis)
 {
     if (!cond || !mutex)
@@ -67,7 +67,7 @@ Cond_waitFor(CMutex* mutex, CCond* cond, int32_t millis)
     return success;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Cond_signal(CCond* cond)
 {
     if (cond)
@@ -82,7 +82,7 @@ Cond_signal(CCond* cond)
     }
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Cond_signalAll(CCond* cond)
 {
     if (cond)

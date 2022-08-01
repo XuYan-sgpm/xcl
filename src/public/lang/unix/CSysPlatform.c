@@ -8,7 +8,7 @@
 #include <time.h>
 #include <xcl/lang/CSys.h>
 
-XCL_PUBLIC(int64_t)
+XCL_EXPORT int64_t XCL_API
 currentMillis()
 {
     struct timeval time;
@@ -18,7 +18,7 @@ currentMillis()
     return s1 + s2;
 }
 
-XCL_PUBLIC(int64_t)
+XCL_EXPORT int64_t XCL_API
 nanos()
 {
 #ifdef CLOCK_MONOTONIC
@@ -34,7 +34,7 @@ nanos()
 #endif
 }
 
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 mSleep(int32_t timeout)
 {
 #if _POSIX_C_SOURCE >= 199309L

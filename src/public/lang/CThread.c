@@ -24,7 +24,7 @@ __Thread_run(void* args)
     Pool_dealloc(Pool_def(), args, sizeof(uintptr_t) << 1);
 }
 
-XCL_PUBLIC(CThread)
+XCL_EXPORT CThread XCL_API
 Thread_create(void (*proc)(void*), void* usr)
 {
     uintptr_t* args = Pool_alloc(Pool_def(), sizeof(uintptr_t) << 1);
@@ -39,49 +39,49 @@ Thread_create(void (*proc)(void*), void* usr)
     return (CThread){handle};
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Thread_valid(CThread thread)
 {
     return thread.handle;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Thread_join(CThread* thread)
 {
     return Thread_join2(thread, -1);
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Thread_join2(CThread* thread, int32_t timeout)
 {
     return __Thread_joinFor(thread->handle, timeout);
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Thread_alive(CThread* thread)
 {
     return __Thread_alive(thread->handle);
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Thread_detach(CThread* thread)
 {
     return __Thread_detach(thread->handle);
 }
 
-XCL_PUBLIC(CThread)
+XCL_EXPORT CThread XCL_API
 Thread_current()
 {
     return (CThread){__Thread_currentHandle()};
 }
 
-XCL_PUBLIC(unsigned long)
+XCL_EXPORT unsigned long XCL_API
 Thread_currentId()
 {
     return __Thread_currentId();
 }
 
-XCL_PUBLIC(uintptr_t)
+XCL_EXPORT uintptr_t XCL_API
 Thread_currentHandle()
 {
     return __Thread_currentHandle();

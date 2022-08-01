@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.15)
 
 project(xcl C CXX)
 
-set(CMAKE_VERBOSE_MAKEFILE ON)
+set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 include(cmake/util.cmake)
 

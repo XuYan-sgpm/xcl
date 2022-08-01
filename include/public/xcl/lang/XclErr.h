@@ -27,14 +27,14 @@ extern "C" {
  * can use Err_get() to check
  * @return err code
  */
-XCL_PUBLIC(unsigned)
+XCL_EXPORT unsigned XCL_API
 Err_get();
 
 /**
  * set global Err_get code
  * @param errorCode Err_get code
  */
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 Err_set(unsigned errorCode);
 
 #ifdef __cplusplus

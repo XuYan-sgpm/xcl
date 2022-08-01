@@ -21,13 +21,13 @@ __SYS_initNanoFreq()
     }
 }
 
-XCL_PUBLIC(int64_t)
+XCL_EXPORT int64_t XCL_API
 currentMillis()
 {
     return GetTickCount();
 }
 
-XCL_PUBLIC(int64_t)
+XCL_EXPORT int64_t XCL_API
 nanos()
 {
     if (__NANO_FREQ_PER_SEC == -1)
@@ -47,7 +47,7 @@ nanos()
     }
 }
 
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 mSleep(int32_t timeout)
 {
     timeBeginPeriod(1);

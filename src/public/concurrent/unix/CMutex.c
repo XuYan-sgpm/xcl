@@ -63,19 +63,19 @@ __Mutex_deleteByPool(CMutex* mutex, CPool* pool)
     return false;
 }
 
-XCL_PUBLIC(CMutex*)
+XCL_EXPORT CMutex* XCL_API
 Mutex_new()
 {
     return __Mutex_newByPool(Pool_def());
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Mutex_delete(CMutex* mutex)
 {
     return __Mutex_deleteByPool(mutex, Pool_def());
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Mutex_lock(CMutex* mutex)
 {
     if (mutex)
@@ -90,7 +90,7 @@ Mutex_lock(CMutex* mutex)
     return false;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Mutex_unlock(CMutex* mutex)
 {
     if (mutex)
@@ -103,7 +103,7 @@ Mutex_unlock(CMutex* mutex)
     return false;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Mutex_tryLock(CMutex* mutex)
 {
     if (mutex)
@@ -116,7 +116,7 @@ Mutex_tryLock(CMutex* mutex)
     return false;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Mutex_tryLock2(CMutex* mutex, int32_t timeout)
 {
     if (mutex)

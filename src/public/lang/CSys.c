@@ -4,7 +4,7 @@
 
 #include <xcl/lang/CSys.h>
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 isCpuBigEndian()
 {
     union

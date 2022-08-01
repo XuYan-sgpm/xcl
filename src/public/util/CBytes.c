@@ -22,13 +22,13 @@ __translate(const void* src, void* dst, int size, bool big)
     }
 }
 
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 int32ToBytes(int val, void* dst, bool big)
 {
     __translate(&val, dst, sizeof(int), big);
 }
 
-XCL_PUBLIC(int32_t)
+XCL_EXPORT int32_t XCL_API
 bytesToInt32(const void* src, bool big)
 {
     int result;
@@ -36,13 +36,13 @@ bytesToInt32(const void* src, bool big)
     return result;
 }
 
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 int64ToBytes(int64_t val, void* dst, bool big)
 {
     __translate(&val, dst, 8, big);
 }
 
-XCL_PUBLIC(int64_t)
+XCL_EXPORT int64_t XCL_API
 bytesToInt64(const void* src, bool big)
 {
     int64_t result;
@@ -50,7 +50,7 @@ bytesToInt64(const void* src, bool big)
     return result;
 }
 
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 bytesCopy(const void* src, void* dst, int len, bool big)
 {
     __translate(src, dst, len, big);

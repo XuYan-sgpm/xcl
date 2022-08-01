@@ -30,86 +30,86 @@ typedef struct {
 /*
  * create a list object
  */
-XCL_PUBLIC(CList*)
+XCL_EXPORT CList* XCL_API
 List_new();
 
 /*
  * free list if list is empty
  * otherwise return false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 List_delete(CList* list);
 
 /*
  * return begin iter of list
  */
-XCL_PUBLIC(CListIter)
+XCL_EXPORT CListIter XCL_API
 List_begin(CList* list);
 
 /*
  * return size iter of list
  */
-XCL_PUBLIC(CListIter)
+XCL_EXPORT CListIter XCL_API
 List_end(CList* list);
 
 /*
  * return previous iter of it
  */
-XCL_PUBLIC(CListIter)
+XCL_EXPORT CListIter XCL_API
 List_prev(CListIter it);
 
 /*
  * return next iter of it
  */
-XCL_PUBLIC(CListIter)
+XCL_EXPORT CListIter XCL_API
 List_next(CListIter it);
 
 /*
  * compare list iter
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 List_iterEquals(CListIter it1, CListIter it2);
 
 /*
  * add value before pos
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 List_add(CList* list, CListIter pos, CListNode* node);
 
 /*
  * push value back into list
  */
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 List_push(CList* list, CListNode* node);
 
 /*
  * push value into the first pos of list
  */
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 List_pushFront(CList* list, CListNode* node);
 
 /*
  * pop the first node of list
  */
-XCL_PUBLIC(CListNode*)
+XCL_EXPORT CListNode* XCL_API
 List_pop(CList* list);
 
 /*
  * pop last node of list
  */
-XCL_PUBLIC(CListNode*)
+XCL_EXPORT CListNode* XCL_API
 List_popBack(CList* list);
 
 /*
  * get the first iter of list
  */
-XCL_PUBLIC(CListIter)
+XCL_EXPORT CListIter XCL_API
 List_peekFirst(CList* list);
 
 /*
  * get the last iter of list
  */
-XCL_PUBLIC(CListIter)
+XCL_EXPORT CListIter XCL_API
 List_peekLast(CList* list);
 
 /**
@@ -118,14 +118,14 @@ List_peekLast(CList* list);
  * @param iter list iterator
  * @return true if remove successfully, otherwise false
  */
-XCL_PUBLIC(CListIter)
+XCL_EXPORT CListIter XCL_API
 List_remove(CList* list, CListIter iter);
 
 /*
  * use cmpHook to find node contains data equals to value
  * if found, return node; otherwise return NULL
  */
-XCL_PUBLIC(CListIter)
+XCL_EXPORT CListIter XCL_API
 List_query(CList* list,
            const void* value,
            int (*cmp)(const void*, const void*));
@@ -133,7 +133,7 @@ List_query(CList* list,
 /*
  * similar to List_query, but start find progress at pos
  */
-XCL_PUBLIC(CListIter)
+XCL_EXPORT CListIter XCL_API
 List_query2(CList* list,
             CListIter pos,
             const void* value,
@@ -142,20 +142,20 @@ List_query2(CList* list,
 /*
  * return size of list, may be O(n)
  */
-XCL_PUBLIC(uint32_t)
+XCL_EXPORT uint32_t XCL_API
 List_size(CList* list);
 
 /*
  * return if list is empty
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 List_empty(CList* list);
 
 /*
  * cut list node range [first, last) and put
  * before pos
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 List_spliceRange(CList* list,
                  CListIter pos,
                  CList* other,
@@ -165,19 +165,19 @@ List_spliceRange(CList* list,
 /*
  * unlink node, and put node before pos
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 List_splice(CList* list, CListIter pos, CList* other, CListIter it);
 
 /*
  * cut all nodes in list and put these nodes before pos
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 List_spliceAll(CList* list, CListIter pos, CList* other);
 
 /*
  * sort elements contains in list
  */
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 List_sort(CList* list, int (*cmp)(const void*, const void*));
 
 #ifdef __cplusplus

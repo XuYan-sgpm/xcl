@@ -6,7 +6,7 @@
 #include "xcl/util/CRingBuffer.h"
 #include "xcl/pool/CPool.h"
 
-XCL_PUBLIC(CRingBuffer)
+XCL_EXPORT CRingBuffer XCL_API
 RingBuffer_make(int32_t cap, int32_t es)
 {
     char* p = Pool_alloc(Pool_def(), ((int64_t)(cap)) * es);
@@ -20,7 +20,7 @@ RingBuffer_make(int32_t cap, int32_t es)
     }
 }
 
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 RingBuffer_release(CRingBuffer* ringBuffer)
 {
     if (ringBuffer->buf)
@@ -32,19 +32,19 @@ RingBuffer_release(CRingBuffer* ringBuffer)
     memset(ringBuffer, 0, sizeof(CRingBuffer));
 }
 
-XCL_PUBLIC(int32_t)
+XCL_EXPORT int32_t XCL_API
 RingBuffer_size(const CRingBuffer* ringBuffer)
 {
     return ringBuffer->size;
 }
 
-XCL_PUBLIC(int32_t)
+XCL_EXPORT int32_t XCL_API
 RingBuffer_capacity(const CRingBuffer* ringBuffer)
 {
     return ringBuffer->cap;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_empty(const CRingBuffer* ringBuffer)
 {
     return ringBuffer->size == 0;
@@ -225,7 +225,7 @@ __RingBuffer_copyExternalBuf(CRingBuffer* ringBuffer,
     }
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_pushFront(CRingBuffer* ringBuffer, const void* src, bool force)
 {
     if (!__RingBuffer_checkRegion(ringBuffer, true, 0, 1) && !force)
@@ -240,7 +240,7 @@ RingBuffer_pushFront(CRingBuffer* ringBuffer, const void* src, bool force)
     return true;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_pushBack(CRingBuffer* ringBuffer, const void* src, bool force)
 {
     if (!__RingBuffer_checkRegion(ringBuffer,
@@ -259,7 +259,7 @@ RingBuffer_pushBack(CRingBuffer* ringBuffer, const void* src, bool force)
     return true;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_popFront(CRingBuffer* ringBuffer, void* dst)
 {
     if (RingBuffer_empty(ringBuffer))
@@ -275,7 +275,7 @@ RingBuffer_popFront(CRingBuffer* ringBuffer, void* dst)
     return true;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_popBack(CRingBuffer* ringBuffer, void* dst)
 {
     if (RingBuffer_empty(ringBuffer))
@@ -291,20 +291,20 @@ RingBuffer_popBack(CRingBuffer* ringBuffer, void* dst)
     return true;
 }
 
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 RingBuffer_clear(CRingBuffer* ringBuffer)
 {
     ringBuffer->beg = ringBuffer->size = 0;
 }
 
-XCL_PUBLIC(void*)
+XCL_EXPORT void* XCL_API
 RingBuffer_at(CRingBuffer* ringBuffer, int32_t pos)
 {
     return ringBuffer->buf
            + __RingBuffer_map(ringBuffer, pos) * ringBuffer->eleSize;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_get(const CRingBuffer* ringBuffer, int32_t pos, void* dst)
 {
     if (!__RingBuffer_checkPosition(ringBuffer, false, pos))
@@ -347,7 +347,7 @@ __RingBuffer_beforeInsert(CRingBuffer* ringBuffer,
     return true;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_insert(CRingBuffer* ringBuffer,
                   int32_t pos,
                   const void* src,
@@ -364,7 +364,7 @@ RingBuffer_insert(CRingBuffer* ringBuffer,
     }
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_insertRepeat(CRingBuffer* ringBuffer,
                         int32_t pos,
                         int32_t count,
@@ -387,7 +387,7 @@ RingBuffer_insertRepeat(CRingBuffer* ringBuffer,
     }
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_insertRegion(CRingBuffer* ringBuffer,
                         int32_t pos,
                         const void* src,
@@ -424,7 +424,7 @@ __RingBuffer_beforeWrite(CRingBuffer* ringBuffer, int32_t pos, int32_t n)
     return true;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_assignRepeat(CRingBuffer* ringBuffer, int32_t n, const void* src)
 {
     if (__RingBuffer_beforeWrite(ringBuffer, 0, n))
@@ -441,7 +441,7 @@ RingBuffer_assignRepeat(CRingBuffer* ringBuffer, int32_t n, const void* src)
     }
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_assignRegion(CRingBuffer* ringBuffer,
                         const void* src,
                         int32_t es,
@@ -493,7 +493,7 @@ __RingBuffer_beforeRep(CRingBuffer* ringBuffer,
     return true;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_replace(CRingBuffer* ringBuffer,
                    int32_t pos,
                    int32_t n,
@@ -502,7 +502,7 @@ RingBuffer_replace(CRingBuffer* ringBuffer,
     return RingBuffer_replaceRepeat(ringBuffer, pos, n, 1, src);
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_replaceRepeat(CRingBuffer* ringBuffer,
                          int32_t pos,
                          int32_t n,
@@ -525,7 +525,7 @@ RingBuffer_replaceRepeat(CRingBuffer* ringBuffer,
     }
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_replaceRegion(CRingBuffer* ringBuffer,
                          int32_t pos,
                          int32_t n,
@@ -548,7 +548,7 @@ RingBuffer_replaceRegion(CRingBuffer* ringBuffer,
     }
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_assignBufRegion(CRingBuffer* ringBuffer,
                            const CRingBuffer* src,
                            int32_t first,
@@ -569,13 +569,13 @@ RingBuffer_assignBufRegion(CRingBuffer* ringBuffer,
     }
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_assignBuf(CRingBuffer* ringBuffer, const CRingBuffer* src)
 {
     return RingBuffer_assignBufRegion(ringBuffer, src, 0, RingBuffer_size(src));
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_insertBufRegion(CRingBuffer* ringBuffer,
                            int32_t pos,
                            const CRingBuffer* src,
@@ -598,7 +598,7 @@ RingBuffer_insertBufRegion(CRingBuffer* ringBuffer,
     }
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 RingBuffer_replaceBufRegion(CRingBuffer* ringBuffer,
                             int32_t pos,
                             int32_t n,

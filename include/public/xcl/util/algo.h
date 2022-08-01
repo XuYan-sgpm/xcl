@@ -11,7 +11,7 @@ extern "C" {
 #include <stdint.h>
 #include <xcl/lang/XclDef.h>
 
-XCL_PUBLIC(uint32_t)
+XCL_EXPORT uint32_t XCL_API
 _log2(uint64_t val);
 
 #ifdef __cplusplus

@@ -12,7 +12,7 @@ struct _CCond_st {
     pthread_cond_t handle;
 };
 
-XCL_PUBLIC(CCond*)
+XCL_EXPORT CCond* XCL_API
 Cond_new()
 {
     CCond* cond = Pool_alloc(Pool_def(), sizeof(CCond));
@@ -30,7 +30,7 @@ Cond_new()
     return NULL;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Cond_delete(CCond* cond)
 {
     if (cond)
@@ -44,7 +44,7 @@ Cond_delete(CCond* cond)
     return false;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Cond_wait(CMutex* mutex, CCond* cond)
 {
     if (mutex && cond)
@@ -57,7 +57,7 @@ Cond_wait(CMutex* mutex, CCond* cond)
     return false;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Cond_waitFor(CMutex* mutex, CCond* cond, int32_t millis)
 {
     if (mutex && cond)
@@ -76,7 +76,7 @@ Cond_waitFor(CMutex* mutex, CCond* cond, int32_t millis)
     return false;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Cond_signal(CCond* cond)
 {
     if (cond)
@@ -89,7 +89,7 @@ Cond_signal(CCond* cond)
     return false;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Cond_signalAll(CCond* cond)
 {
     if (cond)

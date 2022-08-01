@@ -41,38 +41,38 @@ typedef struct {
     char ctx[0];
 } CBitsSet;
 
-XCL_PUBLIC(CBits*)
+XCL_EXPORT CBits* XCL_API
 Bits_new(int32_t size);
 
 /**
  * delete a bits object, must be created by Bits_new
  * @param bits bits object
  */
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 Bits_delete(CBits* bits);
 
-XCL_PUBLIC(int32_t)
+XCL_EXPORT int32_t XCL_API
 Bits_len(CBits* bits);
 
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 Bits_set(CBits* bits, int32_t idx, bool on);
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Bits_get(CBits* bits, int32_t idx);
 
-XCL_PUBLIC(unsigned char)
+XCL_EXPORT unsigned char XCL_API
 Bits_getByte(CBits* bits, int32_t idx);
 
-XCL_PUBLIC(CBits64)
+XCL_EXPORT CBits64 XCL_API
 bits64();
 
-XCL_PUBLIC(CBits8)
+XCL_EXPORT CBits8 XCL_API
 bits8();
 
-XCL_PUBLIC(CBits16)
+XCL_EXPORT CBits16 XCL_API
 bits16();
 
-XCL_PUBLIC(CBits32)
+XCL_EXPORT CBits32 XCL_API
 bits32();
 
 #ifdef __cplusplus

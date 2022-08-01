@@ -75,19 +75,19 @@ __Blocker_new(CMutex* mutex)
     return blocker;
 }
 
-XCL_PUBLIC(CBlocker*)
+XCL_EXPORT CBlocker* XCL_API
 Blocker_new()
 {
     return __Blocker_new(NULL);
 }
 
-XCL_PUBLIC(CBlocker*)
+XCL_EXPORT CBlocker* XCL_API
 Blocker_new2(CMutex* mutex)
 {
     return __Blocker_new(mutex);
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Blocker_delete(CBlocker* blocker)
 {
     bool allow = false;
@@ -112,7 +112,7 @@ Blocker_delete(CBlocker* blocker)
     return allow;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Blocker_wait(CBlocker* blocker)
 {
     if (!Mutex_lock(blocker->mutex))
@@ -129,7 +129,7 @@ Blocker_wait(CBlocker* blocker)
     return success;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Blocker_cancel(CBlocker* blocker)
 {
     if (!Mutex_lock(blocker->mutex))
@@ -153,7 +153,7 @@ Blocker_cancel(CBlocker* blocker)
     return success;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Blocker_wakeAll(CBlocker* blocker)
 {
     if (!Mutex_lock(blocker->mutex))

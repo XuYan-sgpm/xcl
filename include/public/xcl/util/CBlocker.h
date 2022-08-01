@@ -24,7 +24,7 @@ typedef struct _CBlocker_st CBlocker;
  * new a blocker object
  * @return blocker object if create successfully, otherwise false
  */
-XCL_PUBLIC(CBlocker*)
+XCL_EXPORT CBlocker* XCL_API
 Blocker_new();
 
 /**
@@ -32,7 +32,7 @@ Blocker_new();
  * @param mutex mutex object (CMutex)
  * @return blocker object if create successfully, otherwise false
  */
-XCL_PUBLIC(CBlocker*)
+XCL_EXPORT CBlocker* XCL_API
 Blocker_new2(CMutex* mutex);
 
 /**
@@ -44,7 +44,7 @@ Blocker_new2(CMutex* mutex);
  * @return true if blocker is not in waiting state,
  * otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Blocker_delete(CBlocker* blocker);
 
 /**
@@ -52,7 +52,7 @@ Blocker_delete(CBlocker* blocker);
  * @param blocker blocker object
  * @return blocker wait successfully
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Blocker_wait(CBlocker* blocker);
 
 /**
@@ -62,7 +62,7 @@ Blocker_wait(CBlocker* blocker);
  * @param blocker blocker object
  * @return blocker notify successfully
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Blocker_cancel(CBlocker* blocker);
 
 /**
@@ -70,7 +70,7 @@ Blocker_cancel(CBlocker* blocker);
  * @param blocker blocker object
  * @return notify all waiting blocker successfully
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Blocker_wakeAll(CBlocker* blocker);
 
 #ifdef __cplusplus

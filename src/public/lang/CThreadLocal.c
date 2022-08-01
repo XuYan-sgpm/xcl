@@ -80,7 +80,7 @@ __ThreadLocal_getData(CThreadLocal* local)
     return LocalStorage_get(localStorage, local->id);
 }
 
-XCL_PUBLIC(CThreadLocal)
+XCL_EXPORT CThreadLocal XCL_API
 Local_make()
 {
     CThreadLocal result;
@@ -88,7 +88,7 @@ Local_make()
     return result;
 }
 
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 Local_discard(CThreadLocal* local)
 {
     if (local->id != -1)
@@ -98,73 +98,73 @@ Local_discard(CThreadLocal* local)
     }
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_set(CThreadLocal* local, void* ptr)
 {
     return __ThreadLocal_setData(local, &ptr, sizeof(void*));
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_setChar(CThreadLocal* local, char val)
 {
     return __ThreadLocal_setData(local, &val, sizeof(char));
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_setU8(CThreadLocal* local, unsigned char val)
 {
     return __ThreadLocal_setData(local, &val, sizeof(unsigned char));
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_setInt32(CThreadLocal* local, int32_t val)
 {
     return __ThreadLocal_setData(local, &val, 4);
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_setU32(CThreadLocal* local, uint32_t val)
 {
     return __ThreadLocal_setData(local, &val, 4);
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_setInt16(CThreadLocal* local, int16_t val)
 {
     return __ThreadLocal_setData(local, &val, 2);
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_setU16(CThreadLocal* local, uint16_t val)
 {
     return __ThreadLocal_setData(local, &val, 2);
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_setFloat(CThreadLocal* local, float val)
 {
     return __ThreadLocal_setData(local, &val, 4);
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_setInt64(CThreadLocal* local, int64_t val)
 {
     return __ThreadLocal_setData(local, &val, 8);
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_setU64(CThreadLocal* local, uint64_t val)
 {
     return __ThreadLocal_setData(local, &val, 8);
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_setDouble(CThreadLocal* local, double val)
 {
     return __ThreadLocal_setData(local, &val, 8);
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_get(CThreadLocal* local, void** result)
 {
     void* data = __ThreadLocal_getData(local);
@@ -179,7 +179,7 @@ Local_get(CThreadLocal* local, void** result)
     return true;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_getChar(CThreadLocal* local, char* result)
 {
     void* data = __ThreadLocal_getData(local);
@@ -190,7 +190,7 @@ Local_getChar(CThreadLocal* local, char* result)
     return data;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_getU8(CThreadLocal* local, unsigned char* result)
 {
     void* data = __ThreadLocal_getData(local);
@@ -201,7 +201,7 @@ Local_getU8(CThreadLocal* local, unsigned char* result)
     return data;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_getInt16(CThreadLocal* local, int16_t* result)
 {
     void* data = __ThreadLocal_getData(local);
@@ -212,7 +212,7 @@ Local_getInt16(CThreadLocal* local, int16_t* result)
     return data;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_getU16(CThreadLocal* local, uint16_t* result)
 {
     void* data = __ThreadLocal_getData(local);
@@ -223,7 +223,7 @@ Local_getU16(CThreadLocal* local, uint16_t* result)
     return data;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_getInt32(CThreadLocal* local, int32_t* result)
 {
     void* data = __ThreadLocal_getData(local);
@@ -234,7 +234,7 @@ Local_getInt32(CThreadLocal* local, int32_t* result)
     return data;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_getU32(CThreadLocal* local, uint32_t* result)
 {
     void* data = __ThreadLocal_getData(local);
@@ -245,7 +245,7 @@ Local_getU32(CThreadLocal* local, uint32_t* result)
     return data;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_getFloat(CThreadLocal* local, float* result)
 {
     void* data = __ThreadLocal_getData(local);
@@ -256,7 +256,7 @@ Local_getFloat(CThreadLocal* local, float* result)
     return data;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_getInt64(CThreadLocal* local, int64_t* result)
 {
     void* data = __ThreadLocal_getData(local);
@@ -267,7 +267,7 @@ Local_getInt64(CThreadLocal* local, int64_t* result)
     return data;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_getU64(CThreadLocal* local, uint64_t* result)
 {
     void* data = __ThreadLocal_getData(local);
@@ -278,7 +278,7 @@ Local_getU64(CThreadLocal* local, uint64_t* result)
     return data;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Local_getDouble(CThreadLocal* local, double* result)
 {
     void* data = __ThreadLocal_getData(local);

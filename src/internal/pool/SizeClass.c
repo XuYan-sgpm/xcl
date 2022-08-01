@@ -54,7 +54,7 @@ __initSizeClassTab(int32_t idx,
 // */
 // static void __size2idxTab(int32_t *size2idx);
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 SizeClass_initialize()
 {
     if (sizeClasses)
@@ -82,7 +82,7 @@ SizeClass_initialize()
     return success;
 }
 
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 SizeClass_finalize()
 {
     uint32_t groups = _log2(CHUNK_SIZE) + 1 - LOG2_QUANTUM;
@@ -93,13 +93,13 @@ SizeClass_finalize()
     tabs = 0;
 }
 
-XCL_PUBLIC(int32_t)
+XCL_EXPORT int32_t XCL_API
 SizeClass_size()
 {
     return tabs;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 SizeClass_get(int32_t idx, int32_t* out)
 {
     if (idx >= tabs)
@@ -132,7 +132,7 @@ __SC_getGroupAndDelta(uint32_t size, uint32_t* log2Group, uint32_t* log2Delta)
     }
 }
 
-XCL_PUBLIC(uint32_t)
+XCL_EXPORT uint32_t XCL_API
 SizeClass_normalize(uint32_t size)
 {
     if (size <= 16)
@@ -178,7 +178,7 @@ SizeClass_normalize(uint32_t size)
     return (1u << log2Group) + (nDelta << log2Delta);
 }
 
-XCL_PUBLIC(uint32_t)
+XCL_EXPORT uint32_t XCL_API
 SizeClass_size2pages(uint32_t size)
 {
     if (size <= PAGE_SIZE)

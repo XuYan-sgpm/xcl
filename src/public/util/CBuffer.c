@@ -49,7 +49,7 @@ __Buffer_reapply(CBuffer* buffer, int32_t req)
     return p;
 }
 
-XCL_PUBLIC(CBuffer)
+XCL_EXPORT CBuffer XCL_API
 Buffer_make(int cap)
 {
     CBuffer buffer = {NULL, 0, 0};
@@ -60,7 +60,7 @@ Buffer_make(int cap)
     return buffer;
 }
 
-XCL_PUBLIC(CBuffer)
+XCL_EXPORT CBuffer XCL_API
 Buffer_newRegion(char* src, int len)
 {
     CBuffer buffer = {NULL, 0, 0};
@@ -72,13 +72,13 @@ Buffer_newRegion(char* src, int len)
     return buffer;
 }
 
-XCL_PUBLIC(int)
+XCL_EXPORT int XCL_API
 Buffer_cap(const CBuffer* buffer)
 {
     return (int)(buffer->state & __BUF_MASK__);
 }
 
-XCL_PUBLIC(CBuffer)
+XCL_EXPORT CBuffer XCL_API
 wrapBuf(const char* src, int len)
 {
     CBuffer buffer = {(char*)src, 0, len};
@@ -86,7 +86,7 @@ wrapBuf(const char* src, int len)
     return buffer;
 }
 
-XCL_PUBLIC(CBuffer)
+XCL_EXPORT CBuffer XCL_API
 wrapBuf2(const CBuffer* origin, int pos, int len)
 {
     CBuffer buffer = {NULL, 0, 0};
@@ -99,7 +99,7 @@ wrapBuf2(const CBuffer* origin, int pos, int len)
     return buffer;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Buffer_release(CBuffer* buffer)
 {
     if (buffer->data && __Buffer_isReleasable(buffer))
@@ -110,7 +110,7 @@ Buffer_release(CBuffer* buffer)
     return false;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Buffer_push(CBuffer* buffer, char ch)
 {
     if (buffer->size < Buffer_cap(buffer))
@@ -121,7 +121,7 @@ Buffer_push(CBuffer* buffer, char ch)
     return false;
 }
 
-XCL_PUBLIC(int)
+XCL_EXPORT int XCL_API
 Buffer_appendRegion(CBuffer* buffer, const char* src, int len)
 {
     if (len <= 0 || !src)
@@ -138,13 +138,13 @@ Buffer_appendRegion(CBuffer* buffer, const char* src, int len)
     return write;
 }
 
-XCL_PUBLIC(int)
+XCL_EXPORT int XCL_API
 Buffer_append(CBuffer* buffer, const char* src)
 {
     return src ? Buffer_appendRegion(buffer, src, strlen(src)) : 0;
 }
 
-XCL_PUBLIC(int)
+XCL_EXPORT int XCL_API
 Buffer_appendChars(CBuffer* buffer, int n, char ch)
 {
     if (n <= 0)
@@ -161,7 +161,7 @@ Buffer_appendChars(CBuffer* buffer, int n, char ch)
     return count;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Buffer_pop(CBuffer* buffer, char* dst)
 {
     if (buffer->size)
@@ -180,7 +180,7 @@ Buffer_pop(CBuffer* buffer, char* dst)
     return false;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Buffer_get(const CBuffer* buffer, int pos, char* dst)
 {
     if (pos < 0 || pos >= buffer->size)
@@ -194,7 +194,7 @@ Buffer_get(const CBuffer* buffer, int pos, char* dst)
     return true;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Buffer_writeChar(CBuffer* buffer, int pos, char ch)
 {
     if (pos >= 0 && pos <= buffer->size && buffer->size < Buffer_cap(buffer))
@@ -212,7 +212,7 @@ Buffer_writeChar(CBuffer* buffer, int pos, char ch)
     return false;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Buffer_writeChars(CBuffer* buffer, int pos, int n, char ch)
 {
     if (pos >= 0 && n >= 0 && buffer->size + n <= Buffer_cap(buffer))
@@ -230,7 +230,7 @@ Buffer_writeChars(CBuffer* buffer, int pos, int n, char ch)
     return false;
 }
 
-XCL_PUBLIC(int)
+XCL_EXPORT int XCL_API
 Buffer_writeRegion(CBuffer* buffer, int pos, const char* src, int len)
 {
     if (pos > buffer->size || len <= 0 || !src)
@@ -250,13 +250,13 @@ Buffer_writeRegion(CBuffer* buffer, int pos, const char* src, int len)
     return write;
 }
 
-XCL_PUBLIC(int)
+XCL_EXPORT int XCL_API
 Buffer_write(CBuffer* buffer, int pos, const char* src)
 {
     return src ? Buffer_writeRegion(buffer, pos, src, strlen(src)) : 0;
 }
 
-XCL_PUBLIC(int)
+XCL_EXPORT int XCL_API
 Buffer_readRegion(const CBuffer* buffer, int pos, char* dst, int len)
 {
     if (pos >= buffer->size || len <= 0)
@@ -276,7 +276,7 @@ Buffer_readRegion(const CBuffer* buffer, int pos, char* dst, int len)
     return read;
 }
 
-XCL_PUBLIC(int)
+XCL_EXPORT int XCL_API
 Buffer_read(const CBuffer* buffer, int pos, char* dst)
 {
     if (buffer->size - pos > 0)
@@ -286,7 +286,7 @@ Buffer_read(const CBuffer* buffer, int pos, char* dst)
     return 0;
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Buffer_expand(CBuffer* buffer, int cap)
 {
     if (cap <= Buffer_cap(buffer))
@@ -325,7 +325,7 @@ Buffer_expand(CBuffer* buffer, int cap)
     return true;
 }
 
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 Buffer_removeRegion(CBuffer* buffer, int pos, int len)
 {
     if (pos >= 0 && len >= 0 && pos + len <= buffer->size)
@@ -340,13 +340,13 @@ Buffer_removeRegion(CBuffer* buffer, int pos, int len)
     }
 }
 
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 Buffer_removePos(CBuffer* buffer, int pos)
 {
     Buffer_removeRegion(buffer, pos, 1);
 }
 
-XCL_PUBLIC(void)
+XCL_EXPORT void XCL_API
 Buffer_clear(CBuffer* buffer)
 {
     if (buffer->size > 0)
@@ -355,7 +355,7 @@ Buffer_clear(CBuffer* buffer)
     }
 }
 
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Buffer_remake(CBuffer* buffer, int cap)
 {
     if (cap < 0)
@@ -394,7 +394,7 @@ Buffer_remake(CBuffer* buffer, int cap)
     return true;
 }
 
-XCL_PUBLIC(char*)
+XCL_EXPORT char* XCL_API
 Buffer_at(const CBuffer* buffer, int pos)
 {
     if (pos >= 0 && pos <= buffer->size)
@@ -402,4 +402,9 @@ Buffer_at(const CBuffer* buffer, int pos)
         return buffer->data + pos;
     }
     return NULL;
+}
+
+bool __stdcall test(char c, bool b)
+{
+    return false;
 }

@@ -26,7 +26,7 @@ typedef struct {
  * @param usr thread run args
  * @return thread object
  */
-XCL_PUBLIC(CThread)
+XCL_EXPORT CThread XCL_API
 Thread_create(void (*proc)(void*), void* usr);
 
 /**
@@ -34,7 +34,7 @@ Thread_create(void (*proc)(void*), void* usr);
  * @param thread thread object
  * @return true if thread object is valid, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Thread_valid(CThread thread);
 
 /**
@@ -42,7 +42,7 @@ Thread_valid(CThread thread);
  * @param thread thread object
  * @return true if join thread successfully, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Thread_join(CThread* thread);
 
 /**
@@ -52,7 +52,7 @@ Thread_join(CThread* thread);
  * @return true if function succeed and thread is terminated,
  * otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Thread_join2(CThread* thread, int32_t timeout);
 
 /**
@@ -60,7 +60,7 @@ Thread_join2(CThread* thread, int32_t timeout);
  * @param thread thread object
  * @return true if thread is alive, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Thread_alive(CThread* thread);
 
 /**
@@ -68,7 +68,7 @@ Thread_alive(CThread* thread);
  * @param thread thread object
  * @return true if detach operation succeed, otherwise false
  */
-XCL_PUBLIC(bool)
+XCL_EXPORT bool XCL_API
 Thread_detach(CThread* thread);
 
 /**
@@ -77,21 +77,21 @@ Thread_detach(CThread* thread);
  * will be invalid
  * @return current running thread object
  */
-XCL_PUBLIC(CThread)
+XCL_EXPORT CThread XCL_API
 Thread_current();
 
 /**
  * get current thread id
  * @return thread id
  */
-XCL_PUBLIC(unsigned long)
+XCL_EXPORT unsigned long XCL_API
 Thread_currentId();
 
 /**
  * get current thread handle
  * @return thread handle
  */
-XCL_PUBLIC(uintptr_t)
+XCL_EXPORT uintptr_t XCL_API
 Thread_currentHandle();
 
 #ifdef __cplusplus
