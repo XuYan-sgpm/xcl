@@ -91,7 +91,6 @@ target_link_libraries(unit_test ${link_libs})
 add_custom_command(
   TARGET unit_test
   PRE_BUILD
-  COMMAND ${CMAKE_COMMAND} -E remove_directory ${EXECUTABLE_OUTPUT_PATH}
   COMMAND ${CMAKE_COMMAND} -E make_directory ${EXECUTABLE_OUTPUT_PATH}
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${xcl_lib_dir}
           ${EXECUTABLE_OUTPUT_PATH}
