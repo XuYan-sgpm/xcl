@@ -403,8 +403,3 @@ Buffer_at(const CBuffer* buffer, int pos)
     }
     return NULL;
 }
-
-bool __stdcall test(char c, bool b)
-{
-    return false;
-}
