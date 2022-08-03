@@ -37,7 +37,7 @@ elseif(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
         set(compiler_id gnuc)
     endif()
 elseif(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL
-                                                 AppleClang)
+                                                 "AppleClang")
     set(compiler_id clang)
 endif()
 
@@ -81,7 +81,7 @@ else()
 endif()
 
 if(NOT ENABLE_CXX_COMPILE)
-    if(WIN32 AND CMAKE_C_COMPILER_ID STREQUAL GNU)
+    if(WIN32 AND CMAKE_C_COMPILER_ID STREQUAL "GNU")
         set(link_libs ${link_libs} atomic)
     endif()
 endif()
