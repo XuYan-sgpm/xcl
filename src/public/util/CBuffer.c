@@ -2,7 +2,7 @@
 #include "xcl/pool/CPool.h"
 #include <string.h>
 
-const static unsigned __BUF_MASK__ = 0x7fffffff;
+static const unsigned __BUF_MASK__ = 0x7fffffff;
 
 static inline bool
 __Buffer_isReleasable(CBuffer* buffer)
