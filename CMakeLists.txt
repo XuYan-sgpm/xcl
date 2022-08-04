@@ -102,7 +102,8 @@ else()
     message(FATAL_ERROR "unsupported platforms")
 endif()
 
-collect_source_files(${CMAKE_CURRENT_LIST_DIR}/src ${exclude_dirs})
+collect_source_files(${ENABLE_CXX_COMPILE} ${CMAKE_CURRENT_LIST_DIR}/src
+                     ${exclude_dirs})
 
 if(NOT LIBRARY_SOURCE_FILES)
     message(WARNING "no library source file")
