@@ -11,7 +11,7 @@ set(CMAKE_VERBOSE_MAKEFILE OFF)
 
 include(cmake/util.cmake)
 
-check_c_cxx_compiler("MSVC" Clang GNU AppleClang)
+check_c_cxx_compiler("MSVC" "Clang" "GNU" "AppleClang")
 
 if(ENABLE_C11)
     set(CMAKE_C_STANDARD 11)
