@@ -37,6 +37,16 @@ XCL_EXPORT CSingleList* XCL_API
 SingleList_new();
 
 /**
+ * @brief create single list by specified pool
+ * @param pool CPool object
+ * @return single list object if create successfully, otherwise NULL
+ * @author xuyan
+ * @date 2022-08-05
+ */
+XCL_EXPORT CSingleList* XCL_API
+SingleList_newByPool(CPool* pool);
+
+/**
  * delete list object
  * @param list single list object
  * @return true if list is empty and delete successfully,

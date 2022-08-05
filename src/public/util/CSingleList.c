@@ -9,15 +9,31 @@
 
 struct _CSingleList_st {
     CSingleNode* tail;
+    CPool* pool;
     CSingleNode header;
 };
 
 XCL_EXPORT CSingleList* XCL_API
 SingleList_new()
 {
-    CSingleList* list = Pool_alloc(Pool_def(), sizeof(CSingleList));
+    CPool* pool = Pool_def();
+    CSingleList* list = Pool_alloc(pool, sizeof(CSingleList));
     if (list)
     {
+        list->pool = pool;
+        list->header.next = NULL;
+        list->tail = &list->header;
+    }
+    return list;
+}
+
+XCL_EXPORT CSingleList* XCL_API
+SingleList_newByPool(CPool* pool)
+{
+    CSingleList* list = Pool_alloc(pool, sizeof(CSingleList));
+    if (list)
+    {
+        list->pool = pool;
         list->header.next = NULL;
         list->tail = &list->header;
     }
@@ -138,9 +154,10 @@ SingleList_sort(CSingleList* list, int (*cmp)(const void*, const void*))
 XCL_EXPORT bool XCL_API
 SingleList_delete(CSingleList* list)
 {
+    CPool* pool = list->pool;
     if (SingleList_empty(list))
     {
-        Pool_dealloc(Pool_def(), list, sizeof(CSingleList));
+        Pool_dealloc(pool, list, sizeof(CSingleList));
         return true;
     }
     else
