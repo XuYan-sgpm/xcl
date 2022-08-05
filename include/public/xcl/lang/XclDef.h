@@ -85,3 +85,9 @@
 #else
 #define XCL_API
 #endif
+
+#ifdef _MSC_VER
+#define ALIGNED(x) __declspec(align(x))
+#else
+#define ALIGNED(x) __attribute__((aligned(x)))
+#endif
