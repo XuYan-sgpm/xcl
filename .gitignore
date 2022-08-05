@@ -12,4 +12,3 @@ out/
 *.code-workspace
 .DS_Store
 .vscode
-!.cmake-format.json
