@@ -86,3 +86,9 @@ Thread_currentHandle()
 {
     return __Thread_currentHandle();
 }
+
+XCL_EXPORT void XCL_API
+Thread_yield()
+{
+    __Thread_yield();
+}

@@ -1,6 +1,9 @@
-//
-// Created by xuyan on 2022/7/13.
-//
+/**
+ * @author xuyan
+ * @brief ring buffer implementation, simple, graceful and powerful
+ * @version 0.1
+ * @date 2022-08-05
+ */
 
 #pragma once
 

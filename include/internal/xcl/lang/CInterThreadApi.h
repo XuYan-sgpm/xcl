@@ -38,6 +38,9 @@ uintptr_t
 __Thread_currentHandle();
 
 void
+__Thread_yield();
+
+void
 __Thread_run(void* args);
 
 #ifdef __cplusplus

@@ -65,6 +65,12 @@ __Thread_currentHandle()
     return (uintptr_t)GetCurrentThread();
 }
 
+void
+__Thread_yield()
+{
+    Sleep(0);
+}
+
 #ifdef STATIC
 
 #ifdef _MSC_VER
@@ -109,7 +115,7 @@ __allocTls()
 static void
 __Thread_ensureTlsKey()
 {
-    static bool initTlsDone = false;
+    static volatile bool initTlsDone = false;
     if (!initTlsDone)
     {
         __acquireGlobalLock();

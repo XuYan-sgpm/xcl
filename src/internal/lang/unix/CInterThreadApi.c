@@ -96,6 +96,12 @@ __Thread_currentHandle()
     return (uintptr_t)pthread_self();
 }
 
+void
+__Thread_yield()
+{
+    sleep(0);
+}
+
 #ifdef STATIC
 static __thread CLocalStorage* __Unix_Thread_localStorage = NULL;
 

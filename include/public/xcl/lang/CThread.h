@@ -94,6 +94,14 @@ Thread_currentId();
 XCL_EXPORT uintptr_t XCL_API
 Thread_currentHandle();
 
+/**
+ * @brief yield current thread
+ * @author xuyan
+ * @date 2022-08-04
+ */
+XCL_EXPORT void XCL_API
+Thread_yield();
+
 #ifdef __cplusplus
 }
 #endif
