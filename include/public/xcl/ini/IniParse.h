@@ -1,3 +1,10 @@
+/**
+ * @author xuyan
+ * @brief simple ini parse implementation
+ * @version 1.0
+ * @date 2022-08-05
+ */
+
 #pragma once
 
 #ifdef __cplusplus
