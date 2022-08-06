@@ -441,6 +441,7 @@ _RbTree_rmNode(CRbTree* tree, CRbNode* node)
     {
         __RbTree_delRebalance(tree, suc2Par, suc2);
     }
+    --tree->count;
     return node;
 }
 
@@ -748,7 +749,7 @@ __RbTree_copy(CRbTree* tree,
                                      __RbTree_root(tree),
                                      constructor,
                                      usr,
-                                     complete);
+                                     &complete);
     if (copy)
     {
         __RbTree_setRoot(dst, copy);

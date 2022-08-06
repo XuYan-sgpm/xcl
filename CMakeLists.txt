@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.15)
 project(xcl C CXX)
 
 option(ENABLE_CXX_COMPILE "enable cxx compile" OFF)
-option(BUILD_DYNAMIC_LIBRARY "build dynamic library" ON)
+option(BUILD_DYNAMIC_LIBRARY "build dynamic library" OFF)
 option(ENABLE_C11 "enable c11 standard" OFF)
 option(ENABLE_CXX11 "enable cxx11 standard" ON)
 

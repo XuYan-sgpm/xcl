@@ -43,7 +43,7 @@ endif()
 
 message(STATUS ${compiler_id})
 
-set(xcl_lib_type dynamic)
+set(xcl_lib_type static)
 
 if(WIN32)
     set(third_party D:/third_party/${compiler_id}/${build_type})
@@ -66,7 +66,6 @@ set(xcl_inc_dir ${xcl_project_dir}/include/public
 set(xcl_lib_dir ${xcl_project_dir}/lib/${xcl_lib_type}/${CMAKE_BUILD_TYPE})
 
 message(STATUS ${xcl_inc_dir})
-
 message(STATUS ${xcl_lib_dir})
 
 link_directories(${xcl_lib_dir} ${third_party}/googletest/lib)
