@@ -1,6 +1,9 @@
-//
-// Created by xuyan on 2022/7/21.
-//
+/**
+ * @author xuyan
+ * @brief cross-platform thread api implementation
+ * @version 0.1
+ * @date 2022-08-06
+ */
 
 #pragma once
 
