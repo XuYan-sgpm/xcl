@@ -10,6 +10,9 @@ __RbTree_allocNode(CRbTree* tree)
     if (p)
     {
         assert(((uintptr_t)p & 1) == 0);
+        CRbNode* node = p;
+        node->left = node->right = 0;
+        node->parAndColor = 0;
     }
     return p;
 }
@@ -29,7 +32,8 @@ __RbTree_root(CRbTree* tree)
 static inline void
 __RbTree_setRoot(CRbTree* tree, CRbNode* root)
 {
-    uintptr_t val = (uintptr_t)root | 1;
+    uintptr_t val = tree->header.parAndColor;
+    val = (uintptr_t)root | (val & 1);
     tree->header.parAndColor = val;
 }
 
@@ -77,12 +81,7 @@ __RbNode_isBlack(CRbNode* node)
 static inline void
 __RbNode_setPar(CRbNode* node, CRbNode* par)
 {
-    CRbColor color = __RbNode_color(node);
-    uintptr_t val = (uintptr_t)par;
-    if (color == BLACK)
-    {
-        node->parAndColor = val | 1;
-    }
+    node->parAndColor = (uintptr_t)par | (node->parAndColor & 1);
 }
 
 static inline CRbNode*
@@ -111,9 +110,9 @@ __RbNode_max(CRbNode* root)
     CRbNode* maximum = root;
     if (maximum)
     {
-        while (maximum->left)
+        while (maximum->right)
         {
-            maximum = maximum->left;
+            maximum = maximum->right;
         }
     }
     return maximum;
@@ -190,7 +189,7 @@ __RbTree_insertRebalance(CRbTree* tree, CRbNode* node)
         if (par == grand->left)
         {
             CRbNode* uncle = grand->right;
-            if (__RbNode_isRed(uncle))
+            if (uncle && __RbNode_isRed(uncle))
             {
                 __RbNode_setColor(par, BLACK);
                 __RbNode_setColor(uncle, BLACK);
@@ -214,7 +213,7 @@ __RbTree_insertRebalance(CRbTree* tree, CRbNode* node)
         else
         {
             CRbNode* uncle = grand->left;
-            if (__RbNode_isRed(uncle))
+            if (uncle && __RbNode_isRed(uncle))
             {
                 __RbNode_setColor(par, BLACK);
                 __RbNode_setColor(uncle, BLACK);
@@ -322,6 +321,7 @@ __RbTree_delRebalance(CRbTree* tree, CRbNode* par, CRbNode* node)
 bool
 _RbTree_addNode(CRbTree* tree, bool left, CRbNode* par, CRbNode* newNode)
 {
+    __RbNode_setPar(newNode, par);
     if (par == &tree->header)
     {
         assert(RbTree_empty(tree));
@@ -608,8 +608,10 @@ RbTree_range(CRbTree* tree,
              CRbNode** lower,
              CRbNode** upper)
 {
-    *lower = __RbTree_lowerBound(tree, src, cmp, usr);
-    *upper = __RbTree_upperBound(tree, src, cmp, usr);
+    if (lower)
+        *lower = __RbTree_lowerBound(tree, src, cmp, usr);
+    if (upper)
+        *upper = __RbTree_upperBound(tree, src, cmp, usr);
 }
 
 CRbNode*
@@ -636,7 +638,7 @@ RbTree_next(CRbTree* tree, CRbNode* node)
         return __RbNode_min(node->right);
     }
     CRbNode* par;
-    while ((par = __RbNode_par(node))->right == node)
+    while ((par = __RbNode_par(node))->right == node && par != &tree->header)
     {
         node = par;
     }
@@ -694,15 +696,11 @@ __RbTree_makeSub(CRbTree* tree,
         {
             bool leftComplete = false;
             newNode->left = __RbTree_makeSub(tree,
-                                             par,
+                                             newNode,
                                              top->left,
                                              constructor,
                                              usr,
                                              &leftComplete);
-            if (newNode->left)
-            {
-                __RbNode_setPar(newNode->left, newNode);
-            }
             if (!leftComplete)
             {
                 return newNode;
@@ -712,15 +710,11 @@ __RbTree_makeSub(CRbTree* tree,
         {
             bool rightComplete = false;
             newNode->right = __RbTree_makeSub(tree,
-                                              par,
+                                              newNode,
                                               top->right,
                                               constructor,
                                               usr,
                                               &rightComplete);
-            if (newNode->right)
-            {
-                __RbNode_setPar(newNode->right, newNode);
-            }
             if (!rightComplete)
             {
                 return newNode;
@@ -811,16 +805,16 @@ __RbTree_verify(CRbTree* tree,
             {
                 return false;
             }
-            if (right && !__RbNode_isRed(right))
+            if (right && __RbNode_isRed(right))
             {
                 return false;
             }
         }
-        if (cmp(usr, left->attach, cur->attach) > 0)
+        if (left && cmp(usr, left->attach, cur->attach) > 0)
         {
             return false;
         }
-        if (cmp(usr, right->attach, cur->attach) < 0)
+        if (right && cmp(usr, right->attach, cur->attach) < 0)
         {
             return false;
         }
@@ -836,7 +830,7 @@ __RbTree_verify(CRbTree* tree,
     {
         return false;
     }
-    if (tree->header.left != __RbNode_max(__RbTree_root(tree)))
+    if (tree->header.left != __RbNode_min(__RbTree_root(tree)))
     {
         return false;
     }

@@ -132,7 +132,7 @@ __destroyLocalStorage(void* args)
 static void
 __Thread_ensureLocalStorageKey()
 {
-    static bool initStorageKey = false;
+    static volatile bool initStorageKey = false;
     if (!initStorageKey)
     {
         __acquireGlobalLock();
