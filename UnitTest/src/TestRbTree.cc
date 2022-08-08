@@ -13,6 +13,7 @@ __cmpInt(void*, const void* lhs, const void* rhs)
 TEST(RbTreeTest, func1)
 {
     CRbTree tree = RbTree_make(sizeof(int), Pool_def());
+    ASSERT_TRUE(RbTree_init(&tree));
     for (int i = 0; i < 1000; i++)
     {
         CRbNode* node = __RbTree_allocNode(&tree);

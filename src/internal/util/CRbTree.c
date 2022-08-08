@@ -9,12 +9,16 @@ __RbTree_allocNode(CRbTree* tree)
     void* p = Pool_alloc(tree->pool, sizeof(CRbNode) + tree->eleSize);
     if (p)
     {
-        assert(((uintptr_t)p & 1) == 0);
-        CRbNode* node = p;
-        node->left = node->right = 0;
-        node->parAndColor = 0;
+        if (((uintptr_t)p & 1) == 0)
+        {
+            CRbNode* node = p;
+            node->left = node->right = 0;
+            node->parAndColor = 0;
+            return p;
+        }
+        Pool_dealloc(tree->pool, p, sizeof(CRbNode) + tree->eleSize);
     }
-    return p;
+    return 0;
 }
 
 void
@@ -133,16 +137,13 @@ __RbTree_leftRotate(CRbTree* tree, CRbNode* node)
     {
         __RbTree_setRoot(tree, r);
     }
+    else if (node == par->left)
+    {
+        par->left = r;
+    }
     else
     {
-        if (node == par->left)
-        {
-            par->left = r;
-        }
-        else
-        {
-            par->right = r;
-        }
+        par->right = r;
     }
     __RbNode_setPar(r, par);
     r->left = node;
@@ -250,8 +251,8 @@ __RbTree_delRebalance(CRbTree* tree, CRbNode* par, CRbNode* node)
             cousin = par->right;
             if (__RbNode_isRed(cousin))
             {
-                __RbNode_setColor(cousin, __RbNode_color(par));
-                __RbNode_setColor(par, BLACK);
+                __RbNode_setColor(cousin, BLACK);
+                __RbNode_setColor(par, RED);
                 __RbTree_leftRotate(tree, par);
                 cousin = par->right;
             }
@@ -357,7 +358,7 @@ _RbTree_addNode(CRbTree* tree, bool left, CRbNode* par, CRbNode* newNode)
 CRbNode*
 _RbTree_rmNode(CRbTree* tree, CRbNode* node)
 {
-    CRbNode* suc = node; // node replace at position of node
+    CRbNode* suc = node; // node replace at position of removed node
     CRbNode* suc2 = 0;   // node replace at position of suc
     CRbNode* suc2Par = 0;
     if (!node->left)
@@ -378,8 +379,7 @@ _RbTree_rmNode(CRbTree* tree, CRbNode* node)
     {
         if (suc == node->left)
         {
-            suc2 = suc;
-            suc2Par = par;
+            suc2Par = suc;
         }
         else
         {
@@ -514,7 +514,7 @@ __RbTree_delete(CRbTree* tree,
         __RbTree_delete(tree, root->left, destructor, usr);
         __RbTree_delete(tree, root->right, destructor, usr);
         destructor(usr, root->attach);
-        Pool_dealloc(tree->pool, root, tree->eleSize);
+        __RbTree_deallocNode(tree, root);
         --tree->count;
     }
 }
@@ -522,12 +522,16 @@ __RbTree_delete(CRbTree* tree,
 CRbTree
 RbTree_make(int32_t es, CPool* pool)
 {
-    CRbTree tree = (CRbTree){.pool = pool,
-                             .count = 0,
-                             .eleSize = es,
-                             .header = {0, 0, 0}};
-    tree.header.left = tree.header.right = &tree.header;
-    return tree;
+    return (CRbTree){.eleSize = es, .pool = pool};
+}
+
+bool
+RbTree_init(CRbTree* tree)
+{
+    tree->header.left = tree->header.right = &tree->header;
+    tree->header.parAndColor = 0;
+    tree->count = 0;
+    return true;
 }
 
 void
@@ -563,14 +567,14 @@ __RbTree_lowerBound(CRbTree* tree,
     while (cur)
     {
         int32_t ret = cmp(usr, src, cur->attach);
-        if (ret >= 0)
+        if (ret <= 0)
         {
             lower = cur;
-            cur = cur->right;
+            cur = cur->left;
         }
         else
         {
-            cur = cur->left;
+            cur = cur->right;
         }
     }
     return lower;
@@ -638,7 +642,7 @@ RbTree_next(CRbTree* tree, CRbNode* node)
         return __RbNode_min(node->right);
     }
     CRbNode* par;
-    while ((par = __RbNode_par(node))->right == node && par != &tree->header)
+    while ((par = __RbNode_par(node)) != &tree->header && par->right == node)
     {
         node = par;
     }
@@ -670,10 +674,10 @@ RbTree_prev(CRbTree* tree, CRbNode* node)
 
 static CRbNode*
 __RbTree_makeSub(CRbTree* tree,
-                 CRbNode* par,
                  CRbNode* top,
                  bool (*constructor)(void*, void*, const void*),
                  void* usr,
+                 CRbNode* par,
                  bool* complete)
 {
     *complete = false;
@@ -681,49 +685,48 @@ __RbTree_makeSub(CRbTree* tree,
     {
         return 0;
     }
-    CRbNode* newNode = __RbTree_allocNode(tree);
-    if (!newNode)
+    CRbNode* current = __RbTree_allocNode(tree);
+    if (!current)
     {
         return 0;
     }
-    newNode->left = newNode->right = 0;
-    __RbNode_setColor(newNode, __RbNode_color(top));
-    if (constructor(usr, newNode->attach, top->attach))
+    __RbNode_setColor(current, __RbNode_color(top));
+    if (constructor(usr, current->attach, top->attach))
     {
         tree->count += 1;
-        __RbNode_setPar(newNode, par);
+        __RbNode_setPar(current, par);
         if (top->left)
         {
-            bool leftComplete = false;
-            newNode->left = __RbTree_makeSub(tree,
-                                             newNode,
+            bool success = false;
+            current->left = __RbTree_makeSub(tree,
                                              top->left,
                                              constructor,
                                              usr,
-                                             &leftComplete);
-            if (!leftComplete)
+                                             current,
+                                             &success);
+            if (!success)
             {
-                return newNode;
+                return current;
             }
         }
         if (top->right)
         {
-            bool rightComplete = false;
-            newNode->right = __RbTree_makeSub(tree,
-                                              newNode,
+            bool success = false;
+            current->right = __RbTree_makeSub(tree,
                                               top->right,
                                               constructor,
                                               usr,
-                                              &rightComplete);
-            if (!rightComplete)
+                                              current,
+                                              &success);
+            if (!success)
             {
-                return newNode;
+                return current;
             }
         }
         *complete = true;
-        return newNode;
+        return current;
     }
-    __RbTree_deallocNode(tree, newNode);
+    __RbTree_deallocNode(tree, current);
     return 0;
 }
 
@@ -739,10 +742,10 @@ __RbTree_copy(CRbTree* tree,
     }
     bool complete;
     CRbNode* copy = __RbTree_makeSub(dst,
-                                     &dst->header,
                                      __RbTree_root(tree),
                                      constructor,
                                      usr,
+                                     &dst->header,
                                      &complete);
     if (copy)
     {

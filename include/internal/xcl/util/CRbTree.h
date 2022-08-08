@@ -37,9 +37,9 @@ typedef struct {
 } CRbTree;
 
 /**
- * @brief alloc rbnode
+ * @brief alloc tree node
  * @param tree rbtree object
- * @return rbnode object
+ * @return tree node object
  * @author xuyan
  * @date 2022-08-05
  */
@@ -47,9 +47,9 @@ CRbNode*
 __RbTree_allocNode(CRbTree* tree);
 
 /**
- * @brief dealloc rbnode
+ * @brief dealloc tree node
  * @param tree rbtree object
- * @param node rbnode pointer
+ * @param node tree node pointer
  * @author xuyan
  * @date 2022-08-05
  */
@@ -57,20 +57,30 @@ void
 __RbTree_deallocNode(CRbTree* tree, CRbNode* node);
 
 /**
- * @brief create a rbtree object
+ * @brief create rbtree
  * @param es element size
- * @param pool rbtree pool object
- * @return rbtree object
+ * @param pool CPool object
+ * @return tree object
  * @author xuyan
- * @date 2022-08-05
+ * @date 2022-08-08
  */
 CRbTree
 RbTree_make(int32_t es, CPool* pool);
 
 /**
+ * @brief initialize tree object
+ * @param tree rbtree object
+ * @return true if initialize tree successfully, otherwise false
+ * @author xuyan
+ * @date 2022-08-08
+ */
+bool
+RbTree_init(CRbTree* tree);
+
+/**
  * @brief use destructor to release rbtree memory resource
  * @param tree rbtree object
- * @param destructor function destruct rbnode data
+ * @param destructor function destruct tree node data
  * @param usr user param for destructor
  * @author xuyan
  * @date 2022-08-06
@@ -89,9 +99,9 @@ bool
 RbTree_empty(CRbTree* tree);
 
 /**
- * @brief add rbnode to rbtree
+ * @brief add tree node to rbtree
  * @param tree tree object
- * @param left add rbnode as left child of par
+ * @param left add tree node as left child of par
  * @param par parent of new node added
  * @param newNode new node added
  * @return true if add successfully, otherwise false
@@ -102,7 +112,7 @@ bool
 _RbTree_addNode(CRbTree* tree, bool left, CRbNode* par, CRbNode* newNode);
 
 /**
- * @brief remove rbnode from rbtree
+ * @brief remove tree node from rbtree
  * @param tree tree object
  * @param node node required remove
  * @return node removed if remove successfully, otherwise NULL
@@ -113,12 +123,12 @@ CRbNode*
 _RbTree_rmNode(CRbTree* tree, CRbNode* node);
 
 /**
- * @brief find rbnode which data equals to src
+ * @brief find tree node which data equals to src
  * @param tree tree object
  * @param src source data
  * @param cmp comparator used to compare data
- * @param usr user defined object for comparation
- * @return rbnode found, otherwise NULL
+ * @param usr user defined object for compare
+ * @return tree node found, otherwise NULL
  * @author xuyan
  * @date 2022-08-06
  */
@@ -132,13 +142,13 @@ _RbTree_find(CRbTree* tree,
  * @brief find a add position for src
  * @param tree tree object
  * @param interruptIfFound whether search should be interrupted
- * if tree has rbnode which contains value equals to src
+ * if tree has tree node which contains value equals to src
  * @param src source element
  * @param cmp comparator used to compare data
- * @param usr user defined object for comparation
+ * @param usr user defined object for compare
  * @param left true if src less equal than value which return node contains
  * otherwise false
- * @return rbnode which should be parent of src
+ * @return tree node which should be parent of src
  * @author xuyan
  * @date 2022-08-06
  */
@@ -157,7 +167,7 @@ __RbTree_findAddPos(CRbTree* tree,
  * @param tree tree object
  * @param src source element
  * @param cmp comparator used to compare data
- * @param usr user defined object for comparation
+ * @param usr user defined object for compare
  * @param lower output pointer store lower node address
  * @param upper output pointer store upper node address
  * @author xuyan
@@ -219,7 +229,7 @@ RbTree_prev(CRbTree* tree, CRbNode* node);
  * use RbTree_release to completely release dst rbtree
  * dest rbtree must be empty, otherwise return false
  * @param tree source rbtree object
- * @param constructor construct function used to construct attach of rbnode
+ * @param constructor construct function used to construct attach of tree node
  * @param usr user defined object for construct
  * @param dst output rbtree object
  * @return true if copy completely, otherwise false
@@ -236,7 +246,7 @@ __RbTree_copy(CRbTree* tree,
  * @brief verify if rbtree is conform the red-black-tree definition
  * @param tree rbtree object
  * @param cmp comparator used to compare
- * @param usr user defined object for comparation
+ * @param usr user defined object for compare
  * @return true if rbtree is valid, otherwise false
  * @author xuyan
  * @date 2022-08-06

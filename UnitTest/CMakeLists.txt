@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 
+if(MSVC)
+    cmake_policy(SET CMP0091 NEW)
+endif()
+
 project(UnitTest)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -89,9 +93,30 @@ message(STATUS ${link_libs})
 
 target_link_libraries(unit_test ${link_libs})
 
+if(MSVC)
+    set_property(
+        TARGET unit_test PROPERTY MSVC_RUNTIME_LIBRARY
+                                  "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
+
+if(WIN32)
+    add_custom_command(
+        TARGET unit_test
+        PRE_BUILD
+        COMMAND cd ${CMAKE_CURRENT_LIST_DIR} && del /q
+                ".\\bin\\${CMAKE_BUILD_TYPE}\\*"
+        COMMAND echo "clean run path:${run_path}")
+else()
+    add_custom_command(
+        TARGET unit_test
+        PRE_BUILD
+        COMMAND rm -rf ${run_path}/*
+        COMMAND echo "clean run path:${run_path}")
+endif()
+
 add_custom_command(
     TARGET unit_test
-    PRE_BUILD
+    POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E make_directory ${run_path}
     COMMAND ${CMAKE_COMMAND} -E copy_directory ${xcl_lib_dir} ${run_path}
     COMMAND ${CMAKE_COMMAND} -E echo "finish")

@@ -1,5 +1,9 @@
 cmake_minimum_required(VERSION 3.15)
 
+if(MSVC)
+    cmake_policy(SET CMP0091 NEW)
+endif()
+
 project(xcl C CXX)
 
 option(ENABLE_CXX_COMPILE "enable cxx compile" OFF)
@@ -7,7 +11,7 @@ option(BUILD_DYNAMIC_LIBRARY "build dynamic library" OFF)
 option(ENABLE_C11 "enable c11 standard" OFF)
 option(ENABLE_CXX11 "enable cxx11 standard" ON)
 
-set(CMAKE_VERBOSE_MAKEFILE OFF)
+set(CMAKE_VERBOSE_MAKEFILE ON)
 
 include(cmake/util.cmake)
 
@@ -70,6 +74,9 @@ endif()
 
 set(CMAKE_C_FLAGS "${wall} ${hidden}")
 set(CMAKE_CXX_FLAGS "${wall} ${hidden}")
+
+message(STATUS "c flags:${CMAKE_C_FLAGS}")
+message(STATUS "cxx flags:${CMAKE_CXX_FLAGS}")
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(build_type debug)
@@ -136,6 +143,12 @@ if(NOT ENABLE_CXX_COMPILE)
 endif()
 
 target_link_libraries(${xcl_lib_name} ${link_libs})
+
+if(MSVC)
+    set_property(
+        TARGET ${xcl_lib_name} PROPERTY MSVC_RUNTIME_LIBRARY
+                                        "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+endif()
 
 add_custom_command(
     TARGET ${xcl_lib_name}
