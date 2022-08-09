@@ -20,13 +20,13 @@ bool
 __Mutex_init(CMutex* mutex);
 
 bool
-__acquireGlobalLock()
+__GlobalLock_acquire()
 {
     return Mutex_lock(__XCL_globalMutex);
 }
 
 void
-__releaseGlobalLock()
+__GlobalLock_release()
 {
     Mutex_unlock(__XCL_globalMutex);
 }

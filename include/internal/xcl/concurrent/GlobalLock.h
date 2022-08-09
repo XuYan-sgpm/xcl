@@ -11,10 +11,10 @@ extern "C" {
 #include <stdbool.h>
 
 bool
-__acquireGlobalLock();
+__GlobalLock_acquire();
 
 void
-__releaseGlobalLock();
+__GlobalLock_release();
 
 #ifdef __cplusplus
 }

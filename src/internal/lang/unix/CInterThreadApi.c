@@ -135,7 +135,7 @@ __Thread_ensureLocalStorageKey()
     static volatile bool initStorageKey = false;
     if (!initStorageKey)
     {
-        __acquireGlobalLock();
+        __GlobalLock_acquire();
         if (!initStorageKey)
         {
             int ret = pthread_key_create(&__Unix_Thread_localStorageKey,
@@ -143,7 +143,7 @@ __Thread_ensureLocalStorageKey()
             assert(ret == 0);
             initStorageKey = true;
         }
-        __releaseGlobalLock();
+        __GlobalLock_release();
     }
 }
 

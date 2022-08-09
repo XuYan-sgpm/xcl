@@ -31,7 +31,7 @@ Pool_def()
     {
         return __XCL_defaultPool;
     }
-    __acquireGlobalLock();
+    __GlobalLock_acquire();
     if (state == INITIALIZING)
     {
         assert(false);
@@ -47,7 +47,7 @@ Pool_def()
     {
         pool = __XCL_defaultPool;
     }
-    __releaseGlobalLock();
+    __GlobalLock_release();
     return pool;
 }
 

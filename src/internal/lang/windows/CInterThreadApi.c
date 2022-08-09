@@ -119,13 +119,13 @@ __Thread_ensureTlsKey()
     static volatile bool initTlsDone = false;
     if (!initTlsDone)
     {
-        __acquireGlobalLock();
+        __GlobalLock_acquire();
         if (!initTlsDone)
         {
             __allocTls();
             initTlsDone = true;
         }
-        __releaseGlobalLock();
+        __GlobalLock_release();
     }
 }
 

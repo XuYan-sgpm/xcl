@@ -105,13 +105,13 @@ __LocalId_ensureQueue()
     static volatile bool initIdQueueDone = false;
     if (!initIdQueueDone)
     {
-        __acquireGlobalLock();
+        __GlobalLock_acquire();
         if (!initIdQueueDone)
         {
             __LocalId_initQueue();
             initIdQueueDone = true;
         }
-        __releaseGlobalLock();
+        __GlobalLock_release();
     }
 }
 
