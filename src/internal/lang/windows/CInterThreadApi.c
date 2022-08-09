@@ -10,7 +10,8 @@
 bool
 __Win32_wait(HANDLE handle, DWORD timeout);
 
-static unsigned __stdcall __Win32_threadRoutine(void* args)
+static unsigned WINAPI
+__Win32_threadRoutine(void* args)
 {
     __Thread_run(args);
     return 0;

@@ -30,7 +30,8 @@ TEST(RbTreeTest, func1)
     for (int i = 0; i < 1000; i++)
     {
         CRbNode* node = __RbTree_allocNode(&tree);
-        *(int*)node->attach = i;
+        *(int*)node->attach = rand();
+        cout << *(int*)node->attach << ',';
         bool left = true;
         CRbNode* par = __RbTree_findAddPos(&tree,
                                            false,
@@ -41,6 +42,7 @@ TEST(RbTreeTest, func1)
         ASSERT_TRUE(_RbTree_addNode(&tree, left, par, node));
         ASSERT_TRUE(__RbTree_verify(&tree, __cmpInt, 0));
     }
+    cout << endl << endl;
     CRbNode* iter = RbTree_begin(&tree);
     int prev = -1;
     for (; iter != RbTree_end(&tree); iter = RbTree_next(&tree, iter))
@@ -48,9 +50,21 @@ TEST(RbTreeTest, func1)
         cout << *(int*)iter->attach << ' ';
         ASSERT_TRUE(prev < *(int*)iter->attach);
     }
+    cout << endl << endl;
+    prev = -1;
     while (RbTree_empty(&tree) == false)
     {
-        _RbTree_rmNode(&tree, RbTree_prev(&tree, iter));
+        iter = _RbTree_rmNode(&tree, RbTree_prev(&tree, iter));
+        if (tree.count == 999)
+        {
+            prev = *(int*)iter->attach;
+        }
+        else
+        {
+            ASSERT_TRUE(*(int*)iter->attach <= prev);
+            prev = *(int*)iter->attach;
+        }
+        cout << prev << ",";
         ASSERT_TRUE(__RbTree_verify(&tree, __cmpInt, 0));
     }
     cout << endl;
