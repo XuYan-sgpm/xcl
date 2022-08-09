@@ -12,6 +12,8 @@
 
 #pragma once
 
+#include <xcl/pool/CPool.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -23,18 +25,36 @@ typedef struct _CLinkedBlockingQueue_st CLinkedBlockingQueue;
 #include <stdint.h>
 
 /**
- * new a linked blocking queue object
- * @return queue object if successfully, otherwise NULL
+ * @brief new a linked blocking queue object with default pool
+ * @param es element size
+ * @param limit queue max element count
+ * @return queue object if successfully, otherwise false
+ * @author xuyan
+ * @date 2022-08-09
  */
 XCL_EXPORT CLinkedBlockingQueue* XCL_API
-LinkedBlockingQueue_new(uint32_t blockSize);
+LinkedBlockingQueue_new(uint32_t es, uint32_t limit);
+
+/**
+ * @brief new a linked blocking queue object with specified pool
+ * @param es element size
+ * @param limit max queue element count
+ * @param pool pool object for node allocation
+ * @return queue object
+ * @author xuyan
+ * @date 2022-08-09
+ */
+XCL_EXPORT CLinkedBlockingQueue* XCL_API
+LinkedBlockingQueue_newByPool(uint32_t es, uint32_t limit, CPool* pool);
 
 /**
  * delete a linked blocking queue object
  * @param queue queue object
  */
 XCL_EXPORT void XCL_API
-LinkedBlockingQueue_delete(CLinkedBlockingQueue* queue);
+LinkedBlockingQueue_delete(CLinkedBlockingQueue* queue,
+                           void (*destructor)(void*, void*),
+                           void* usr);
 
 /**
  * offer a byte block to queue
@@ -46,7 +66,8 @@ LinkedBlockingQueue_delete(CLinkedBlockingQueue* queue);
 XCL_EXPORT bool XCL_API
 LinkedBlockingQueue_offer(CLinkedBlockingQueue* queue,
                           const void* src,
-                          uint32_t len);
+                          bool (*constructor)(void*, void*, const void*),
+                          void* usr);
 
 /**
  * get first byte data block from queue
@@ -57,7 +78,10 @@ LinkedBlockingQueue_offer(CLinkedBlockingQueue* queue,
  * @return true if peek successfully, otherwise false
  */
 XCL_EXPORT bool XCL_API
-LinkedBlockingQueue_peek(CLinkedBlockingQueue* queue, void* dst, uint32_t* len);
+LinkedBlockingQueue_peek(CLinkedBlockingQueue* queue,
+                         bool (*constructor)(void*, void*, const void*),
+                         void* usr,
+                         void* dst);
 
 /**
  * poll first byte data block from queue
@@ -68,7 +92,10 @@ LinkedBlockingQueue_peek(CLinkedBlockingQueue* queue, void* dst, uint32_t* len);
  * @return true if poll successfully, otherwise false
  */
 XCL_EXPORT bool XCL_API
-LinkedBlockingQueue_poll(CLinkedBlockingQueue* queue, void* dst, uint32_t* len);
+LinkedBlockingQueue_poll(CLinkedBlockingQueue* queue,
+                         bool (*move)(void*, void*, void*),
+                         void* usr,
+                         void* dst);
 
 /**
  * handle if queue is empty
