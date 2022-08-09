@@ -52,9 +52,12 @@ TEST(RbTreeTest, func1)
     }
     cout << endl << endl;
     prev = -1;
+    CRbNode* del = 0;
     while (RbTree_empty(&tree) == false)
     {
         iter = _RbTree_rmNode(&tree, RbTree_prev(&tree, iter));
+        __RbTree_deallocNode(&tree, del);
+        del = iter;
         if (tree.count == 999)
         {
             prev = *(int*)iter->attach;
@@ -67,6 +70,7 @@ TEST(RbTreeTest, func1)
         cout << prev << ",";
         ASSERT_TRUE(__RbTree_verify(&tree, __cmpInt, 0));
     }
+    __RbTree_deallocNode(&tree, del);
     cout << endl;
 }
 

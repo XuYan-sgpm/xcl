@@ -15,6 +15,7 @@ AllowShortFunctionsOnASingleLine: None
 AllowShortIfStatementsOnASingleLine: Never
 AllowShortLambdasOnASingleLine: None
 AllowShortLoopsOnASingleLine: false
+AlignTrailingComments: true
 AlwaysBreakAfterReturnType: All
 AlwaysBreakTemplateDeclarations: Yes
 BinPackArguments: false
@@ -43,6 +44,7 @@ CompactNamespaces: false
 ContinuationIndentWidth: 4
 IndentCaseLabels: false
 IndentPPDirectives: None
+PPIndentWidth: 2
 IndentWidth: 4
 KeepEmptyLinesAtTheStartOfBlocks: true
 MaxEmptyLinesToKeep: 1
@@ -70,3 +72,6 @@ SpacesInSquareBrackets: false
 SortIncludes: Never
 TabWidth: 4
 UseTab: Never
+StatementAttributeLikeMacros:
+- XCL_EXPORT
+- XCL_API

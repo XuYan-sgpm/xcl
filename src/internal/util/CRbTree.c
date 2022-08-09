@@ -24,7 +24,8 @@ __RbTree_allocNode(CRbTree* tree)
 void
 __RbTree_deallocNode(CRbTree* tree, CRbNode* node)
 {
-    Pool_dealloc(tree->pool, node, sizeof(CRbNode) + tree->eleSize);
+    if (node)
+        Pool_dealloc(tree->pool, node, sizeof(CRbNode) + tree->eleSize);
 }
 
 static inline CRbNode*
