@@ -121,30 +121,36 @@ LinkedBlockingQueue_offer(CLinkedBlockingQueue* queue,
         __LinkedBlockingQueue_deallocNode(queue, node);
         return false;
     }
-    bool queueNotFull = false;
+    bool ret = false;
+    bool notifyNotFull = false;
+    bool notifyNotEmpty = false;
     Mutex_lock(queue->putLock);
     int32_t size;
-    while (__Atomic_load32(&queue->size, memory_order_acquire) == queue->limit)
+    if ((size = __Atomic_load32(&queue->size, memory_order_acquire))
+        == queue->limit)
     {
-        Cond_wait(queue->putLock, queue->notFull);
     }
-    queue->tail->next = node;
-    queue->tail = node;
-    size = __Atomic_fetchAdd32(&queue->size, 1, memory_order_acq_rel);
-    if (size + 1 < queue->limit)
+    else
     {
-        queueNotFull = true;
+        ret = true;
+        queue->tail->next = node;
+        queue->tail = node;
+        size = __Atomic_fetchAdd32(&queue->size, 1, memory_order_acq_rel);
+        if (size + 1 < queue->limit)
+        {
+            notifyNotFull = true;
+        }
     }
     Mutex_unlock(queue->putLock);
-    if (queueNotFull)
+    if (notifyNotFull)
     {
         Cond_signal(queue->notFull);
     }
-    if (size == 0)
+    if (ret && size == 0)
     {
         Cond_signal(queue->notEmpty);
     }
-    return true;
+    return ret;
 }
 
 XCL_EXPORT bool XCL_API
