@@ -183,47 +183,47 @@ __Atomic_weakCas64(ATOMIC(int64_t) * obj,
 }
 
 #if X64
-__int128_t
-__Atomic_load128(ATOMIC(__int128_t) * obj, memory_order m)
+__INT128__
+__Atomic_load128(ATOMIC(__INT128__) * obj, memory_order m)
 {
     return atomic_load_explicit(obj, m);
 }
 
 void
-__Atomic_store128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m)
+__Atomic_store128(ATOMIC(__INT128__) * obj, __INT128__ val, memory_order m)
 {
     atomic_store_explicit(obj, val, m);
 }
 
-__int128_t
-__Atomic_fetchAdd128(ATOMIC(__int128_t) * obj, __int128_t delta, memory_order m)
+__INT128__
+__Atomic_fetchAdd128(ATOMIC(__INT128__) * obj, __INT128__ delta, memory_order m)
 {
     return atomic_fetch_add_explicit(obj, delta, m);
 }
 
-__int128_t
-__Atomic_exchange128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m)
+__INT128__
+__Atomic_exchange128(ATOMIC(__INT128__) * obj, __INT128__ val, memory_order m)
 {
     return atomic_exchange_explicit(obj, val, m);
 }
 
 bool
-__Atomic_cas128(ATOMIC(__int128_t) * obj,
-                __int128_t* expect,
-                __int128_t exchange,
+__Atomic_cas128(ATOMIC(__INT128__) * obj,
+                __INT128__* expect,
+                __INT128__ exchange,
                 memory_order m)
 {
-    __int128_t origin = *expect;
+    __INT128__ origin = *expect;
     return atomic_compare_exchange_strong_explicit(obj, expect, exchange, m, m);
 }
 
 bool
-__Atomic_weakCas128(ATOMIC(__int128_t) * obj,
-                    __int128_t* expect,
-                    __int128_t exchange,
+__Atomic_weakCas128(ATOMIC(__INT128__) * obj,
+                    __INT128__* expect,
+                    __INT128__ exchange,
                     memory_order m)
 {
-    __int128_t origin = *expect;
+    __INT128__ origin = *expect;
     return atomic_compare_exchange_weak_explicit(obj, expect, exchange, m, m);
 }
 #endif
@@ -269,28 +269,38 @@ __Atomic_load64(ATOMIC(int64_t) * obj, memory_order m)
     switch (m)
     {
         case memory_order_relaxed:
+#ifdef InterlockedOr64NoFence
             return InterlockedOr64NoFence(obj, 0);
+#endif
         case memory_order_consume:
         case memory_order_acquire:
+#ifdef InterlockedOr64Acquire
             return InterlockedOr64Acquire(obj, 0);
+#endif
         case memory_order_release:
+#ifdef InterlockedOr64Release
             return InterlockedOr64Release(obj, 0);
+#endif
         default:
             return InterlockedOr64(obj, 0);
     }
 }
 
 #if X64
-__int128_t
-__Atomic_load128(ATOMIC(__int128_t) * obj, memory_order m)
+__INT128__
+__Atomic_load128(ATOMIC(__INT128__) * obj, memory_order m)
 {
-    __int128_t expect = *obj;
-    __int128_t exchange = expect;
+#ifdef InterlockedCompareExchange128
+    __INT128__ expect = *obj;
+    __INT128__ exchange = expect;
     InterlockedCompareExchange128(obj->pair,
                                   exchange.pair[1],
                                   exchange.pair[0],
                                   expect.pair);
     return expect;
+#else
+#error "current platform doesn't support 128 bits cas"
+#endif
 }
 #endif
 
@@ -348,9 +358,10 @@ __Atomic_store64(ATOMIC(int64_t) * obj, int64_t val, memory_order m)
 
 #if X64
 void
-__Atomic_store128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m)
+__Atomic_store128(ATOMIC(__INT128__) * obj, __INT128__ val, memory_order m)
 {
-    __int128_t expect = *obj;
+#ifdef InterlockedCompareExchange128
+    __INT128__ expect = *obj;
     for (;;)
     {
         if (!InterlockedCompareExchange128(obj->pair,
@@ -365,6 +376,9 @@ __Atomic_store128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m)
             break;
         }
     }
+#else
+#error "current platform doesn't support 128 bits cas"
+#endif
 }
 #endif
 
@@ -536,9 +550,13 @@ __Atomic_fetchAdd64(ATOMIC(int64_t) * obj, int64_t delta, memory_order m)
             return InterlockedExchangeAddNoFence64(obj, delta);
         case memory_order_consume:
         case memory_order_acquire:
+#ifdef InterlockedExchangeAddAcquire64
             return InterlockedExchangeAddAcquire64(obj, delta);
+#endif
         case memory_order_release:
+#ifdef InterlockedExchangeAddRelease64
             return InterlockedExchangeAddRelease64(obj, delta);
+#endif
         default:
             return InterlockedExchangeAdd64(obj, delta);
     }
@@ -609,10 +627,10 @@ __Atomic_fetchAdd64(ATOMIC(int64_t) * obj, int64_t delta, memory_order m)
 #if X64
 #include <xcl/lang/CSys.h>
 
-static __int128_t
-__Int128_add(__int128_t val, __int128_t delta)
+static __INT128__
+__Int128_add(__INT128__ val, __INT128__ delta)
 {
-    __int128_t ret = val;
+    __INT128__ ret = val;
     uint64_t limit = -1ull;
     int lowIdx = isCpuBigEndian();
     uint64_t low = *(uint64_t*)(ret.pair + lowIdx);
@@ -630,13 +648,14 @@ __Int128_add(__int128_t val, __int128_t delta)
     return ret;
 }
 
-__int128_t
-__Atomic_fetchAdd128(ATOMIC(__int128_t) * obj, __int128_t delta, memory_order m)
+__INT128__
+__Atomic_fetchAdd128(ATOMIC(__INT128__) * obj, __INT128__ delta, memory_order m)
 {
-    __int128_t original = *obj;
+#ifdef InterlockedCompareExchange128
+    __INT128__ original = *obj;
     for (;;)
     {
-        __int128_t exchange = __Int128_add(original, delta);
+        __INT128__ exchange = __Int128_add(original, delta);
         bool ret = InterlockedCompareExchange128(obj->pair,
                                                  exchange.pair[1],
                                                  exchange.pair[0],
@@ -646,6 +665,9 @@ __Atomic_fetchAdd128(ATOMIC(__int128_t) * obj, __int128_t delta, memory_order m)
             return original;
         }
     }
+#else
+#error "current platform doesn't support 128 bits cas"
+#endif
 }
 #endif
 
@@ -702,10 +724,11 @@ __Atomic_exchange64(ATOMIC(int64_t) * obj, int64_t val, memory_order m)
 }
 
 #if X64
-__int128_t
-__Atomic_exchange128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m)
+__INT128__
+__Atomic_exchange128(ATOMIC(__INT128__) * obj, __INT128__ val, memory_order m)
 {
-    __int128_t original = *obj;
+#ifdef InterlockedCompareExchange128
+    __INT128__ original = *obj;
     for (;;)
     {
         bool ret = InterlockedCompareExchange128(obj->pair,
@@ -717,6 +740,9 @@ __Atomic_exchange128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m)
             return original;
         }
     }
+#else
+#error "current platform doesn't support 128 bits cas"
+#endif
 }
 #endif
 
@@ -857,15 +883,19 @@ __Atomic_cas64(ATOMIC(int64_t) * obj,
 
 #if X64
 bool
-__Atomic_cas128(ATOMIC(__int128_t) * obj,
-                __int128_t* expect,
-                __int128_t exchange,
+__Atomic_cas128(ATOMIC(__INT128__) * obj,
+                __INT128__* expect,
+                __INT128__ exchange,
                 memory_order m)
 {
+#ifdef InterlockedCompareExchange128
     return InterlockedCompareExchange128(obj->pair,
                                          exchange.pair[1],
                                          exchange.pair[0],
                                          expect->pair);
+#else
+#error "current platform doesn't support 128 bits cas"
+#endif
 }
 #endif
 
@@ -909,9 +939,9 @@ __Atomic_weakCas64(ATOMIC(int64_t) * obj,
 
 #if X64
 bool
-__Atomic_weakCas128(ATOMIC(__int128_t) * obj,
-                    __int128_t* expect,
-                    __int128_t exchange,
+__Atomic_weakCas128(ATOMIC(__INT128__) * obj,
+                    __INT128__* expect,
+                    __INT128__ exchange,
                     memory_order m)
 {
     return __Atomic_cas128(obj, expect, exchange, m);

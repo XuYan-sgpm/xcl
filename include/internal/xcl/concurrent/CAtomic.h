@@ -13,12 +13,14 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#ifdef __SIZEOF_INT128__
-#else
 typedef struct {
     int64_t pair[2];
 } __Int128;
-typedef __Int128 __int128_t;
+
+#if !defined(__SIZEOF_INT128__) || defined(_MSC_VER)
+#define __INT128__ __Int128
+#else
+#define __INT128__ __int128_t
 #endif
 
 #ifndef _MSC_VER
@@ -93,8 +95,8 @@ __Atomic_load64(ATOMIC(int64_t) * obj, memory_order m);
  * @author xuyan
  * @date 2022-08-09
  */
-__int128_t
-__Atomic_load128(ATOMIC(__int128_t) * obj, memory_order m);
+__INT128__
+__Atomic_load128(ATOMIC(__INT128__) * obj, memory_order m);
 #endif
 
 /**
@@ -146,7 +148,7 @@ __Atomic_store64(ATOMIC(int64_t) * obj, int64_t val, memory_order m);
  * @date 2022-08-09
  */
 void
-__Atomic_store128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m);
+__Atomic_store128(ATOMIC(__INT128__) * obj, __INT128__ val, memory_order m);
 #endif
 
 /**
@@ -202,9 +204,9 @@ __Atomic_fetchAdd64(ATOMIC(int64_t) * obj, int64_t delta, memory_order m);
  * @author xuyan
  * @date 2022-08-09
  */
-__int128_t
-__Atomic_fetchAdd128(ATOMIC(__int128_t) * obj,
-                     __int128_t delta,
+__INT128__
+__Atomic_fetchAdd128(ATOMIC(__INT128__) * obj,
+                     __INT128__ delta,
                      memory_order m);
 #endif
 
@@ -261,8 +263,8 @@ __Atomic_exchange64(ATOMIC(int64_t) * obj, int64_t val, memory_order m);
  * @author xuyan
  * @date 2022-08-09
  */
-__int128_t
-__Atomic_exchange128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m);
+__INT128__
+__Atomic_exchange128(ATOMIC(__INT128__) * obj, __INT128__ val, memory_order m);
 #endif
 
 #if X86
@@ -342,9 +344,9 @@ __Atomic_cas64(ATOMIC(int64_t) * obj,
  * @date 2022-08-09
  */
 bool
-__Atomic_cas128(ATOMIC(__int128_t) * obj,
-                __int128_t* expect,
-                __int128_t exchange,
+__Atomic_cas128(ATOMIC(__INT128__) * obj,
+                __INT128__* expect,
+                __INT128__ exchange,
                 memory_order m);
 #endif
 
@@ -428,9 +430,9 @@ __Atomic_weakCas64(ATOMIC(int64_t) * obj,
  * @date 2022-08-09
  */
 bool
-__Atomic_weakCas128(ATOMIC(__int128_t) * obj,
-                    __int128_t* expect,
-                    __int128_t exchange,
+__Atomic_weakCas128(ATOMIC(__INT128__) * obj,
+                    __INT128__* expect,
+                    __INT128__ exchange,
                     memory_order m);
 #endif
 
