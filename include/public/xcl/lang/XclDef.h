@@ -48,13 +48,13 @@
 #define MSVC 0
 #endif
 
-#if defined(__amd64__) || defined(_M_AMD64) || defined(__x86_64__)
-#define X64 1
-#define X86 0
-#else
-#define X86 1
-#define X64 1
-#endif
+// #if defined(__amd64__) || defined(_M_AMD64) || defined(__x86_64__)
+// #define X64 1
+// #define X86 0
+// #else
+// #define X86 1
+// #define X64 1
+// #endif
 
 #ifdef _MSC_VER
 #ifdef BUILD_LIBRARY

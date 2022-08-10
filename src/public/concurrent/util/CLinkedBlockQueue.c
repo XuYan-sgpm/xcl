@@ -222,7 +222,7 @@ LinkedBlockingQueue_poll(CLinkedBlockingQueue* queue,
 }
 
 XCL_EXPORT bool XCL_API
-LinkedBlockingQueue_isEmpty(const CLinkedBlockingQueue* queue)
+LinkedBlockingQueue_isEmpty(CLinkedBlockingQueue* queue)
 {
     Mutex_lock(queue->putLock);
     Mutex_lock(queue->popLock);
@@ -234,7 +234,7 @@ LinkedBlockingQueue_isEmpty(const CLinkedBlockingQueue* queue)
 }
 
 XCL_EXPORT int32_t XCL_API
-LinkedBlockingQueue_size(const CLinkedBlockingQueue* queue)
+LinkedBlockingQueue_size(CLinkedBlockingQueue* queue)
 {
     return __Atomic_load32(&queue->size, memory_order_acq_rel);
 }

@@ -103,7 +103,7 @@ LinkedBlockingQueue_poll(CLinkedBlockingQueue* queue,
  * @return true if queue is empty, otherwise false
  */
 XCL_EXPORT bool XCL_API
-LinkedBlockingQueue_isEmpty(const CLinkedBlockingQueue* queue);
+LinkedBlockingQueue_isEmpty(CLinkedBlockingQueue* queue);
 
 /**
  * get queue block count
@@ -111,7 +111,7 @@ LinkedBlockingQueue_isEmpty(const CLinkedBlockingQueue* queue);
  * @return available byte data block count in queue
  */
 XCL_EXPORT int32_t XCL_API
-LinkedBlockingQueue_size(const CLinkedBlockingQueue* queue);
+LinkedBlockingQueue_size(CLinkedBlockingQueue* queue);
 
 #ifdef __cplusplus
 }

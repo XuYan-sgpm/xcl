@@ -1,6 +1,6 @@
 #include "xcl/concurrent/CAtomic.h"
 
-#if CLANG || GNUC
+#ifndef _MSC_VER
 char
 __Atomic_load8(ATOMIC(char) * obj, memory_order m)
 {
@@ -183,48 +183,48 @@ __Atomic_weakCas64(ATOMIC(int64_t) * obj,
 }
 
 #if X64
-__int128_t
-__Atomic_load128(ATOMIC(__int128_t) * obj, memory_order m)
+__Int128
+__Atomic_load128(ATOMIC(__Int128) * obj, memory_order m)
 {
     return atomic_load_explicit(obj, m);
 }
 
 void
-__Atomic_store128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m)
+__Atomic_store128(ATOMIC(__Int128) * obj, __Int128 val, memory_order m)
 {
     atomic_store_explicit(obj, val, m);
 }
 
-__int128_t
-__Atomic_fetchAdd128(ATOMIC(__int128_t) * obj, __int128_t delta, memory_order m)
+__Int128
+__Atomic_fetchAdd128(ATOMIC(__Int128) * obj, __Int128 delta, memory_order m)
 {
     return atomic_fetch_add_explicit(obj, delta, m);
 }
 
-__int128_t
-__Atomic_exchange128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m)
+__Int128
+__Atomic_exchange128(ATOMIC(__Int128) * obj, __Int128 val, memory_order m)
 {
     return atomic_exchange_explicit(obj, val, m);
 }
 
 bool
-__Atomic_cas128(ATOMIC(__int128_t) * obj,
-                __int128_t* expect,
-                __int128_t exchange,
+__Atomic_cas128(ATOMIC(__Int128) * obj,
+                __Int128* expect,
+                __Int128 exchange,
                 memory_order m)
 {
-    __int128_t origin = *expect;
+    __Int128 origin = *expect;
     return atomic_compare_exchange_strong_explicit(obj, expect, exchange, m, m)
            == origin;
 }
 
 bool
-__Atomic_weakCas128(ATOMIC(__int128_t) * obj,
-                    __int128_t* expect,
-                    __int128_t exchange,
+__Atomic_weakCas128(ATOMIC(__Int128) * obj,
+                    __Int128* expect,
+                    __Int128 exchange,
                     memory_order m)
 {
-    __int128_t origin = *expect;
+    __Int128 origin = *expect;
     return atomic_compare_exchange_weak_explicit(obj, expect, exchange, m, m)
            == origin;
 }
@@ -283,11 +283,11 @@ __Atomic_load64(ATOMIC(int64_t) * obj, memory_order m)
 }
 
 #if X64
-__int128_t
-__Atomic_load128(ATOMIC(__int128_t) * obj, memory_order m)
+__Int128
+__Atomic_load128(ATOMIC(__Int128) * obj, memory_order m)
 {
-    __int128_t expect = *obj;
-    __int128_t exchange = expect;
+    __Int128 expect = *obj;
+    __Int128 exchange = expect;
     InterlockedCompareExchange128(obj->pair,
                                   exchange.pair[1],
                                   exchange.pair[0],
@@ -350,9 +350,9 @@ __Atomic_store64(ATOMIC(int64_t) * obj, int64_t val, memory_order m)
 
 #if X64
 void
-__Atomic_store128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m)
+__Atomic_store128(ATOMIC(__Int128) * obj, __Int128 val, memory_order m)
 {
-    __int128_t expect = *obj;
+    __Int128 expect = *obj;
     for (;;)
     {
         if (!InterlockedCompareExchange128(obj->pair,
@@ -611,10 +611,10 @@ __Atomic_fetchAdd64(ATOMIC(int64_t) * obj, int64_t delta, memory_order m)
 #if X64
 #include <xcl/lang/CSys.h>
 
-static __int128_t
-__Int128_add(__int128_t val, __int128_t delta)
+static __Int128
+__Int128_add(__Int128 val, __Int128 delta)
 {
-    __int128_t ret = val;
+    __Int128 ret = val;
     uint64_t limit = -1ull;
     int lowIdx = isCpuBigEndian();
     uint64_t low = *(uint64_t*)(ret.pair + lowIdx);
@@ -632,13 +632,13 @@ __Int128_add(__int128_t val, __int128_t delta)
     return ret;
 }
 
-__int128_t
-__Atomic_fetchAdd128(ATOMIC(__int128_t) * obj, __int128_t delta, memory_order m)
+__Int128
+__Atomic_fetchAdd128(ATOMIC(__Int128) * obj, __Int128 delta, memory_order m)
 {
-    __int128_t original = *obj;
+    __Int128 original = *obj;
     for (;;)
     {
-        __int128_t exchange = __Int128_add(original, delta);
+        __Int128 exchange = __Int128_add(original, delta);
         bool ret = InterlockedCompareExchange128(obj->pair,
                                                  exchange.pair[1],
                                                  exchange.pair[0],
@@ -704,10 +704,10 @@ __Atomic_exchange64(ATOMIC(int64_t) * obj, int64_t val, memory_order m)
 }
 
 #if X64
-__int128_t
-__Atomic_exchange128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m)
+__Int128
+__Atomic_exchange128(ATOMIC(__Int128) * obj, __Int128 val, memory_order m)
 {
-    __int128_t original = *obj;
+    __Int128 original = *obj;
     for (;;)
     {
         bool ret = InterlockedCompareExchange128(obj->pair,
@@ -722,7 +722,7 @@ __Atomic_exchange128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m)
 }
 #endif
 
-#if X86
+#if X86 && defined(_InterlockedCompareExchange8)
 bool
 __Atomic_cas8(ATOMIC(char) * obj, char* expect, char exchange, memory_order m)
 {
@@ -855,9 +855,9 @@ __Atomic_cas64(ATOMIC(int64_t) * obj,
 
 #if X64
 bool
-__Atomic_cas128(ATOMIC(__int128_t) * obj,
-                __int128_t* expect,
-                __int128_t exchange,
+__Atomic_cas128(ATOMIC(__Int128) * obj,
+                __Int128* expect,
+                __Int128 exchange,
                 memory_order m)
 {
     return InterlockedCompareExchange128(obj->pair,
@@ -904,11 +904,12 @@ __Atomic_weakCas64(ATOMIC(int64_t) * obj,
 {
     return __Atomic_cas64(obj, expect, exchange, m);
 }
+
 #if X64
 bool
-__Atomic_weakCas128(ATOMIC(__int128_t) * obj,
-                    __int128_t* expect,
-                    __int128_t exchange,
+__Atomic_weakCas128(ATOMIC(__Int128) * obj,
+                    __Int128* expect,
+                    __Int128 exchange,
                     memory_order m)
 {
     return __Atomic_cas128(obj, expect, exchange, m);

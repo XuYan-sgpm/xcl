@@ -13,7 +13,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#if CLANG || GNUC
+#ifndef _MSC_VER
 #define ALIGNED(x) __attribute__((aligned(x)))
 #if CLANG
 #define ATOMIC(type) _Atomic(type)
@@ -22,7 +22,7 @@
 #endif
 #include <stdatomic.h>
 
-#elif defined(_MSC_VER)
+#else
 #define ALIGNED(x)   __declspec(align(x))
 #define ATOMIC(type) volatile type
 
@@ -36,11 +36,9 @@ typedef enum
     memory_order_seq_cst
 } memory_order;
 
-#ifndef __int128_t
 typedef struct {
     int64_t pair[2];
-} __int128_t;
-#endif
+} __Int128;
 #endif
 
 /**
@@ -90,8 +88,8 @@ __Atomic_load64(ATOMIC(int64_t) * obj, memory_order m);
  * @author xuyan
  * @date 2022-08-09
  */
-__int128_t
-__Atomic_load128(ATOMIC(__int128_t) * obj, memory_order m);
+__Int128
+__Atomic_load128(ATOMIC(__Int128) * obj, memory_order m);
 
 /**
  * @brief atomic store char
@@ -141,7 +139,7 @@ __Atomic_store64(ATOMIC(int64_t) * obj, int64_t val, memory_order m);
  * @date 2022-08-09
  */
 void
-__Atomic_store128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m);
+__Atomic_store128(ATOMIC(__Int128) * obj, __Int128 val, memory_order m);
 
 /**
  * @brief atomic fetch original value and add delta
@@ -195,10 +193,8 @@ __Atomic_fetchAdd64(ATOMIC(int64_t) * obj, int64_t delta, memory_order m);
  * @author xuyan
  * @date 2022-08-09
  */
-__int128_t
-__Atomic_fetchAdd128(ATOMIC(__int128_t) * obj,
-                     __int128_t delta,
-                     memory_order m);
+__Int128
+__Atomic_fetchAdd128(ATOMIC(__Int128) * obj, __Int128 delta, memory_order m);
 
 /**
  * @brief atomic exchange char
@@ -252,11 +248,12 @@ __Atomic_exchange64(ATOMIC(int64_t) * obj, int64_t val, memory_order m);
  * @author xuyan
  * @date 2022-08-09
  */
-__int128_t
-__Atomic_exchange128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m);
+__Int128
+__Atomic_exchange128(ATOMIC(__Int128) * obj, __Int128 val, memory_order m);
 
 /**
  * @brief atomic cas char
+ * note that cas char may not available for x64 platform
  * @param expect pointer store expected value
  * and will store actual value of atomic object
  * @param exchange exchanged char
@@ -318,6 +315,7 @@ __Atomic_cas64(ATOMIC(int64_t) * obj,
 
 /**
  * @brief atomic cas int128
+ * note that cas 128 bits variable is not available for x86 platform
  * @param expect pointer store expected int128 value and
  * will store actual int128 value of atomic object
  * @param exchange exchanged int128 value
@@ -327,13 +325,14 @@ __Atomic_cas64(ATOMIC(int64_t) * obj,
  * @date 2022-08-09
  */
 bool
-__Atomic_cas128(ATOMIC(__int128_t) * obj,
-                __int128_t* expect,
-                __int128_t exchange,
+__Atomic_cas128(ATOMIC(__Int128) * obj,
+                __Int128* expect,
+                __Int128 exchange,
                 memory_order m);
 
 /**
  * @brief weak atomic cas char
+ * note that cas char may not available for x64 platform
  * @param expect pointer store expected char value
  * and will store actual char value of atomic object
  * @param exchange exchanged char value
@@ -398,6 +397,7 @@ __Atomic_weakCas64(ATOMIC(int64_t) * obj,
 
 /**
  * @brief weak atomic cas int128
+ * note that cas 128 bits variable is not available for x86 platform
  * @param expect pointer store expected int128 value
  * and will store actual int128 value of atomic object
  * @param exchange exchanged int128 value
@@ -407,9 +407,9 @@ __Atomic_weakCas64(ATOMIC(int64_t) * obj,
  * @date 2022-08-09
  */
 bool
-__Atomic_weakCas128(ATOMIC(__int128_t) * obj,
-                    __int128_t* expect,
-                    __int128_t exchange,
+__Atomic_weakCas128(ATOMIC(__Int128) * obj,
+                    __Int128* expect,
+                    __Int128 exchange,
                     memory_order m);
 
 #endif
