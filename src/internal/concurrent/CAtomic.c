@@ -726,9 +726,12 @@ __Atomic_exchange128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m)
 bool
 __Atomic_cas8(ATOMIC(char) * obj, char* expect, char exchange, memory_order m)
 {
-    char original = _InterlockedCompareExchange8(obj, exchange, *obj);
+    char original = _InterlockedCompareExchange8(obj, exchange, *expect);
     bool ret = original == *expect;
-    *expect = original;
+    if (!ret)
+    {
+        *expect = original;
+    }
     return ret;
 }
 #endif
@@ -744,25 +747,31 @@ __Atomic_cas16(ATOMIC(short) * obj,
     switch (m)
     {
         case memory_order_relaxed: {
-            original = InterlockedCompareExchangeNoFence16(obj, exchange, *obj);
+            original
+                = InterlockedCompareExchangeNoFence16(obj, exchange, *expect);
             break;
         }
         case memory_order_consume:
         case memory_order_acquire: {
-            original = InterlockedCompareExchangeAcquire16(obj, exchange, *obj);
+            original
+                = InterlockedCompareExchangeAcquire16(obj, exchange, *expect);
             break;
         }
         case memory_order_release: {
-            original = InterlockedCompareExchangeRelease16(obj, exchange, *obj);
+            original
+                = InterlockedCompareExchangeRelease16(obj, exchange, *expect);
             break;
         }
         default: {
-            original = InterlockedCompareExchange16(obj, exchange, *obj);
+            original = InterlockedCompareExchange16(obj, exchange, *expect);
             break;
         }
     }
     ret = original == *expect;
-    *expect = original;
+    if (!ret)
+    {
+        *expect = original;
+    }
     return ret;
 }
 
@@ -777,25 +786,31 @@ __Atomic_cas32(ATOMIC(int32_t) * obj,
     switch (m)
     {
         case memory_order_relaxed: {
-            original = InterlockedCompareExchangeNoFence(obj, exchange, *obj);
+            original
+                = InterlockedCompareExchangeNoFence(obj, exchange, *expect);
             break;
         }
         case memory_order_consume:
         case memory_order_acquire: {
-            original = InterlockedCompareExchangeAcquire(obj, exchange, *obj);
+            original
+                = InterlockedCompareExchangeAcquire(obj, exchange, *expect);
             break;
         }
         case memory_order_release: {
-            original = InterlockedCompareExchangeRelease(obj, exchange, *obj);
+            original
+                = InterlockedCompareExchangeRelease(obj, exchange, *expect);
             break;
         }
         default: {
-            original = InterlockedCompareExchange(obj, exchange, *obj);
+            original = InterlockedCompareExchange(obj, exchange, *expect);
             break;
         }
     }
     ret = original == *expect;
-    *expect = original;
+    if (!ret)
+    {
+        *expect = original;
+    }
     return ret;
 }
 
@@ -810,25 +825,31 @@ __Atomic_cas64(ATOMIC(int64_t) * obj,
     switch (m)
     {
         case memory_order_relaxed: {
-            original = InterlockedCompareExchangeNoFence64(obj, exchange, *obj);
+            original
+                = InterlockedCompareExchangeNoFence64(obj, exchange, *expect);
             break;
         }
         case memory_order_consume:
         case memory_order_acquire: {
-            original = InterlockedCompareExchangeAcquire64(obj, exchange, *obj);
+            original
+                = InterlockedCompareExchangeAcquire64(obj, exchange, *expect);
             break;
         }
         case memory_order_release: {
-            original = InterlockedCompareExchangeRelease64(obj, exchange, *obj);
+            original
+                = InterlockedCompareExchangeRelease64(obj, exchange, *expect);
             break;
         }
         default: {
-            original = InterlockedCompareExchange64(obj, exchange, *obj);
+            original = InterlockedCompareExchange64(obj, exchange, *expect);
             break;
         }
     }
     ret = original == *expect;
-    *expect = original;
+    if (!ret)
+    {
+        *expect = original;
+    }
     return ret;
 }
 
@@ -847,12 +868,50 @@ __Atomic_cas128(ATOMIC(__int128_t) * obj,
 #endif
 
 #if X86
-#pragma comment(linker, "/export:__Atomic_weakCas8=__Atomic_cas8")
+bool
+__Atomic_weakCas8(ATOMIC(char) * obj,
+                  char* expect,
+                  char exchange,
+                  memory_order m)
+{
+    return __Atomic_cas8(obj, expect, exchange, m);
+}
 #endif
-#pragma comment(linker, "/export:__Atomic_weakCas16=__Atomic_cas16")
-#pragma comment(linker, "/export:__Atomic_weakCas32=__Atomic_cas32")
-#pragma comment(linker, "/export:__Atomic_weakCas64=__Atomic_cas64")
+
+bool
+__Atomic_weakCas16(ATOMIC(short) * obj,
+                   short* expect,
+                   short exchange,
+                   memory_order m)
+{
+    return __Atomic_cas16(obj, expect, exchange, m);
+}
+
+bool
+__Atomic_weakCas32(ATOMIC(int32_t) * obj,
+                   int32_t* expect,
+                   int32_t exchange,
+                   memory_order m)
+{
+    return __Atomic_cas32(obj, expect, exchange, m);
+}
+
+bool
+__Atomic_weakCas64(ATOMIC(int64_t) * obj,
+                   int64_t* expect,
+                   int64_t exchange,
+                   memory_order m)
+{
+    return __Atomic_cas64(obj, expect, exchange, m);
+}
 #if X64
-#pragma comment(linker, "/export:__Atomic_weakCas128=__Atomic_cas128")
+bool
+__Atomic_weakCas128(ATOMIC(__int128_t) * obj,
+                    __int128_t* expect,
+                    __int128_t exchange,
+                    memory_order m)
+{
+    return __Atomic_cas128(obj, expect, exchange, m);
+}
 #endif
 #endif
