@@ -720,10 +720,11 @@ __Atomic_exchange128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m)
 }
 #endif
 
-#if X86 && defined(_InterlockedCompareExchange8)
+#if X86
 bool
 __Atomic_cas8(ATOMIC(char) * obj, char* expect, char exchange, memory_order m)
 {
+#if defined(_InterlockedCompareExchange8)
     char original = _InterlockedCompareExchange8(obj, exchange, *expect);
     bool ret = original == *expect;
     if (!ret)
@@ -731,6 +732,9 @@ __Atomic_cas8(ATOMIC(char) * obj, char* expect, char exchange, memory_order m)
         *expect = original;
     }
     return ret;
+#else
+#error "current platform doesn't support cas 8 bits"
+#endif
 }
 #endif
 

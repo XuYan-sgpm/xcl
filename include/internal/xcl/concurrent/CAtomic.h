@@ -13,8 +13,8 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#if CLANG || GNUC
-#elif defined(_MSC_VER)
+#ifdef __SIZEOF_INT128__
+#else
 typedef struct {
     int64_t pair[2];
 } __Int128;
@@ -85,6 +85,7 @@ __Atomic_load32(ATOMIC(int32_t) * obj, memory_order m);
 int64_t
 __Atomic_load64(ATOMIC(int64_t) * obj, memory_order m);
 
+#if X64
 /**
  * @brief atomic load int128
  * @param m memory order
@@ -94,6 +95,7 @@ __Atomic_load64(ATOMIC(int64_t) * obj, memory_order m);
  */
 __int128_t
 __Atomic_load128(ATOMIC(__int128_t) * obj, memory_order m);
+#endif
 
 /**
  * @brief atomic store char
@@ -135,6 +137,7 @@ __Atomic_store32(ATOMIC(int32_t) * obj, int32_t val, memory_order m);
 void
 __Atomic_store64(ATOMIC(int64_t) * obj, int64_t val, memory_order m);
 
+#if X64
 /**
  * @brief atomic store int128
  * @param val int128 value
@@ -144,6 +147,7 @@ __Atomic_store64(ATOMIC(int64_t) * obj, int64_t val, memory_order m);
  */
 void
 __Atomic_store128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m);
+#endif
 
 /**
  * @brief atomic fetch original value and add delta
@@ -189,6 +193,7 @@ __Atomic_fetchAdd32(ATOMIC(int32_t) * obj, int32_t delta, memory_order m);
 int64_t
 __Atomic_fetchAdd64(ATOMIC(int64_t) * obj, int64_t delta, memory_order m);
 
+#if X64
 /**
  * @brief atomic fetch original int128 and add int128
  * @param delta add delta
@@ -201,6 +206,7 @@ __int128_t
 __Atomic_fetchAdd128(ATOMIC(__int128_t) * obj,
                      __int128_t delta,
                      memory_order m);
+#endif
 
 /**
  * @brief atomic exchange char
@@ -246,6 +252,7 @@ __Atomic_exchange32(ATOMIC(int32_t) * obj, int32_t val, memory_order m);
 int64_t
 __Atomic_exchange64(ATOMIC(int64_t) * obj, int64_t val, memory_order m);
 
+#if X64
 /**
  * @brief atomic int128
  * @param val exchanged int128
@@ -256,7 +263,9 @@ __Atomic_exchange64(ATOMIC(int64_t) * obj, int64_t val, memory_order m);
  */
 __int128_t
 __Atomic_exchange128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m);
+#endif
 
+#if X86
 /**
  * @brief atomic cas char
  * note that cas char may not available for x64 platform
@@ -270,6 +279,7 @@ __Atomic_exchange128(ATOMIC(__int128_t) * obj, __int128_t val, memory_order m);
  */
 bool
 __Atomic_cas8(ATOMIC(char) * obj, char* expect, char exchange, memory_order m);
+#endif
 
 /**
  * @brief atomic cas short
@@ -319,6 +329,7 @@ __Atomic_cas64(ATOMIC(int64_t) * obj,
                int64_t exchange,
                memory_order m);
 
+#if X64
 /**
  * @brief atomic cas int128
  * note that cas 128 bits variable is not available for x86 platform
@@ -335,7 +346,9 @@ __Atomic_cas128(ATOMIC(__int128_t) * obj,
                 __int128_t* expect,
                 __int128_t exchange,
                 memory_order m);
+#endif
 
+#if X86
 /**
  * @brief weak atomic cas char
  * note that cas char may not available for x64 platform
@@ -352,6 +365,7 @@ __Atomic_weakCas8(ATOMIC(char) * obj,
                   char* expect,
                   char exchange,
                   memory_order m);
+#endif
 
 /**
  * @brief weak atomic cas short
@@ -401,6 +415,7 @@ __Atomic_weakCas64(ATOMIC(int64_t) * obj,
                    int64_t exchange,
                    memory_order m);
 
+#if X64
 /**
  * @brief weak atomic cas int128
  * note that cas 128 bits variable is not available for x86 platform
@@ -417,5 +432,6 @@ __Atomic_weakCas128(ATOMIC(__int128_t) * obj,
                     __int128_t* expect,
                     __int128_t exchange,
                     memory_order m);
+#endif
 
 #endif
