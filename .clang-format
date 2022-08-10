@@ -42,7 +42,7 @@ BreakStringLiterals: true
 ColumnLimit: 80
 CompactNamespaces: false
 ContinuationIndentWidth: 4
-IndentCaseLabels: false
+IndentCaseLabels: true
 IndentPPDirectives: None
 PPIndentWidth: 2
 IndentWidth: 4

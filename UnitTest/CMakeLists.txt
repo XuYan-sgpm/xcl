@@ -30,7 +30,7 @@ endif()
 
 set(run_path ${CMAKE_CURRENT_LIST_DIR}/bin/${CMAKE_BUILD_TYPE})
 
-file(GLOB test_src_files src/*.cc)
+file(GLOB test_src_files src/*.cc src/*.c)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(compiler_id msvc)

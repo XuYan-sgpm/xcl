@@ -1,6 +1,9 @@
-//
-// Created by xuyan on 2022/7/26.
-//
+/**
+ * @author xuyan
+ * @brief atomic implementation only available for pure C invoke
+ * @version 0.8
+ * @date 2022-08-10
+ */
 
 #pragma once
 
@@ -23,14 +26,14 @@
 #define ALIGNED(x)   __declspec(align(x))
 #define ATOMIC(type) volatile type
 
-typedef enum memory_order
+typedef enum
 {
-    memory_order_relaxed = __ATOMIC_RELAXED,
-    memory_order_consume = __ATOMIC_CONSUME,
-    memory_order_acquire = __ATOMIC_ACQUIRE,
-    memory_order_release = __ATOMIC_RELEASE,
-    memory_order_acq_rel = __ATOMIC_ACQ_REL,
-    memory_order_seq_cst = __ATOMIC_SEQ_CST
+    memory_order_relaxed = 0xff,
+    memory_order_consume,
+    memory_order_acquire,
+    memory_order_release,
+    memory_order_acq_rel,
+    memory_order_seq_cst
 } memory_order;
 
 #ifndef __int128_t

@@ -67,7 +67,7 @@ add_definitions(-DBUILD_LIBRARY)
 set(xcl_lib_type "${BUILD_LIB_TYPE}")
 
 if("${CMAKE_CXX_COMPILER_ID}" STREQUAL "MSVC")
-    set(wall "/Wall /wd4255 /wd5045 /wd4668 /wd4996 /wd4200")
+    set(wall "/Wall /wd4255 /wd5045 /wd4668 /wd4996 /wd4200 /wd4061 /wd4100 /wd4146")
     set(hidden)
 else()
     set(wall "-Wall")
