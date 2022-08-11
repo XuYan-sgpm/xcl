@@ -47,7 +47,7 @@ endif()
 
 message(STATUS ${compiler_id})
 
-set(xcl_lib_type static)
+# set(xcl_lib_type dynamic)
 
 if(WIN32)
     set(third_party D:/third_party/${compiler_id}/${build_type})
@@ -67,7 +67,15 @@ endif()
 set(xcl_project_dir ${CMAKE_CURRENT_LIST_DIR}/..)
 set(xcl_inc_dir ${xcl_project_dir}/include/public
                 ${xcl_project_dir}/include/internal)
-set(xcl_lib_dir ${xcl_project_dir}/lib/${xcl_lib_type}/${CMAKE_BUILD_TYPE})
+set(xcl_lib_dir ${xcl_project_dir}/lib/${xcl_lib_type})
+
+if(COMPILE_X86_TARGET)
+    set(xcl_lib_dir ${xcl_lib_dir}/x86)
+else()
+    set(xcl_lib_dir ${xcl_lib_dir}/x64)
+endif()
+
+set(xcl_lib_dir ${xcl_lib_dir}/${CMAKE_BUILD_TYPE})
 
 message(STATUS ${xcl_inc_dir})
 message(STATUS ${xcl_lib_dir})
