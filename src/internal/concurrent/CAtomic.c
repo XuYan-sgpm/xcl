@@ -504,7 +504,7 @@ __Atomic_fetchAdd32(ATOMIC(int32_t) * obj, int32_t delta, memory_order m)
 int64_t
 __Atomic_fetchAdd64(ATOMIC(int64_t) * obj, int64_t delta, memory_order m)
 {
-#    ifndef InterlockedExchangeAdd64
+#    ifdef InterlockedExchangeAdd64
 #      ifndef InterlockedExchangeAddNoFence64
 #        define InterlockedExchangeAddNoFence64 InterlockedExchangeAdd64
 #      endif
@@ -685,7 +685,7 @@ __Atomic_exchange32(ATOMIC(int32_t) * obj, int32_t val, memory_order m)
 int64_t
 __Atomic_exchange64(ATOMIC(int64_t) * obj, int64_t val, memory_order m)
 {
-#    ifndef InterlockedExchange64
+#    ifdef InterlockedExchange64
 #      ifndef InterlockedExchangeNoFence64
 #        define InterlockedExcahngeNoFence64 InterlockedExchange64
 #      endif
