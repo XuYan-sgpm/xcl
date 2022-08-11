@@ -149,12 +149,12 @@ Mutex_tryLock2(CMutex* mutex, int32_t timeout)
             {
                 return true;
             }
-#if _POSIX_C_SOURCE >= 199309L
+#  if _POSIX_C_SOURCE >= 199309L
             struct timespec ts = {0, 1000000};
             nanosleep(&ts, NULL);
-#else
+#  else
             usleep(1000);
-#endif
+#  endif
             totalWait = nanos() - st;
         }
         int ret = pthread_mutex_trylock(&mutex->handle);

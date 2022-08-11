@@ -182,7 +182,7 @@ __Atomic_weakCas64(ATOMIC(int64_t) * obj,
            == origin;
 }
 
-#if X64
+#  if X64
 __INT128__
 __Atomic_load128(ATOMIC(__INT128__) * obj, memory_order m)
 {
@@ -213,7 +213,6 @@ __Atomic_cas128(ATOMIC(__INT128__) * obj,
                 __INT128__ exchange,
                 memory_order m)
 {
-    __INT128__ origin = *expect;
     return atomic_compare_exchange_strong_explicit(obj, expect, exchange, m, m);
 }
 
@@ -223,28 +222,25 @@ __Atomic_weakCas128(ATOMIC(__INT128__) * obj,
                     __INT128__ exchange,
                     memory_order m)
 {
-    __INT128__ origin = *expect;
     return atomic_compare_exchange_weak_explicit(obj, expect, exchange, m, m);
 }
-#endif
+#  endif
 #else
-#include <windows.h>
+#  include <windows.h>
 
-#ifdef InterlockedOr8
+#  define ENABLE_128_CAS (X64 && defined(InterlockedCompareExchange128))
+
 char
 __Atomic_load8(ATOMIC(char) * obj, memory_order m)
 {
     return InterlockedOr8(obj, 0);
 }
-#endif
 
-#ifdef InterlockedOr16
 short
 __Atomic_load16(ATOMIC(short) * obj, memory_order m)
 {
     return InterlockedOr16(obj, 0);
 }
-#endif
 
 int32_t
 __Atomic_load32(ATOMIC(int32_t) * obj, memory_order m)
@@ -263,34 +259,35 @@ __Atomic_load32(ATOMIC(int32_t) * obj, memory_order m)
     }
 }
 
+#  ifdef InterlockedOr64
 int64_t
 __Atomic_load64(ATOMIC(int64_t) * obj, memory_order m)
 {
     switch (m)
     {
         case memory_order_relaxed:
-#ifdef InterlockedOr64NoFence
+#    ifdef InterlockedOr64NoFence
             return InterlockedOr64NoFence(obj, 0);
-#endif
+#    endif
         case memory_order_consume:
         case memory_order_acquire:
-#ifdef InterlockedOr64Acquire
+#    ifdef InterlockedOr64Acquire
             return InterlockedOr64Acquire(obj, 0);
-#endif
+#    endif
         case memory_order_release:
-#ifdef InterlockedOr64Release
+#    ifdef InterlockedOr64Release
             return InterlockedOr64Release(obj, 0);
-#endif
+#    endif
         default:
             return InterlockedOr64(obj, 0);
     }
 }
+#  endif
 
-#if X64
+#  if ENABLE_128_CAS
 __INT128__
 __Atomic_load128(ATOMIC(__INT128__) * obj, memory_order m)
 {
-#ifdef InterlockedCompareExchange128
     __INT128__ expect = *obj;
     __INT128__ exchange = expect;
     InterlockedCompareExchange128(obj->pair,
@@ -298,27 +295,20 @@ __Atomic_load128(ATOMIC(__INT128__) * obj, memory_order m)
                                   exchange.pair[0],
                                   expect.pair);
     return expect;
-#else
-#error "current platform doesn't support 128 bits cas"
-#endif
 }
-#endif
+#  endif
 
-#ifdef InterlockedExchange8
 void
 __Atomic_store8(ATOMIC(char) * obj, char val, memory_order m)
 {
     InterlockedExchange8(obj, val);
 }
-#endif
 
-#ifdef InterlockedExchange16
 void
 __Atomic_store16(ATOMIC(short) * obj, short val, memory_order m)
 {
     InterlockedExchange16(obj, val);
 }
-#endif
 
 void
 __Atomic_store32(ATOMIC(int32_t) * obj, int32_t val, memory_order m)
@@ -326,41 +316,60 @@ __Atomic_store32(ATOMIC(int32_t) * obj, int32_t val, memory_order m)
     switch (m)
     {
         case memory_order_relaxed:
+#  ifdef InterlockedExchangeNoFence
             InterlockedExchangeNoFence(obj, val);
             break;
+#  endif
         case memory_order_consume:
         case memory_order_acquire:
+#  ifdef InterlockedExchangeAcquire
             InterlockedExchangeAcquire(obj, val);
             break;
+#  endif
+        case memory_order_release:
+#  ifdef InterlockedExchangeRelease
+            InterlockedExchangeRelease(obj, val);
+            break;
+#  endif
         default:
             InterlockedExchange(obj, val);
             break;
     }
 }
 
+#  ifdef InterlockedExchange64
 void
 __Atomic_store64(ATOMIC(int64_t) * obj, int64_t val, memory_order m)
 {
     switch (m)
     {
         case memory_order_relaxed:
+#    ifdef InterlockedExchangeNoFence64
             InterlockedExchangeNoFence64(obj, val);
             break;
+#    endif
         case memory_order_consume:
         case memory_order_acquire:
+#    ifdef InterlockedExchangeAcquire64
             InterlockedExchangeAcquire64(obj, val);
             break;
+#    endif
+        case memory_order_release:
+#    ifdef InterlockedExchangeRelease64
+            InterlockedExchangeRelease64(obj, val);
+            break;
+#    endif
         default:
             InterlockedExchange64(obj, val);
             break;
     }
 }
+#  endif
 
-#if X64
+#  if ENABLE_128_CAS
 void
 __Atomic_store128(ATOMIC(__INT128__) * obj, __INT128__ val, memory_order m)
 {
-#ifdef InterlockedCompareExchange128
     __INT128__ expect = *obj;
     for (;;)
     {
@@ -376,26 +385,31 @@ __Atomic_store128(ATOMIC(__INT128__) * obj, __INT128__ val, memory_order m)
             break;
         }
     }
-#else
-#error "current platform doesn't support 128 bits cas"
-#endif
 }
-#endif
+#  endif
 
-#ifdef InterlockedExchangeAdd8
 char
 __Atomic_fetchAdd8(ATOMIC(char) * obj, char delta, memory_order m)
 {
     return InterlockedExchangeAdd8(obj, delta);
 }
-#endif
 
+#  if defined(InterlockedExchangeAdd16) || defined(InterlockedCompareExchange16)
 short
 __Atomic_fetchAdd16(ATOMIC(short) * obj, short delta, memory_order m)
 {
-#ifdef InterlockedExchangeAdd16
+#    ifdef InterlockedExchangeAdd16
     return InterlockedExchangeAdd16(obj, delta);
-#else
+#    else
+#      ifndef InterlockedCompareExchangeNoFence16
+#        define InterlockedCompareExchangeNoFence16 InterlockedCompareExchange16
+#      endif
+#      ifndef InterlockedCompareExchangeAcquire16
+#        define InterlockedCompareExchangeAcquire16 InterlockedCompareExchange16
+#      endif
+#      ifndef InterlockedCompareExchangeRelease16
+#        define InterlockedCompareExchangeRelease16 InterlockedCompareExchange16
+#      endif
     short original = *obj;
     switch (m)
     {
@@ -456,14 +470,22 @@ __Atomic_fetchAdd16(ATOMIC(short) * obj, short delta, memory_order m)
             }
         }
     }
-
-#endif
+#    endif
 }
+#  endif
 
 int32_t
 __Atomic_fetchAdd32(ATOMIC(int32_t) * obj, int32_t delta, memory_order m)
 {
-#ifdef InterlockedExchangeAdd
+#  ifndef InterlockedExchangeAddNoFence
+#    define InterlockedExchangeAddNoFence InterlockedExchangeAdd
+#  endif
+#  ifndef InterlockedExchangeAddAcquire
+#    define InterlockedExchangeAddAcquire InterlockedExchangeAdd
+#  endif
+#  ifndef InterlockedExchangeAddRelease
+#    define InterlockedExchangeAddRelease InterlockedExchangeAdd
+#  endif
     switch (m)
     {
         case memory_order_relaxed:
@@ -476,91 +498,44 @@ __Atomic_fetchAdd32(ATOMIC(int32_t) * obj, int32_t delta, memory_order m)
         default:
             return InterlockedExchangeAdd(obj, delta);
     }
-#else
-    int32_t original = *obj;
-    switch (m)
-    {
-        case memory_order_relaxed: {
-            for (;;)
-            {
-                int32_t ret
-                    = InterlockedCompareExchangeNoFence(obj,
-                                                        original + delta,
-                                                        original);
-                if (ret == original)
-                {
-                    return ret;
-                }
-                original = ret;
-            }
-        }
-        case memory_order_consume:
-        case memory_order_acquire: {
-            for (;;)
-            {
-                int32_t ret
-                    = InterlockedCompareExchangeAcquire(obj,
-                                                        original + delta,
-                                                        original);
-                if (ret == original)
-                {
-                    return ret;
-                }
-                original = ret;
-            }
-        }
-        case memory_order_release: {
-            for (;;)
-            {
-                int32_t ret
-                    = InterlockedCompareExchangeRelease(obj,
-                                                        original + delta,
-                                                        original);
-                if (ret == original)
-                {
-                    return ret;
-                }
-                original = ret;
-            }
-        }
-        default: {
-            for (;;)
-            {
-                int32_t ret = InterlockedCompareExchange(obj,
-                                                         original + delta,
-                                                         original);
-                if (ret == original)
-                {
-                    return ret;
-                }
-                original = ret;
-            }
-        }
-    }
-#endif
 }
 
+#  if defined(InterlockedExchangeAdd64) || defined(InterlockedCompareExchange64)
 int64_t
 __Atomic_fetchAdd64(ATOMIC(int64_t) * obj, int64_t delta, memory_order m)
 {
-#ifdef InterlockedExchangeAdd
+#    ifndef InterlockedExchangeAdd64
+#      ifndef InterlockedExchangeAddNoFence64
+#        define InterlockedExchangeAddNoFence64 InterlockedExchangeAdd64
+#      endif
+#      ifndef InterlockedExchangeAddAcquire64
+#        define InterlockedExchangeAddAcquire64 InterlockedExchangeAdd64
+#      endif
+#      ifndef InterlockedExchangeAddRelease64
+#        define InterlockedExchangeAddRelease64 InterlockedExchangeAdd64
+#      endif
     switch (m)
     {
         case memory_order_relaxed:
             return InterlockedExchangeAddNoFence64(obj, delta);
         case memory_order_consume:
         case memory_order_acquire:
-#ifdef InterlockedExchangeAddAcquire64
             return InterlockedExchangeAddAcquire64(obj, delta);
-#endif
         case memory_order_release:
-#ifdef InterlockedExchangeAddRelease64
             return InterlockedExchangeAddRelease64(obj, delta);
-#endif
         default:
             return InterlockedExchangeAdd64(obj, delta);
     }
-#else
+#    else
+#      ifndef InterlockedCompareExchangeNoFence64
+#        define InterlockedCompareExchangeNoFence64 InterlockedCompareExchange64
+#      endif
+#      ifndef InterlockedCompareExchangeAcquire64
+#        define InterlockedCompareExchangeAcquire64 InterlockedCompareExchange64
+#      endif
+#      ifndef InterlockedCompareExchangeRelease64
+#        define InterlockedCompareExchangeRelease64 InterlockedCompareExchange64
+#      endif
     int32_t original = *obj;
     switch (m)
     {
@@ -621,11 +596,12 @@ __Atomic_fetchAdd64(ATOMIC(int64_t) * obj, int64_t delta, memory_order m)
             }
         }
     }
-#endif
+#    endif
 }
+#  endif
 
-#if X64
-#include <xcl/lang/CSys.h>
+#  if ENABLE_128_CAS
+#    include <xcl/lang/CSys.h>
 
 static __INT128__
 __Int128_add(__INT128__ val, __INT128__ delta)
@@ -651,7 +627,6 @@ __Int128_add(__INT128__ val, __INT128__ delta)
 __INT128__
 __Atomic_fetchAdd128(ATOMIC(__INT128__) * obj, __INT128__ delta, memory_order m)
 {
-#ifdef InterlockedCompareExchange128
     __INT128__ original = *obj;
     for (;;)
     {
@@ -665,37 +640,33 @@ __Atomic_fetchAdd128(ATOMIC(__INT128__) * obj, __INT128__ delta, memory_order m)
             return original;
         }
     }
-#else
-#error "current platform doesn't support 128 bits cas"
-#endif
 }
-#endif
+#  endif
 
-#ifdef InterlockedExchange8
 char
 __Atomic_exchange8(ATOMIC(char) * obj, char val, memory_order m)
 {
     return InterlockedExchange8(obj, val);
 }
-#elif defined(InterlockedExchangeAdd8)
-char
-__Atomic_exchange8(ATOMIC(char) * obj, char val, memory_order m)
-{
-    return InterlockedExchangeAdd8(obj, val);
-}
-#endif
 
-#ifdef InterlockedExchange16
 short
 __Atomic_exchange16(ATOMIC(short) * obj, short val, memory_order m)
 {
     return InterlockedExchange16(obj, val);
 }
-#endif
 
 int32_t
 __Atomic_exchange32(ATOMIC(int32_t) * obj, int32_t val, memory_order m)
 {
+#  ifndef InterlockedExchangeNoFence
+#    define InterlockedExcahngeNoFence InterlockedExchange
+#  endif
+#  ifndef InterlockedExchangeAcquire
+#    define InterlockedExcahngeAcquire InterlockedExchange
+#  endif
+#  ifndef InterlockedExchangeRelease
+#    define InterlockedExchangeRelease InterlockedExchange
+#  endif
     switch (m)
     {
         case memory_order_relaxed:
@@ -703,14 +674,27 @@ __Atomic_exchange32(ATOMIC(int32_t) * obj, int32_t val, memory_order m)
         case memory_order_consume:
         case memory_order_acquire:
             return InterlockedExchangeAcquire(obj, val);
+        case memory_order_release:
+            return InterlockedExchangeRelease(obj, val);
         default:
             return InterlockedExchange(obj, val);
     }
 }
 
+#  if defined(InterlockedExchange64) || defined(InterlockedCompareExchange64)
 int64_t
 __Atomic_exchange64(ATOMIC(int64_t) * obj, int64_t val, memory_order m)
 {
+#    ifndef InterlockedExchange64
+#      ifndef InterlockedExchangeNoFence64
+#        define InterlockedExcahngeNoFence64 InterlockedExchange64
+#      endif
+#      ifndef InterlockedExchangeAcquire64
+#        define InterlockedExcahngeAcquire64 InterlockedExchange64
+#      endif
+#      ifndef InterlockedExchangeRelease64
+#        define InterlockedExchangeRelease64 InterlockedExchange64
+#      endif
     switch (m)
     {
         case memory_order_relaxed:
@@ -718,16 +702,85 @@ __Atomic_exchange64(ATOMIC(int64_t) * obj, int64_t val, memory_order m)
         case memory_order_consume:
         case memory_order_acquire:
             return InterlockedExchangeAcquire64(obj, val);
+        case memory_order_release:
+            return InterlockedExchangeRelease64(obj, val);
         default:
             return InterlockedExchange64(obj, val);
     }
+#    else
+#      ifndef InterlockedCompareExchangeNoFence64
+#        define InterlockedCompareExchangeNoFence64 InterlockedCompareExchange64
+#      endif
+#      ifndef InterlockedCompareExchangeAcquire64
+#        define InterlockedCompareExchangeAcquire64 InterlockedCompareExchange64
+#      endif
+#      ifndef InterlockedCompareExchangeRelease64
+#        define InterlockedCompareExchangeRelease64 InterlockedCompareExchange64
+#      endif
+    int64_t original = *obj;
+    switch (m)
+    {
+        case memory_order_relaxed: {
+            for (;;)
+            {
+                int64_t ret
+                    = InterlockedCompareExchangeNoFence64(obj, val, original);
+                if (ret == original)
+                {
+                    return original;
+                }
+                original = ret;
+            }
+            break;
+        }
+        case memory_order_consume:
+        case memory_order_acquire: {
+            for (;;)
+            {
+                int64_t ret
+                    = InterlockedCompareExchangeAcquire64(obj, val, original);
+                if (ret == original)
+                {
+                    return original;
+                }
+                original = ret;
+            }
+            break;
+        }
+        case memory_order_release: {
+            for (;;)
+            {
+                int64_t ret
+                    = InterlockedCompareExchangeRelease64(obj, val, original);
+                if (ret == original)
+                {
+                    return original;
+                }
+                original = ret;
+            }
+            break;
+        }
+        default: {
+            for (;;)
+            {
+                int64_t ret = InterlockedCompareExchange64(obj, val, original);
+                if (ret == original)
+                {
+                    return original;
+                }
+                original = ret;
+            }
+            break;
+        }
+    }
+#    endif
 }
+#  endif
 
-#if X64
+#  if ENABLE_128_CAS
 __INT128__
 __Atomic_exchange128(ATOMIC(__INT128__) * obj, __INT128__ val, memory_order m)
 {
-#ifdef InterlockedCompareExchange128
     __INT128__ original = *obj;
     for (;;)
     {
@@ -740,29 +793,26 @@ __Atomic_exchange128(ATOMIC(__INT128__) * obj, __INT128__ val, memory_order m)
             return original;
         }
     }
-#else
-#error "current platform doesn't support 128 bits cas"
-#endif
 }
-#endif
+#  endif
 
-#if X86
+#  if X86
 bool
 __Atomic_cas8(ATOMIC(char) * obj, char* expect, char exchange, memory_order m)
 {
-#if defined(_InterlockedCompareExchange8)
-    char original = _InterlockedCompareExchange8(obj, exchange, *expect);
+#    ifdef InterlockedCompareExchange8
+    char original = InterlockedCompareExchange8(obj, exchange, *expect);
     bool ret = original == *expect;
     if (!ret)
     {
         *expect = original;
     }
     return ret;
-#else
-#error "current platform doesn't support cas 8 bits"
-#endif
+#    else
+    return false;
+#    endif
 }
-#endif
+#  endif
 
 bool
 __Atomic_cas16(ATOMIC(short) * obj,
@@ -842,12 +892,22 @@ __Atomic_cas32(ATOMIC(int32_t) * obj,
     return ret;
 }
 
+#  ifdef InterlockedCompareExchange64
 bool
 __Atomic_cas64(ATOMIC(int64_t) * obj,
                int64_t* expect,
                int64_t exchange,
                memory_order m)
 {
+#    ifndef InterlockedCompareExchangeNoFence64
+#      define InterlockedCompareExchangeNoFence64 InterlockedCompareExchange64
+#    endif
+#    ifndef InterlockedCompareExchangeAcquire64
+#      define InterlockedCompareExchangeAcquire64 InterlockedCompareExchange64
+#    endif
+#    ifndef InterlockedCompareExchangeRelease64
+#      define InterlockedCompareExchangeRelease64 InterlockedCompareExchange64
+#    endif
     bool ret = false;
     int64_t original;
     switch (m)
@@ -880,26 +940,23 @@ __Atomic_cas64(ATOMIC(int64_t) * obj,
     }
     return ret;
 }
+#  endif
 
-#if X64
+#  if ENABLE_128_CAS
 bool
 __Atomic_cas128(ATOMIC(__INT128__) * obj,
                 __INT128__* expect,
                 __INT128__ exchange,
                 memory_order m)
 {
-#ifdef InterlockedCompareExchange128
     return InterlockedCompareExchange128(obj->pair,
                                          exchange.pair[1],
                                          exchange.pair[0],
                                          expect->pair);
-#else
-#error "current platform doesn't support 128 bits cas"
-#endif
 }
-#endif
+#  endif
 
-#if X86
+#  if X86
 bool
 __Atomic_weakCas8(ATOMIC(char) * obj,
                   char* expect,
@@ -908,7 +965,7 @@ __Atomic_weakCas8(ATOMIC(char) * obj,
 {
     return __Atomic_cas8(obj, expect, exchange, m);
 }
-#endif
+#  endif
 
 bool
 __Atomic_weakCas16(ATOMIC(short) * obj,
@@ -937,7 +994,7 @@ __Atomic_weakCas64(ATOMIC(int64_t) * obj,
     return __Atomic_cas64(obj, expect, exchange, m);
 }
 
-#if X64
+#  if ENABLE_128_CAS
 bool
 __Atomic_weakCas128(ATOMIC(__INT128__) * obj,
                     __INT128__* expect,
@@ -946,5 +1003,5 @@ __Atomic_weakCas128(ATOMIC(__INT128__) * obj,
 {
     return __Atomic_cas128(obj, expect, exchange, m);
 }
-#endif
+#  endif
 #endif

@@ -7,45 +7,45 @@
 #include <stddef.h>
 
 #ifdef __APPLE__
-#define MACOSX 1
+#  define MACOSX 1
 #else
-#define MACOSX 0
+#  define MACOSX 0
 #endif
 
 #if defined(_WIN32) || defined(_WIN64)
-#define WINDOWS 1
+#  define WINDOWS 1
 #else
-#define WINDOWS 0
+#  define WINDOWS 0
 #endif
 
 #ifdef __ANDROID__
-#define ANDROID 1
+#  define ANDROID 1
 #else
-#define ANDROID 0
+#  define ANDROID 0
 #endif
 
 #ifdef __linux__
-#define LINUX 1
+#  define LINUX 1
 #else
-#define LINUX 0
+#  define LINUX 0
 #endif
 
 #ifdef __GNUC__
-#define GNUC 1
+#  define GNUC 1
 #else
-#define GNUC 0
+#  define GNUC 0
 #endif
 
 #ifdef __clang__
-#define CLANG 1
+#  define CLANG 1
 #else
-#define CLANG 0
+#  define CLANG 0
 #endif
 
 #if defined(_MSC_VER) && !CLANG && !GNUC
-#define MSVC 1
+#  define MSVC 1
 #else
-#define MSVC 0
+#  define MSVC 0
 #endif
 
 // #if defined(__amd64__) || defined(_M_AMD64) || defined(__x86_64__)
@@ -57,37 +57,37 @@
 // #endif
 
 #ifdef _MSC_VER
-#ifdef BUILD_LIBRARY
-#ifdef DYNAMIC
-#define XCL_EXPORT __declspec(dllexport)
-#else
-#define XCL_EXPORT
-#endif
-#elif defined(DYNAMIC)
-#define XCL_EXPORT __declspec(dllimport)
-#else
-#define XCL_EXPORT
-#endif
+#  ifdef BUILD_LIBRARY
+#    ifdef DYNAMIC
+#      define XCL_EXPORT __declspec(dllexport)
+#    else
+#      define XCL_EXPORT
+#    endif
+#  elif defined(DYNAMIC)
+#    define XCL_EXPORT __declspec(dllimport)
+#  else
+#    define XCL_EXPORT
+#  endif
 #elif CLANG || GNUC
-#define XCL_EXPORT __attribute__((visibility("default")))
+#  define XCL_EXPORT __attribute__((visibility("default")))
 #else
-#define XCL_EXPORT
+#  define XCL_EXPORT
 #endif
 
 #if GNUC || CLANG
-#define XCL_LOCAL __attribute__((visibility("hidden")))
+#  define XCL_LOCAL __attribute__((visibility("hidden")))
 #else
-#define XCL_LOCAL
+#  define XCL_LOCAL
 #endif
 
 #if WINDOWS
-#define XCL_API __stdcall
+#  define XCL_API __stdcall
 #else
-#define XCL_API
+#  define XCL_API
 #endif
 
 #ifdef _MSC_VER
-#define ALIGNED(x) __declspec(align(x))
+#  define ALIGNED(x) __declspec(align(x))
 #else
-#define ALIGNED(x) __attribute__((aligned(x)))
+#  define ALIGNED(x) __attribute__((aligned(x)))
 #endif
