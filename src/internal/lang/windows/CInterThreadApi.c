@@ -74,11 +74,11 @@ __Thread_yield()
 
 #ifdef STATIC
 
-#  ifdef _MSC_VER
+#ifdef _MSC_VER
 static __declspec(thread) CLocalStorage* __Win32_Thread_localStorage = NULL;
-#  elif GNUC || CLANG
+#elif GNUC || CLANG
 static __thread CLocalStorage* __Win32_Thread_localStorage = NULL;
-#  endif
+#endif
 
 CLocalStorage*
 __Thread_getLocalStorage()
@@ -95,7 +95,7 @@ __Thread_setLocalStorage(CLocalStorage* localStorage)
 
 #elif defined(DYNAMIC)
 
-#  include <xcl/concurrent/GlobalLock.h>
+#include <xcl/concurrent/GlobalLock.h>
 
 static DWORD __Win32_Thread_storageKey = TLS_OUT_OF_INDEXES;
 

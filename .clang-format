@@ -43,7 +43,7 @@ ColumnLimit: 80
 CompactNamespaces: false
 ContinuationIndentWidth: 4
 IndentCaseLabels: true
-IndentPPDirectives: AfterHash
+IndentPPDirectives: None
 PPIndentWidth: 2
 IndentWidth: 4
 KeepEmptyLinesAtTheStartOfBlocks: true

@@ -118,8 +118,8 @@ __Thread_setLocalStorage(CLocalStorage* localStorage)
     return true;
 }
 #elif defined(DYNAMIC)
-#  include <xcl/concurrent/GlobalLock.h>
-#  include <assert.h>
+#include <xcl/concurrent/GlobalLock.h>
+#include <assert.h>
 
 static pthread_key_t __Unix_Thread_localStorageKey;
 
