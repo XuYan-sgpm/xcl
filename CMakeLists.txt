@@ -213,13 +213,8 @@ if(MSVC)
     set_property(
         TARGET ${xcl_lib_name} PROPERTY MSVC_RUNTIME_LIBRARY
                                         "MultiThreaded$<$<CONFIG:Debug>:Debug>")
-elseif(CMAKE_SYSTEM_NAME STREQUAL "Darwin")
-    if(COMPILE_X86_TARGET)
+elseif(APPLE)
 
-    else()
-        set_target_properties(${xcl_lib_name} PROPERTIES OSX_ARCHITECTURES
-                                                         x86_64)
-    endif()
 endif()
 
 add_custom_command(
