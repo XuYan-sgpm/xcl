@@ -9,7 +9,7 @@
 
 using namespace std;
 
-void XCL_API
+void
 __threadProc(void*)
 {
     cout << "enter thread" << endl;
