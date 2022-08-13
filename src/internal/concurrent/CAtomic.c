@@ -536,13 +536,13 @@ __Atomic_fetchAdd64(ATOMIC(int64_t) * obj, int64_t delta, memory_order m)
 #ifndef InterlockedCompareExchangeRelease64
 #define InterlockedCompareExchangeRelease64 InterlockedCompareExchange64
 #endif
-    int32_t original = *obj;
+    int64_t original = *obj;
     switch (m)
     {
         case memory_order_relaxed: {
             for (;;)
             {
-                int32_t ret
+                int64_t ret
                     = InterlockedCompareExchangeNoFence64(obj,
                                                           original + delta,
                                                           original);
@@ -557,7 +557,7 @@ __Atomic_fetchAdd64(ATOMIC(int64_t) * obj, int64_t delta, memory_order m)
         case memory_order_acquire: {
             for (;;)
             {
-                int32_t ret
+                int64_t ret
                     = InterlockedCompareExchangeAcquire64(obj,
                                                           original + delta,
                                                           original);
@@ -571,7 +571,7 @@ __Atomic_fetchAdd64(ATOMIC(int64_t) * obj, int64_t delta, memory_order m)
         case memory_order_release: {
             for (;;)
             {
-                int32_t ret
+                int64_t ret
                     = InterlockedCompareExchangeRelease64(obj,
                                                           original + delta,
                                                           original);
@@ -585,7 +585,7 @@ __Atomic_fetchAdd64(ATOMIC(int64_t) * obj, int64_t delta, memory_order m)
         default: {
             for (;;)
             {
-                int32_t ret = InterlockedCompareExchange64(obj,
+                int64_t ret = InterlockedCompareExchange64(obj,
                                                            original + delta,
                                                            original);
                 if (ret == original)
