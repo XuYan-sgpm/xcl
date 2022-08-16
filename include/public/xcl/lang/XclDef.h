@@ -12,7 +12,7 @@
 #define MACOSX 0
 #endif
 
-#if defined(_WIN32) || defined(_WIN64)
+#if defined(_WIN32)
 #define WINDOWS 1
 #else
 #define WINDOWS 0

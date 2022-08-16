@@ -1,6 +1,7 @@
 /**
  * @author xuyan
  * @brief ring buffer implementation, simple, graceful and powerful
+ * only available for pod-like data
  * @version 0.1
  * @date 2022-08-05
  */
@@ -317,6 +318,51 @@ RingBuffer_replaceBufRegion(CRingBuffer* ringBuffer,
                             const CRingBuffer* src,
                             int32_t first,
                             int32_t last);
+
+/**
+ * @brief write ring buffer data at [pos,pos+n) to specified stream
+ * @param ringBuffer ring buffer object
+ * @param pos write start pos
+ * @param n element written
+ * @param write write function for data element writing
+ * @param usr user specified object for element writing
+ * @return total bytes written, not elements
+ * @author xuyan
+ * @date 2022-08-15
+ */
+XCL_EXPORT int32_t XCL_API
+RingBuffer_writeStream(const CRingBuffer* ringBuffer,
+                       int32_t pos,
+                       int32_t n,
+                       int32_t (*write)(void*, const void*, int32_t),
+                       void* usr);
+
+/**
+ * @brief write ring buffer data begin at pos to [dst,dst+len) region
+ * @param ringBuffer ring buffer object
+ * @param pos start pos of write
+ * @param dst pointer store data from ring buffer
+ * @param len max size of elements can be written
+ * @return actually write element count
+ * @author xuyan
+ * @date 2022-08-16
+ */
+XCL_EXPORT int32_t XCL_API
+RingBuffer_write(const CRingBuffer* ringBuffer,
+                 int32_t pos,
+                 void* dst,
+                 int32_t len);
+
+/**
+ * @brief remove elements at [pos,pos+n)
+ * @param ringBuffer ring buffer object
+ * @param pos start position of remove
+ * @param n remove elements count
+ * @author xuyan
+ * @date 2022-08-16
+ */
+XCL_EXPORT void XCL_API
+RingBuffer_remove(CRingBuffer* ringBuffer, int32_t pos, int32_t n);
 
 #ifdef __cplusplus
 }

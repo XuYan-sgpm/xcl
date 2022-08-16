@@ -225,6 +225,59 @@ __RingBuffer_copyExternalBuf(CRingBuffer* ringBuffer,
     }
 }
 
+static int32_t
+__RingBuffer_write(const CRingBuffer* ringBuffer,
+                   int32_t srcIdx,
+                   void* dst,
+                   int32_t len)
+{
+    int32_t total = 0;
+    int32_t es = ringBuffer->eleSize;
+    int32_t from = __RingBuffer_map(ringBuffer, srcIdx);
+    while (total < len)
+    {
+        int32_t copied = ringBuffer->cap - from;
+        if (copied > len - total)
+            copied = len - total;
+        memcpy(dst, ringBuffer->buf + from * es, copied * es);
+        from = __RingBuffer_mappedNext(ringBuffer, from, copied);
+        total += copied;
+    }
+    return total;
+}
+
+static int32_t
+__RingBuffer_writeStream(const CRingBuffer* ringBuffer,
+                         int32_t srcIdx,
+                         int32_t n,
+                         int32_t (*write)(void*, const void*, int32_t),
+                         void* usr)
+{
+    int32_t total = 0;
+    int32_t es = ringBuffer->eleSize;
+    int32_t from = __RingBuffer_map(ringBuffer, srcIdx);
+    while (total < n * es)
+    {
+        int32_t copied = ringBuffer->cap - from;
+        if (copied > n - total)
+            copied = n - total;
+        for (int32_t written = 0; written < copied * es;)
+        {
+            int32_t ret = write(usr,
+                                ringBuffer->buf + from * es,
+                                copied * es - written);
+            if (ret < 0)
+            {
+                return total;
+            }
+            written += ret;
+            total += ret;
+        }
+        from = __RingBuffer_mappedNext(ringBuffer, from, copied);
+    }
+    return total;
+}
+
 static inline void
 __RingBuffer_incSize(CRingBuffer* ringBuffer, int32_t delta)
 {
@@ -650,4 +703,82 @@ RingBuffer_replaceBufRegion(CRingBuffer* ringBuffer,
     {
         return false;
     }
+}
+
+XCL_EXPORT int32_t XCL_API
+RingBuffer_writeStream(const CRingBuffer* ringBuffer,
+                       int32_t pos,
+                       int32_t n,
+                       int32_t (*write)(void*, const void*, int32_t),
+                       void* usr)
+{
+    if (!__RingBuffer_checkRegion(ringBuffer, true, pos, n))
+    {
+        return -1;
+    }
+    return __RingBuffer_writeStream(ringBuffer, pos, n, write, usr);
+}
+
+XCL_EXPORT int32_t XCL_API
+RingBuffer_write(const CRingBuffer* ringBuffer,
+                 int32_t pos,
+                 void* dst,
+                 int32_t len)
+{
+    if (!__RingBuffer_checkPosition(ringBuffer, true, pos))
+    {
+        return -1;
+    }
+    if (len == 0)
+    {
+        return 0;
+    }
+    if (len < 0)
+    {
+        return -1;
+    }
+    if (len > ringBuffer->size - pos)
+    {
+        len = ringBuffer->size - pos;
+    }
+    return __RingBuffer_write(ringBuffer, pos, dst, len);
+}
+
+XCL_EXPORT void XCL_API
+RingBuffer_remove(CRingBuffer* ringBuffer, int32_t pos, int32_t n)
+{
+    if (!__RingBuffer_checkRegion(ringBuffer, true, pos, n))
+    {
+        return;
+    }
+    if (pos == 0)
+    {
+        if (n < ringBuffer->size)
+        {
+            __RingBuffer_nextBeg(ringBuffer, n);
+        }
+        else
+        {
+            ringBuffer->beg = 0;
+        }
+    }
+    else if (pos + n == ringBuffer->size)
+    {
+    }
+    else
+    {
+        if (pos < ringBuffer->size - pos - n)
+        {
+            __RingBuffer_move(ringBuffer, n, 0, pos);
+            __RingBuffer_nextBeg(ringBuffer, n);
+        }
+        else
+        {
+            __RingBuffer_move(ringBuffer,
+                              pos,
+                              pos + n,
+                              ringBuffer->size - pos - n);
+        }
+    }
+    ringBuffer->size -= n;
 }
