@@ -66,7 +66,7 @@ endif()
 
 set(xcl_project_dir ${CMAKE_CURRENT_LIST_DIR}/..)
 set(xcl_inc_dir ${xcl_project_dir}/include/public
-                ${xcl_project_dir}/include/internal)
+                ${xcl_project_dir}/include/private)
 set(xcl_lib_dir ${xcl_project_dir}/lib/${xcl_lib_type})
 
 if(COMPILE_X86_TARGET)

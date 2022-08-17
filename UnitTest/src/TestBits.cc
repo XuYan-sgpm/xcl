@@ -2,7 +2,7 @@
 // Created by xuyan on 2022/6/30.
 //
 
-#include "xcl/util/CBits.h"
+#include "util/bits.h"
 #include <gtest/gtest.h>
 
 TEST(CBitsTest, func0)

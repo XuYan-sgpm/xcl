@@ -2,13 +2,13 @@
 // Created by xuyan on 2022/6/21.
 //
 
-#include "xcl/lang/CLocalStorage.h"
-#include "xcl/lang/CThread.h"
-#include "xcl/lang/CThreadLocal.h"
+#include "lang/localstorage.h"
+#include "lang/thread.h"
+#include "lang/threadlocal.h"
 #include <gtest/gtest.h>
 
 #include <iostream>
-#include <xcl/lang/CSys.h>
+#include <lang/system.h>
 
 using namespace std;
 

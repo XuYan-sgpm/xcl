@@ -64,9 +64,11 @@ endif()
 if(COMPILE_X86_TARGET)
     message(STATUS "compile x86 target")
     add_compile_definitions(X86=1 X64=0)
+    set(architecture x86)
 else()
     message(STATUS "compile x64 target")
     add_compile_definitions(X86=0 X64=1)
+    set(architecture x64)
 endif()
 
 if(UNICODE)
@@ -164,7 +166,7 @@ if(NOT MSVC)
     set(LIBRARY_OUTPUT_PATH ${LIBRARY_OUTPUT_PATH}/${CMAKE_BUILD_TYPE})
 endif()
 
-set(xcl_inc_dir include/public include/internal)
+set(xcl_inc_dir include private/inc)
 set(xcl_lib_dir ${LIBRARY_OUTPUT_PATH})
 include_directories(${xcl_inc_dir})
 link_directories(${xcl_lib_dir})
@@ -232,3 +234,7 @@ add_custom_command(
     COMMAND ${CMAKE_COMMAND} -E echo
             "make library directories ${LIBRARY_OUTPUT_PATH}"
     VERBATIM)
+
+install(
+    CODE "execute_process(COMMAND python -u ${CMAKE_CURRENT_LIST_DIR}/install.py ${CMAKE_INSTALL_PREFIX} ${CMAKE_BUILD_TYPE} ${architecture} ${BUILD_LIB_TYPE} ${CMAKE_CURRENT_LIST_DIR})"
+)

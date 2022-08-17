@@ -1,5 +1,5 @@
-#include "xcl/util/CRbTree.h"
-#include <xcl/pool/CPool.h>
+#include "util/rbtree.h"
+#include <pool/pool.h>
 #include <gtest/gtest.h>
 #include <iostream>
 using namespace std;

@@ -2,10 +2,10 @@
 // Created by xuyan on 2022/7/10.
 //
 
-#include "xcl/lang/CSys.h"
+#include "lang/system.h"
 #include <gtest/gtest.h>
 #include <iostream>
-#include <xcl/lang/CThread.h>
+#include <lang/thread.h>
 
 using namespace std;
 

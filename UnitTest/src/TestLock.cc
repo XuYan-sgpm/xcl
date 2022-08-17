@@ -2,11 +2,11 @@
 // Created by xuyan on 2022/6/24.
 //
 
-#include "xcl/concurrent/CMutex.h"
-#include "xcl/concurrent/Lock.h"
-#include "xcl/lang/CThread.h"
-#include "xcl/lang/XclErr.h"
-#include "xcl/lang/CSys.h"
+#include "concurrent/mutex.h"
+#include "concurrent/lock.h"
+#include "lang/thread.h"
+#include "lang/xclerr.h"
+#include "lang/system.h"
 #include <gtest/gtest.h>
 #include <iostream>
 

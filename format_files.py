@@ -38,10 +38,10 @@ def handleFileType(file_name: str):
     for cxx in __CXX__:
         if fmt == cxx:
             return 1
-        if file_name == 'CMakeLists.txt':
+    if file_name == 'CMakeLists.txt':
             return 2
-        if fmt == '.cmake':
-            return 2
+    if fmt == '.cmake':
+        return 2
     return 0
 
 

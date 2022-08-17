@@ -1,6 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
-#include <xcl/concurrent/CAtomic.h>
+#include <concurrent/xclatomic.h>
 
 void
 __AtomicTest_func1()
