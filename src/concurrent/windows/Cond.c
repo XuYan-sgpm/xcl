@@ -1,0 +1,98 @@
+//
+// Created by xuyan on 2022/7/5.
+//
+
+#include <Windows.h>
+#include "concurrent/cond.h"
+#include "lang/xclerr.h"
+#include "pool/pool.h"
+
+struct _CCond_st {
+    CONDITION_VARIABLE conditionVariable;
+};
+
+XCL_EXPORT CCond* XCL_API
+Cond_new()
+{
+    CCond* cond = (CCond*)Pool_alloc(Pool_def(), sizeof(CCond));
+    if (cond)
+    {
+        InitializeConditionVariable(&cond->conditionVariable);
+    }
+    else
+    {
+        Err_set(XCL_MEMORY_ERR);
+    }
+    return cond;
+}
+
+XCL_EXPORT bool XCL_API
+Cond_delete(CCond* cond)
+{
+    Pool_dealloc(Pool_def(), cond, sizeof(CCond));
+    return true;
+}
+
+XCL_EXPORT bool XCL_API
+Cond_wait(CMutex* mutex, CCond* cond)
+{
+    if (cond)
+    {
+        return SleepConditionVariableCS(&((CCond*)cond)->conditionVariable,
+                                        (PCRITICAL_SECTION)mutex,
+                                        INFINITE);
+    }
+    else
+    {
+        Err_set(XCL_INVALID_PARAM);
+    }
+    return false;
+}
+
+XCL_EXPORT bool XCL_API
+Cond_waitFor(CMutex* mutex, CCond* cond, int32_t millis)
+{
+    if (!cond || !mutex)
+    {
+        Err_set(XCL_INVALID_PARAM);
+        return false;
+    }
+    bool success = SleepConditionVariableCS(&((CCond*)cond)->conditionVariable,
+                                            (PCRITICAL_SECTION)mutex,
+                                            millis);
+    if (!success)
+    {
+        Err_set(GetLastError());
+    }
+    return success;
+}
+
+XCL_EXPORT bool XCL_API
+Cond_signal(CCond* cond)
+{
+    if (cond)
+    {
+        WakeConditionVariable(&((CCond*)cond)->conditionVariable);
+        return true;
+    }
+    else
+    {
+        Err_set(XCL_INVALID_PARAM);
+        return false;
+    }
+}
+
+XCL_EXPORT bool XCL_API
+Cond_signalAll(CCond* cond)
+{
+    if (cond)
+    {
+        WakeAllConditionVariable(&((CCond*)cond)->conditionVariable);
+        return true;
+    }
+    else
+    {
+        Err_set(XCL_INVALID_PARAM);
+        return false;
+    }
+}
