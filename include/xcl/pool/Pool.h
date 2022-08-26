@@ -11,15 +11,18 @@ extern "C" {
 #include <stdint.h>
 #include <xcl/lang/XclDef.h>
 
-typedef struct _CPool_st {
-    void* (*const alloc)(struct _CPool_st* pool, uint64_t size);
-    void (*const dealloc)(struct _CPool_st* pool, void* ptr, uint64_t size);
-    void* (*const reapply)(struct _CPool_st* pool,
-                           void* ptr,
-                           uint64_t old,
-                           uint64_t req);
+typedef struct _CPool CPool;
+
+typedef struct {
+    void* (*const alloc)(CPool* pool, uint64_t size);
+    void (*const dealloc)(CPool* pool, void* ptr, uint64_t size);
+    void* (*const reapply)(CPool* pool, void* ptr, uint64_t old, uint64_t req);
+} CPoolMethods;
+
+struct _CPool {
+    const CPoolMethods* const methods;
     char attach[0];
-} CPool;
+};
 
 /**
  * xcl default pool, may be use jemalloc algorithm

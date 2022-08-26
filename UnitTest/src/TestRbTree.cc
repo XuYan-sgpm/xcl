@@ -1,5 +1,6 @@
-#include "util/RbTree.h"
-#include <pool/Pool.h>
+#ifdef STATIC
+#include "xcl/util/RbTree.h"
+#include <xcl/pool/Pool.h>
 #include <gtest/gtest.h>
 #include <iostream>
 using namespace std;
@@ -105,3 +106,4 @@ TEST(RbTreeTest, func2)
         ASSERT_EQ(*(int*)iter1->attach, *(int*)iter2->attach);
     }
 }
+#endif

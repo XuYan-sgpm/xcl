@@ -2,7 +2,7 @@
 // Created by xuyan on 2022/7/10.
 //
 
-#include "lang/System.h"
+#include "xcl/lang/System.h"
 #include <gtest/gtest.h>
 #include <iostream>
 #include <xcl/lang/Thread.h>

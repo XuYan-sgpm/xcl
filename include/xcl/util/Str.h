@@ -12,9 +12,11 @@ extern "C" {
 #ifdef _UNICODE
 #define __str_dispatch__(name) wcs##name
 #define __TCSTR(x)             L##x
+typedef wchar_t __FilePathChr;
 #else
 #define __str_dispatch__(name) str##name
 #define __TCSTR(x)             x
+typedef char __FilePathChr;
 #endif
 
 #undef _tcslen

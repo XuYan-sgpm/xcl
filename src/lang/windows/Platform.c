@@ -76,3 +76,27 @@ __Win32_wait(HANDLE handle, DWORD timeout)
         return true;
     }
 }
+
+XCL_EXPORT bool XCL_API
+getCwd(__FilePathChr* cwd, int32_t len)
+{
+    if (!cwd)
+    {
+        return false;
+    }
+    DWORD ret = GetModuleFileName(NULL, cwd, len);
+    if (ret == 0)
+    {
+        Err_set(GetLastError());
+        return false;
+    }
+    if (ret >= len)
+    {
+        cwd[0] = 0;
+        return false;
+    }
+    cwd[ret] = 0;
+    char* p = strrchr(cwd, '\\');
+    *p = 0;
+    return true;
+}

@@ -51,12 +51,19 @@ Pool_def()
     return pool;
 }
 
+static bool
+__Pool_available(const CPool* pool)
+{
+    return pool && pool->methods && pool->methods->alloc
+           && pool->methods->dealloc && pool->methods->reapply;
+}
+
 XCL_EXPORT void* XCL_API
 Pool_alloc(CPool* pool, uint64_t size)
 {
-    if (pool && pool->alloc)
+    if (__Pool_available(pool))
     {
-        return pool->alloc(pool, size);
+        return pool->methods->alloc(pool, size);
     }
     else
     {
@@ -67,9 +74,9 @@ Pool_alloc(CPool* pool, uint64_t size)
 XCL_EXPORT void XCL_API
 Pool_dealloc(CPool* pool, void* ptr, uint64_t size)
 {
-    if (pool && pool->dealloc)
+    if (__Pool_available(pool))
     {
-        pool->dealloc(pool, ptr, size);
+        pool->methods->dealloc(pool, ptr, size);
     }
     else
     {
@@ -80,9 +87,9 @@ Pool_dealloc(CPool* pool, void* ptr, uint64_t size)
 XCL_EXPORT void* XCL_API
 Pool_reapply(CPool* pool, void* ptr, uint64_t old, uint64_t req)
 {
-    if (pool && pool->reapply)
+    if (__Pool_available(pool))
     {
-        return pool->reapply(pool, ptr, old, req);
+        return pool->methods->reapply(pool, ptr, old, req);
     }
     else
     {

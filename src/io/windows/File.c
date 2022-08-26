@@ -1,9 +1,11 @@
-#include <util/File.h>
+#include <io/File.h>
 #include <io.h>
 #include <windows.h>
 #include <xcl/lang/XclErr.h>
 #include <stdlib.h>
-#include <util/Str.h>
+#include <stdio.h>
+#include <assert.h>
+#include <stdarg.h>
 
 typedef struct {
     unsigned char buf[128];
@@ -199,15 +201,16 @@ XCL_EXPORT int32_t XCL_API
 File_path(const CFile* file, __FilePathChr* path, int32_t* len)
 {
     int32_t filePathLen = _tcslen(__File_path(file));
-    if (path && *len < filePathLen)
-    {
-        return -1;
-    }
     if (path)
     {
-        memcpy(path, __File_path(file), filePathLen * sizeof(__FilePathChr));
+        if (*len > filePathLen)
+            *len = filePathLen;
+        _tcsncpy(path, __File_path(file), *len);
     }
-    *len = filePathLen;
+    else
+    {
+        *len = filePathLen;
+    }
     return 0;
 }
 
@@ -223,26 +226,6 @@ __FileIter_initialized(const CFileIter* fileIter)
     return fileIter->findHandle != INVALID_HANDLE_VALUE;
 }
 
-// static inline void
-// __FileIter_setInit(CFileIter* fileIter, bool flag)
-// {
-//     char state = fileIter->state;
-//     fileIter->state = flag ? (state | 1) : (state & ~1);
-// }
-
-// static inline bool
-// __FileIter_isUsingFile(const CFileIter* fileIter)
-// {
-//     return fileIter->state & 2;
-// }
-
-// static inline void
-// __FileIter_useFile(CFileIter* fileIter, bool isFile)
-// {
-//     char state = fileIter->state;
-//     fileIter->state = isFile ? (state | 2) : (state & ~2);
-// }
-
 XCL_EXPORT CFileIter* XCL_API
 File_list(CFile* file)
 {
@@ -256,7 +239,7 @@ File_list(CFile* file)
         return 0;
     }
     iter->findHandle = INVALID_HANDLE_VALUE;
-    iter->cwd = file->absPath;
+    iter->cwd = _tcsdup(file->absPath);
     return iter;
 }
 
@@ -284,16 +267,13 @@ FileIter_next(CFileIter* fileIter, __FilePathChr* fileName, int32_t* len)
     {
         if (!__FileIter_initialized(fileIter))
         {
-            __FilePathChr findDir[1024];
-            int32_t findLen = sizeof(findDir) / sizeof(__FilePathChr);
             const __FilePathChr* cwd;
             size_t cwdLen;
             cwd = fileIter->cwd;
             cwdLen = _tcslen(cwd);
-            if (cwdLen >= findLen)
-            {
-                return -1;
-            }
+            __FilePathChr findDir[2048];
+            int32_t findLen = sizeof(findDir) / sizeof(__FilePathChr);
+            assert(findLen > cwdLen);
             _tcscpy(findDir, cwd);
             findLen = cwdLen;
             _tcscpy(findDir + findLen,
@@ -328,12 +308,16 @@ FileIter_next(CFileIter* fileIter, __FilePathChr* fileName, int32_t* len)
         {
             __FilePathChr* p = fileIter->findData.cFileName;
             size_t nameLen = _tcslen(p);
-            if (fileName && *len < nameLen)
+            if (fileName)
             {
-                return -1;
+                if (*len > nameLen)
+                    *len = nameLen;
+                _tcsncpy(fileName, p, *len);
             }
-            _tcsncpy(fileName, p, nameLen);
-            *len = nameLen;
+            else
+            {
+                *len = nameLen;
+            }
             break;
         }
     }
@@ -348,15 +332,16 @@ FileIter_current(CFileIter* fileIter, __FilePathChr* fileName, int32_t* len)
         return false;
     }
     int32_t req = _tcslen(fileIter->findData.cFileName);
-    if (fileName && *len < req)
-    {
-        return false;
-    }
     if (fileName)
     {
-        _tcsncpy(fileName, fileIter->findData.cFileName, req);
+        if (*len > req)
+            *len = req;
+        _tcsncpy(fileName, fileIter->findData.cFileName, *len);
     }
-    *len = req;
+    else
+    {
+        *len = req;
+    }
     return true;
 }
 
@@ -368,14 +353,33 @@ FileIter_cwd(CFileIter* fileIter, __FilePathChr* dir, int32_t* len)
         return false;
     }
     int32_t cwdLen = _tcslen(fileIter->cwd);
-    if (dir && *len < cwdLen)
-    {
-        return false;
-    }
     if (dir)
-        _tcscpy(dir, fileIter->cwd);
-    *len = cwdLen;
+    {
+        if (*len > cwdLen)
+            *len = cwdLen;
+        _tcsncpy(dir, fileIter->cwd, *len);
+    }
+    else
+    {
+        *len = cwdLen;
+    }
     return true;
+}
+
+XCL_EXPORT void XCL_API
+FileIter_delete(CFileIter* fileIter)
+{
+    if (fileIter->findHandle != INVALID_HANDLE_VALUE)
+    {
+        CloseHandle(fileIter->findHandle);
+        fileIter->findHandle = INVALID_HANDLE_VALUE;
+    }
+    if (fileIter->cwd)
+    {
+        free((void*)fileIter->cwd);
+        fileIter->cwd = NULL;
+    }
+    free(fileIter);
 }
 
 XCL_EXPORT bool XCL_API
@@ -400,4 +404,66 @@ XCL_EXPORT bool XCL_API
 File_isPathFile(const __FilePathChr* path)
 {
     return __File_isFile(path);
+}
+
+XCL_EXPORT bool XCL_API
+File_joinPath(__FilePathChr* out, int32_t outLen, unsigned n, ...)
+{
+    if (!out)
+    {
+        return false;
+    }
+    if (n == 0)
+    {
+        out[0] = 0;
+    }
+    else
+    {
+        va_list names;
+        va_start(names, n);
+        bool ret = File_joinPath2(out, outLen, n, names);
+        va_end(names);
+        return ret;
+    }
+    return true;
+}
+
+XCL_EXPORT bool XCL_API
+File_joinPath2(__FilePathChr* out, int32_t outLen, unsigned n, va_list names)
+{
+    if (!out)
+    {
+        return false;
+    }
+    if (n == 0)
+    {
+        out[0] = 0;
+    }
+    else
+    {
+        int32_t cursor = 0;
+        for (int i = 0; i < n; i++)
+        {
+            if (i > 0)
+            {
+                if (out[cursor - 1] != '\\')
+                {
+                    out[cursor++] = '\\';
+                }
+            }
+            const __FilePathChr* name = va_arg(names, const __FilePathChr*);
+            int32_t nameLen = _tcslen(name);
+            if (nameLen <= outLen - cursor - 1)
+            {
+                _tcscpy(out + cursor, name);
+            }
+            else
+            {
+                break;
+            }
+            cursor += nameLen;
+        }
+        out[cursor] = 0;
+    }
+    return true;
 }

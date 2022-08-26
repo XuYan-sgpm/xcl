@@ -9,6 +9,7 @@ extern "C" {
 #endif
 
 #include "xcl/lang/XclDef.h"
+#include <xcl/util/Str.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -39,8 +40,29 @@ mSleep(int32_t timeout);
  * get if cpu byte order is big-endian
  * @return true if byte order of current cpu is big-endian, otherwise false
  */
+inline bool XCL_API
+isCpuBigEndian()
+{
+    union
+    {
+        short val;
+        char data[2];
+    } unit;
+    unit.val = 0x0001;
+    return unit.data[1] == 1;
+}
+
+/**
+ * @brief get current working directory
+ * @param cwd buffer store cwd info
+ * @param len max size of cwd
+ * @return true if get cwd successfully,
+ * false if passing insufficient memory or syscall failed
+ * @author xuyan
+ * @date 2022-08-18
+ */
 XCL_EXPORT bool XCL_API
-isCpuBigEndian();
+getCwd(__FilePathChr* cwd, int32_t len);
 
 #ifdef __cplusplus
 }

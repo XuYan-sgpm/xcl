@@ -1,3 +1,5 @@
+#ifdef STATIC
+
 #include <gtest/gtest.h>
 #include <iostream>
 using namespace std;
@@ -11,3 +13,5 @@ TEST(TestAtomic, func1)
 {
     __AtomicTest_func1();
 }
+
+#endif

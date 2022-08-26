@@ -3,7 +3,7 @@
 //
 #include <gtest/gtest.h>
 #include <iostream>
-#include <util/RingBuffer.h>
+#include <xcl/util/RingBuffer.h>
 using namespace std;
 
 TEST(TestRingBuffer, func1)

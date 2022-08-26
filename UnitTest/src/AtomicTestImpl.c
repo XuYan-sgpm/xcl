@@ -1,6 +1,7 @@
+#ifdef STATIC
 #include <stdio.h>
 #include <assert.h>
-#include <concurrent/XclAtomic.h>
+#include <xcl/concurrent/XclAtomic.h>
 
 void
 __AtomicTest_func1()
@@ -12,3 +13,4 @@ __AtomicTest_func1()
     printf("%d\n", __Atomic_weakCas64(&x, &val, 876, memory_order_acq_rel));
     printf("%lld\n", __Atomic_load64(&x, memory_order_consume));
 }
+#endif

@@ -5,12 +5,7 @@ extern "C" {
 #endif
 
 #include <xcl/util/RingBuffer.h>
-
-#ifdef _UNICODE
-typedef wchar_t __FilePathChr;
-#else
-typedef char __FilePathChr;
-#endif
+#include <xcl/util/Str.h>
 
 typedef enum
 {
@@ -89,11 +84,33 @@ File_list(CFile* file);
 XCL_EXPORT CFileIter* XCL_API
 File_listByPath(const __FilePathChr* path);
 
+/**
+ * @brief join file path for multiple names
+ * @param out output buffer for result path
+ * @param outLen length of output buffer
+ * @param n args count
+ * @param ... multiple args of file name
+ * @return true if function successfully, otherwise false
+ */
+XCL_EXPORT bool XCL_API
+File_joinPath(__FilePathChr* out, int32_t outLen, unsigned n, ...);
+
+/**
+ * @brief join file path for multiple names
+ * @param out output buffer for result path
+ * @param outLen length of output buffer
+ * @param n args count
+ * @param names multiple args of file name
+ * @return true if function successfully, otherwise false
+ */
+XCL_EXPORT bool XCL_API
+File_joinPath2(__FilePathChr* out, int32_t outLen, unsigned n, va_list names);
+
 XCL_EXPORT int32_t XCL_API
 FileIter_next(CFileIter* fileIter, __FilePathChr* fileName, int32_t* len);
 
 XCL_EXPORT void XCL_API
-FileIter_close(CFileIter* fileIter);
+FileIter_delete(CFileIter* fileIter);
 
 XCL_EXPORT bool XCL_API
 FileIter_current(CFileIter* fileIter, __FilePathChr* fileName, int32_t* len);

@@ -1,9 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
 
-if(MSVC)
-    cmake_policy(SET CMP0091 NEW)
-endif()
-
 project(UnitTest)
 
 set(CMAKE_VERBOSE_MAKEFILE ON)
@@ -47,10 +43,8 @@ endif()
 
 message(STATUS ${compiler_id})
 
-# set(xcl_lib_type dynamic)
-
 if(WIN32)
-    set(third_party D:/third_party/${compiler_id}/${build_type})
+    set(third_party d:/libraries/${compiler_id})
 elseif(APPLE)
     set(third_party /usr/local/${compiler_id})
 else()
@@ -62,6 +56,8 @@ message(STATUS "third_party:${third_party}")
 
 if(xcl_lib_type STREQUAL "dynamic")
     add_definitions(-DDYNAMIC)
+else()
+    add_definitions(-DSTATIC)
 endif()
 
 set(xcl_project_dir ${CMAKE_CURRENT_LIST_DIR}/..)
@@ -79,8 +75,9 @@ set(xcl_lib_dir ${xcl_lib_dir}/${CMAKE_BUILD_TYPE})
 message(STATUS ${xcl_inc_dir})
 message(STATUS ${xcl_lib_dir})
 
-link_directories(${xcl_lib_dir} ${third_party}/googletest/lib)
-include_directories(${xcl_inc_dir} ${third_party}/googletest/include)
+link_directories(${xcl_lib_dir} ${third_party}/googletest/${xcl_lib_type}/lib)
+include_directories(${xcl_inc_dir}
+                    ${third_party}/googletest/${xcl_lib_type}/include)
 
 add_executable(unit_test main.cc ${test_src_files})
 
@@ -101,9 +98,17 @@ message(STATUS ${link_libs})
 target_link_libraries(unit_test ${link_libs})
 
 if(MSVC)
-    set_property(
-        TARGET unit_test PROPERTY MSVC_RUNTIME_LIBRARY
-                                  "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    if(xcl_lib_type STREQUAL "static")
+        set_property(
+            TARGET unit_test PROPERTY MSVC_RUNTIME_LIBRARY
+                                      "MultiThreaded$<$<CONFIG:Debug>:Debug>")
+    else()
+        set_property(
+            TARGET unit_test
+            PROPERTY MSVC_RUNTIME_LIBRARY
+                     "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
+    endif()
+
 endif()
 
 if(WIN32)

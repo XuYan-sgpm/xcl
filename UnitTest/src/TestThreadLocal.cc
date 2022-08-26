@@ -2,9 +2,9 @@
 // Created by xuyan on 2022/6/21.
 //
 
-#include "lang/LocalStorage.h"
-#include "lang/Thread.h"
-#include "lang/ThreadLocal.h"
+#include "xcl/lang/LocalStorage.h"
+#include "xcl/lang/Thread.h"
+#include "xcl/lang/ThreadLocal.h"
 #include <gtest/gtest.h>
 
 #include <iostream>
