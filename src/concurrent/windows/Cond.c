@@ -3,18 +3,18 @@
 //
 
 #include <Windows.h>
-#include "concurrent/Cond.h"
-#include "lang/XclErr.h"
-#include "pool/Pool.h"
+#include "concurrent/cond.h"
+#include "lang/xcl_err.h"
+#include "pool/pool.h"
 
-struct _CCond_st {
+struct Cond {
     CONDITION_VARIABLE conditionVariable;
 };
 
-XCL_EXPORT CCond* XCL_API
+XCL_EXPORT Cond* XCL_API
 Cond_new()
 {
-    CCond* cond = (CCond*)Pool_alloc(Pool_def(), sizeof(CCond));
+    Cond* cond = (Cond*)Pool_alloc(Pool_def(), sizeof(Cond));
     if (cond)
     {
         InitializeConditionVariable(&cond->conditionVariable);
@@ -27,18 +27,18 @@ Cond_new()
 }
 
 XCL_EXPORT bool XCL_API
-Cond_delete(CCond* cond)
+Cond_delete(Cond* cond)
 {
-    Pool_dealloc(Pool_def(), cond, sizeof(CCond));
+    Pool_dealloc(Pool_def(), cond, sizeof(Cond));
     return true;
 }
 
 XCL_EXPORT bool XCL_API
-Cond_wait(CMutex* mutex, CCond* cond)
+Cond_wait(Mutex* mutex, Cond* cond)
 {
     if (cond)
     {
-        return SleepConditionVariableCS(&((CCond*)cond)->conditionVariable,
+        return SleepConditionVariableCS(&((Cond*)cond)->conditionVariable,
                                         (PCRITICAL_SECTION)mutex,
                                         INFINITE);
     }
@@ -50,14 +50,14 @@ Cond_wait(CMutex* mutex, CCond* cond)
 }
 
 XCL_EXPORT bool XCL_API
-Cond_waitFor(CMutex* mutex, CCond* cond, int32_t millis)
+Cond_waitFor(Mutex* mutex, Cond* cond, int32_t millis)
 {
     if (!cond || !mutex)
     {
         Err_set(XCL_INVALID_PARAM);
         return false;
     }
-    bool success = SleepConditionVariableCS(&((CCond*)cond)->conditionVariable,
+    bool success = SleepConditionVariableCS(&((Cond*)cond)->conditionVariable,
                                             (PCRITICAL_SECTION)mutex,
                                             millis);
     if (!success)
@@ -68,11 +68,11 @@ Cond_waitFor(CMutex* mutex, CCond* cond, int32_t millis)
 }
 
 XCL_EXPORT bool XCL_API
-Cond_signal(CCond* cond)
+Cond_signal(Cond* cond)
 {
     if (cond)
     {
-        WakeConditionVariable(&((CCond*)cond)->conditionVariable);
+        WakeConditionVariable(&((Cond*)cond)->conditionVariable);
         return true;
     }
     else
@@ -83,11 +83,11 @@ Cond_signal(CCond* cond)
 }
 
 XCL_EXPORT bool XCL_API
-Cond_signalAll(CCond* cond)
+Cond_signalAll(Cond* cond)
 {
     if (cond)
     {
-        WakeAllConditionVariable(&((CCond*)cond)->conditionVariable);
+        WakeAllConditionVariable(&((Cond*)cond)->conditionVariable);
         return true;
     }
     else

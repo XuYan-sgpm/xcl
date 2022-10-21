@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string.h>
-#include <xcl/lang/XclDef.h>
+#include <xcl/lang/xcl_def.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -12,11 +12,11 @@ extern "C" {
 #ifdef _UNICODE
 #define __str_dispatch__(name) wcs##name
 #define __TCSTR(x)             L##x
-typedef wchar_t __FilePathChr;
+typedef wchar_t TChar;
 #else
 #define __str_dispatch__(name) str##name
 #define __TCSTR(x)             x
-typedef char __FilePathChr;
+typedef char TChar;
 #endif
 
 #undef _tcslen

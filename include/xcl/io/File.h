@@ -4,85 +4,95 @@
 extern "C" {
 #endif
 
-#include <xcl/util/RingBuffer.h>
-#include <xcl/util/Str.h>
+#include <xcl/lang/xcl_def.h>
+#include <stdbool.h>
+#include <stdint.h>
+#include <xcl/util/str.h>
 
-typedef enum
+typedef enum FileMode
 {
     F_READ = 1,
     F_WRITE = 2,
     F_UPDATE = 4,
     F_APPEND = 8
-} CFileMode;
+} FileMode;
 
-typedef struct _CFile CFile;
-typedef struct _CFileIter CFileIter;
+typedef struct File File;
+typedef struct FileIter FileIter;
 
-XCL_EXPORT CFile* XCL_API
-File_new(const __FilePathChr* path, int32_t mode);
-
-XCL_EXPORT bool XCL_API
-File_isPathExists(const __FilePathChr* path);
+XCL_EXPORT File* XCL_API
+File_new(const TChar* path, int32_t mode);
 
 XCL_EXPORT bool XCL_API
-File_exists(const CFile* file);
+File_isPathExists(const TChar* path);
+
+XCL_EXPORT bool XCL_API
+File_exists(const File* file);
 
 XCL_EXPORT void XCL_API
-File_delete(CFile* file);
+File_delete(File* file);
 
 XCL_EXPORT int32_t XCL_API
-File_flush(CFile* file);
+File_flush(File* file);
 
 XCL_EXPORT int32_t XCL_API
-File_read(CFile* file, void* dst, int32_t len);
+File_read(File* file, void* dst, int32_t len);
 
 XCL_EXPORT int32_t XCL_API
-File_write(CFile* file, const void* src, int32_t len);
+File_write(File* file, const void* src, int32_t len);
 
 XCL_EXPORT bool XCL_API
-File_remove(CFile* file);
+File_remove(File* file);
 
 XCL_EXPORT bool XCL_API
-File_deletePath(const __FilePathChr* path);
+File_deletePath(const TChar* path);
 
 XCL_EXPORT bool XCL_API
-File_rename(CFile* file, const __FilePathChr* newFileName);
+File_rename(File* file, const TChar* newFileName);
 
 XCL_EXPORT bool XCL_API
-File_renamePath(const __FilePathChr* old, const __FilePathChr* now);
+File_renamePath(const TChar* old, const TChar* now);
 
 XCL_EXPORT bool XCL_API
-File_isDir(CFile* file);
+File_isDir(File* file);
 
 XCL_EXPORT bool XCL_API
-File_isFile(CFile* file);
+File_isFile(File* file);
 
 XCL_EXPORT bool XCL_API
-File_isPathDir(const __FilePathChr* path);
+File_isPathDir(const TChar* path);
 
 XCL_EXPORT bool XCL_API
-File_isPathFile(const __FilePathChr* path);
+File_isPathFile(const TChar* path);
 
 XCL_EXPORT bool XCL_API
-File_ensure(CFile* file);
+File_ensure(File* file);
 
 XCL_EXPORT bool XCL_API
-File_ensurePath(const __FilePathChr* path);
+File_ensurePath(const TChar* path);
 
-XCL_EXPORT CFile* XCL_API
-File_parentFile(CFile* file);
+XCL_EXPORT File* XCL_API
+File_parentFile(File* file);
 
 XCL_EXPORT int32_t XCL_API
-File_parent(CFile* file, __FilePathChr* path, int32_t* len);
+File_parent(File* file, TChar* path, int32_t* len);
 
 XCL_EXPORT int32_t XCL_API
-File_path(const CFile* file, __FilePathChr* path, int32_t* len);
+File_path(const File* file, TChar* path, int32_t* len);
 
-XCL_EXPORT CFileIter* XCL_API
-File_list(CFile* file);
+XCL_EXPORT FileIter* XCL_API
+File_iter(File* file);
 
-XCL_EXPORT CFileIter* XCL_API
-File_listByPath(const __FilePathChr* path);
+XCL_EXPORT FileIter* XCL_API
+File_pathIter(const TChar* path);
+
+XCL_EXPORT bool XCL_API
+File_listDir(const TChar* path,
+             void (*callback)(void*, const TChar*),
+             void* obj);
+
+XCL_EXPORT char XCL_API
+File_sep();
 
 /**
  * @brief join file path for multiple names
@@ -93,7 +103,7 @@ File_listByPath(const __FilePathChr* path);
  * @return true if function successfully, otherwise false
  */
 XCL_EXPORT bool XCL_API
-File_joinPath(__FilePathChr* out, int32_t outLen, unsigned n, ...);
+File_joinPath(TChar* out, int32_t outLen, unsigned n, ...);
 
 /**
  * @brief join file path for multiple names
@@ -104,19 +114,19 @@ File_joinPath(__FilePathChr* out, int32_t outLen, unsigned n, ...);
  * @return true if function successfully, otherwise false
  */
 XCL_EXPORT bool XCL_API
-File_joinPath2(__FilePathChr* out, int32_t outLen, unsigned n, va_list names);
+File_joinPath2(TChar* out, int32_t outLen, unsigned n, va_list names);
 
 XCL_EXPORT int32_t XCL_API
-FileIter_next(CFileIter* fileIter, __FilePathChr* fileName, int32_t* len);
+FileIter_next(FileIter* fileIter, TChar* fileName, int32_t* len);
 
 XCL_EXPORT void XCL_API
-FileIter_delete(CFileIter* fileIter);
+FileIter_delete(FileIter* fileIter);
 
 XCL_EXPORT bool XCL_API
-FileIter_current(CFileIter* fileIter, __FilePathChr* fileName, int32_t* len);
+FileIter_current(FileIter* fileIter, TChar* fileName, int32_t* len);
 
 XCL_EXPORT bool XCL_API
-FileIter_cwd(CFileIter* fileIter, __FilePathChr* dir, int32_t* len);
+FileIter_cwd(FileIter* fileIter, TChar* dir, int32_t* len);
 
 #ifdef __cplusplus
 }

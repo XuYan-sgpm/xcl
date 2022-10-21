@@ -4,8 +4,8 @@
 
 #include <stdlib.h>
 #include <assert.h>
-#include "pool/Pool.h"
-#include "concurrent/GlobalLock.h"
+#include "pool/pool.h"
+#include <stdbool.h>
 
 typedef enum
 {
@@ -14,56 +14,33 @@ typedef enum
     INITIALIZED
 } CPoolState;
 
-static CPool* __XCL_defaultPool = NULL;
+static struct Pool* __XCL_default_pool = NULL;
 
-static CPool*
+static struct Pool*
 __implInitXclDefPool()
 {
     return NULL;
 }
 
-XCL_EXPORT CPool* XCL_API
+XCL_EXPORT struct Pool* XCL_API
 Pool_def()
 {
-    static volatile CPoolState state = UNINITIALIZED;
-    CPool* pool = NULL;
-    if (state == INITIALIZED)
-    {
-        return __XCL_defaultPool;
-    }
-    __acquireGlobalLock();
-    if (state == INITIALIZING)
-    {
-        assert(false);
-    }
-    else if (state == UNINITIALIZED)
-    {
-        state = INITIALIZING;
-        __XCL_defaultPool = __implInitXclDefPool();
-        pool = __XCL_defaultPool;
-        state = INITIALIZED;
-    }
-    else
-    {
-        pool = __XCL_defaultPool;
-    }
-    __releaseGlobalLock();
-    return pool;
+    return NULL;
 }
 
 static bool
-__Pool_available(const CPool* pool)
+__Pool_available(const struct Pool* pool)
 {
-    return pool && pool->methods && pool->methods->alloc
-           && pool->methods->dealloc && pool->methods->reapply;
+    return pool && pool->clazz && pool->clazz->alloc && pool->clazz->dealloc
+           && pool->clazz->reapply;
 }
 
 XCL_EXPORT void* XCL_API
-Pool_alloc(CPool* pool, uint64_t size)
+Pool_alloc(struct Pool* pool, uint64_t size)
 {
     if (__Pool_available(pool))
     {
-        return pool->methods->alloc(pool, size);
+        return pool->clazz->alloc(pool, size);
     }
     else
     {
@@ -72,11 +49,13 @@ Pool_alloc(CPool* pool, uint64_t size)
 }
 
 XCL_EXPORT void XCL_API
-Pool_dealloc(CPool* pool, void* ptr, uint64_t size)
+Pool_dealloc(struct Pool* pool, void* ptr, uint64_t size)
 {
+    if (!ptr || !size)
+        return;
     if (__Pool_available(pool))
     {
-        pool->methods->dealloc(pool, ptr, size);
+        pool->clazz->dealloc(pool, ptr, size);
     }
     else
     {
@@ -85,11 +64,11 @@ Pool_dealloc(CPool* pool, void* ptr, uint64_t size)
 }
 
 XCL_EXPORT void* XCL_API
-Pool_reapply(CPool* pool, void* ptr, uint64_t old, uint64_t req)
+Pool_reapply(struct Pool* pool, void* ptr, uint64_t old, uint64_t req)
 {
     if (__Pool_available(pool))
     {
-        return pool->methods->reapply(pool, ptr, old, req);
+        return pool->clazz->reapply(pool, ptr, old, req);
     }
     else
     {

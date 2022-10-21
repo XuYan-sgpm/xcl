@@ -14,26 +14,26 @@
 extern "C" {
 #endif
 
-#include "xcl/lang/XclDef.h"
-#include "xcl/concurrent/Mutex.h"
+#include "xcl/lang/xcl_def.h"
+#include "xcl/concurrent/mutex.h"
 #include <stdbool.h>
 
-typedef struct _CBlocker_st CBlocker;
+typedef struct Blocker Blocker;
 
 /**
  * new a blocker object
  * @return blocker object if create successfully, otherwise false
  */
-XCL_EXPORT CBlocker* XCL_API
+XCL_EXPORT Blocker* XCL_API
 Blocker_new();
 
 /**
  * new a blocker object with a mutex object
- * @param mutex mutex object (CMutex)
+ * @param mutex mutex object (Mutex)
  * @return blocker object if create successfully, otherwise false
  */
-XCL_EXPORT CBlocker* XCL_API
-Blocker_new2(CMutex* mutex);
+XCL_EXPORT Blocker* XCL_API
+Blocker_new2(Mutex* mutex);
 
 /**
  * delete the blocker object
@@ -45,7 +45,7 @@ Blocker_new2(CMutex* mutex);
  * otherwise false
  */
 XCL_EXPORT bool XCL_API
-Blocker_delete(CBlocker* blocker);
+Blocker_delete(Blocker* blocker);
 
 /**
  * wait blocker util signal received
@@ -53,7 +53,7 @@ Blocker_delete(CBlocker* blocker);
  * @return blocker wait successfully
  */
 XCL_EXPORT bool XCL_API
-Blocker_wait(CBlocker* blocker);
+Blocker_wait(Blocker* blocker);
 
 /**
  * send a signal if blocker is in waiting state
@@ -63,7 +63,7 @@ Blocker_wait(CBlocker* blocker);
  * @return blocker notify successfully
  */
 XCL_EXPORT bool XCL_API
-Blocker_cancel(CBlocker* blocker);
+Blocker_cancel(Blocker* blocker);
 
 /**
  * wake all waiting blocker
@@ -71,7 +71,7 @@ Blocker_cancel(CBlocker* blocker);
  * @return notify all waiting blocker successfully
  */
 XCL_EXPORT bool XCL_API
-Blocker_wakeAll(CBlocker* blocker);
+Blocker_wakeAll(Blocker* blocker);
 
 #ifdef __cplusplus
 }

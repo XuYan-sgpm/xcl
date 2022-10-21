@@ -19,9 +19,8 @@ def install_header(src_dir: str, destination: str):
         os.system(cmd)
 
 
-def install_library(src_dir, lib_type, build_type, architecture, destination):
-    dest_full_dir = os.path.join(destination, lib_type, architecture,
-                                 build_type)
+def install_library(src_dir, destination):
+    dest_full_dir = destination
     if not os.path.exists(dest_full_dir):
         os.makedirs(dest_full_dir)
     names = os.listdir(src_dir)
@@ -69,5 +68,4 @@ if __name__ == '__main__':
     print('original lib dir:', origin_lib_dir)
     inc_dir = os.path.join(cwd, 'include', 'xcl')
     install_header(inc_dir, os.path.join(install_prefix, 'include', 'xcl'))
-    install_library(origin_lib_dir, lib_type, build_type, architecture,
-                    os.path.join(install_prefix, 'lib'))
+    install_library(origin_lib_dir, os.path.join(install_prefix, 'lib'))

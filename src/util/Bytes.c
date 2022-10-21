@@ -2,8 +2,8 @@
 // Created by xuyan on 2022/6/21.
 //
 
-#include "util/Bytes.h"
-#include "lang/System.h"
+#include "util/bytes.h"
+#include "lang/system.h"
 #include <string.h>
 
 static void

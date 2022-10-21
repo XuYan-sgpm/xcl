@@ -78,8 +78,10 @@ else()
 endif()
 
 if(COMPILE_X86_TARGET)
+    add_compile_definitions(X86=1)
     set(architecture x86)
 else()
+    add_compile_definitions(X64=1)
     set(architecture x64)
 endif()
 

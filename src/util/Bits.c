@@ -2,32 +2,32 @@
 // Created by xuyan on 2022/6/29.
 //
 
-#include "util/Bits.h"
-#include "pool/Pool.h"
+#include "util/bits.h"
+#include "pool/pool.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
 
 static inline void
-__Bits_setLen(CBits* bits, const int32_t category)
+__Bits_setLen(Bits* bits, const int32_t category)
 {
-    memcpy((void*)&bits->nBits, &category, sizeof(category));
+    memcpy((void*)&bits->n_bits, &category, sizeof(category));
 }
 
 static inline char*
-__Bits_getValPtr(CBits* bits)
+__Bits_getValPtr(Bits* bits)
 {
-    return ((CBitsSet*)bits)->ctx;
+    return ((BitsSet*)bits)->ctx;
 }
 
-XCL_EXPORT CBits* XCL_API
+XCL_EXPORT Bits* XCL_API
 Bits_new(int32_t size)
 {
     if ((size & 7))
     {
         size = ((size >> 3) + 1) << 3;
     }
-    CBits* bits = Pool_alloc(Pool_def(), (size >> 3) + sizeof(CBits));
+    Bits* bits = Pool_alloc(Pool_def(), (size >> 3) + sizeof(Bits));
     if (!bits)
     {
         return NULL;
@@ -38,15 +38,15 @@ Bits_new(int32_t size)
 }
 
 XCL_EXPORT void XCL_API
-Bits_delete(CBits* bits)
+Bits_delete(Bits* bits)
 {
-    Pool_dealloc(Pool_def(), bits, sizeof(CBits) + (bits->nBits >> 3));
+    Pool_dealloc(Pool_def(), bits, sizeof(Bits) + (bits->n_bits >> 3));
 }
 
 XCL_EXPORT void XCL_API
-Bits_set(CBits* bits, int32_t idx, bool on)
+Bits_set(Bits* bits, int32_t idx, bool on)
 {
-    assert((idx >= 0 && idx < bits->nBits) && "index overflow");
+    assert((idx >= 0 && idx < bits->n_bits) && "index overflow");
     unsigned char* vp = (unsigned char*)__Bits_getValPtr(bits) + (idx >> 3);
     unsigned char value = vp[0];
     if (on)
@@ -62,13 +62,13 @@ Bits_set(CBits* bits, int32_t idx, bool on)
 }
 
 XCL_EXPORT int32_t XCL_API
-Bits_len(CBits* bits)
+Bits_len(Bits* bits)
 {
-    return bits->nBits;
+    return bits->n_bits;
 }
 
 XCL_EXPORT bool XCL_API
-Bits_get(CBits* bits, int32_t idx)
+Bits_get(Bits* bits, int32_t idx)
 {
     unsigned char* vp = (unsigned char*)__Bits_getValPtr(bits) + (idx >> 3);
     unsigned char value = vp[0];
@@ -76,32 +76,32 @@ Bits_get(CBits* bits, int32_t idx)
     return value & op;
 }
 
-XCL_EXPORT CBits64 XCL_API
+XCL_EXPORT Bits64 XCL_API
 bits64()
 {
-    return (CBits64){{64}, 0};
+    return (Bits64){{64}, 0};
 }
 
-XCL_EXPORT CBits8 XCL_API
+XCL_EXPORT Bits8 XCL_API
 bits8()
 {
-    return (CBits8){{8}, 0};
+    return (Bits8){{8}, 0};
 }
 
-XCL_EXPORT CBits16 XCL_API
+XCL_EXPORT Bits16 XCL_API
 bits16()
 {
-    return (CBits16){{16}, 0};
+    return (Bits16){{16}, 0};
 }
 
-XCL_EXPORT CBits32 XCL_API
+XCL_EXPORT Bits32 XCL_API
 bits32()
 {
-    return (CBits32){{32}, 0};
+    return (Bits32){{32}, 0};
 }
 
 XCL_EXPORT unsigned char XCL_API
-Bits_getByte(CBits* bits, int32_t idx)
+Bits_getByte(Bits* bits, int32_t idx)
 {
     return *(unsigned char*)(__Bits_getValPtr(bits) + idx);
 }

@@ -8,18 +8,18 @@
 extern "C" {
 #endif
 
-#include "xcl/lang/XclDef.h"
-#include "xcl/concurrent/Mutex.h"
+#include "xcl/lang/xcl_def.h"
+#include "xcl/concurrent/mutex.h"
 #include <stdbool.h>
 #include <stdint.h>
 
-typedef struct _CCond_st CCond;
+typedef struct Cond Cond;
 
 /**
  * new condition variable
  * @return condition variable if successfully, otherwise NULL
  */
-XCL_EXPORT CCond* XCL_API
+XCL_EXPORT Cond* XCL_API
 Cond_new();
 
 /**
@@ -27,14 +27,14 @@ Cond_new();
  * @param cond condition variable
  */
 XCL_EXPORT bool XCL_API
-Cond_delete(CCond* cond);
+Cond_delete(Cond* cond);
 
 /**
  * wait signal util Cond_signal called
  * @param cond condition variable
  */
 XCL_EXPORT bool XCL_API
-Cond_wait(CMutex* mutex, CCond* cond);
+Cond_wait(Mutex* mutex, Cond* cond);
 
 /**
  * wait signal on the condition during millis
@@ -45,21 +45,21 @@ Cond_wait(CMutex* mutex, CCond* cond);
  * @return true if condition variable signaled, otherwise false
  */
 XCL_EXPORT bool XCL_API
-Cond_waitFor(CMutex* mutex, CCond* cond, int32_t millis);
+Cond_waitFor(Mutex* mutex, Cond* cond, int32_t millis);
 
 /**
  * signal random thread wait on cond
  * @param cond condition variable
  */
 XCL_EXPORT bool XCL_API
-Cond_signal(CCond* cond);
+Cond_signal(Cond* cond);
 
 /**
  * signal all threads wait on cond
  * @param cond condition variable
  */
 XCL_EXPORT bool XCL_API
-Cond_signalAll(CCond* cond);
+Cond_signalAll(Cond* cond);
 
 #ifdef __cplusplus
 }

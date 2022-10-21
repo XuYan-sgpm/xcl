@@ -6,7 +6,7 @@
 #include <stddef.h>
 #include <sys/time.h>
 #include <time.h>
-#include <xcl/lang/System.h>
+#include <xcl/lang/system.h>
 
 XCL_EXPORT int64_t XCL_API
 currentMillis()

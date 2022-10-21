@@ -8,8 +8,8 @@
 extern "C" {
 #endif
 
-#include "xcl/lang/XclDef.h"
-#include <xcl/util/Str.h>
+#include "xcl/lang/xcl_def.h"
+#include <xcl/util/str.h>
 #include <stdint.h>
 #include <stdbool.h>
 
@@ -62,7 +62,7 @@ isCpuBigEndian()
  * @date 2022-08-18
  */
 XCL_EXPORT bool XCL_API
-getCwd(__FilePathChr* cwd, int32_t len);
+getCwd(TChar* cwd, int32_t len);
 
 #ifdef __cplusplus
 }

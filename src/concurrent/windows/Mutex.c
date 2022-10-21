@@ -2,27 +2,27 @@
 // Created by xuyan on 2022/7/4.
 //
 
-#include "concurrent/Mutex.h"
-#include "lang/XclErr.h"
-#include "lang/System.h"
-#include "pool/Pool.h"
+#include "concurrent/mutex.h"
+#include "lang/xcl_err.h"
+#include "lang/system.h"
+#include "pool/pool.h"
 #include <Windows.h>
 
-struct _CMutex_st {
-    CRITICAL_SECTION criticalSection;
+struct Mutex {
+    CRITICAL_SECTION critical_section;
 };
 
 bool
-__Mutex_init(CMutex* mutex)
+__Mutex_init(Mutex* mutex)
 {
-    InitializeCriticalSection(&mutex->criticalSection);
+    InitializeCriticalSection(&mutex->critical_section);
     return true;
 }
 
-CMutex*
-__Mutex_newByPool(CPool* pool)
+Mutex*
+__Mutex_newByPool(struct Pool* pool)
 {
-    CMutex* mutex = (CMutex*)Pool_alloc(pool, sizeof(CMutex));
+    Mutex* mutex = (Mutex*)Pool_alloc(pool, sizeof(Mutex));
     if (mutex)
     {
         __Mutex_init(mutex);
@@ -34,19 +34,19 @@ __Mutex_newByPool(CPool* pool)
     return mutex;
 }
 
-XCL_EXPORT CMutex* XCL_API
+XCL_EXPORT Mutex* XCL_API
 Mutex_new()
 {
     return __Mutex_newByPool(Pool_def());
 }
 
 XCL_EXPORT bool XCL_API
-Mutex_delete(CMutex* mutex)
+Mutex_delete(Mutex* mutex)
 {
     if (mutex)
     {
-        DeleteCriticalSection(&mutex->criticalSection);
-        Pool_dealloc(Pool_def(), mutex, sizeof(CMutex));
+        DeleteCriticalSection(&mutex->critical_section);
+        Pool_dealloc(Pool_def(), mutex, sizeof(Mutex));
         return true;
     }
     else
@@ -57,11 +57,11 @@ Mutex_delete(CMutex* mutex)
 }
 
 XCL_EXPORT bool XCL_API
-Mutex_lock(CMutex* mutex)
+Mutex_lock(Mutex* mutex)
 {
     if (mutex)
     {
-        EnterCriticalSection(&mutex->criticalSection);
+        EnterCriticalSection(&mutex->critical_section);
         return true;
     }
     else
@@ -72,11 +72,11 @@ Mutex_lock(CMutex* mutex)
 }
 
 XCL_EXPORT bool XCL_API
-Mutex_unlock(CMutex* mutex)
+Mutex_unlock(Mutex* mutex)
 {
     if (mutex)
     {
-        LeaveCriticalSection(&mutex->criticalSection);
+        LeaveCriticalSection(&mutex->critical_section);
         return true;
     }
     else
@@ -87,7 +87,7 @@ Mutex_unlock(CMutex* mutex)
 }
 
 XCL_EXPORT bool XCL_API
-Mutex_tryLock(CMutex* mutex)
+Mutex_tryLock(Mutex* mutex)
 {
     if (!mutex)
     {
@@ -96,12 +96,12 @@ Mutex_tryLock(CMutex* mutex)
     }
     else
     {
-        return TryEnterCriticalSection(&mutex->criticalSection);
+        return TryEnterCriticalSection(&mutex->critical_section);
     }
 }
 
 XCL_EXPORT bool XCL_API
-Mutex_tryLock2(CMutex* mutex, int32_t millis)
+Mutex_tryLock2(Mutex* mutex, int32_t millis)
 {
     if (!mutex)
     {
@@ -110,23 +110,23 @@ Mutex_tryLock2(CMutex* mutex, int32_t millis)
     }
     int64_t st = nanos();
     timeBeginPeriod(1);
-    int64_t totalWait = 0;
-    int64_t nanoTimeout = millis * 1000000;
+    int64_t total_wait = 0;
+    int64_t nano_timeout = millis * 1000000;
     bool acquired = false;
-    while ((nanoTimeout - totalWait) > 500000)
+    while ((nano_timeout - total_wait) > 500000)
     {
-        if (TryEnterCriticalSection(&mutex->criticalSection))
+        if (TryEnterCriticalSection(&mutex->critical_section))
         {
             acquired = true;
             break;
         }
         Sleep(1);
-        totalWait = nanos() - st;
+        total_wait = nanos() - st;
     }
     timeEndPeriod(1);
     if (!acquired)
     {
-        acquired = TryEnterCriticalSection(&mutex->criticalSection);
+        acquired = TryEnterCriticalSection(&mutex->critical_section);
     }
     return acquired;
 }

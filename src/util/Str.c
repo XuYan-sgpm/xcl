@@ -1,4 +1,4 @@
-#include "util/Str.h"
+#include "util/str.h"
 #include <stdlib.h>
 
 XCL_EXPORT char* XCL_API

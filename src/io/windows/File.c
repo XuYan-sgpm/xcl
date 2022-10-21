@@ -1,26 +1,26 @@
-#include <io/File.h>
+#include <io/file.h>
 #include <io.h>
 #include <windows.h>
-#include <xcl/lang/XclErr.h>
+#include <xcl/lang/xcl_err.h>
 #include <stdlib.h>
 #include <stdio.h>
 #include <assert.h>
 #include <stdarg.h>
 
-typedef struct {
+typedef struct FileCache {
     unsigned char buf[128];
     int32_t start, finish;
-} CFileCache;
+} FileCache;
 
 static inline void
-__FileCache_init(CFileCache* cache)
+__FileCache_init(FileCache* cache)
 {
     memset(cache->buf, 0, sizeof(cache->buf));
     cache->start = cache->finish = 0;
 }
 
 static int32_t
-__FileCache_push(CFileCache* cache, const void* src, int32_t len)
+__FileCache_push(FileCache* cache, const void* src, int32_t len)
 {
     int32_t cap = sizeof(cache->buf);
     int32_t to = cache->finish & (cap - 1);
@@ -42,7 +42,7 @@ __FileCache_push(CFileCache* cache, const void* src, int32_t len)
 }
 
 static int32_t
-__FileCache_pop(CFileCache* cache, int32_t len)
+__FileCache_pop(FileCache* cache, int32_t len)
 {
     int32_t size = cache->finish - cache->start;
     if (len > size)
@@ -54,27 +54,27 @@ __FileCache_pop(CFileCache* cache, int32_t len)
 }
 
 static inline int32_t
-__FileCache_remaining(const CFileCache* cache)
+__FileCache_remaining(const FileCache* cache)
 {
     return sizeof(cache->buf) - (cache->finish - cache->start);
 }
 
-struct _CFile {
+struct File {
     uintptr_t fd;
-    CFileCache cache;
-    const __FilePathChr* absPath;
+    FileCache cache;
+    const TChar* abs_path;
 };
 
-static inline const __FilePathChr*
-__File_path(const CFile* file)
+static inline const TChar*
+__File_path(const File* file)
 {
-    return file->absPath;
+    return file->abs_path;
 }
 
 static inline void
-__File_setPath(CFile* file, const __FilePathChr* path)
+__File_setPath(File* file, const TChar* path)
 {
-    __FilePathChr* old = (__FilePathChr*)__File_path(file);
+    TChar* old = (TChar*)__File_path(file);
     if (old)
     {
         if (path && _tcscmp(path, old) == 0)
@@ -82,16 +82,16 @@ __File_setPath(CFile* file, const __FilePathChr* path)
             return;
         }
         free(old);
-        file->absPath = NULL;
+        file->abs_path = NULL;
     }
     if (path)
     {
-        file->absPath = _tcsdup(path);
+        file->abs_path = _tcsdup(path);
     }
 }
 
 static inline bool
-__File_isDir(const __FilePathChr* path)
+__File_isDir(const TChar* path)
 {
     DWORD ret = GetFileAttributes(path);
     if (ret == INVALID_FILE_ATTRIBUTES)
@@ -103,20 +103,20 @@ __File_isDir(const __FilePathChr* path)
 }
 
 static inline bool
-__File_isFile(const __FilePathChr* path)
+__File_isFile(const TChar* path)
 {
     return !__File_isDir(path);
 }
 
-XCL_EXPORT CFile* XCL_API
-File_new(const __FilePathChr* path, int32_t mode)
+XCL_EXPORT File* XCL_API
+File_new(const TChar* path, int32_t mode)
 {
-    CFile* file = malloc(sizeof(CFile));
+    File* file = malloc(sizeof(File));
     if (!file)
     {
         return NULL;
     }
-    file->absPath = NULL;
+    file->abs_path = NULL;
     DWORD access = 0;
     if ((mode & F_READ) || (mode & F_UPDATE))
     {
@@ -126,24 +126,25 @@ File_new(const __FilePathChr* path, int32_t mode)
     {
         access |= GENERIC_WRITE;
     }
-    DWORD shareMode = FILE_SHARE_READ | FILE_SHARE_WRITE;
-    DWORD openWay = 0;
+    DWORD share_mode = FILE_SHARE_READ | FILE_SHARE_WRITE;
+    DWORD open_way = 0;
     if ((mode & F_READ))
     {
-        openWay = OPEN_EXISTING;
+        open_way = OPEN_EXISTING;
     }
     else if ((mode & F_WRITE))
     {
-        openWay = CREATE_ALWAYS;
+        open_way = CREATE_ALWAYS;
     }
     else
     {
-        openWay = OPEN_ALWAYS;
+        open_way = OPEN_ALWAYS;
     }
-    DWORD attrAndFlags = __File_isDir(path)
-                             ? FILE_FLAG_BACKUP_SEMANTICS
+    DWORD attr_and_flags
+        = __File_isDir(path) ? FILE_FLAG_BACKUP_SEMANTICS
                              : FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH;
-    HANDLE h = CreateFile(path, access, shareMode, 0, openWay, attrAndFlags, 0);
+    HANDLE h
+        = CreateFile(path, access, share_mode, 0, open_way, attr_and_flags, 0);
     if (h != INVALID_HANDLE_VALUE)
     {
         if ((mode & F_APPEND))
@@ -164,7 +165,7 @@ File_new(const __FilePathChr* path, int32_t mode)
 }
 
 XCL_EXPORT void XCL_API
-File_delete(CFile* file)
+File_delete(File* file)
 {
     if (file->fd != (uintptr_t)INVALID_HANDLE_VALUE)
     {
@@ -176,13 +177,13 @@ File_delete(CFile* file)
 }
 
 XCL_EXPORT int32_t XCL_API
-File_flush(CFile* file)
+File_flush(File* file)
 {
     return -1;
 }
 
 XCL_EXPORT bool XCL_API
-File_isPathExists(const __FilePathChr* path)
+File_isPathExists(const TChar* path)
 {
 #ifndef _UNICODE
     return _access(path, 0) == 0;
@@ -192,104 +193,157 @@ File_isPathExists(const __FilePathChr* path)
 }
 
 XCL_EXPORT bool XCL_API
-File_exists(const CFile* file)
+File_exists(const File* file)
 {
     return File_isPathExists(__File_path(file));
 }
 
 XCL_EXPORT int32_t XCL_API
-File_path(const CFile* file, __FilePathChr* path, int32_t* len)
+File_path(const File* file, TChar* path, int32_t* len)
 {
-    int32_t filePathLen = _tcslen(__File_path(file));
+    int32_t file_path_len = _tcslen(__File_path(file));
     if (path)
     {
-        if (*len > filePathLen)
-            *len = filePathLen;
+        if (*len > file_path_len)
+            *len = file_path_len;
         _tcsncpy(path, __File_path(file), *len);
     }
     else
     {
-        *len = filePathLen;
+        *len = file_path_len;
     }
     return 0;
 }
 
-struct _CFileIter {
-    HANDLE findHandle;
-    WIN32_FIND_DATA findData;
-    const __FilePathChr* cwd;
+struct FileIter {
+    HANDLE find_handle;
+    WIN32_FIND_DATA find_data;
+    const TChar* cwd;
 };
 
 static inline bool
-__FileIter_initialized(const CFileIter* fileIter)
+__FileIter_initialized(const FileIter* file_iter)
 {
-    return fileIter->findHandle != INVALID_HANDLE_VALUE;
+    return file_iter->find_handle != INVALID_HANDLE_VALUE;
 }
 
-XCL_EXPORT CFileIter* XCL_API
-File_list(CFile* file)
+XCL_EXPORT FileIter* XCL_API
+File_iter(File* file)
 {
     if (!__File_isDir(__File_path(file)))
     {
         return 0;
     }
-    CFileIter* iter = malloc(sizeof(CFileIter));
+    FileIter* iter = malloc(sizeof(FileIter));
     if (!iter)
     {
         return 0;
     }
-    iter->findHandle = INVALID_HANDLE_VALUE;
-    iter->cwd = _tcsdup(file->absPath);
+    iter->find_handle = INVALID_HANDLE_VALUE;
+    iter->cwd = _tcsdup(file->abs_path);
     return iter;
 }
 
-XCL_EXPORT CFileIter* XCL_API
-File_listByPath(const __FilePathChr* path)
+XCL_EXPORT FileIter* XCL_API
+File_pathIter(const TChar* path)
 {
     if (!__File_isDir(path))
     {
         return NULL;
     }
-    CFileIter* iter = malloc(sizeof(CFileIter));
+    FileIter* iter = malloc(sizeof(FileIter));
     if (!iter)
     {
         return 0;
     }
-    iter->findHandle = INVALID_HANDLE_VALUE;
+    iter->find_handle = INVALID_HANDLE_VALUE;
     iter->cwd = _tcsdup(path);
     return iter;
 }
 
+XCL_EXPORT bool XCL_API
+File_listDir(const TChar* path,
+             void (*callback)(void*, const TChar*),
+             void* obj)
+{
+    if (!File_isPathExists(path))
+    {
+        return false;
+    }
+    if (File_isPathFile(path))
+    {
+        return false;
+    }
+    int32_t path_len = _tcslen(path);
+    int32_t postfix = 3;
+    if (path[path_len - 1] != '\\')
+    {
+        ++postfix;
+    }
+    TChar tmp[2048];
+    if (!tmp)
+    {
+        return false;
+    }
+    bool success = false;
+    _tcscpy(tmp, path);
+    _tcscat(tmp, postfix > 3 ? __TCSTR("\\*.*") : __TCSTR("*.*"));
+    WIN32_FIND_DATA find_data;
+    memset(&find_data, 0, sizeof(find_data));
+    HANDLE h = FindFirstFile(tmp, &find_data);
+    if (h == INVALID_HANDLE_VALUE)
+    {
+        Err_set(GetLastError());
+        goto end;
+    }
+    do
+    {
+        if (strcmp(find_data.cFileName, "..") == 0
+            || strcmp(find_data.cFileName, ".") == 0)
+        {
+        }
+        else if (callback)
+        {
+            callback(obj, find_data.cFileName);
+        }
+    } while (FindNextFile(h, &find_data));
+    int err = GetLastError();
+    success = true;
+end:
+    FindClose(h);
+    return success;
+}
+
 XCL_EXPORT int32_t XCL_API
-FileIter_next(CFileIter* fileIter, __FilePathChr* fileName, int32_t* len)
+FileIter_next(FileIter* file_iter, TChar* file_name, int32_t* len)
 {
     for (;;)
     {
-        if (!__FileIter_initialized(fileIter))
+        if (!__FileIter_initialized(file_iter))
         {
-            const __FilePathChr* cwd;
-            size_t cwdLen;
-            cwd = fileIter->cwd;
-            cwdLen = _tcslen(cwd);
-            __FilePathChr findDir[2048];
-            int32_t findLen = sizeof(findDir) / sizeof(__FilePathChr);
-            assert(findLen > cwdLen);
-            _tcscpy(findDir, cwd);
-            findLen = cwdLen;
-            _tcscpy(findDir + findLen,
-                    findDir[findLen - 1] == '\\' ? __TCSTR("*.*")
-                                                 : __TCSTR("\\*.*"));
-            HANDLE h = FindFirstFile(findDir, &fileIter->findData);
+            const TChar* cwd;
+            size_t cwd_len;
+            cwd = file_iter->cwd;
+            cwd_len = _tcslen(cwd);
+            TChar find_dir[2048];
+            int32_t find_len = sizeof(find_dir) / sizeof(TChar);
+            assert(find_len > cwd_len);
+            _tcscpy(find_dir, cwd);
+            find_len = cwd_len;
+            _tcscpy(find_dir + find_len,
+                    find_dir[find_len - 1] == '\\' ? __TCSTR("*.*")
+                                                   : __TCSTR("\\*.*"));
+            HANDLE h = FindFirstFile(find_dir, &file_iter->find_data);
             if (h == INVALID_HANDLE_VALUE)
             {
                 Err_set(GetLastError());
                 return -1;
             }
-            fileIter->findHandle = h;
+            file_iter->find_handle = h;
         }
         else
         {
-            if (!FindNextFile(fileIter->findHandle, &fileIter->findData))
+            if (!FindNextFile(file_iter->find_handle, &file_iter->find_data))
             {
                 DWORD err = GetLastError();
                 if (err == ERROR_NO_MORE_FILES)
@@ -303,20 +357,20 @@ FileIter_next(CFileIter* fileIter, __FilePathChr* fileName, int32_t* len)
                 }
             }
         }
-        if (_tcscmp(fileIter->findData.cFileName, __TCSTR(".")) != 0
-            && _tcscmp(fileIter->findData.cFileName, __TCSTR("..")) != 0)
+        if (_tcscmp(file_iter->find_data.cFileName, __TCSTR(".")) != 0
+            && _tcscmp(file_iter->find_data.cFileName, __TCSTR("..")) != 0)
         {
-            __FilePathChr* p = fileIter->findData.cFileName;
-            size_t nameLen = _tcslen(p);
-            if (fileName)
+            TChar* p = file_iter->find_data.cFileName;
+            size_t name_len = _tcslen(p);
+            if (file_name)
             {
-                if (*len > nameLen)
-                    *len = nameLen;
-                _tcsncpy(fileName, p, *len);
+                if (*len > name_len)
+                    *len = name_len;
+                _tcsncpy(file_name, p, *len);
             }
             else
             {
-                *len = nameLen;
+                *len = name_len;
             }
             break;
         }
@@ -325,18 +379,18 @@ FileIter_next(CFileIter* fileIter, __FilePathChr* fileName, int32_t* len)
 }
 
 XCL_EXPORT bool XCL_API
-FileIter_current(CFileIter* fileIter, __FilePathChr* fileName, int32_t* len)
+FileIter_current(FileIter* file_iter, TChar* file_name, int32_t* len)
 {
-    if (!__FileIter_initialized(fileIter))
+    if (!__FileIter_initialized(file_iter))
     {
         return false;
     }
-    int32_t req = _tcslen(fileIter->findData.cFileName);
-    if (fileName)
+    int32_t req = _tcslen(file_iter->find_data.cFileName);
+    if (file_name)
     {
         if (*len > req)
             *len = req;
-        _tcsncpy(fileName, fileIter->findData.cFileName, *len);
+        _tcsncpy(file_name, file_iter->find_data.cFileName, *len);
     }
     else
     {
@@ -346,68 +400,74 @@ FileIter_current(CFileIter* fileIter, __FilePathChr* fileName, int32_t* len)
 }
 
 XCL_EXPORT bool XCL_API
-FileIter_cwd(CFileIter* fileIter, __FilePathChr* dir, int32_t* len)
+FileIter_cwd(FileIter* file_iter, TChar* dir, int32_t* len)
 {
-    if (!__FileIter_initialized(fileIter))
+    if (!__FileIter_initialized(file_iter))
     {
         return false;
     }
-    int32_t cwdLen = _tcslen(fileIter->cwd);
+    int32_t cwd_len = _tcslen(file_iter->cwd);
     if (dir)
     {
-        if (*len > cwdLen)
-            *len = cwdLen;
-        _tcsncpy(dir, fileIter->cwd, *len);
+        if (*len > cwd_len)
+            *len = cwd_len;
+        _tcsncpy(dir, file_iter->cwd, *len);
     }
     else
     {
-        *len = cwdLen;
+        *len = cwd_len;
     }
     return true;
 }
 
 XCL_EXPORT void XCL_API
-FileIter_delete(CFileIter* fileIter)
+FileIter_delete(FileIter* file_iter)
 {
-    if (fileIter->findHandle != INVALID_HANDLE_VALUE)
+    if (file_iter->find_handle != INVALID_HANDLE_VALUE)
     {
-        CloseHandle(fileIter->findHandle);
-        fileIter->findHandle = INVALID_HANDLE_VALUE;
+        FindClose(file_iter->find_handle);
+        file_iter->find_handle = INVALID_HANDLE_VALUE;
     }
-    if (fileIter->cwd)
+    if (file_iter->cwd)
     {
-        free((void*)fileIter->cwd);
-        fileIter->cwd = NULL;
+        free((void*)file_iter->cwd);
+        file_iter->cwd = NULL;
     }
-    free(fileIter);
+    free(file_iter);
 }
 
 XCL_EXPORT bool XCL_API
-File_isDir(CFile* file)
+File_isDir(File* file)
 {
     return __File_isDir(__File_path(file));
 }
 
 XCL_EXPORT bool XCL_API
-File_isFile(CFile* file)
+File_isFile(File* file)
 {
     return __File_isFile(__File_path(file));
 }
 
 XCL_EXPORT bool XCL_API
-File_isPathDir(const __FilePathChr* path)
+File_isPathDir(const TChar* path)
 {
     return __File_isDir(path);
 }
 
 XCL_EXPORT bool XCL_API
-File_isPathFile(const __FilePathChr* path)
+File_isPathFile(const TChar* path)
 {
     return __File_isFile(path);
 }
 
+XCL_EXPORT char XCL_API
+File_sep()
+{
+    return '\\';
+}
+
 XCL_EXPORT bool XCL_API
-File_joinPath(__FilePathChr* out, int32_t outLen, unsigned n, ...)
+File_joinPath(TChar* out, int32_t out_len, unsigned n, ...)
 {
     if (!out)
     {
@@ -421,7 +481,7 @@ File_joinPath(__FilePathChr* out, int32_t outLen, unsigned n, ...)
     {
         va_list names;
         va_start(names, n);
-        bool ret = File_joinPath2(out, outLen, n, names);
+        bool ret = File_joinPath2(out, out_len, n, names);
         va_end(names);
         return ret;
     }
@@ -429,7 +489,7 @@ File_joinPath(__FilePathChr* out, int32_t outLen, unsigned n, ...)
 }
 
 XCL_EXPORT bool XCL_API
-File_joinPath2(__FilePathChr* out, int32_t outLen, unsigned n, va_list names)
+File_joinPath2(TChar* out, int32_t out_len, unsigned n, va_list names)
 {
     if (!out)
     {
@@ -451,19 +511,77 @@ File_joinPath2(__FilePathChr* out, int32_t outLen, unsigned n, va_list names)
                     out[cursor++] = '\\';
                 }
             }
-            const __FilePathChr* name = va_arg(names, const __FilePathChr*);
-            int32_t nameLen = _tcslen(name);
-            if (nameLen <= outLen - cursor - 1)
-            {
-                _tcscpy(out + cursor, name);
-            }
-            else
+            const TChar* name = va_arg(names, const TChar*);
+            int32_t name_len = _tcslen(name);
+            if (name_len > out_len - cursor - 1)
             {
                 break;
             }
-            cursor += nameLen;
+            else if (out + cursor != name)
+            {
+                _tcscpy(out + cursor, name);
+            }
+            cursor += name_len;
         }
         out[cursor] = 0;
     }
     return true;
+}
+
+XCL_EXPORT bool XCL_API
+File_deletePath(const TChar* path)
+{
+    if (!File_isPathExists(path))
+    {
+        return false;
+    }
+    if (File_isPathFile(path))
+    {
+        if (!DeleteFile(path))
+        {
+            Err_set(GetLastError());
+            return false;
+        }
+        return true;
+    }
+    int32_t path_len = _tcslen(path);
+    int32_t postfix = 3;
+    if (path[path_len - 1] != '\\')
+    {
+        ++postfix;
+    }
+    TChar tmp[2048];
+    if (!tmp)
+    {
+        return false;
+    }
+    bool success = false;
+    _tcscpy(tmp, path);
+    _tcscat(tmp, postfix > 3 ? __TCSTR("\\*.*") : __TCSTR("*.*"));
+    WIN32_FIND_DATA find_data;
+    HANDLE h = FindFirstFile(tmp, &find_data);
+    if (h == INVALID_HANDLE_VALUE)
+    {
+        Err_set(GetLastError());
+        goto end;
+    }
+    do
+    {
+        if (strcmp(find_data.cFileName, "..") == 0
+            || strcmp(find_data.cFileName, ".") == 0)
+        {
+        }
+        else
+        {
+            if (!File_deletePath(find_data.cFileName))
+            {
+                goto end;
+            }
+        }
+    } while (FindNextFile(h, &find_data));
+    success = true;
+end:
+    if (h != INVALID_HANDLE_VALUE)
+        FindClose(h);
+    return success;
 }

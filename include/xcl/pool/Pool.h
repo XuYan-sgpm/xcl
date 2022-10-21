@@ -9,26 +9,27 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-#include <xcl/lang/XclDef.h>
+#include <xcl/lang/xcl_def.h>
 
-typedef struct _CPool CPool;
+typedef struct PoolClass {
+    void* (*const alloc)(struct Pool* pool, uint64_t size);
+    void (*const dealloc)(struct Pool* pool, void* ptr, uint64_t size);
+    void* (*const reapply)(struct Pool* pool,
+                           void* ptr,
+                           uint64_t old,
+                           uint64_t req);
+} PoolClass;
 
-typedef struct {
-    void* (*const alloc)(CPool* pool, uint64_t size);
-    void (*const dealloc)(CPool* pool, void* ptr, uint64_t size);
-    void* (*const reapply)(CPool* pool, void* ptr, uint64_t old, uint64_t req);
-} CPoolMethods;
-
-struct _CPool {
-    const CPoolMethods* const methods;
-    char attach[0];
-};
+typedef struct Pool {
+    const struct PoolClass* const clazz;
+    // char attach[0];
+} Pool;
 
 /**
  * xcl default pool, may be use jemalloc algorithm
  * @return default pool object
  */
-XCL_EXPORT CPool* XCL_API
+XCL_EXPORT struct Pool* XCL_API
 Pool_def();
 
 /**
@@ -38,13 +39,13 @@ Pool_def();
  */
 
 /**
- * alloc memory by CPool
+ * alloc memory by pool
  * @param pool pool object
  * @param size memory size
  * @return pointer if successfully, otherwise NULL
  */
 XCL_EXPORT void* XCL_API
-Pool_alloc(CPool* pool, uint64_t size);
+Pool_alloc(struct Pool* pool, uint64_t size);
 
 /**
  * dealloc allocated memory, must be allocated
@@ -54,7 +55,7 @@ Pool_alloc(CPool* pool, uint64_t size);
  * @param size allocated memory size
  */
 XCL_EXPORT void XCL_API
-Pool_dealloc(CPool* pool, void* ptr, uint64_t size);
+Pool_dealloc(struct Pool* pool, void* ptr, uint64_t size);
 
 /**
  * recycle old memory and alloc new size of memory
@@ -65,7 +66,7 @@ Pool_dealloc(CPool* pool, void* ptr, uint64_t size);
  * @return pointer if successfully, otherwise NULL
  */
 XCL_EXPORT void* XCL_API
-Pool_reapply(CPool* pool, void* ptr, uint64_t old, uint64_t req);
+Pool_reapply(struct Pool* pool, void* ptr, uint64_t old, uint64_t req);
 
 #ifdef __cplusplus
 }

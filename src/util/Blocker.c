@@ -3,36 +3,36 @@
 //
 
 #include <stdlib.h>
-#include "lang/XclErr.h"
-#include "util/Blocker.h"
-#include "concurrent/Cond.h"
-#include "pool/Pool.h"
+#include "lang/xcl_err.h"
+#include "util/blocker.h"
+#include "concurrent/cond.h"
+#include "pool/pool.h"
 
-struct _CBlocker_st {
+struct Blocker {
     int32_t wait;
     int32_t notify;
-    bool externalLock;
-    CMutex* mutex;
-    CCond* cond;
+    bool external_lock;
+    Mutex* mutex;
+    Cond* cond;
 };
 
 /**
  * get blocker state, if state is <= 0, blocker is in signaled
  * state; otherwise, blocker in blocking state
- * @param blocker CBlocker object
+ * @param blocker Blocker object
  * @return blocker current state
  */
 static inline int32_t
-__Blocker_state(CBlocker* blocker)
+__Blocker_state(Blocker* blocker)
 {
     return blocker->wait - blocker->notify;
 }
 
 static bool
-__Blocker_init(CBlocker* blocker, CMutex* mutex)
+__Blocker_init(Blocker* blocker, Mutex* mutex)
 {
     blocker->wait = blocker->notify = 0;
-    blocker->externalLock = mutex;
+    blocker->external_lock = mutex;
     if (mutex)
     {
         blocker->mutex = mutex;
@@ -56,15 +56,15 @@ __Blocker_init(CBlocker* blocker, CMutex* mutex)
     return false;
 }
 
-static CBlocker*
-__Blocker_new(CMutex* mutex)
+static Blocker*
+__Blocker_new(Mutex* mutex)
 {
-    CBlocker* blocker = Pool_alloc(Pool_def(), sizeof(CBlocker));
+    Blocker* blocker = Pool_alloc(Pool_def(), sizeof(Blocker));
     if (blocker)
     {
         if (!__Blocker_init(blocker, mutex))
         {
-            Pool_dealloc(Pool_def(), blocker, sizeof(CBlocker));
+            Pool_dealloc(Pool_def(), blocker, sizeof(Blocker));
             blocker = 0;
         }
     }
@@ -75,20 +75,20 @@ __Blocker_new(CMutex* mutex)
     return blocker;
 }
 
-XCL_EXPORT CBlocker* XCL_API
+XCL_EXPORT Blocker* XCL_API
 Blocker_new()
 {
     return __Blocker_new(NULL);
 }
 
-XCL_EXPORT CBlocker* XCL_API
-Blocker_new2(CMutex* mutex)
+XCL_EXPORT Blocker* XCL_API
+Blocker_new2(Mutex* mutex)
 {
     return __Blocker_new(mutex);
 }
 
 XCL_EXPORT bool XCL_API
-Blocker_delete(CBlocker* blocker)
+Blocker_delete(Blocker* blocker)
 {
     bool allow = false;
     if (!Mutex_lock(blocker->mutex))
@@ -102,18 +102,18 @@ Blocker_delete(CBlocker* blocker)
     Mutex_unlock(blocker->mutex);
     if (allow)
     {
-        if (!blocker->externalLock)
+        if (!blocker->external_lock)
         {
             Mutex_delete(blocker->mutex);
         }
         Cond_delete(blocker->cond);
-        Pool_dealloc(Pool_def(), blocker, sizeof(CBlocker));
+        Pool_dealloc(Pool_def(), blocker, sizeof(Blocker));
     }
     return allow;
 }
 
 XCL_EXPORT bool XCL_API
-Blocker_wait(CBlocker* blocker)
+Blocker_wait(Blocker* blocker)
 {
     if (!Mutex_lock(blocker->mutex))
     {
@@ -130,7 +130,7 @@ Blocker_wait(CBlocker* blocker)
 }
 
 XCL_EXPORT bool XCL_API
-Blocker_cancel(CBlocker* blocker)
+Blocker_cancel(Blocker* blocker)
 {
     if (!Mutex_lock(blocker->mutex))
     {
@@ -154,7 +154,7 @@ Blocker_cancel(CBlocker* blocker)
 }
 
 XCL_EXPORT bool XCL_API
-Blocker_wakeAll(CBlocker* blocker)
+Blocker_wakeAll(Blocker* blocker)
 {
     if (!Mutex_lock(blocker->mutex))
     {

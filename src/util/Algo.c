@@ -2,7 +2,7 @@
 // Created by xuyan on 2022/7/21.
 //
 
-#include "util/Algo.h"
+#include "util/algo.h"
 #include <string.h>
 #include <stdlib.h>
 

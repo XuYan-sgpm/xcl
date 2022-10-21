@@ -8,9 +8,9 @@
 extern "C" {
 #endif
 
-typedef struct _CMutex_st CMutex;
+typedef struct Mutex Mutex;
 
-#include "xcl/lang/XclDef.h"
+#include "xcl/lang/xcl_def.h"
 #include <stdbool.h>
 #include <stdint.h>
 
@@ -19,7 +19,7 @@ typedef struct _CMutex_st CMutex;
  * default is a recursive mutex
  * @return mutex object if succeed, otherwise return NULL
  */
-XCL_EXPORT CMutex* XCL_API
+XCL_EXPORT Mutex* XCL_API
 Mutex_new();
 
 /**
@@ -28,7 +28,7 @@ Mutex_new();
  * @return true if delete successfully, otherwise false
  */
 XCL_EXPORT bool XCL_API
-Mutex_delete(CMutex* mutex);
+Mutex_delete(Mutex* mutex);
 
 /**
  * lock a mutex
@@ -36,7 +36,7 @@ Mutex_delete(CMutex* mutex);
  * @return true if lock successfully
  */
 XCL_EXPORT bool XCL_API
-Mutex_lock(CMutex* mutex);
+Mutex_lock(Mutex* mutex);
 
 /**
  * release the mutex object
@@ -44,7 +44,7 @@ Mutex_lock(CMutex* mutex);
  * @return true if unlock successfully, otherwise false
  */
 XCL_EXPORT bool XCL_API
-Mutex_unlock(CMutex* mutex);
+Mutex_unlock(Mutex* mutex);
 
 /**
  * try lock mutex
@@ -52,7 +52,7 @@ Mutex_unlock(CMutex* mutex);
  * @return true if acquire mutex object successfully, otherwise false
  */
 XCL_EXPORT bool XCL_API
-Mutex_tryLock(CMutex* mutex);
+Mutex_tryLock(Mutex* mutex);
 
 /**
  * try lock mutex during timeout, return if acquire mutex successfully
@@ -62,7 +62,7 @@ Mutex_tryLock(CMutex* mutex);
  * @return true if lock mutex object during timeout, otherwise false
  */
 XCL_EXPORT bool XCL_API
-Mutex_tryLock2(CMutex* mutex, int32_t timeout);
+Mutex_tryLock2(Mutex* mutex, int32_t timeout);
 
 #ifdef __cplusplus
 }

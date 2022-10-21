@@ -5,14 +5,14 @@ extern "C" {
 #endif
 
 #include <stdbool.h>
-#include <xcl/lang/XclDef.h>
+#include <xcl/lang/xcl_def.h>
 #include <stdint.h>
 
 typedef struct {
     char* data;
     uint32_t state;
     int size;
-} CBuffer;
+} Buffer;
 
 /**
  * @brief make buffer object
@@ -21,7 +21,7 @@ typedef struct {
  * @author xuyan
  * @date 2022-08-01
  */
-XCL_EXPORT CBuffer XCL_API
+XCL_EXPORT Buffer XCL_API
 Buffer_make(int cap);
 
 /**
@@ -32,7 +32,7 @@ Buffer_make(int cap);
  * @author xuyan
  * @date 2022-08-01
  */
-XCL_EXPORT CBuffer XCL_API
+XCL_EXPORT Buffer XCL_API
 Buffer_newRegion(char* src, int len);
 
 /**
@@ -43,7 +43,7 @@ Buffer_newRegion(char* src, int len);
  * @date 2022-08-01
  */
 XCL_EXPORT int XCL_API
-Buffer_cap(const CBuffer* buffer);
+Buffer_cap(const Buffer* buffer);
 
 /**
  * @brief wrap buffer with specified str
@@ -53,7 +53,7 @@ Buffer_cap(const CBuffer* buffer);
  * @author xuyan
  * @date 2022-08-02
  */
-XCL_EXPORT CBuffer XCL_API
+XCL_EXPORT Buffer XCL_API
 wrapBuf(const char* src, int len);
 
 /**
@@ -65,8 +65,8 @@ wrapBuf(const char* src, int len);
  * @author xuyan
  * @date 2022-08-02
  */
-XCL_EXPORT CBuffer XCL_API
-wrapBuf2(const CBuffer* buffer, int pos, int len);
+XCL_EXPORT Buffer XCL_API
+wrapBuf2(const Buffer* buffer, int pos, int len);
 
 /**
  * @brief release buffer memory
@@ -76,7 +76,7 @@ wrapBuf2(const CBuffer* buffer, int pos, int len);
  * @date 2022-08-02
  */
 XCL_EXPORT bool XCL_API
-Buffer_release(CBuffer* buffer);
+Buffer_release(Buffer* buffer);
 
 /**
  * @brief push character to a buffer object
@@ -87,7 +87,7 @@ Buffer_release(CBuffer* buffer);
  * @date 2022-08-02
  */
 XCL_EXPORT bool XCL_API
-Buffer_push(CBuffer* buffer, char ch);
+Buffer_push(Buffer* buffer, char ch);
 
 /**
  * @brief append source region to buffer
@@ -99,7 +99,7 @@ Buffer_push(CBuffer* buffer, char ch);
  * @date 2022-08-02
  */
 XCL_EXPORT int XCL_API
-Buffer_appendRegion(CBuffer* buffer, const char* src, int len);
+Buffer_appendRegion(Buffer* buffer, const char* src, int len);
 
 /**
  * @brief append str to buffer
@@ -110,7 +110,7 @@ Buffer_appendRegion(CBuffer* buffer, const char* src, int len);
  * @date 2022-08-02
  */
 XCL_EXPORT int XCL_API
-Buffer_append(CBuffer* buffer, const char* src);
+Buffer_append(Buffer* buffer, const char* src);
 
 /**
  * @brief append characters to buffer
@@ -122,7 +122,7 @@ Buffer_append(CBuffer* buffer, const char* src);
  * @date 2022-08-03
  */
 XCL_EXPORT int XCL_API
-Buffer_appendChars(CBuffer* buffer, int n, char ch);
+Buffer_appendChars(Buffer* buffer, int n, char ch);
 
 /**
  * @brief pop character at first position of buffer
@@ -133,7 +133,7 @@ Buffer_appendChars(CBuffer* buffer, int n, char ch);
  * @date 2022-08-03
  */
 XCL_EXPORT bool XCL_API
-Buffer_pop(CBuffer* buffer, char* dst);
+Buffer_pop(Buffer* buffer, char* dst);
 
 /**
  * @brief get character at position of buffer
@@ -145,7 +145,7 @@ Buffer_pop(CBuffer* buffer, char* dst);
  * @date 2022-08-03
  */
 XCL_EXPORT bool XCL_API
-Buffer_get(const CBuffer* buffer, int pos, char* dst);
+Buffer_get(const Buffer* buffer, int pos, char* dst);
 
 /**
  * @brief write character at position
@@ -157,7 +157,7 @@ Buffer_get(const CBuffer* buffer, int pos, char* dst);
  * @date 2022-08-03
  */
 XCL_EXPORT bool XCL_API
-Buffer_writeChar(CBuffer* buffer, int pos, char ch);
+Buffer_writeChar(Buffer* buffer, int pos, char ch);
 
 /**
  * @brief write characters to the buffer
@@ -170,7 +170,7 @@ Buffer_writeChar(CBuffer* buffer, int pos, char ch);
  * @date 2022-08-03
  */
 XCL_EXPORT bool XCL_API
-Buffer_writeChars(CBuffer* buffer, int pos, int n, char ch);
+Buffer_writeChars(Buffer* buffer, int pos, int n, char ch);
 
 /**
  * @brief write characters of [src,src+len) to the buffer
@@ -183,7 +183,7 @@ Buffer_writeChars(CBuffer* buffer, int pos, int n, char ch);
  * @date 2022-08-03
  */
 XCL_EXPORT int XCL_API
-Buffer_writeRegion(CBuffer* buffer, int pos, const char* src, int len);
+Buffer_writeRegion(Buffer* buffer, int pos, const char* src, int len);
 
 /**
  * @brief write string to the buffer, string should be terminated by '\0'
@@ -195,7 +195,7 @@ Buffer_writeRegion(CBuffer* buffer, int pos, const char* src, int len);
  * @date 2022-08-03
  */
 XCL_EXPORT int XCL_API
-Buffer_write(CBuffer* buffer, int pos, const char* src);
+Buffer_write(Buffer* buffer, int pos, const char* src);
 
 /**
  * @brief read data at [pos,pos+len) from buffer, store data to dst
@@ -208,7 +208,7 @@ Buffer_write(CBuffer* buffer, int pos, const char* src);
  * @date 2022-08-03
  */
 XCL_EXPORT int XCL_API
-Buffer_readRegion(const CBuffer* buffer, int pos, char* dst, int len);
+Buffer_readRegion(const Buffer* buffer, int pos, char* dst, int len);
 
 /**
  * @brief read all data at [pos,size) from buffer, and store data to dst
@@ -220,7 +220,7 @@ Buffer_readRegion(const CBuffer* buffer, int pos, char* dst, int len);
  * @date 2022-08-03
  */
 XCL_EXPORT int XCL_API
-Buffer_read(const CBuffer* buffer, int pos, char* dst);
+Buffer_read(const Buffer* buffer, int pos, char* dst);
 
 /**
  * @brief expand buffer capacity to new cap, hold original buffer data.
@@ -232,7 +232,7 @@ Buffer_read(const CBuffer* buffer, int pos, char* dst);
  * @date 2022-08-03
  */
 XCL_EXPORT bool XCL_API
-Buffer_expand(CBuffer* buffer, int cap);
+Buffer_expand(Buffer* buffer, int cap);
 
 /**
  * @brief remove characters store at region [pos,pos+len) of buffer
@@ -243,7 +243,7 @@ Buffer_expand(CBuffer* buffer, int cap);
  * @date 2022-08-03
  */
 XCL_EXPORT void XCL_API
-Buffer_removeRegion(CBuffer* buffer, int pos, int len);
+Buffer_removeRegion(Buffer* buffer, int pos, int len);
 
 /**
  * @brief remove data store at pos of buffer
@@ -253,7 +253,7 @@ Buffer_removeRegion(CBuffer* buffer, int pos, int len);
  * @date 2022-08-03
  */
 XCL_EXPORT void XCL_API
-Buffer_removePos(CBuffer* buffer, int pos);
+Buffer_removePos(Buffer* buffer, int pos);
 
 /**
  * @brief clear buffer object
@@ -262,7 +262,7 @@ Buffer_removePos(CBuffer* buffer, int pos);
  * @date 2022-08-03
  */
 XCL_EXPORT void XCL_API
-Buffer_clear(CBuffer* buffer);
+Buffer_clear(Buffer* buffer);
 
 /**
  * @brief realloc buffer to cap. if buffer is wrapped from
@@ -276,7 +276,7 @@ Buffer_clear(CBuffer* buffer);
  * @date 2022-08-03
  */
 XCL_EXPORT bool XCL_API
-Buffer_remake(CBuffer* buffer, int cap);
+Buffer_remake(Buffer* buffer, int cap);
 
 /**
  * @brief get pointer at pos of buffer
@@ -287,7 +287,7 @@ Buffer_remake(CBuffer* buffer, int cap);
  * @date 2022-08-03
  */
 XCL_EXPORT char* XCL_API
-Buffer_at(const CBuffer* buffer, int pos);
+Buffer_at(const Buffer* buffer, int pos);
 
 #ifdef __cplusplus
 }

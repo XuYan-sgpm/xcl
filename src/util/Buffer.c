@@ -1,32 +1,32 @@
-#include "util/Buffer.h"
-#include "pool/Pool.h"
+#include "util/buffer.h"
+#include "pool/pool.h"
 #include <string.h>
 
 static const unsigned __BUF_MASK__ = 0x7fffffff;
 
 static inline bool
-__Buffer_isReleasable(CBuffer* buffer)
+__Buffer_isReleasable(Buffer* buffer)
 {
     return (buffer->state & ~__BUF_MASK__) >> 31;
 }
 
 static inline void
-__Buffer_setState(CBuffer* buffer, int cap, const bool flag)
+__Buffer_setState(Buffer* buffer, int cap, const bool flag)
 {
     int val = flag;
     buffer->state = (cap & __BUF_MASK__) | (val << 31);
 }
 
 static inline void
-__Buffer_dealloc(CBuffer* buffer)
+__Buffer_dealloc(Buffer* buffer)
 {
     if (buffer->data)
         Pool_dealloc(Pool_def(), buffer->data, Buffer_cap(buffer));
-    memset(buffer, 0, sizeof(CBuffer));
+    memset(buffer, 0, sizeof(Buffer));
 }
 
 static inline bool
-__Buffer_alloc(CBuffer* buffer, int32_t cap)
+__Buffer_alloc(Buffer* buffer, int32_t cap)
 {
     buffer->data = Pool_alloc(Pool_def(), cap);
     if (buffer->data)
@@ -38,7 +38,7 @@ __Buffer_alloc(CBuffer* buffer, int32_t cap)
 }
 
 static inline bool
-__Buffer_reapply(CBuffer* buffer, int32_t req)
+__Buffer_reapply(Buffer* buffer, int32_t req)
 {
     void* p = Pool_reapply(Pool_def(), buffer->data, Buffer_cap(buffer), req);
     if (p)
@@ -49,10 +49,10 @@ __Buffer_reapply(CBuffer* buffer, int32_t req)
     return p;
 }
 
-XCL_EXPORT CBuffer XCL_API
+XCL_EXPORT Buffer XCL_API
 Buffer_make(int cap)
 {
-    CBuffer buffer = {NULL, 0, 0};
+    Buffer buffer = {NULL, 0, 0};
     if (cap > 0)
     {
         __Buffer_alloc(&buffer, cap);
@@ -60,10 +60,10 @@ Buffer_make(int cap)
     return buffer;
 }
 
-XCL_EXPORT CBuffer XCL_API
+XCL_EXPORT Buffer XCL_API
 Buffer_newRegion(char* src, int len)
 {
-    CBuffer buffer = {NULL, 0, 0};
+    Buffer buffer = {NULL, 0, 0};
     if (src && len > 0)
     {
         buffer.data = src;
@@ -73,23 +73,23 @@ Buffer_newRegion(char* src, int len)
 }
 
 XCL_EXPORT int XCL_API
-Buffer_cap(const CBuffer* buffer)
+Buffer_cap(const Buffer* buffer)
 {
     return (int)(buffer->state & __BUF_MASK__);
 }
 
-XCL_EXPORT CBuffer XCL_API
+XCL_EXPORT Buffer XCL_API
 wrapBuf(const char* src, int len)
 {
-    CBuffer buffer = {(char*)src, 0, len};
+    Buffer buffer = {(char*)src, 0, len};
     __Buffer_setState(&buffer, len, false);
     return buffer;
 }
 
-XCL_EXPORT CBuffer XCL_API
-wrapBuf2(const CBuffer* origin, int pos, int len)
+XCL_EXPORT Buffer XCL_API
+wrapBuf2(const Buffer* origin, int pos, int len)
 {
-    CBuffer buffer = {NULL, 0, 0};
+    Buffer buffer = {NULL, 0, 0};
     if (origin && pos >= 0 && len >= 0 && pos + len <= origin->size)
     {
         buffer.size = len;
@@ -100,7 +100,7 @@ wrapBuf2(const CBuffer* origin, int pos, int len)
 }
 
 XCL_EXPORT bool XCL_API
-Buffer_release(CBuffer* buffer)
+Buffer_release(Buffer* buffer)
 {
     if (buffer->data && __Buffer_isReleasable(buffer))
     {
@@ -111,7 +111,7 @@ Buffer_release(CBuffer* buffer)
 }
 
 XCL_EXPORT bool XCL_API
-Buffer_push(CBuffer* buffer, char ch)
+Buffer_push(Buffer* buffer, char ch)
 {
     if (buffer->size < Buffer_cap(buffer))
     {
@@ -122,7 +122,7 @@ Buffer_push(CBuffer* buffer, char ch)
 }
 
 XCL_EXPORT int XCL_API
-Buffer_appendRegion(CBuffer* buffer, const char* src, int len)
+Buffer_appendRegion(Buffer* buffer, const char* src, int len)
 {
     if (len <= 0 || !src)
     {
@@ -139,13 +139,13 @@ Buffer_appendRegion(CBuffer* buffer, const char* src, int len)
 }
 
 XCL_EXPORT int XCL_API
-Buffer_append(CBuffer* buffer, const char* src)
+Buffer_append(Buffer* buffer, const char* src)
 {
     return src ? Buffer_appendRegion(buffer, src, strlen(src)) : 0;
 }
 
 XCL_EXPORT int XCL_API
-Buffer_appendChars(CBuffer* buffer, int n, char ch)
+Buffer_appendChars(Buffer* buffer, int n, char ch)
 {
     if (n <= 0)
     {
@@ -162,7 +162,7 @@ Buffer_appendChars(CBuffer* buffer, int n, char ch)
 }
 
 XCL_EXPORT bool XCL_API
-Buffer_pop(CBuffer* buffer, char* dst)
+Buffer_pop(Buffer* buffer, char* dst)
 {
     if (buffer->size)
     {
@@ -181,7 +181,7 @@ Buffer_pop(CBuffer* buffer, char* dst)
 }
 
 XCL_EXPORT bool XCL_API
-Buffer_get(const CBuffer* buffer, int pos, char* dst)
+Buffer_get(const Buffer* buffer, int pos, char* dst)
 {
     if (pos < 0 || pos >= buffer->size)
     {
@@ -195,7 +195,7 @@ Buffer_get(const CBuffer* buffer, int pos, char* dst)
 }
 
 XCL_EXPORT bool XCL_API
-Buffer_writeChar(CBuffer* buffer, int pos, char ch)
+Buffer_writeChar(Buffer* buffer, int pos, char ch)
 {
     if (pos >= 0 && pos <= buffer->size && buffer->size < Buffer_cap(buffer))
     {
@@ -213,7 +213,7 @@ Buffer_writeChar(CBuffer* buffer, int pos, char ch)
 }
 
 XCL_EXPORT bool XCL_API
-Buffer_writeChars(CBuffer* buffer, int pos, int n, char ch)
+Buffer_writeChars(Buffer* buffer, int pos, int n, char ch)
 {
     if (pos >= 0 && n >= 0 && buffer->size + n <= Buffer_cap(buffer))
     {
@@ -231,7 +231,7 @@ Buffer_writeChars(CBuffer* buffer, int pos, int n, char ch)
 }
 
 XCL_EXPORT int XCL_API
-Buffer_writeRegion(CBuffer* buffer, int pos, const char* src, int len)
+Buffer_writeRegion(Buffer* buffer, int pos, const char* src, int len)
 {
     if (pos > buffer->size || len <= 0 || !src)
     {
@@ -251,13 +251,13 @@ Buffer_writeRegion(CBuffer* buffer, int pos, const char* src, int len)
 }
 
 XCL_EXPORT int XCL_API
-Buffer_write(CBuffer* buffer, int pos, const char* src)
+Buffer_write(Buffer* buffer, int pos, const char* src)
 {
     return src ? Buffer_writeRegion(buffer, pos, src, strlen(src)) : 0;
 }
 
 XCL_EXPORT int XCL_API
-Buffer_readRegion(const CBuffer* buffer, int pos, char* dst, int len)
+Buffer_readRegion(const Buffer* buffer, int pos, char* dst, int len)
 {
     if (pos >= buffer->size || len <= 0)
     {
@@ -277,7 +277,7 @@ Buffer_readRegion(const CBuffer* buffer, int pos, char* dst, int len)
 }
 
 XCL_EXPORT int XCL_API
-Buffer_read(const CBuffer* buffer, int pos, char* dst)
+Buffer_read(const Buffer* buffer, int pos, char* dst)
 {
     if (buffer->size - pos > 0)
     {
@@ -287,7 +287,7 @@ Buffer_read(const CBuffer* buffer, int pos, char* dst)
 }
 
 XCL_EXPORT bool XCL_API
-Buffer_expand(CBuffer* buffer, int cap)
+Buffer_expand(Buffer* buffer, int cap)
 {
     if (cap <= Buffer_cap(buffer))
     {
@@ -296,7 +296,7 @@ Buffer_expand(CBuffer* buffer, int cap)
     {
         if (!buffer->data || !__Buffer_isReleasable(buffer))
         {
-            CBuffer newBuf = Buffer_make(cap);
+            Buffer newBuf = Buffer_make(cap);
             if (!newBuf.data)
             {
                 return false;
@@ -307,7 +307,7 @@ Buffer_expand(CBuffer* buffer, int cap)
         {
             if (!__Buffer_reapply(buffer, cap))
             {
-                CBuffer newBuf = Buffer_make(cap);
+                Buffer newBuf = Buffer_make(cap);
                 if (newBuf.data)
                 {
                     memcpy(newBuf.data, buffer->data, buffer->size);
@@ -326,7 +326,7 @@ Buffer_expand(CBuffer* buffer, int cap)
 }
 
 XCL_EXPORT void XCL_API
-Buffer_removeRegion(CBuffer* buffer, int pos, int len)
+Buffer_removeRegion(Buffer* buffer, int pos, int len)
 {
     if (pos >= 0 && len >= 0 && pos + len <= buffer->size)
     {
@@ -341,13 +341,13 @@ Buffer_removeRegion(CBuffer* buffer, int pos, int len)
 }
 
 XCL_EXPORT void XCL_API
-Buffer_removePos(CBuffer* buffer, int pos)
+Buffer_removePos(Buffer* buffer, int pos)
 {
     Buffer_removeRegion(buffer, pos, 1);
 }
 
 XCL_EXPORT void XCL_API
-Buffer_clear(CBuffer* buffer)
+Buffer_clear(Buffer* buffer)
 {
     if (buffer->size > 0)
     {
@@ -356,7 +356,7 @@ Buffer_clear(CBuffer* buffer)
 }
 
 XCL_EXPORT bool XCL_API
-Buffer_remake(CBuffer* buffer, int cap)
+Buffer_remake(Buffer* buffer, int cap)
 {
     if (cap < 0)
     {
@@ -370,7 +370,7 @@ Buffer_remake(CBuffer* buffer, int cap)
     {
         if (!__Buffer_isReleasable(buffer))
         {
-            CBuffer newBuf = Buffer_make(cap);
+            Buffer newBuf = Buffer_make(cap);
             if (!newBuf.data)
             {
                 return false;
@@ -395,7 +395,7 @@ Buffer_remake(CBuffer* buffer, int cap)
 }
 
 XCL_EXPORT char* XCL_API
-Buffer_at(const CBuffer* buffer, int pos)
+Buffer_at(const Buffer* buffer, int pos)
 {
     if (pos >= 0 && pos <= buffer->size)
     {

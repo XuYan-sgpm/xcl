@@ -5,9 +5,9 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-#include <xcl/lang/XclDef.h>
+#include <xcl/lang/xcl_def.h>
 
-typedef struct _CConfig_st Config;
+typedef struct Config Config;
 
 /*
  * create config from specified ini path
@@ -16,7 +16,7 @@ XCL_EXPORT Config* XCL_API
 Config_new(const char* storePath);
 
 /*
- * create config from usr specified stream
+ * create config from obj specified stream
  */
 XCL_EXPORT Config* XCL_API
 Config_newFromStream(void* stream, int32_t (*reader)(void*, char*, int32_t));
@@ -50,7 +50,7 @@ XCL_EXPORT int32_t XCL_API
 Config_flushToPath(Config* config, const char* storePath);
 
 /*
- * flush config data to usr specified stream
+ * flush config data to obj specified stream
  * write data only contains available data without
  * comment string and useless blank lines
  */

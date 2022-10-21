@@ -2,77 +2,77 @@
 // Created by xuyan on 2022/7/21.
 //
 
-#include "lang/Thread.h"
-#include "lang/XclErr.h"
-#include "lang/LocalStorage.h"
-#include "lang/InterThreadApi.h"
-#include "pool/Pool.h"
+#include "lang/thread.h"
+#include "lang/xcl_err.h"
+#include "lang/local_storage.h"
+#include "lang/inter_thread_api.h"
+#include "pool/pool.h"
 
 void
 __Thread_run(void* args)
 {
     typedef void (*Proc)(void*);
     Proc run = (Proc)((uintptr_t*)args)[0];
-    void* usr = (void*)((uintptr_t*)args)[1];
-    run(usr);
-    CLocalStorage* localStorage = __Thread_getLocalStorage();
-    if (localStorage)
+    void* obj = (void*)((uintptr_t*)args)[1];
+    run(obj);
+    LocalStorage* local_storage = __Thread_getLocalStorage();
+    if (local_storage)
     {
         __Thread_setLocalStorage(0);
-        LocalStorage_delete(localStorage);
+        LocalStorage_delete(local_storage);
     }
     Pool_dealloc(Pool_def(), args, sizeof(uintptr_t) << 1);
 }
 
-XCL_EXPORT CThread XCL_API
-Thread_create(void (*proc)(void*), void* usr)
+XCL_EXPORT Thread XCL_API
+Thread_create(void (*proc)(void*), void* obj)
 {
     uintptr_t* args = Pool_alloc(Pool_def(), sizeof(uintptr_t) << 1);
     if (!args)
     {
         Err_set(XCL_MEMORY_ERR);
-        return (CThread){0};
+        return (Thread){0};
     }
     args[0] = (uintptr_t)proc;
-    args[1] = (uintptr_t)usr;
+    args[1] = (uintptr_t)obj;
     uintptr_t handle = __Thread_createHandle(args);
-    return (CThread){handle};
+    return (Thread){handle};
 }
 
 XCL_EXPORT bool XCL_API
-Thread_valid(CThread thread)
+Thread_valid(Thread thread)
 {
     return thread.handle;
 }
 
 XCL_EXPORT bool XCL_API
-Thread_join(CThread* thread)
+Thread_join(Thread* thread)
 {
     return Thread_join2(thread, -1);
 }
 
 XCL_EXPORT bool XCL_API
-Thread_join2(CThread* thread, int32_t timeout)
+Thread_join2(Thread* thread, int32_t timeout)
 {
     return __Thread_joinFor(thread->handle, timeout);
 }
 
 XCL_EXPORT bool XCL_API
-Thread_alive(CThread* thread)
+Thread_alive(Thread* thread)
 {
     return __Thread_alive(thread->handle);
 }
 
 XCL_EXPORT bool XCL_API
-Thread_detach(CThread* thread)
+Thread_detach(Thread* thread)
 {
     return __Thread_detach(thread->handle);
 }
 
-XCL_EXPORT CThread XCL_API
+XCL_EXPORT Thread XCL_API
 Thread_current()
 {
-    return (CThread){__Thread_currentHandle()};
+    return (Thread){__Thread_currentHandle()};
 }
 
 XCL_EXPORT unsigned long XCL_API

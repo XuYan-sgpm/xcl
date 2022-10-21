@@ -1,5 +1,5 @@
-#include "util/List.h"
-#include "pool/Pool.h"
+#include "util/list.h"
+#include "pool/pool.h"
 
 #include <stdlib.h>
 
@@ -7,7 +7,7 @@
  * link prev and next
  */
 static inline void
-__List_link(CListNode* prev, CListNode* next)
+__List_link(ListNode* prev, ListNode* next)
 {
     if (prev)
     {
@@ -24,7 +24,7 @@ __List_link(CListNode* prev, CListNode* next)
  * but not free
  */
 static inline void
-__List_unlink(CListNode* node)
+__List_unlink(ListNode* node)
 {
     if (node)
     {
@@ -40,20 +40,20 @@ __List_unlink(CListNode* node)
     }
 }
 
-struct _CList {
-    CListNode header;
+struct List {
+    ListNode header;
 };
 
 static void
-__List_init(CList* list)
+__List_init(List* list)
 {
     __List_link(&list->header, &list->header);
 }
 
-XCL_EXPORT CList* XCL_API
+XCL_EXPORT List* XCL_API
 List_new()
 {
-    CList* list = (CList*)Pool_alloc(Pool_def(), sizeof(CList));
+    List* list = (List*)Pool_alloc(Pool_def(), sizeof(List));
     if (list)
     {
         __List_init(list);
@@ -62,59 +62,59 @@ List_new()
 }
 
 XCL_EXPORT bool XCL_API
-List_delete(CList* list)
+List_delete(List* list)
 {
     if (!List_empty(list))
     {
         return false;
     }
-    Pool_dealloc(Pool_def(), list, sizeof(CList));
+    Pool_dealloc(Pool_def(), list, sizeof(List));
     return true;
 }
 
-XCL_EXPORT CListIter XCL_API
-List_begin(CList* list)
+XCL_EXPORT ListIter XCL_API
+List_begin(List* list)
 {
-    CListIter it = {&list->header, list->header.next};
+    ListIter it = {&list->header, list->header.next};
     return it;
 }
 
-XCL_EXPORT CListIter XCL_API
-List_end(CList* list)
+XCL_EXPORT ListIter XCL_API
+List_end(List* list)
 {
-    CListIter it = {&list->header, &list->header};
+    ListIter it = {&list->header, &list->header};
     return it;
 }
 
-XCL_EXPORT CListIter XCL_API
-List_prev(CListIter it)
+XCL_EXPORT ListIter XCL_API
+List_prev(ListIter it)
 {
-    CListIter prevIt = {it.terminator, it.cur->prev};
+    ListIter prevIt = {it.terminator, it.cur->prev};
     return prevIt;
 }
 
-XCL_EXPORT CListIter XCL_API
-List_next(CListIter it)
+XCL_EXPORT ListIter XCL_API
+List_next(ListIter it)
 {
-    CListIter nextIt = {it.terminator, it.cur->next};
+    ListIter nextIt = {it.terminator, it.cur->next};
     return nextIt;
 }
 
 XCL_EXPORT void XCL_API
-List_push(CList* list, CListNode* node)
+List_push(List* list, ListNode* node)
 {
     __List_link(list->header.prev, node);
     __List_link(node, &list->header);
 }
 
 XCL_EXPORT bool XCL_API
-List_iterEquals(CListIter it1, CListIter it2)
+List_iterEquals(ListIter it1, ListIter it2)
 {
     return it1.cur == it2.cur;
 }
 
 XCL_EXPORT bool XCL_API
-List_add(CList* list, CListIter pos, CListNode* node)
+List_add(List* list, ListIter pos, ListNode* node)
 {
     if (!node || pos.terminator != &list->header)
     {
@@ -126,7 +126,7 @@ List_add(CList* list, CListIter pos, CListNode* node)
 }
 
 XCL_EXPORT void XCL_API
-List_pushFront(CList* list, CListNode* node)
+List_pushFront(List* list, ListNode* node)
 {
     if (!node)
     {
@@ -136,10 +136,10 @@ List_pushFront(CList* list, CListNode* node)
     __List_link(&list->header, node);
 }
 
-XCL_EXPORT CListNode* XCL_API
-List_pop(CList* list)
+XCL_EXPORT ListNode* XCL_API
+List_pop(List* list)
 {
-    CListNode* node = list->header.next;
+    ListNode* node = list->header.next;
     if (node == &list->header)
     {
         return NULL;
@@ -148,10 +148,10 @@ List_pop(CList* list)
     return node;
 }
 
-XCL_EXPORT CListNode* XCL_API
-List_popBack(CList* list)
+XCL_EXPORT ListNode* XCL_API
+List_popBack(List* list)
 {
-    CListNode* node = list->header.prev;
+    ListNode* node = list->header.prev;
     if (node != &list->header)
     {
         __List_unlink(node);
@@ -160,11 +160,11 @@ List_popBack(CList* list)
     return NULL;
 }
 
-XCL_EXPORT CListIter XCL_API
-List_peekFirst(CList* list)
+XCL_EXPORT ListIter XCL_API
+List_peekFirst(List* list)
 {
-    CListIter it = {&list->header, &list->header};
-    CListNode* node = list->header.next;
+    ListIter it = {&list->header, &list->header};
+    ListNode* node = list->header.next;
     if (node != it.terminator)
     {
         it.cur = node;
@@ -172,11 +172,11 @@ List_peekFirst(CList* list)
     return it;
 }
 
-XCL_EXPORT CListIter XCL_API
-List_peekLast(CList* list)
+XCL_EXPORT ListIter XCL_API
+List_peekLast(List* list)
 {
-    CListIter it = {&list->header, &list->header};
-    CListNode* node = list->header.prev;
+    ListIter it = {&list->header, &list->header};
+    ListNode* node = list->header.prev;
     if (node != it.terminator)
     {
         it.cur = node;
@@ -184,24 +184,24 @@ List_peekLast(CList* list)
     return it;
 }
 
-XCL_EXPORT CListIter XCL_API
-List_remove(CList* list, CListIter iter)
+XCL_EXPORT ListIter XCL_API
+List_remove(List* list, ListIter iter)
 {
     if (iter.terminator != &list->header || iter.cur == iter.terminator)
     {
         return List_end(list);
     }
-    CListNode* node = iter.cur;
-    CListNode* next = node->next;
+    ListNode* node = iter.cur;
+    ListNode* next = node->next;
     __List_unlink(iter.cur);
-    return (CListIter){&list->header, next};
+    return (ListIter){&list->header, next};
 }
 
-XCL_EXPORT CListIter XCL_API
-List_query(CList* list, const void* value, int (*cmp)(const void*, const void*))
+XCL_EXPORT ListIter XCL_API
+List_query(List* list, const void* value, int (*cmp)(const void*, const void*))
 {
-    CListNode* cur = list->header.next;
-    CListIter it = {&list->header, &list->header};
+    ListNode* cur = list->header.next;
+    ListIter it = {&list->header, &list->header};
     while (cur != &list->header)
     {
         if (cmp(cur->data, value) == 0)
@@ -214,18 +214,18 @@ List_query(CList* list, const void* value, int (*cmp)(const void*, const void*))
     return it;
 }
 
-XCL_EXPORT CListIter XCL_API
-List_query2(CList* list,
-            CListIter pos,
+XCL_EXPORT ListIter XCL_API
+List_query2(List* list,
+            ListIter pos,
             const void* value,
             int (*cmp)(const void*, const void*))
 {
-    CListIter it = List_end(list);
+    ListIter it = List_end(list);
     if (pos.terminator != &list->header)
     {
         return it;
     }
-    CListNode* cur = pos.cur;
+    ListNode* cur = pos.cur;
     while (cur != &list->header)
     {
         if (cmp(cur->data, value) == 0)
@@ -239,10 +239,10 @@ List_query2(CList* list,
 }
 
 XCL_EXPORT uint32_t XCL_API
-List_size(CList* list)
+List_size(List* list)
 {
     int size = 0;
-    CListNode* cur = list->header.next;
+    ListNode* cur = list->header.next;
     while (cur != &list->header)
     {
         ++size;
@@ -251,17 +251,17 @@ List_size(CList* list)
 }
 
 XCL_EXPORT bool XCL_API
-List_empty(CList* list)
+List_empty(List* list)
 {
     return list->header.next == &list->header;
 }
 
 XCL_EXPORT bool XCL_API
-List_spliceRange(CList* list,
-                 CListIter pos,
-                 CList* other,
-                 CListIter first,
-                 CListIter last)
+List_spliceRange(List* list,
+                 ListIter pos,
+                 List* other,
+                 ListIter first,
+                 ListIter last)
 {
     if (pos.terminator != &list->header || first.terminator != &other->header
         || last.terminator != &other->header)
@@ -272,15 +272,15 @@ List_spliceRange(CList* list,
     {
         return true;
     }
-    CListNode* lastRemoved = last.cur->prev;
+    ListNode* last_removed = last.cur->prev;
     __List_link(first.cur->prev, last.cur);
     __List_link(pos.cur->prev, first.cur);
-    __List_link(lastRemoved, pos.cur);
+    __List_link(last_removed, pos.cur);
     return true;
 }
 
 XCL_EXPORT bool XCL_API
-List_splice(CList* list, CListIter pos, CList* other, CListIter it)
+List_splice(List* list, ListIter pos, List* other, ListIter it)
 {
     if (it.terminator != &other->header || pos.terminator != &list->header
         || it.cur == it.terminator)
@@ -294,7 +294,7 @@ List_splice(CList* list, CListIter pos, CList* other, CListIter it)
 }
 
 XCL_EXPORT bool XCL_API
-List_spliceAll(CList* list, CListIter pos, CList* other)
+List_spliceAll(List* list, ListIter pos, List* other)
 {
     if (pos.terminator != &list->header)
     {
@@ -304,11 +304,11 @@ List_spliceAll(CList* list, CListIter pos, CList* other)
     {
         return true;
     }
-    CListNode* first = other->header.next;
-    CListNode* lastRemoved = other->header.prev;
+    ListNode* first = other->header.next;
+    ListNode* last_removed = other->header.prev;
     __List_link(first->prev, &other->header);
     __List_link(pos.cur->prev, first);
-    __List_link(lastRemoved, pos.cur);
+    __List_link(last_removed, pos.cur);
     return true;
 }
 
@@ -316,10 +316,10 @@ List_spliceAll(CList* list, CListIter pos, CList* other)
  * merge list2 into list1 with cmp
  */
 static void
-__List_merge(CList* list1, CList* list2, int (*cmp)(const void*, const void*))
+__List_merge(List* list1, List* list2, int (*cmp)(const void*, const void*))
 {
-    CListIter it1 = List_begin(list1);
-    CListIter it2 = List_begin(list2);
+    ListIter it1 = List_begin(list1);
+    ListIter it2 = List_begin(list2);
     while (it1.cur != it1.terminator && it2.cur != it2.terminator)
     {
         int ret = cmp(it1.cur->data, it2.cur->data);
@@ -329,7 +329,7 @@ __List_merge(CList* list1, CList* list2, int (*cmp)(const void*, const void*))
         }
         else
         {
-            CListIter it3 = List_next(it2);
+            ListIter it3 = List_next(it2);
             while (it3.cur != it3.terminator)
             {
                 if (cmp(it1.cur->data, it3.cur->data) < 0)
@@ -349,15 +349,15 @@ __List_merge(CList* list1, CList* list2, int (*cmp)(const void*, const void*))
 }
 
 XCL_EXPORT void XCL_API
-List_sort(CList* list, int (*cmp)(const void*, const void*))
+List_sort(List* list, int (*cmp)(const void*, const void*))
 {
     if (List_empty(list) || list->header.next->next == &list->header)
     {
         return;
     }
-    CList carry;
-    char data[64 * sizeof(CList)];
-    CList* tmp = (CList*)data;
+    List carry;
+    char data[64 * sizeof(List)];
+    List* tmp = (List*)data;
     for (int i = 0; i < 64; i++)
     {
         __List_init(&tmp[i]);

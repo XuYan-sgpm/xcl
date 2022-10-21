@@ -2,8 +2,8 @@
 // Created by xuyan on 2022/7/4.
 //
 
-#include "lang/XclErr.h"
-#include "lang/System.h"
+#include "lang/xcl_err.h"
+#include "lang/system.h"
 #include <Windows.h>
 #include <profileapi.h>
 #include <stdbool.h>
@@ -78,7 +78,7 @@ __Win32_wait(HANDLE handle, DWORD timeout)
 }
 
 XCL_EXPORT bool XCL_API
-getCwd(__FilePathChr* cwd, int32_t len)
+getCwd(TChar* cwd, int32_t len)
 {
     if (!cwd)
     {

@@ -10,7 +10,7 @@ extern "C" {
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "xcl/lang/XclDef.h"
+#include "xcl/lang/xcl_def.h"
 
 /**
  * translate int16_t to bytes

@@ -12,7 +12,7 @@ extern "C" {
 #endif
 
 #include <stdint.h>
-#include "xcl/lang/XclDef.h"
+#include "xcl/lang/xcl_def.h"
 #include <stdbool.h>
 
 typedef uintptr_t ThreadHandle;
@@ -21,16 +21,16 @@ typedef uintptr_t ThreadHandle;
 
 typedef struct {
     ThreadHandle handle;
-} CThread;
+} Thread;
 
 /**
  * create a thread object
  * @param proc thread run proc
- * @param usr thread run args
+ * @param obj thread run args
  * @return thread object
  */
-XCL_EXPORT CThread XCL_API
-Thread_create(void (*proc)(void*), void* usr);
+XCL_EXPORT Thread XCL_API
+Thread_create(void (*proc)(void*), void* obj);
 
 /**
  * check whether thread object returned by Thread_create is valid
@@ -38,7 +38,7 @@ Thread_create(void (*proc)(void*), void* usr);
  * @return true if thread object is valid, otherwise false
  */
 XCL_EXPORT bool XCL_API
-Thread_valid(CThread thread);
+Thread_valid(Thread thread);
 
 /**
  * wait util thread is terminated
@@ -46,7 +46,7 @@ Thread_valid(CThread thread);
  * @return true if join thread successfully, otherwise false
  */
 XCL_EXPORT bool XCL_API
-Thread_join(CThread* thread);
+Thread_join(Thread* thread);
 
 /**
  * wait thread util terminated or timeout expired
@@ -56,7 +56,7 @@ Thread_join(CThread* thread);
  * otherwise false
  */
 XCL_EXPORT bool XCL_API
-Thread_join2(CThread* thread, int32_t timeout);
+Thread_join2(Thread* thread, int32_t timeout);
 
 /**
  * check whether thread is still alive
@@ -64,7 +64,7 @@ Thread_join2(CThread* thread, int32_t timeout);
  * @return true if thread is alive, otherwise false
  */
 XCL_EXPORT bool XCL_API
-Thread_alive(CThread* thread);
+Thread_alive(Thread* thread);
 
 /**
  * detach thread
@@ -72,7 +72,7 @@ Thread_alive(CThread* thread);
  * @return true if detach operation succeed, otherwise false
  */
 XCL_EXPORT bool XCL_API
-Thread_detach(CThread* thread);
+Thread_detach(Thread* thread);
 
 /**
  * get current thread object
@@ -80,7 +80,7 @@ Thread_detach(CThread* thread);
  * will be invalid
  * @return current running thread object
  */
-XCL_EXPORT CThread XCL_API
+XCL_EXPORT Thread XCL_API
 Thread_current();
 
 /**

@@ -2,23 +2,23 @@
 // Created by xy on 7/10/22.
 //
 
-#include "lang/System.h"
-#include "pool/Pool.h"
+#include "lang/system.h"
+#include "pool/pool.h"
 #include <errno.h>
 #include <pthread.h>
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
-#include <concurrent/Mutex.h>
+#include <concurrent/mutex.h>
 
-struct _CMutex_st {
+struct Mutex {
     pthread_mutex_t handle;
 };
 
 bool
-__Mutex_init(CMutex* mutex)
+__Mutex_init(Mutex* mutex)
 {
-    memset(mutex, 0, sizeof(CMutex));
+    memset(mutex, 0, sizeof(Mutex));
     pthread_mutexattr_t attr;
     pthread_mutexattr_init(&attr);
     pthread_mutexattr_settype(&attr, PTHREAD_MUTEX_RECURSIVE);
@@ -31,15 +31,15 @@ __Mutex_init(CMutex* mutex)
     return false;
 }
 
-CMutex*
-__Mutex_newByPool(CPool* pool)
+Mutex*
+__Mutex_newByPool(struct Pool* pool)
 {
-    CMutex* mutex = Pool_alloc(pool, sizeof(CMutex));
+    Mutex* mutex = Pool_alloc(pool, sizeof(Mutex));
     if (mutex)
     {
         if (!__Mutex_init(mutex))
         {
-            Pool_dealloc(pool, mutex, sizeof(CMutex));
+            Pool_dealloc(pool, mutex, sizeof(Mutex));
         }
         else
         {
@@ -50,12 +50,12 @@ __Mutex_newByPool(CPool* pool)
 }
 
 bool
-__Mutex_deleteByPool(CMutex* mutex, CPool* pool)
+__Mutex_deleteByPool(Mutex* mutex, struct Pool* pool)
 {
     if (mutex)
     {
         int ret = pthread_mutex_destroy(&mutex->handle);
-        Pool_dealloc(pool, mutex, sizeof(CMutex));
+        Pool_dealloc(pool, mutex, sizeof(Mutex));
         if (ret != 0)
             errno = ret;
         return !ret;
@@ -63,20 +63,20 @@ __Mutex_deleteByPool(CMutex* mutex, CPool* pool)
     return false;
 }
 
-XCL_EXPORT CMutex* XCL_API
+XCL_EXPORT Mutex* XCL_API
 Mutex_new()
 {
     return __Mutex_newByPool(Pool_def());
 }
 
 XCL_EXPORT bool XCL_API
-Mutex_delete(CMutex* mutex)
+Mutex_delete(Mutex* mutex)
 {
     return __Mutex_deleteByPool(mutex, Pool_def());
 }
 
 XCL_EXPORT bool XCL_API
-Mutex_lock(CMutex* mutex)
+Mutex_lock(Mutex* mutex)
 {
     if (mutex)
     {
@@ -91,7 +91,7 @@ Mutex_lock(CMutex* mutex)
 }
 
 XCL_EXPORT bool XCL_API
-Mutex_unlock(CMutex* mutex)
+Mutex_unlock(Mutex* mutex)
 {
     if (mutex)
     {
@@ -104,7 +104,7 @@ Mutex_unlock(CMutex* mutex)
 }
 
 XCL_EXPORT bool XCL_API
-Mutex_tryLock(CMutex* mutex)
+Mutex_tryLock(Mutex* mutex)
 {
     if (mutex)
     {
@@ -117,7 +117,7 @@ Mutex_tryLock(CMutex* mutex)
 }
 
 XCL_EXPORT bool XCL_API
-Mutex_tryLock2(CMutex* mutex, int32_t timeout)
+Mutex_tryLock2(Mutex* mutex, int32_t timeout)
 {
     if (mutex)
     {
@@ -140,10 +140,10 @@ Mutex_tryLock2(CMutex* mutex, int32_t timeout)
             errno = ret;
         return !ret;
 #else
-        int64_t nanoTimeout = (int64_t)timeout * 1000000L;
-        int64_t totalWait = 0;
+        int64_t nano_timeout = (int64_t)timeout * 1000000L;
+        int64_t total_wait = 0;
         int64_t st = nanos();
-        while (totalWait < nanoTimeout)
+        while (total_wait < nano_timeout)
         {
             if ((pthread_mutex_trylock(&mutex->handle)) == 0)
             {
@@ -155,7 +155,7 @@ Mutex_tryLock2(CMutex* mutex, int32_t timeout)
 #else
             usleep(1000);
 #endif
-            totalWait = nanos() - st;
+            total_wait = nanos() - st;
         }
         int ret = pthread_mutex_trylock(&mutex->handle);
         if (ret)

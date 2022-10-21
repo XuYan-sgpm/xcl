@@ -7,7 +7,7 @@ __CXX__ = ['.cc', '.cpp', '.cxx', '.c', '.h', '.hpp', '.hxx']
 __CMAKE_FORMAT_SETTINGS__ = '.cmake-format.py'
 
 
-def getCmakeFormatSettings():
+def get_cmake_format_settings():
     global __CMAKE_FORMAT_SETTINGS__
     settingsPath = os.path.join('.', __CMAKE_FORMAT_SETTINGS__)
     if os.path.exists(settingsPath):
@@ -21,7 +21,7 @@ def getCmakeFormatSettings():
     print(__CMAKE_FORMAT_SETTINGS__)
 
 
-def isExcluded(folder_name):
+def is_excluded(folder_name):
     global __EXCLUDES__
     for exclude in __EXCLUDES__:
         if exclude == folder_name:
@@ -29,7 +29,7 @@ def isExcluded(folder_name):
     return 0
 
 
-def handleFileType(file_name: str):
+def handle_file_type(file_name: str):
     global __CXX__
     dot = file_name.rfind('.')
     if dot == -1:
@@ -39,13 +39,13 @@ def handleFileType(file_name: str):
         if fmt == cxx:
             return 1
     if file_name == 'CMakeLists.txt':
-            return 2
+        return 2
     if fmt == '.cmake':
         return 2
     return 0
 
 
-def formatFiles(folder):
+def format_files(folder):
     if not os.path.exists(folder):
         print('path {} is not exists'.format(folder))
         return
@@ -53,12 +53,12 @@ def formatFiles(folder):
     for name in names:
         absPath = os.path.join(folder, name)
         if os.path.isdir(absPath):
-            if isExcluded(name):
+            if is_excluded(name):
                 print('ignore folder:{}'.format(absPath))
             else:
-                formatFiles(absPath)
+                format_files(absPath)
             continue
-        code = handleFileType(name)
+        code = handle_file_type(name)
         if code == 0:
             continue
         cmd = None
@@ -76,5 +76,5 @@ def formatFiles(folder):
 
 
 if __name__ == '__main__':
-    getCmakeFormatSettings()
-    formatFiles('.')
+    get_cmake_format_settings()
+    format_files('.')

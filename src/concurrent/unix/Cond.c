@@ -5,38 +5,38 @@
 #include <errno.h>
 #include <pthread.h>
 #include <string.h>
-#include <concurrent/Cond.h>
-#include "pool/Pool.h"
+#include <concurrent/cond.h>
+#include "pool/pool.h"
 
-struct _CCond_st {
+struct Cond {
     pthread_cond_t handle;
 };
 
-XCL_EXPORT CCond* XCL_API
+XCL_EXPORT Cond* XCL_API
 Cond_new()
 {
-    CCond* cond = Pool_alloc(Pool_def(), sizeof(CCond));
+    Cond* cond = Pool_alloc(Pool_def(), sizeof(Cond));
     if (cond)
     {
-        memset(cond, 0, sizeof(CCond));
+        memset(cond, 0, sizeof(Cond));
         int ret = pthread_cond_init(&cond->handle, NULL);
         if (ret == 0)
         {
             return cond;
         }
         errno = ret;
-        Pool_dealloc(Pool_def(), cond, sizeof(CCond));
+        Pool_dealloc(Pool_def(), cond, sizeof(Cond));
     }
     return NULL;
 }
 
 XCL_EXPORT bool XCL_API
-Cond_delete(CCond* cond)
+Cond_delete(Cond* cond)
 {
     if (cond)
     {
-        int ret = pthread_cond_destroy(&((CCond*)cond)->handle);
-        Pool_dealloc(Pool_def(), cond, sizeof(CCond));
+        int ret = pthread_cond_destroy(&((Cond*)cond)->handle);
+        Pool_dealloc(Pool_def(), cond, sizeof(Cond));
         if (ret)
             errno = ret;
         return !ret;
@@ -45,7 +45,7 @@ Cond_delete(CCond* cond)
 }
 
 XCL_EXPORT bool XCL_API
-Cond_wait(CMutex* mutex, CCond* cond)
+Cond_wait(Mutex* mutex, Cond* cond)
 {
     if (mutex && cond)
     {
@@ -58,7 +58,7 @@ Cond_wait(CMutex* mutex, CCond* cond)
 }
 
 XCL_EXPORT bool XCL_API
-Cond_waitFor(CMutex* mutex, CCond* cond, int32_t millis)
+Cond_waitFor(Mutex* mutex, Cond* cond, int32_t millis)
 {
     if (mutex && cond)
     {
@@ -77,7 +77,7 @@ Cond_waitFor(CMutex* mutex, CCond* cond, int32_t millis)
 }
 
 XCL_EXPORT bool XCL_API
-Cond_signal(CCond* cond)
+Cond_signal(Cond* cond)
 {
     if (cond)
     {
@@ -90,7 +90,7 @@ Cond_signal(CCond* cond)
 }
 
 XCL_EXPORT bool XCL_API
-Cond_signalAll(CCond* cond)
+Cond_signalAll(Cond* cond)
 {
     if (cond)
     {

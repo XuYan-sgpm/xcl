@@ -1,6 +1,7 @@
 set_arch_compile_flags(${COMPILE_X86_TARGET})
 if(MSVC)
-
+    message(STATUS "debug msvc:${CMAKE_BUILD_TYPE}")
+    # set(LIBRARY_OUTPUT_PATH ${LIBRARY_OUTPUT_PATH}/${CMAKE_BUILD_TYPE})
 else()
     if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
         if(COMPILE_X86_TARGET)

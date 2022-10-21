@@ -4,7 +4,7 @@
 
 #pragma once
 
-#include "xcl/lang/XclDef.h"
+#include "xcl/lang/xcl_def.h"
 #include <cstdint>
 
 namespace xcl
