@@ -1,0 +1,15 @@
+.idea
+cmake-build-debug
+cmake-build-release
+lib
+*.sh
+*.bat
+bin
+build
+.vs
+out
+*.json
+*.code-workspace
+.DS_Store
+.vscode
+.cmake-format.py
