@@ -1,4 +1,4 @@
-set_arch_compile_flags(${COMPILE_X86_TARGET})
+# set_arch_compile_flags(${COMPILE_X86_TARGET})
 
 if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
 

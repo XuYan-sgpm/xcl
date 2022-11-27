@@ -13,7 +13,7 @@
 using namespace std;
 
 static void
-__testThreadLocal(ThreadLocal* local)
+__testThreadLocal(ThreadLocal local)
 {
     const char* p = "hello world";
     assert(Local_set(local, (void*)p));
@@ -42,7 +42,7 @@ threadProc(void* args)
     {
         for (int i = 0; i < 10; i++)
         {
-            __testThreadLocal(locals + i);
+            __testThreadLocal(locals[i]);
         }
     }
     *(int*)args = 0;
@@ -60,11 +60,11 @@ TEST(ThreadLocal, func1)
     for (int i = 0; i < n; i++)
     {
         threads[i] = Thread_create(threadProc, code + i);
-        ASSERT_TRUE(Thread_valid(threads[i]));
+        ASSERT_TRUE(threads[i] != 0);
     }
     for (int i = 0; i < n; i++)
     {
-        Thread_join(&threads[i]);
+        Thread_join(threads[i]);
     }
     for (int i = 0; i < n; i++)
     {
@@ -73,7 +73,7 @@ TEST(ThreadLocal, func1)
 }
 
 typedef struct {
-    ThreadLocal* local;
+    ThreadLocal local;
     int32_t val;
 } __TestLocalParameter;
 
@@ -82,10 +82,10 @@ __threadProc2(void* args)
 {
     cout << "in thread proc:" << Thread_currentId() << endl;
     __TestLocalParameter* parameter = static_cast<__TestLocalParameter*>(args);
-    ThreadLocal* local = parameter->local;
+    ThreadLocal local = parameter->local;
     int32_t val;
     Local_setInt32(local, parameter->val);
-    mSleep(1000);
+    sleepMs(1000);
     ASSERT_TRUE(Local_getInt32(local, &val));
     ASSERT_EQ(val, parameter->val);
 }
@@ -98,12 +98,12 @@ TEST(ThreadLocal, func2)
     ThreadLocal local = Local_make();
     for (int i = 0; i < n; i++)
     {
-        parameters[i] = {&local, 45 + i};
+        parameters[i] = {local, 45 + i};
         threads[i] = Thread_create(__threadProc2, parameters + i);
-        ASSERT_TRUE(Thread_valid(threads[i]));
+        ASSERT_TRUE(threads[i] != 0);
     }
     for (int i = 0; i < n; i++)
     {
-        Thread_join(&threads[i]);
+        Thread_join(threads[i]);
     }
 }

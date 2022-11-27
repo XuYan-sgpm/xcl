@@ -35,6 +35,7 @@ endif()
 set(run_path ${CMAKE_CURRENT_LIST_DIR}/bin/${CMAKE_BUILD_TYPE})
 
 file(GLOB test_src_files src/*.cc src/*.c)
+# set(test_src_files src/test_bits.cc)
 
 if(CMAKE_CXX_COMPILER_ID STREQUAL "MSVC")
     set(compiler_id msvc)
@@ -51,42 +52,25 @@ endif()
 
 message(STATUS ${compiler_id})
 
-if(WIN32)
-    set(third_party d:/libraries/${compiler_id})
-elseif(APPLE)
-    set(third_party /usr/local/${compiler_id})
-else()
-    set(third_party /usr/local/${compiler_id}/${build_type})
-endif()
-
-message(STATUS ${CMAKE_BUILD_TYPE})
-message(STATUS "third_party:${third_party}")
-
-if(xcl_lib_type STREQUAL "dynamic")
-    add_definitions(-DDYNAMIC)
+if(xcl_lib_type STREQUAL "SHARED")
+    add_definitions(-DSHARED)
 else()
     add_definitions(-DSTATIC)
 endif()
 
 set(xcl_project_dir ${CMAKE_CURRENT_LIST_DIR}/..)
-set(xcl_inc_dir ${xcl_project_dir}/include)
+set(xcl_inc_dir ${xcl_project_dir}/inc_pri ${xcl_project_dir}/inc_pub)
 set(xcl_lib_dir ${xcl_project_dir}/lib/${xcl_lib_type})
-
-if(COMPILE_X86_TARGET)
-    set(xcl_lib_dir ${xcl_lib_dir}/x86)
-else()
-    set(xcl_lib_dir ${xcl_lib_dir}/x64)
-endif()
-
 set(xcl_lib_dir ${xcl_lib_dir}/${xcl_build_type})
 
 message(STATUS ${xcl_inc_dir})
 message(STATUS ${xcl_lib_dir})
 
-link_directories(${xcl_lib_dir}
-                 ${third_party}/${xcl_lib_type}/x86/googletest/lib)
+set(third_party d:/libraries/${compiler_id})
+
+link_directories(${xcl_lib_dir} ${third_party}/dynamic/x86/googletest/lib)
 include_directories(${xcl_inc_dir}
-                    ${third_party}/${xcl_lib_type}/x86/googletest/include)
+                    ${third_party}/dynamic/x86/googletest/include)
 
 add_executable(unit_test main.cc ${test_src_files})
 
@@ -119,13 +103,6 @@ if(MSVC)
     endif()
 
 endif()
-
-# if(WIN32) add_custom_command( TARGET unit_test PRE_BUILD COMMAND cd
-# ${CMAKE_CURRENT_LIST_DIR} && del /q
-# ".\\bin\\${CMAKE_BUILD_TYPE}\\*"
-# COMMAND echo "clean run path:${run_path}") else() add_custom_command( TARGET
-# unit_test PRE_BUILD COMMAND rm -rf ${run_path}/* COMMAND echo "clean run
-# path:${run_path}") endif()
 
 add_custom_command(
     TARGET unit_test

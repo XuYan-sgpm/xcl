@@ -10,27 +10,37 @@ extern "C" {
 
 #include <stdint.h>
 #include <xcl/lang/xcl_def.h>
+#include <stdbool.h>
 
-typedef struct PoolClass {
+struct Pool;
+
+typedef struct PoolMethod {
     void* (*const alloc)(struct Pool* pool, uint64_t size);
     void (*const dealloc)(struct Pool* pool, void* ptr, uint64_t size);
-    void* (*const reapply)(struct Pool* pool,
-                           void* ptr,
-                           uint64_t old,
-                           uint64_t req);
-} PoolClass;
+    void* (*const reallocate)(struct Pool* pool,
+                              void* ptr,
+                              uint64_t old,
+                              uint64_t req);
+} PoolMethod;
 
 typedef struct Pool {
-    const struct PoolClass* const clazz;
-    // char attach[0];
+    const struct PoolMethod* const method;
 } Pool;
 
 /**
+ * @brief init global pool object
+ * @return true if success, otherwise false
+ */
+XCL_EXPORT bool XCL_API
+Pool_initGlobal();
+
+/**
  * xcl default pool, may be use jemalloc algorithm
+ * available after Pool_initGlobal return true
  * @return default pool object
  */
 XCL_EXPORT struct Pool* XCL_API
-Pool_def();
+Pool_global();
 
 /**
  * all functions below can passing NULL as pool object
@@ -66,7 +76,7 @@ Pool_dealloc(struct Pool* pool, void* ptr, uint64_t size);
  * @return pointer if successfully, otherwise NULL
  */
 XCL_EXPORT void* XCL_API
-Pool_reapply(struct Pool* pool, void* ptr, uint64_t old, uint64_t req);
+Pool_reallocate(struct Pool* pool, void* ptr, uint64_t old, uint64_t req);
 
 #ifdef __cplusplus
 }

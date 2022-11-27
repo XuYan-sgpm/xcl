@@ -13,10 +13,10 @@ struct SingleList {
     SingleNode header;
 };
 
-XCL_EXPORT SingleList* XCL_API
+SingleList* XCL_API
 SingleList_new()
 {
-    struct Pool* pool = Pool_def();
+    struct Pool* pool = Pool_global();
     SingleList* list = Pool_alloc(pool, sizeof(SingleList));
     if (list)
     {
@@ -27,7 +27,7 @@ SingleList_new()
     return list;
 }
 
-XCL_EXPORT SingleList* XCL_API
+SingleList* XCL_API
 SingleList_newByPool(struct Pool* pool)
 {
     SingleList* list = Pool_alloc(pool, sizeof(SingleList));
@@ -40,13 +40,13 @@ SingleList_newByPool(struct Pool* pool)
     return list;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 SingleList_empty(const SingleList* list)
 {
     return list->header.next == NULL;
 }
 
-XCL_EXPORT int32_t XCL_API
+int32_t XCL_API
 SingleList_size(const SingleList* list)
 {
     int32_t count = 0;
@@ -59,21 +59,21 @@ SingleList_size(const SingleList* list)
     return count;
 }
 
-XCL_EXPORT SingleListIter XCL_API
+SingleListIter XCL_API
 SingleList_begin(SingleList* list)
 {
     SingleListIter iter = {.tag = &list->header, .cur = list->header.next};
     return iter;
 }
 
-XCL_EXPORT SingleListIter XCL_API
+SingleListIter XCL_API
 SingleList_end(SingleList* list)
 {
     SingleListIter iter = {.tag = &list->header, .cur = &list->header};
     return iter;
 }
 
-XCL_EXPORT void XCL_API
+void XCL_API
 SingleList_pushFront(SingleList* list, SingleNode* node)
 {
     node->next = list->header.next;
@@ -84,7 +84,7 @@ SingleList_pushFront(SingleList* list, SingleNode* node)
     }
 }
 
-XCL_EXPORT void XCL_API
+void XCL_API
 SingleList_pushBack(SingleList* list, SingleNode* node)
 {
     node->next = NULL;
@@ -92,7 +92,7 @@ SingleList_pushBack(SingleList* list, SingleNode* node)
     list->tail = node;
 }
 
-XCL_EXPORT SingleNode* XCL_API
+SingleNode* XCL_API
 SingleList_popFront(SingleList* list)
 {
     SingleNode* node = list->header.next;
@@ -107,7 +107,7 @@ SingleList_popFront(SingleList* list)
     return node;
 }
 
-XCL_EXPORT SingleNode* XCL_API
+SingleNode* XCL_API
 SingleList_popBack(SingleList* list)
 {
     SingleNode* prev = &list->header;
@@ -126,7 +126,7 @@ SingleList_popBack(SingleList* list)
     return node;
 }
 
-XCL_EXPORT SingleListIter XCL_API
+SingleListIter XCL_API
 SingleList_next(SingleList* list, SingleListIter iter)
 {
     if (!iter.cur || iter.cur == iter.tag)
@@ -145,13 +145,13 @@ SingleList_next(SingleList* list, SingleListIter iter)
     return next;
 }
 
-XCL_EXPORT void XCL_API
+void XCL_API
 SingleList_sort(SingleList* list, int (*cmp)(const void*, const void*))
 {
     //
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 SingleList_delete(SingleList* list)
 {
     struct Pool* pool = list->pool;

@@ -85,9 +85,9 @@ __RbTree_new(Pool* pool)
 bool
 __RbTree_empty(RbTree* tree)
 {
-    return tree->count == 0 && (&tree->header)->left == (&tree->header)
-           && (&tree->header)->right == (&tree->header)
-           && (&tree->header)->par_and_color == 0;
+    return tree->count == 0 && (&tree->header)->left == (&tree->header) &&
+           (&tree->header)->right == (&tree->header) &&
+           (&tree->header)->par_and_color == 0;
 }
 
 static int32_t
@@ -275,8 +275,8 @@ __RbTree_removeRebalance(RbTree* tree, RbNode* par, RbNode* node)
                 __RbTree_leftRotate(tree, par);
                 cousin = par->right;
             }
-            if ((!cousin->left || __RBTREE_IS_BLACK(cousin->left))
-                && (!cousin->right || __RBTREE_IS_BLACK(cousin->right)))
+            if ((!cousin->left || __RBTREE_IS_BLACK(cousin->left)) &&
+                (!cousin->right || __RBTREE_IS_BLACK(cousin->right)))
             {
                 __RBTREE_SET_COLOR(cousin, RED);
                 node = par;
@@ -308,8 +308,8 @@ __RbTree_removeRebalance(RbTree* tree, RbNode* par, RbNode* node)
                 __RbTree_rightRotate(tree, par);
                 cousin = par->left;
             }
-            if ((!cousin->left || __RBTREE_IS_BLACK(cousin->left))
-                && (!cousin->right || __RBTREE_IS_BLACK(cousin->right)))
+            if ((!cousin->left || __RBTREE_IS_BLACK(cousin->left)) &&
+                (!cousin->right || __RBTREE_IS_BLACK(cousin->right)))
             {
                 __RBTREE_SET_COLOR(cousin, RED);
                 node = par;
@@ -488,8 +488,8 @@ __RbTree_next(RbTree* tree, RbNode* node)
         return __RbNode_min(node->right);
     }
     RbNode* par;
-    while ((par = __RBTREE_PARENT(node)) != (&tree->header)
-           && par->right == node)
+    while ((par = __RBTREE_PARENT(node)) != (&tree->header) &&
+           par->right == node)
     {
         node = par;
     }

@@ -5,13 +5,13 @@
 #include <errno.h>
 #include <xcl/lang/xcl_err.h>
 
-XCL_EXPORT unsigned XCL_API
+unsigned XCL_API
 Err_get()
 {
     return errno;
 }
 
-XCL_EXPORT void XCL_API
+void XCL_API
 Err_set(unsigned error_code)
 {
     errno = (int)error_code;

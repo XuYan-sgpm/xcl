@@ -63,19 +63,19 @@ __Mutex_deleteByPool(Mutex* mutex, struct Pool* pool)
     return false;
 }
 
-XCL_EXPORT Mutex* XCL_API
+Mutex* XCL_API
 Mutex_new()
 {
     return __Mutex_newByPool(Pool_def());
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 Mutex_delete(Mutex* mutex)
 {
     return __Mutex_deleteByPool(mutex, Pool_def());
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 Mutex_lock(Mutex* mutex)
 {
     if (mutex)
@@ -90,7 +90,7 @@ Mutex_lock(Mutex* mutex)
     return false;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 Mutex_unlock(Mutex* mutex)
 {
     if (mutex)
@@ -103,7 +103,7 @@ Mutex_unlock(Mutex* mutex)
     return false;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 Mutex_tryLock(Mutex* mutex)
 {
     if (mutex)
@@ -116,7 +116,7 @@ Mutex_tryLock(Mutex* mutex)
     return false;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 Mutex_tryLock2(Mutex* mutex, int32_t timeout)
 {
     if (mutex)
@@ -149,12 +149,12 @@ Mutex_tryLock2(Mutex* mutex, int32_t timeout)
             {
                 return true;
             }
-#if _POSIX_C_SOURCE >= 199309L
+#  if _POSIX_C_SOURCE >= 199309L
             struct timespec ts = {0, 1000000};
             nanosleep(&ts, NULL);
-#else
+#  else
             usleep(1000);
-#endif
+#  endif
             total_wait = nanos() - st;
         }
         int ret = pthread_mutex_trylock(&mutex->handle);

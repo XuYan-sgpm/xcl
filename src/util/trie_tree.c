@@ -158,8 +158,8 @@ __TrieTree_put(TrieTree* tree, const char* str, TrieIter iter)
     for (;;)
     {
         TrieNode* new_node = NULL;
-        new_node
-            = Pool_alloc(tree->pool, sizeof(TrieNode) + tree->element_size);
+        new_node =
+            Pool_alloc(tree->pool, sizeof(TrieNode) + tree->element_size);
         if (!new_node)
             return NULL;
         memset(new_node, 0, sizeof(TrieNode) + tree->element_size);
@@ -176,7 +176,7 @@ __TrieTree_put(TrieTree* tree, const char* str, TrieIter iter)
     }
 }
 
-TrieTree*
+TrieTree* XCL_API
 TrieTree_new(int32_t size, Pool* pool)
 {
     TrieTree* tree = Pool_alloc(pool, sizeof(TrieTree));
@@ -188,7 +188,7 @@ TrieTree_new(int32_t size, Pool* pool)
     return tree;
 }
 
-void
+void XCL_API
 TrieTree_delete(TrieTree* tree)
 {
     if (tree->count)
@@ -201,7 +201,7 @@ TrieTree_delete(TrieTree* tree)
     Pool_dealloc(pool, tree, sizeof(*tree));
 }
 
-void*
+void* XCL_API
 TrieTree_get(TrieTree* tree, const char* word)
 {
     TrieNode* node = __TrieTree_find(tree, word);
@@ -210,7 +210,7 @@ TrieTree_get(TrieTree* tree, const char* word)
     return node->attach;
 }
 
-void*
+void* XCL_API
 TrieTree_check(TrieTree* tree, const char* word)
 {
     if (!word || !word[0])
@@ -223,13 +223,13 @@ TrieTree_check(TrieTree* tree, const char* word)
     return node->attach;
 }
 
-int32_t
+int32_t XCL_API
 TrieTree_size(TrieTree* tree)
 {
     return tree->count;
 }
 
-bool
+bool XCL_API
 TrieTree_contains(TrieTree* tree, const char* word)
 {
     if (!word || word[0])
@@ -240,7 +240,7 @@ TrieTree_contains(TrieTree* tree, const char* word)
     return true;
 }
 
-TrieIter
+TrieIter XCL_API
 TrieTree_find(TrieTree* tree, const char* word)
 {
     if (!word || word[0])
@@ -252,7 +252,7 @@ TrieTree_find(TrieTree* tree, const char* word)
     return iter;
 }
 
-void*
+void* XCL_API
 TrieTree_value(TrieTree* tree, TrieIter iter)
 {
     if (tree->element_size == 0)
@@ -263,7 +263,7 @@ TrieTree_value(TrieTree* tree, TrieIter iter)
     return node && tree->element_size ? node->attach : NULL;
 }
 
-bool
+bool XCL_API
 TrieTree_remove(TrieTree* tree, const char* word)
 {
     int32_t len;
@@ -274,7 +274,7 @@ TrieTree_remove(TrieTree* tree, const char* word)
     return true;
 }
 
-void
+void XCL_API
 TrieTree_removeAt(TrieTree* tree, TrieIter iter)
 {
     if ((uintptr_t)tree != iter.data[0])
@@ -294,7 +294,7 @@ TrieTree_removeAt(TrieTree* tree, TrieIter iter)
     --tree->count;
 }
 
-bool
+bool XCL_API
 TrieIter_valid(TrieIter iter)
 {
     return iter.data[0] && iter.data[1];

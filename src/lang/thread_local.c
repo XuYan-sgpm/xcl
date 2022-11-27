@@ -8,11 +8,14 @@
 #include <xcl/lang/xcl_def.h>
 #include <xcl/lang/xcl_err.h>
 
-int32_t
-__LocalId_get();
+#ifdef WINDOWS
+#  include <windows.h>
+#elif GNUC || CLANG
+#  include <stdatomic.h>
+#endif
 
-void
-__LocalId_recycle(int32_t id);
+int32_t
+__Local_genId();
 
 LocalStorage*
 __Thread_getLocalStorage();
@@ -49,9 +52,9 @@ __ThreadLocal_checkoutLocalStorage()
 }
 
 static bool
-__ThreadLocal_setData(ThreadLocal* local, const void* src, int len)
+__ThreadLocal_setData(ThreadLocal local, const void* src, int len)
 {
-    if (local->id < 0)
+    if (local.id < 0)
     {
         Err_set(XCL_LOCAL_INVALID_ID);
         return false;
@@ -61,13 +64,13 @@ __ThreadLocal_setData(ThreadLocal* local, const void* src, int len)
     {
         return false;
     }
-    return LocalStorage_setTiny(local_storage, local->id, src, len);
+    return LocalStorage_setTiny(local_storage, local.id, src, len);
 }
 
 static void*
-__ThreadLocal_getData(ThreadLocal* local)
+__ThreadLocal_getData(ThreadLocal local)
 {
-    if (local->id < 0)
+    if (local.id < 0)
     {
         Err_set(XCL_LOCAL_INVALID_ID);
         return NULL;
@@ -77,95 +80,85 @@ __ThreadLocal_getData(ThreadLocal* local)
     {
         return NULL;
     }
-    return LocalStorage_get(local_storage, local->id);
+    return LocalStorage_get(local_storage, local.id);
 }
 
-XCL_EXPORT ThreadLocal XCL_API
+ThreadLocal XCL_API
 Local_make()
 {
     ThreadLocal result;
-    result.id = __LocalId_get();
+    result.id = __Local_genId();
     return result;
 }
 
-XCL_EXPORT void XCL_API
-Local_discard(ThreadLocal* local)
-{
-    if (local->id != -1)
-    {
-        __LocalId_recycle(local->id);
-        local->id = -1;
-    }
-}
-
-XCL_EXPORT bool XCL_API
-Local_set(ThreadLocal* local, void* ptr)
+bool XCL_API
+Local_set(ThreadLocal local, void* ptr)
 {
     return __ThreadLocal_setData(local, &ptr, sizeof(void*));
 }
 
-XCL_EXPORT bool XCL_API
-Local_setChar(ThreadLocal* local, char val)
+bool XCL_API
+Local_setChar(ThreadLocal local, char val)
 {
     return __ThreadLocal_setData(local, &val, sizeof(char));
 }
 
-XCL_EXPORT bool XCL_API
-Local_setU8(ThreadLocal* local, unsigned char val)
+bool XCL_API
+Local_setU8(ThreadLocal local, unsigned char val)
 {
     return __ThreadLocal_setData(local, &val, sizeof(unsigned char));
 }
 
-XCL_EXPORT bool XCL_API
-Local_setInt32(ThreadLocal* local, int32_t val)
+bool XCL_API
+Local_setInt32(ThreadLocal local, int32_t val)
 {
     return __ThreadLocal_setData(local, &val, 4);
 }
 
-XCL_EXPORT bool XCL_API
-Local_setU32(ThreadLocal* local, uint32_t val)
+bool XCL_API
+Local_setU32(ThreadLocal local, uint32_t val)
 {
     return __ThreadLocal_setData(local, &val, 4);
 }
 
-XCL_EXPORT bool XCL_API
-Local_setInt16(ThreadLocal* local, int16_t val)
+bool XCL_API
+Local_setInt16(ThreadLocal local, int16_t val)
 {
     return __ThreadLocal_setData(local, &val, 2);
 }
 
-XCL_EXPORT bool XCL_API
-Local_setU16(ThreadLocal* local, uint16_t val)
+bool XCL_API
+Local_setU16(ThreadLocal local, uint16_t val)
 {
     return __ThreadLocal_setData(local, &val, 2);
 }
 
-XCL_EXPORT bool XCL_API
-Local_setFloat(ThreadLocal* local, float val)
+bool XCL_API
+Local_setFloat(ThreadLocal local, float val)
 {
     return __ThreadLocal_setData(local, &val, 4);
 }
 
-XCL_EXPORT bool XCL_API
-Local_setInt64(ThreadLocal* local, int64_t val)
+bool XCL_API
+Local_setInt64(ThreadLocal local, int64_t val)
 {
     return __ThreadLocal_setData(local, &val, 8);
 }
 
-XCL_EXPORT bool XCL_API
-Local_setU64(ThreadLocal* local, uint64_t val)
+bool XCL_API
+Local_setU64(ThreadLocal local, uint64_t val)
 {
     return __ThreadLocal_setData(local, &val, 8);
 }
 
-XCL_EXPORT bool XCL_API
-Local_setDouble(ThreadLocal* local, double val)
+bool XCL_API
+Local_setDouble(ThreadLocal local, double val)
 {
     return __ThreadLocal_setData(local, &val, 8);
 }
 
-XCL_EXPORT bool XCL_API
-Local_get(ThreadLocal* local, void** result)
+bool XCL_API
+Local_get(ThreadLocal local, void** result)
 {
     void* data = __ThreadLocal_getData(local);
     if (!data)
@@ -179,8 +172,8 @@ Local_get(ThreadLocal* local, void** result)
     return true;
 }
 
-XCL_EXPORT bool XCL_API
-Local_getChar(ThreadLocal* local, char* result)
+bool XCL_API
+Local_getChar(ThreadLocal local, char* result)
 {
     void* data = __ThreadLocal_getData(local);
     if (data && result)
@@ -190,8 +183,8 @@ Local_getChar(ThreadLocal* local, char* result)
     return data;
 }
 
-XCL_EXPORT bool XCL_API
-Local_getU8(ThreadLocal* local, unsigned char* result)
+bool XCL_API
+Local_getU8(ThreadLocal local, unsigned char* result)
 {
     void* data = __ThreadLocal_getData(local);
     if (data && result)
@@ -201,8 +194,8 @@ Local_getU8(ThreadLocal* local, unsigned char* result)
     return data;
 }
 
-XCL_EXPORT bool XCL_API
-Local_getInt16(ThreadLocal* local, int16_t* result)
+bool XCL_API
+Local_getInt16(ThreadLocal local, int16_t* result)
 {
     void* data = __ThreadLocal_getData(local);
     if (data && result)
@@ -212,8 +205,8 @@ Local_getInt16(ThreadLocal* local, int16_t* result)
     return data;
 }
 
-XCL_EXPORT bool XCL_API
-Local_getU16(ThreadLocal* local, uint16_t* result)
+bool XCL_API
+Local_getU16(ThreadLocal local, uint16_t* result)
 {
     void* data = __ThreadLocal_getData(local);
     if (data && result)
@@ -223,8 +216,8 @@ Local_getU16(ThreadLocal* local, uint16_t* result)
     return data;
 }
 
-XCL_EXPORT bool XCL_API
-Local_getInt32(ThreadLocal* local, int32_t* result)
+bool XCL_API
+Local_getInt32(ThreadLocal local, int32_t* result)
 {
     void* data = __ThreadLocal_getData(local);
     if (data && result)
@@ -234,8 +227,8 @@ Local_getInt32(ThreadLocal* local, int32_t* result)
     return data;
 }
 
-XCL_EXPORT bool XCL_API
-Local_getU32(ThreadLocal* local, uint32_t* result)
+bool XCL_API
+Local_getU32(ThreadLocal local, uint32_t* result)
 {
     void* data = __ThreadLocal_getData(local);
     if (data && result)
@@ -245,8 +238,8 @@ Local_getU32(ThreadLocal* local, uint32_t* result)
     return data;
 }
 
-XCL_EXPORT bool XCL_API
-Local_getFloat(ThreadLocal* local, float* result)
+bool XCL_API
+Local_getFloat(ThreadLocal local, float* result)
 {
     void* data = __ThreadLocal_getData(local);
     if (data && result)
@@ -256,8 +249,8 @@ Local_getFloat(ThreadLocal* local, float* result)
     return data;
 }
 
-XCL_EXPORT bool XCL_API
-Local_getInt64(ThreadLocal* local, int64_t* result)
+bool XCL_API
+Local_getInt64(ThreadLocal local, int64_t* result)
 {
     void* data = __ThreadLocal_getData(local);
     if (data && result)
@@ -267,8 +260,8 @@ Local_getInt64(ThreadLocal* local, int64_t* result)
     return data;
 }
 
-XCL_EXPORT bool XCL_API
-Local_getU64(ThreadLocal* local, uint64_t* result)
+bool XCL_API
+Local_getU64(ThreadLocal local, uint64_t* result)
 {
     void* data = __ThreadLocal_getData(local);
     if (data && result)
@@ -278,8 +271,8 @@ Local_getU64(ThreadLocal* local, uint64_t* result)
     return data;
 }
 
-XCL_EXPORT bool XCL_API
-Local_getDouble(ThreadLocal* local, double* result)
+bool XCL_API
+Local_getDouble(ThreadLocal local, double* result)
 {
     void* data = __ThreadLocal_getData(local);
     if (data && result)
@@ -287,4 +280,20 @@ Local_getDouble(ThreadLocal* local, double* result)
         *result = *(double*)data;
     }
     return data;
+}
+
+/*
+ * we start gen thread local id from 1
+ * because id 0 is reserved to store
+ * thread handle
+ */
+static ATOMIC(int32_t) __Local_idGenerator = 1;
+int32_t
+__Local_genId()
+{
+#if WINDOWS
+    return InterlockedIncrement(&__Local_idGenerator) - 1;
+#else
+    return atomic_fetch_add(&__Local_idGenerator, 1);
+#endif
 }

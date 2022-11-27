@@ -35,24 +35,65 @@ struct RbTree {
     RbNode header;
 };
 
+/**
+ * @brief alloc rbnode with pool of rbtree
+ * @param tree rbtree object
+ * @param element_size element data size
+ * @return rbnode if success, otherwise NULL
+ */
 RbNode*
 __RbTree_allocNode(RbTree* tree, int32_t element_size);
 
+/**
+ * @brief dealloc rbnode with pool of rbtree
+ * @param tree rbtree object
+ * @param node rbnode
+ * @param element_size element data size
+ */
 void
 __RbTree_deallocNode(RbTree* tree, RbNode* node, int32_t element_size);
 
+/**
+ * @brief root node of rbtree
+ * @param tree rbtree object
+ * @return root node if rbtree is not empty, otherwise NULL
+ */
 RbNode*
 __RbTree_root(RbTree* tree);
 
+/**
+ * @brief init rbtree
+ * @param tree rbtree
+ * @param pool c pool object
+ */
 void
 __RbTree_init(RbTree* tree, Pool* pool);
 
+/**
+ * @brief new rbtree object
+ * @param pool c pool
+ * @return rbtree if success, otherwise NULL
+ */
 RbTree*
 __RbTree_new(Pool* pool);
 
+/**
+ * @brief add rbnode into rbtree
+ * @param tree rbtree
+ * @param left whether rbnode should be left child of its parent
+ * @param par rbnode parent
+ * @param new_node the rbnode to add
+ * @return true if success, otherwise false
+ */
 bool
 __RbTree_addNode(RbTree* tree, bool left, RbNode* par, RbNode* new_node);
 
+/**
+ * @brief remove rbnode from rbtree
+ * @param tree rbtree
+ * @param node the rbnode to remove
+ * @return removed rbnode, usually same as node
+ */
 RbNode*
 __RbTree_removeNode(RbTree* tree, RbNode* node);
 

@@ -6,7 +6,7 @@
 #include <string.h>
 #include <stdlib.h>
 
-XCL_EXPORT uint32_t XCL_API
+uint32_t XCL_API
 _log2(uint64_t val)
 {
     if (val == 0)

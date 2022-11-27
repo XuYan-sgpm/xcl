@@ -1,7 +1,7 @@
 #include "util/str.h"
 #include <stdlib.h>
 
-XCL_EXPORT char* XCL_API
+char* XCL_API
 strDup(const char* str)
 {
     if (!str)
@@ -19,7 +19,7 @@ strDup(const char* str)
     return dup;
 }
 
-XCL_EXPORT wchar_t* XCL_API
+wchar_t* XCL_API
 wcsDup(const wchar_t* str)
 {
     if (!str)

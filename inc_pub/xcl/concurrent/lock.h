@@ -17,8 +17,7 @@ namespace xcl
         Lock(const Lock&) = delete;
 
         Lock&
-        operator=(const Lock&)
-            = delete;
+        operator=(const Lock&) = delete;
 
         explicit Lock() = default;
 
@@ -27,23 +26,20 @@ namespace xcl
          * acquire a lock for current thread
          */
         virtual void
-        lock()
-            = 0;
+        lock() = 0;
 
         /**
          * release a lock for current thread
          */
         virtual void
-        unlock()
-            = 0;
+        unlock() = 0;
 
         /**
          * try acquire lock for current thread
          * @return true if acquire successfully, otherwise false
          */
         virtual bool
-        tryLock()
-            = 0;
+        tryLock() = 0;
 
     public:
         static Lock*
@@ -62,8 +58,7 @@ namespace xcl
          * otherwise false
          */
         virtual bool
-        tryLock(int32_t millis)
-            = 0;
+        tryLock(int32_t millis) = 0;
 
         static TimedLock*
         NewLock();
@@ -78,8 +73,7 @@ namespace xcl
 
     public:
         Locker&
-        operator=(const Locker&)
-            = delete;
+        operator=(const Locker&) = delete;
 
     private:
         Lock* lock_;

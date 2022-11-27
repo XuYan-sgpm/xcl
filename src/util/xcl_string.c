@@ -53,15 +53,15 @@ __String_cap(const String* string)
 static inline bool
 __String_addCheck(const String* string, const int pos, const int len)
 {
-    return pos >= 0 && pos <= __String_getSize(string) && len >= 0
-           && len <= __String_cap(string) - __String_getSize(string);
+    return pos >= 0 && pos <= __String_getSize(string) && len >= 0 &&
+           len <= __String_cap(string) - __String_getSize(string);
 }
 
 static inline bool
 __String_removeCheck(const String* string, const int pos, const int len)
 {
-    return pos >= 0 && pos < __String_getSize(string) && len > 0
-           && len <= __String_getSize(string) - pos;
+    return pos >= 0 && pos < __String_getSize(string) && len > 0 &&
+           len <= __String_getSize(string) - pos;
 }
 
 static inline int
@@ -80,7 +80,7 @@ __String_init(String* string, const int cap)
     }
     else
     {
-        char* p = (char*)Pool_alloc(Pool_def(), cap);
+        char* p = (char*)Pool_alloc(Pool_global(), cap);
         if (p)
         {
             string->mem.heap.ptr = p;
@@ -106,7 +106,7 @@ __String_insertAux(String* string, const int pos, const int len)
     else
     {
         int new_cap = __String_grow(cap, size + len - cap);
-        char* new_ptr = (char*)Pool_alloc(Pool_def(), new_cap);
+        char* new_ptr = (char*)Pool_alloc(Pool_global(), new_cap);
         if (!new_ptr)
         {
             return NULL;
@@ -115,7 +115,7 @@ __String_insertAux(String* string, const int pos, const int len)
         memcpy(new_ptr + pos + len, p, size - pos);
         if (!__String_useStack(string))
         {
-            Pool_dealloc(Pool_def(),
+            Pool_dealloc(Pool_global(),
                          string->mem.heap.ptr,
                          string->mem.heap.cap);
         }
@@ -141,7 +141,7 @@ __String_assignAux(String* string, const int pos, const int len)
     else
     {
         int new_cap = __String_grow(cap, pos + len - cap);
-        char* new_ptr = (char*)Pool_alloc(Pool_def(), new_cap);
+        char* new_ptr = (char*)Pool_alloc(Pool_global(), new_cap);
         if (!new_ptr)
         {
             return NULL;
@@ -149,7 +149,7 @@ __String_assignAux(String* string, const int pos, const int len)
         memcpy(new_ptr, __String_ptr(string, 0), pos);
         if (!__String_useStack(string))
         {
-            Pool_dealloc(Pool_def(),
+            Pool_dealloc(Pool_global(),
                          string->mem.heap.ptr,
                          string->mem.heap.cap);
         }
@@ -172,13 +172,13 @@ __String_assign(String* string, const int pos, const char* src, const int len)
     return assign_cursor;
 }
 
-XCL_EXPORT String XCL_API
+String XCL_API
 String_make(const char* str)
 {
     return String_newRegion(str, strlen(str));
 }
 
-XCL_EXPORT String XCL_API
+String XCL_API
 String_newRegion(const char* str, const int len)
 {
     String string;
@@ -188,7 +188,7 @@ String_newRegion(const char* str, const int len)
     return string;
 }
 
-XCL_EXPORT String XCL_API
+String XCL_API
 String_alloc(const int cap)
 {
     assert(cap > 0);
@@ -197,59 +197,59 @@ String_alloc(const int cap)
     return string;
 }
 
-XCL_EXPORT void XCL_API
+void XCL_API
 String_release(String* string)
 {
     if (!__String_useStack(string))
     {
-        Pool_dealloc(Pool_def(), string->mem.heap.ptr, string->mem.heap.cap);
+        Pool_dealloc(Pool_global(), string->mem.heap.ptr, string->mem.heap.cap);
     }
     __String_setState(string, true, 0);
 }
 
-XCL_EXPORT void XCL_API
+void XCL_API
 String_clear(String* string)
 {
     __String_setSize(string, 0);
 }
 
-XCL_EXPORT int XCL_API
+int XCL_API
 String_size(const String* string)
 {
     return __String_getSize(string);
 }
 
-XCL_EXPORT int XCL_API
+int XCL_API
 String_cap(const String* string)
 {
     return __String_cap(string);
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_empty(const String* string)
 {
     return __String_getSize(string) == 0;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_assign(String* string, const char* str)
 {
     return __String_assign(string, 0, str, strlen(str));
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_assignRegion(String* string, const char* str, const int len)
 {
     return __String_assign(string, 0, str, len);
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_assignStr(String* string, const String* src)
 {
     return __String_assign(string, 0, __String_cPtr(src, 0), String_size(src));
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_pushChar(String* string, char ch)
 {
     char* cursor = __String_insertAux(string, String_size(string), 1);
@@ -260,7 +260,7 @@ String_pushChar(String* string, char ch)
     return cursor;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_pushChars(String* string, const int n, char ch)
 {
     char* cursor = __String_insertAux(string, String_size(string), n);
@@ -271,7 +271,7 @@ String_pushChars(String* string, const int n, char ch)
     return cursor;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_pushRegion(String* string, const char* str, const int len)
 {
     char* cursor = __String_insertAux(string, String_size(string), len);
@@ -282,19 +282,19 @@ String_pushRegion(String* string, const char* str, const int len)
     return cursor;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_push(String* string, const char* str)
 {
     return String_pushRegion(string, str, strlen(str));
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_pushStr(String* string, const String* src)
 {
     return String_pushRegion(string, __String_cPtr(src, 0), String_size(src));
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_writeChar(String* string, const int pos, char ch)
 {
     char* cursor = __String_insertAux(string, pos, 1);
@@ -305,7 +305,7 @@ String_writeChar(String* string, const int pos, char ch)
     return cursor;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_writeChars(String* string, const int pos, const int n, char ch)
 {
     char* cursor = __String_insertAux(string, pos, n);
@@ -316,7 +316,7 @@ String_writeChars(String* string, const int pos, const int n, char ch)
     return cursor;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_writeRegion(String* string,
                    const int pos,
                    const char* str,
@@ -330,7 +330,7 @@ String_writeRegion(String* string,
     return cursor;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_write(String* string, const int pos, const char* str)
 {
     const int len = strlen(str);
@@ -342,7 +342,7 @@ String_write(String* string, const int pos, const char* str)
     return cursor;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_writeStr(String* string, const int pos, const String* src)
 {
     return String_writeRegion(string,
@@ -351,7 +351,7 @@ String_writeStr(String* string, const int pos, const String* src)
                               String_size(src));
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_pop(String* string, char* dst)
 {
     if (String_empty(string))
@@ -366,7 +366,7 @@ String_pop(String* string, char* dst)
     return true;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_popBack(String* string, char* dst)
 {
     if (String_empty(string))
@@ -380,7 +380,7 @@ String_popBack(String* string, char* dst)
     return true;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 String_get(const String* string, const int pos, char* dst)
 {
     if (pos >= 0 && pos < String_size(string))
@@ -391,7 +391,7 @@ String_get(const String* string, const int pos, char* dst)
     return false;
 }
 
-XCL_EXPORT int XCL_API
+int XCL_API
 String_gets(const String* string, const int pos, const int len, char* dst)
 {
     if (!__String_removeCheck(string, pos, len))
@@ -402,7 +402,7 @@ String_gets(const String* string, const int pos, const int len, char* dst)
     return len;
 }
 
-XCL_EXPORT void XCL_API
+void XCL_API
 String_delete(String* string, const int pos)
 {
     const int size = String_size(string);
@@ -415,7 +415,7 @@ String_delete(String* string, const int pos)
     __String_setSize(string, size - 1);
 }
 
-XCL_EXPORT void XCL_API
+void XCL_API
 String_deleteRegion(String* string, const int pos, const int len)
 {
     if (__String_removeCheck(string, pos, len))
@@ -427,7 +427,7 @@ String_deleteRegion(String* string, const int pos, const int len)
     }
 }
 
-XCL_EXPORT const char* XCL_API
+const char* XCL_API
 String_queryChar(const String* string, const bool left, char ch)
 {
     const char* p = __String_cPtr(string, 0);
@@ -552,25 +552,25 @@ String_queryChar(const String* string, const bool left, char ch)
 //     return NULL;
 // }
 
-XCL_EXPORT const char* XCL_API
+const char* XCL_API
 String_query(const String* string, const char* str)
 {
     return strstr(__String_cPtr(string, 0), str);
 }
 
-XCL_EXPORT char XCL_API
+char XCL_API
 String_at(const String* string, const int pos)
 {
     return *__String_cPtr(string, pos);
 }
 
-XCL_EXPORT String XCL_API
+String XCL_API
 String_dup(const String* string)
 {
     return String_dupRegion(string, 0, String_size(string));
 }
 
-XCL_EXPORT String XCL_API
+String XCL_API
 String_dupRegion(const String* string, const int pos, const int len)
 {
     String copy;

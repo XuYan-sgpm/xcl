@@ -3,12 +3,18 @@
 //
 
 #include "pool/size_class.h"
-#include "pool/pool_def.h"
 #include "pool/pool.h"
 #include "util/algo.h"
 #include <assert.h>
 #include <stddef.h>
 #include <stdint.h>
+
+#define CHUNK_SIZE         1 << 24
+#define LOG2_QUANTUM       4
+#define LOG2_GROUP_SIZE    2
+#define PAGE_SIZE          1 << 13
+#define PAGE_SHIFTS        13
+#define SUB_PAGE_THRESHOLD 28 << 10
 
 typedef struct {
     int32_t log2_group;
@@ -54,7 +60,7 @@ __initSizeClassTab(int32_t idx,
 // */
 // static void __size2idxTab(int32_t *size2idx);
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 SizeClass_initialize()
 {
     if (size_classes)
@@ -65,9 +71,9 @@ SizeClass_initialize()
     do
     {
         uint32_t groups = _log2(CHUNK_SIZE) + 1 - LOG2_QUANTUM;
-        size_classes = (SizeTab*)Pool_alloc(NULL,
-                                            sizeof(SizeTab)
-                                                * (groups << LOG2_GROUP_SIZE));
+        size_classes =
+            (SizeTab*)Pool_alloc(NULL,
+                                 sizeof(SizeTab) * (groups << LOG2_GROUP_SIZE));
         if (!size_classes)
         {
             break;
@@ -82,7 +88,7 @@ SizeClass_initialize()
     return success;
 }
 
-XCL_EXPORT void XCL_API
+void XCL_API
 SizeClass_finalize()
 {
     uint32_t groups = _log2(CHUNK_SIZE) + 1 - LOG2_QUANTUM;
@@ -93,13 +99,13 @@ SizeClass_finalize()
     tabs = 0;
 }
 
-XCL_EXPORT int32_t XCL_API
+int32_t XCL_API
 SizeClass_size()
 {
     return tabs;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 SizeClass_get(int32_t idx, int32_t* out)
 {
     if (idx >= tabs)
@@ -132,7 +138,7 @@ __SC_getGroupAndDelta(uint32_t size, uint32_t* log2_group, uint32_t* log2_delta)
     }
 }
 
-XCL_EXPORT uint32_t XCL_API
+uint32_t XCL_API
 SizeClass_normalize(uint32_t size)
 {
     if (size <= 16)
@@ -178,7 +184,7 @@ SizeClass_normalize(uint32_t size)
     return (1u << log2_group) + (n_delta << log2_delta);
 }
 
-XCL_EXPORT uint32_t XCL_API
+uint32_t XCL_API
 SizeClass_size2pages(uint32_t size)
 {
     if (size <= PAGE_SIZE)
@@ -240,8 +246,8 @@ __initSizeClassTab(int32_t idx,
         is_multi_page = size % PAGE_SIZE == 0;
     }
     bool is_sub_page = size <= SUB_PAGE_THRESHOLD;
-    SizeTab tab
-        = {log2_group, log2_delta, n_delta, is_multi_page, is_sub_page, size};
+    SizeTab tab =
+        {log2_group, log2_delta, n_delta, is_multi_page, is_sub_page, size};
     size_classes[idx] = tab;
     return size;
 }

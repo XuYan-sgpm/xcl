@@ -15,13 +15,9 @@ extern "C" {
 #include "xcl/lang/xcl_def.h"
 #include <stdbool.h>
 
-typedef uintptr_t ThreadHandle;
+typedef uintptr_t Thread;
 
 #define INVALID_THREAD_HANDLE (0)
-
-typedef struct {
-    ThreadHandle handle;
-} Thread;
 
 /**
  * create a thread object
@@ -30,15 +26,7 @@ typedef struct {
  * @return thread object
  */
 XCL_EXPORT Thread XCL_API
-Thread_create(void (*proc)(void*), void* obj);
-
-/**
- * check whether thread object returned by Thread_create is valid
- * @param thread thread object
- * @return true if thread object is valid, otherwise false
- */
-XCL_EXPORT bool XCL_API
-Thread_valid(Thread thread);
+Thread_create(void (*run)(void*), void* obj);
 
 /**
  * wait util thread is terminated
@@ -46,7 +34,7 @@ Thread_valid(Thread thread);
  * @return true if join thread successfully, otherwise false
  */
 XCL_EXPORT bool XCL_API
-Thread_join(Thread* thread);
+Thread_join(Thread thread);
 
 /**
  * wait thread util terminated or timeout expired
@@ -56,7 +44,7 @@ Thread_join(Thread* thread);
  * otherwise false
  */
 XCL_EXPORT bool XCL_API
-Thread_join2(Thread* thread, int32_t timeout);
+Thread_join2(Thread thread, int32_t timeout);
 
 /**
  * check whether thread is still alive
@@ -64,7 +52,7 @@ Thread_join2(Thread* thread, int32_t timeout);
  * @return true if thread is alive, otherwise false
  */
 XCL_EXPORT bool XCL_API
-Thread_alive(Thread* thread);
+Thread_alive(Thread thread);
 
 /**
  * detach thread
@@ -72,7 +60,7 @@ Thread_alive(Thread* thread);
  * @return true if detach operation succeed, otherwise false
  */
 XCL_EXPORT bool XCL_API
-Thread_detach(Thread* thread);
+Thread_detach(Thread thread);
 
 /**
  * get current thread object
@@ -95,7 +83,7 @@ Thread_currentId();
  * @return thread handle
  */
 XCL_EXPORT uintptr_t XCL_API
-Thread_currentHandle();
+Thread_current();
 
 /**
  * @brief yield current thread

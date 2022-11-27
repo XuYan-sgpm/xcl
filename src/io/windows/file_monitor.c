@@ -1,7 +1,6 @@
 #include <xcl/io/file_monitor.h>
 #include <windows.h>
 #include <xcl/concurrent/mutex.h>
-#include <xcl/concurrent/xcl_atomic.h>
 #include <xcl/io/file.h>
 #include <xcl/lang/xcl_err.h>
 #include <xcl/lang/inter_thread_api.h>
@@ -28,27 +27,26 @@ struct FileMonitor {
 static inline bool
 __FileMonitor_isParamBitSet(FileMonitor* monitor, int32_t idx)
 {
-    int32_t params = __Atomic_load32(&monitor->params, memory_order_seq_cst);
+    int32_t params = InterlockedOr(&monitor->params, 0);
     return params & (1 << idx);
 }
 
 static inline void
 __FileMonitor_setParamBit(FileMonitor* monitor, int32_t idx, bool flag)
 {
-    int32_t params = __Atomic_load32(&monitor->params, memory_order_seq_cst);
-    __Atomic_store32(&monitor->params,
-                     flag ? (params | (1 << idx)) : (params & ~(1 << idx)),
-                     memory_order_seq_cst);
+    int32_t params = InterlockedOr(&monitor->params, 0);
+    InterlockedExchange(&monitor->params,
+                        flag ? (params | (1 << idx)) : (params & ~(1 << idx)));
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 FileMonitor_exclusive(FileMonitor* monitor)
 {
-    return __FileMonitor_isParamBitSet(monitor, AUTO_MONITOR)
-           || __FileMonitor_isParamBitSet(monitor, MANUAL_MONITOR);
+    return __FileMonitor_isParamBitSet(monitor, AUTO_MONITOR) ||
+           __FileMonitor_isParamBitSet(monitor, MANUAL_MONITOR);
 }
 
-XCL_EXPORT FileMonitor* XCL_API
+FileMonitor* XCL_API
 FileMonitor_new(const TChar* path, bool recursive)
 {
     DWORD err = GetLastError();
@@ -62,18 +60,17 @@ FileMonitor_new(const TChar* path, bool recursive)
         return NULL;
     }
     memset(monitor, 0, sizeof(FileMonitor));
-    if ((monitor->ovl.hEvent = CreateEvent(NULL, true, false, NULL))
-        && (monitor->cancel_handle = CreateEvent(NULL, false, false, NULL))
-        && (monitor->mutex = Mutex_new())
-        && (monitor->dir_handle
-            = CreateFile(path,
-                         FILE_LIST_DIRECTORY,
-                         FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
-                         NULL,
-                         OPEN_EXISTING,
-                         FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED,
-                         NULL))
-               != INVALID_HANDLE_VALUE)
+    if ((monitor->ovl.hEvent = CreateEvent(NULL, true, false, NULL)) &&
+        (monitor->cancel_handle = CreateEvent(NULL, false, false, NULL)) &&
+        (monitor->mutex = Mutex_new()) &&
+        (monitor->dir_handle =
+             CreateFile(path,
+                        FILE_LIST_DIRECTORY,
+                        FILE_SHARE_DELETE | FILE_SHARE_READ | FILE_SHARE_WRITE,
+                        NULL,
+                        OPEN_EXISTING,
+                        FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OVERLAPPED,
+                        NULL)) != INVALID_HANDLE_VALUE)
     {
         __FileMonitor_setParamBit(monitor, RECURSIVE, recursive);
         return monitor;
@@ -110,19 +107,30 @@ __FileMonitor_processChanges2(FileMonitor* monitor,
 {
     int32_t ret = 1;
     DWORD bytes;
-    if ((millis == INFINITE ? GetOverlappedResult(monitor->dir_handle,
-                                                  &monitor->ovl,
-                                                  &bytes,
-                                                  true)
-         : millis == 0      ? GetOverlappedResult(monitor->dir_handle,
-                                             &monitor->ovl,
-                                             &bytes,
-                                             false)
-                            : GetOverlappedResultEx(monitor->dir_handle,
-                                               &monitor->ovl,
-                                               &bytes,
-                                               millis,
-                                               false)))
+    bool success = false;
+    if (millis == INFINITE)
+    {
+        success = GetOverlappedResult(monitor->dir_handle,
+                                      &monitor->ovl,
+                                      &bytes,
+                                      true);
+    }
+    else if (millis == 0)
+    {
+        success = GetOverlappedResult(monitor->dir_handle,
+                                      &monitor->ovl,
+                                      &bytes,
+                                      false);
+    }
+    else
+    {
+        success = GetOverlappedResultEx(monitor->dir_handle,
+                                        &monitor->ovl,
+                                        &bytes,
+                                        millis,
+                                        false);
+    }
+    if (success)
     {
         assert(bytes > 0);
         __FileMonitor_setParamBit(monitor, ASYNC_REQ_QUEUED, false);
@@ -202,10 +210,10 @@ __FileMonitor_postListenReq(FileMonitor* monitor)
             monitor->cache,
             sizeof(monitor->cache),
             __FileMonitor_isParamBitSet(monitor, RECURSIVE),
-            FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_ATTRIBUTES
-                | FILE_NOTIFY_CHANGE_CREATION | FILE_NOTIFY_CHANGE_DIR_NAME
-                | FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_ACCESS
-                | FILE_NOTIFY_CHANGE_SECURITY | FILE_NOTIFY_CHANGE_SIZE,
+            FILE_NOTIFY_CHANGE_LAST_WRITE | FILE_NOTIFY_CHANGE_ATTRIBUTES |
+                FILE_NOTIFY_CHANGE_CREATION | FILE_NOTIFY_CHANGE_DIR_NAME |
+                FILE_NOTIFY_CHANGE_FILE_NAME | FILE_NOTIFY_CHANGE_LAST_ACCESS |
+                FILE_NOTIFY_CHANGE_SECURITY | FILE_NOTIFY_CHANGE_SIZE,
             NULL,
             &monitor->ovl,
             NULL);
@@ -219,13 +227,13 @@ __FileMonitor_postListenReq(FileMonitor* monitor)
     return true;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 FileMonitor_exec(FileMonitor* monitor, MonitorCallback callback, void* obj)
 {
     Mutex_lock(monitor->mutex);
     if (FileMonitor_exclusive(monitor))
     {
-        Mutex_lock(monitor->mutex);
+        Mutex_unlock(monitor->mutex);
         return false;
     }
     __FileMonitor_setParamBit(monitor, AUTO_MONITOR, true);
@@ -242,15 +250,13 @@ FileMonitor_exec(FileMonitor* monitor, MonitorCallback callback, void* obj)
             break;
         }
         Mutex_unlock(monitor->mutex);
-        DWORD waitRet = WaitForMultipleObjects(2, handles, false, INFINITE);
+        DWORD wait_ret = WaitForMultipleObjects(2, handles, false, INFINITE);
         Mutex_lock(monitor->mutex);
-        switch (waitRet)
+        switch (wait_ret)
         {
             case WAIT_OBJECT_0: {
-                int32_t ret = __FileMonitor_processChanges(monitor,
-                                                           true,
-                                                           callback,
-                                                           obj);
+                int32_t ret =
+                    __FileMonitor_processChanges(monitor, true, callback, obj);
                 assert(ret != -1);
                 break;
             }
@@ -276,7 +282,7 @@ FileMonitor_exec(FileMonitor* monitor, MonitorCallback callback, void* obj)
     return success;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 FileMonitor_cancel(FileMonitor* monitor)
 {
     bool ret = true;
@@ -284,7 +290,7 @@ FileMonitor_cancel(FileMonitor* monitor)
     return ret;
 }
 
-XCL_EXPORT void XCL_API
+void XCL_API
 FileMonitor_delete(FileMonitor* monitor)
 {
     Mutex_delete(monitor->mutex);
@@ -294,7 +300,7 @@ FileMonitor_delete(FileMonitor* monitor)
     free(monitor);
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 FileMonitor_listen(FileMonitor* monitor,
                    uint32_t millis,
                    MonitorCallback callback,
@@ -304,47 +310,46 @@ FileMonitor_listen(FileMonitor* monitor,
     bool success = true;
     if (FileMonitor_exclusive(monitor))
     {
-        Mutex_lock(monitor->mutex);
+        Mutex_unlock(monitor->mutex);
         return false;
     }
     __FileMonitor_setParamBit(monitor, MANUAL_MONITOR, true);
     success = __FileMonitor_postListenReq(monitor);
-    if (success)
+    if (!success)
+        goto end;
+    HANDLE handles[] = {monitor->ovl.hEvent, monitor->cancel_handle};
+    Mutex_unlock(monitor->mutex);
+    DWORD wait_ret = WaitForMultipleObjects(2, handles, false, millis);
+    Mutex_lock(monitor->mutex);
+    switch (wait_ret)
     {
-        HANDLE handles[] = {monitor->ovl.hEvent, monitor->cancel_handle};
-        DWORD waitRet = WaitForMultipleObjects(2, handles, false, millis);
-        switch (waitRet)
-        {
-            case WAIT_TIMEOUT: {
-                success = false;
-                break;
-            }
-            case WAIT_OBJECT_0: {
-                int32_t ret;
-                ret = __FileMonitor_processChanges2(monitor,
-                                                    millis,
-                                                    callback,
-                                                    obj);
-                assert(ret != -1);
-                break;
-            }
-            case WAIT_OBJECT_0 + 1: {
-                /**
-                 * @brief cancel event detected
-                 * @author xuyan
-                 * @date 2022-08-21
-                 */
-                CancelIo(monitor->dir_handle);
-                __FileMonitor_processChanges(monitor, true, callback, obj);
-                __FileMonitor_setParamBit(monitor, ASYNC_REQ_QUEUED, false);
-                success = false;
-                break;
-            }
-            default: {
-                assert(false);
-            }
+        case WAIT_TIMEOUT: {
+            success = false;
+            break;
+        }
+        case WAIT_OBJECT_0: {
+            int32_t ret;
+            ret = __FileMonitor_processChanges2(monitor, millis, callback, obj);
+            assert(ret != -1);
+            break;
+        }
+        case WAIT_OBJECT_0 + 1: {
+            /**
+             * @brief cancel event detected
+             * @author xuyan
+             * @date 2022-08-21
+             */
+            CancelIo(monitor->dir_handle);
+            __FileMonitor_processChanges(monitor, true, callback, obj);
+            __FileMonitor_setParamBit(monitor, ASYNC_REQ_QUEUED, false);
+            success = false;
+            break;
+        }
+        default: {
+            assert(false);
         }
     }
+end:
     __FileMonitor_setParamBit(monitor, MANUAL_MONITOR, false);
     Mutex_unlock(monitor->mutex);
     return success;

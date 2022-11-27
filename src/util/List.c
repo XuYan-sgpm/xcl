@@ -50,10 +50,10 @@ __List_init(List* list)
     __List_link(&list->header, &list->header);
 }
 
-XCL_EXPORT List* XCL_API
+List* XCL_API
 List_new()
 {
-    List* list = (List*)Pool_alloc(Pool_def(), sizeof(List));
+    List* list = (List*)Pool_alloc(Pool_global(), sizeof(List));
     if (list)
     {
         __List_init(list);
@@ -61,59 +61,59 @@ List_new()
     return list;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 List_delete(List* list)
 {
     if (!List_empty(list))
     {
         return false;
     }
-    Pool_dealloc(Pool_def(), list, sizeof(List));
+    Pool_dealloc(Pool_global(), list, sizeof(List));
     return true;
 }
 
-XCL_EXPORT ListIter XCL_API
+ListIter XCL_API
 List_begin(List* list)
 {
     ListIter it = {&list->header, list->header.next};
     return it;
 }
 
-XCL_EXPORT ListIter XCL_API
+ListIter XCL_API
 List_end(List* list)
 {
     ListIter it = {&list->header, &list->header};
     return it;
 }
 
-XCL_EXPORT ListIter XCL_API
+ListIter XCL_API
 List_prev(ListIter it)
 {
     ListIter prevIt = {it.terminator, it.cur->prev};
     return prevIt;
 }
 
-XCL_EXPORT ListIter XCL_API
+ListIter XCL_API
 List_next(ListIter it)
 {
     ListIter nextIt = {it.terminator, it.cur->next};
     return nextIt;
 }
 
-XCL_EXPORT void XCL_API
+void XCL_API
 List_push(List* list, ListNode* node)
 {
     __List_link(list->header.prev, node);
     __List_link(node, &list->header);
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 List_iterEquals(ListIter it1, ListIter it2)
 {
     return it1.cur == it2.cur;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 List_add(List* list, ListIter pos, ListNode* node)
 {
     if (!node || pos.terminator != &list->header)
@@ -125,7 +125,7 @@ List_add(List* list, ListIter pos, ListNode* node)
     return true;
 }
 
-XCL_EXPORT void XCL_API
+void XCL_API
 List_pushFront(List* list, ListNode* node)
 {
     if (!node)
@@ -136,7 +136,7 @@ List_pushFront(List* list, ListNode* node)
     __List_link(&list->header, node);
 }
 
-XCL_EXPORT ListNode* XCL_API
+ListNode* XCL_API
 List_pop(List* list)
 {
     ListNode* node = list->header.next;
@@ -148,7 +148,7 @@ List_pop(List* list)
     return node;
 }
 
-XCL_EXPORT ListNode* XCL_API
+ListNode* XCL_API
 List_popBack(List* list)
 {
     ListNode* node = list->header.prev;
@@ -160,7 +160,7 @@ List_popBack(List* list)
     return NULL;
 }
 
-XCL_EXPORT ListIter XCL_API
+ListIter XCL_API
 List_peekFirst(List* list)
 {
     ListIter it = {&list->header, &list->header};
@@ -172,7 +172,7 @@ List_peekFirst(List* list)
     return it;
 }
 
-XCL_EXPORT ListIter XCL_API
+ListIter XCL_API
 List_peekLast(List* list)
 {
     ListIter it = {&list->header, &list->header};
@@ -184,7 +184,7 @@ List_peekLast(List* list)
     return it;
 }
 
-XCL_EXPORT ListIter XCL_API
+ListIter XCL_API
 List_remove(List* list, ListIter iter)
 {
     if (iter.terminator != &list->header || iter.cur == iter.terminator)
@@ -197,7 +197,7 @@ List_remove(List* list, ListIter iter)
     return (ListIter){&list->header, next};
 }
 
-XCL_EXPORT ListIter XCL_API
+ListIter XCL_API
 List_query(List* list, const void* value, int (*cmp)(const void*, const void*))
 {
     ListNode* cur = list->header.next;
@@ -214,7 +214,7 @@ List_query(List* list, const void* value, int (*cmp)(const void*, const void*))
     return it;
 }
 
-XCL_EXPORT ListIter XCL_API
+ListIter XCL_API
 List_query2(List* list,
             ListIter pos,
             const void* value,
@@ -238,7 +238,7 @@ List_query2(List* list,
     return it;
 }
 
-XCL_EXPORT uint32_t XCL_API
+uint32_t XCL_API
 List_size(List* list)
 {
     int size = 0;
@@ -250,21 +250,21 @@ List_size(List* list)
     return size;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 List_empty(List* list)
 {
     return list->header.next == &list->header;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 List_spliceRange(List* list,
                  ListIter pos,
                  List* other,
                  ListIter first,
                  ListIter last)
 {
-    if (pos.terminator != &list->header || first.terminator != &other->header
-        || last.terminator != &other->header)
+    if (pos.terminator != &list->header || first.terminator != &other->header ||
+        last.terminator != &other->header)
     {
         return false;
     }
@@ -279,11 +279,11 @@ List_spliceRange(List* list,
     return true;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 List_splice(List* list, ListIter pos, List* other, ListIter it)
 {
-    if (it.terminator != &other->header || pos.terminator != &list->header
-        || it.cur == it.terminator)
+    if (it.terminator != &other->header || pos.terminator != &list->header ||
+        it.cur == it.terminator)
     {
         return false;
     }
@@ -293,7 +293,7 @@ List_splice(List* list, ListIter pos, List* other, ListIter it)
     return true;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 List_spliceAll(List* list, ListIter pos, List* other)
 {
     if (pos.terminator != &list->header)
@@ -348,7 +348,7 @@ __List_merge(List* list1, List* list2, int (*cmp)(const void*, const void*))
     }
 }
 
-XCL_EXPORT void XCL_API
+void XCL_API
 List_sort(List* list, int (*cmp)(const void*, const void*))
 {
     if (List_empty(list) || list->header.next->next == &list->header)

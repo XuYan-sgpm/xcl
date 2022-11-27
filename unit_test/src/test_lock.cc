@@ -34,7 +34,7 @@ __testLock(void* args)
     }
     //  lock->lock();
     cout << "lock successfully" << endl;
-    mSleep(800);
+    sleepMs(800);
     lock->unlock();
     cout << "unlock successfully" << endl;
 }
@@ -61,7 +61,7 @@ __testCMutex(void* args)
     }
     //  lock->lock();
     cout << "lock successfully" << endl;
-    mSleep(40);
+    sleepMs(40);
     Mutex_unlock((Mutex*)args);
     cout << "unlock successfully" << endl;
 }
@@ -74,11 +74,10 @@ __runLockThreads(Callback cb, void* args)
     for (int i = 0; i < nThreads; i++)
     {
         threads[i] = Thread_create(cb, args);
-        ASSERT_TRUE(Thread_valid(threads[i]));
     }
     for (int i = 0; i < nThreads; i++)
     {
-        Thread_join(&threads[i]);
+        Thread_join(threads[i]);
     }
 }
 

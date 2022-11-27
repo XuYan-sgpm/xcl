@@ -1,6 +1,5 @@
-from genericpath import isdir
+
 import os
-import subprocess
 
 __EXCLUDES__ = ['bin', 'build', 'lib', '.vscode', '.git']
 __CXX__ = ['.cc', '.cpp', '.cxx', '.c', '.h', '.hpp', '.hxx']

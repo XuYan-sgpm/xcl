@@ -19,30 +19,6 @@ __Thread_getLocalStorage();
 bool
 __Thread_setLocalStorage(LocalStorage* localStorage);
 
-uintptr_t
-__Thread_createHandle(void* args);
-
-bool
-__Thread_joinFor(uintptr_t handle, int32_t timeout);
-
-bool
-__Thread_detach(uintptr_t handle);
-
-bool
-__Thread_alive(uintptr_t handle);
-
-unsigned long
-__Thread_currentId();
-
-uintptr_t
-__Thread_currentHandle();
-
-void
-__Thread_yield();
-
-void
-__Thread_run(void* args);
-
 #ifdef __cplusplus
 }
 #endif

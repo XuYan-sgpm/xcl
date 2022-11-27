@@ -11,28 +11,22 @@
 
 static int64_t __NANO_FREQ_PER_SEC = -1;
 
-static void
-__SYS_initNanoFreq()
-{
-    LARGE_INTEGER freq;
-    if (QueryPerformanceFrequency(&freq))
-    {
-        __NANO_FREQ_PER_SEC = freq.QuadPart;
-    }
-}
-
-XCL_EXPORT int64_t XCL_API
+int64_t XCL_API
 currentMillis()
 {
     return GetTickCount();
 }
 
-XCL_EXPORT int64_t XCL_API
+int64_t XCL_API
 nanos()
 {
     if (__NANO_FREQ_PER_SEC == -1)
     {
-        __SYS_initNanoFreq();
+        LARGE_INTEGER freq;
+        if (QueryPerformanceFrequency(&freq))
+        {
+            __NANO_FREQ_PER_SEC = freq.QuadPart;
+        }
     }
     if (__NANO_FREQ_PER_SEC > 0)
     {
@@ -47,8 +41,8 @@ nanos()
     }
 }
 
-XCL_EXPORT void XCL_API
-mSleep(int32_t timeout)
+void XCL_API
+sleepMs(int32_t timeout)
 {
     timeBeginPeriod(1);
     Sleep(timeout);
@@ -56,7 +50,7 @@ mSleep(int32_t timeout)
 }
 
 bool
-__Win32_wait(HANDLE handle, DWORD timeout)
+__waitHandle(HANDLE handle, DWORD timeout)
 {
     DWORD ret = WaitForSingleObject(handle, timeout);
     if (ret != WAIT_OBJECT_0)
@@ -77,8 +71,8 @@ __Win32_wait(HANDLE handle, DWORD timeout)
     }
 }
 
-XCL_EXPORT bool XCL_API
-getCwd(TChar* cwd, int32_t len)
+bool XCL_API
+currentWorkingDir(TChar* cwd, int32_t len)
 {
     if (!cwd)
     {

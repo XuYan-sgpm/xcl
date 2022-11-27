@@ -34,19 +34,19 @@ __Mutex_newByPool(struct Pool* pool)
     return mutex;
 }
 
-XCL_EXPORT Mutex* XCL_API
+Mutex* XCL_API
 Mutex_new()
 {
-    return __Mutex_newByPool(Pool_def());
+    return __Mutex_newByPool(Pool_global());
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 Mutex_delete(Mutex* mutex)
 {
     if (mutex)
     {
         DeleteCriticalSection(&mutex->critical_section);
-        Pool_dealloc(Pool_def(), mutex, sizeof(Mutex));
+        Pool_dealloc(Pool_global(), mutex, sizeof(Mutex));
         return true;
     }
     else
@@ -56,7 +56,7 @@ Mutex_delete(Mutex* mutex)
     }
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 Mutex_lock(Mutex* mutex)
 {
     if (mutex)
@@ -71,7 +71,7 @@ Mutex_lock(Mutex* mutex)
     }
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 Mutex_unlock(Mutex* mutex)
 {
     if (mutex)
@@ -86,7 +86,7 @@ Mutex_unlock(Mutex* mutex)
     }
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 Mutex_tryLock(Mutex* mutex)
 {
     if (!mutex)
@@ -100,7 +100,7 @@ Mutex_tryLock(Mutex* mutex)
     }
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 Mutex_tryLock2(Mutex* mutex, int32_t millis)
 {
     if (!mutex)

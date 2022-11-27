@@ -34,14 +34,14 @@ nanos();
  * @param timeout milliseconds timeout
  */
 XCL_EXPORT void XCL_API
-mSleep(int32_t timeout);
+sleepMs(int32_t timeout);
 
 /**
  * get if cpu byte order is big-endian
  * @return true if byte order of current cpu is big-endian, otherwise false
  */
 inline bool XCL_API
-isCpuBigEndian()
+bigEndian()
 {
     union
     {
@@ -62,7 +62,7 @@ isCpuBigEndian()
  * @date 2022-08-18
  */
 XCL_EXPORT bool XCL_API
-getCwd(TChar* cwd, int32_t len);
+currentWorkingDir(TChar* cwd, int32_t len);
 
 #ifdef __cplusplus
 }

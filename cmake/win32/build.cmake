@@ -1,14 +1,9 @@
-set_arch_compile_flags(${COMPILE_X86_TARGET})
 if(MSVC)
     message(STATUS "debug msvc:${CMAKE_BUILD_TYPE}")
     # set(LIBRARY_OUTPUT_PATH ${LIBRARY_OUTPUT_PATH}/${CMAKE_BUILD_TYPE})
 else()
     if(CMAKE_C_COMPILER_ID STREQUAL "Clang")
-        if(COMPILE_X86_TARGET)
 
-        else()
-            set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -march=skylake")
-        endif()
     elseif(CMAKE_C_COMPILER_ID STREQUAL "GNU")
         set(link_libs ${link_libs} atomic)
     endif()
@@ -27,13 +22,11 @@ if(MSVC)
     endif()
 
     if(NOT COMPILE_STATIC_LIB OR FORCE_MDd_STATIC)
-        message(STATUS "xcl:MDd")
         set_property(
             TARGET ${xcl_lib_name}
             PROPERTY MSVC_RUNTIME_LIBRARY
                      "MultiThreaded$<$<CONFIG:Debug>:Debug>DLL")
     else()
-        message(STATUS "xcl:MTd")
         set_property(
             TARGET ${xcl_lib_name}
             PROPERTY MSVC_RUNTIME_LIBRARY

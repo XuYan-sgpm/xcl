@@ -4,7 +4,7 @@ project(xcl C CXX)
 
 set(project_dir ${CMAKE_CURRENT_LIST_DIR})
 
-include_directories(include include/xcl)
+include_directories(inc_pub inc_pri inc_pub/xcl inc_pri/xcl)
 
 include(cmake/common.cmake)
 set(xcl_lib_name xcl)
@@ -13,12 +13,17 @@ set(link_libs)
 
 message(STATUS "build type:${CMAKE_BUILD_TYPE}")
 function(make_xcl_lib)
-    compile_library(
+    set(opt_str)
+    if(ENABLE_CXX_COMPILE)
+        set(opt_str ENABLE_CXX)
+    endif()
+    compile_library2(
         ${xcl_lib_name}
         ${BUILD_LIB_TYPE}
-        ${ENABLE_CXX_COMPILE}
+        ${opt_str}
         ${project_dir}/src
-        ${project_dir}/include
+        ${project_dir}/inc_pub
+        ${project_dir}/inc_pri
         EXCLUDE
         ${exclude_dirs})
     target_link_libraries(${xcl_lib_name} ${link_libs})
@@ -38,7 +43,6 @@ message(STATUS ${LIBRARY_OUTPUT_PATH})
 add_custom_command(
     TARGET ${xcl_lib_name}
     PRE_BUILD
-    # COMMAND ${CMAKE_COMMAND} -E remove_directory ${LIBRARY_OUTPUT_PATH}
     COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBRARY_OUTPUT_PATH}
     COMMAND ${CMAKE_COMMAND} -E echo
             "make library directories ${LIBRARY_OUTPUT_PATH}"

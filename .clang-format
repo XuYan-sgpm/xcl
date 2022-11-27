@@ -34,7 +34,7 @@ BraceWrapping:
   IndentBraces: false
   SplitEmptyFunction: false
   SplitEmptyRecord: true
-BreakBeforeBinaryOperators: All
+BreakBeforeBinaryOperators: None
 BreakBeforeTernaryOperators: true
 BreakConstructorInitializers: BeforeColon
 BreakInheritanceList: BeforeColon
@@ -43,7 +43,7 @@ ColumnLimit: 80
 CompactNamespaces: false
 ContinuationIndentWidth: 4
 IndentCaseLabels: true
-IndentPPDirectives: None
+IndentPPDirectives: AfterHash
 PPIndentWidth: 2
 IndentWidth: 4
 KeepEmptyLinesAtTheStartOfBlocks: true

@@ -12,7 +12,7 @@ struct Cond {
     pthread_cond_t handle;
 };
 
-XCL_EXPORT Cond* XCL_API
+Cond* XCL_API
 Cond_new()
 {
     Cond* cond = Pool_alloc(Pool_def(), sizeof(Cond));
@@ -30,7 +30,7 @@ Cond_new()
     return NULL;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 Cond_delete(Cond* cond)
 {
     if (cond)
@@ -44,7 +44,7 @@ Cond_delete(Cond* cond)
     return false;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 Cond_wait(Mutex* mutex, Cond* cond)
 {
     if (mutex && cond)
@@ -57,7 +57,7 @@ Cond_wait(Mutex* mutex, Cond* cond)
     return false;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 Cond_waitFor(Mutex* mutex, Cond* cond, int32_t millis)
 {
     if (mutex && cond)
@@ -66,9 +66,8 @@ Cond_waitFor(Mutex* mutex, Cond* cond, int32_t millis)
         ts.tv_sec = millis / 1000;
         int64_t remaining = millis % 1000;
         ts.tv_nsec = remaining * 1000000;
-        int ret = pthread_cond_timedwait(&cond->handle,
-                                         (pthread_mutex_t*)mutex,
-                                         &ts);
+        int ret =
+            pthread_cond_timedwait(&cond->handle, (pthread_mutex_t*)mutex, &ts);
         if (ret)
             errno = ret;
         return !ret;
@@ -76,7 +75,7 @@ Cond_waitFor(Mutex* mutex, Cond* cond, int32_t millis)
     return false;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 Cond_signal(Cond* cond)
 {
     if (cond)
@@ -89,7 +88,7 @@ Cond_signal(Cond* cond)
     return false;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 Cond_signalAll(Cond* cond)
 {
     if (cond)

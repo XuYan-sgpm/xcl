@@ -165,20 +165,20 @@ __parseSectionLine(const char* line,
          * find key
          */
         const char* key_start = start;
-        const char* key_finish
-            = __skipRightSpace(key_start, sep - key_start) + 1;
+        const char* key_finish =
+            __skipRightSpace(key_start, sep - key_start) + 1;
         key_region = __region(key_start, key_finish - key_start);
     }
     /*
      * if :or= found, value start at sep+1
      * otherwise, key is empty and treat line as value
      */
-    const char* value_start
-        = sep ? __skipLeftSpace(sep + 1, end - sep - 1) : start;
+    const char* value_start =
+        sep ? __skipLeftSpace(sep + 1, end - sep - 1) : start;
     if (value_start)
     {
-        const char* value_finish
-            = __skipRightSpace(value_start, end - value_start) + 1;
+        const char* value_finish =
+            __skipRightSpace(value_start, end - value_start) + 1;
         value_region = __region(value_start, value_finish - value_start);
     }
     if (callback)

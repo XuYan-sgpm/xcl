@@ -117,9 +117,9 @@ __Thread_setLocalStorage(LocalStorage* local_storage)
     __Unix_Thread_local_storage = local_storage;
     return true;
 }
-#elif defined(DYNAMIC)
-#include <concurrent/GlobalLock.h>
-#include <assert.h>
+#elif defined(SHARED)
+#  include <concurrent/GlobalLock.h>
+#  include <assert.h>
 
 static pthread_key_t __Unix_Thread_local_storage_key;
 
@@ -158,8 +158,8 @@ bool
 __Thread_setLocalStorage(LocalStorage* local_storage)
 {
     __Thread_ensureLocalStorageKey();
-    int ret
-        = pthread_setspecific(__Unix_Thread_local_storage_key, local_storage);
+    int ret =
+        pthread_setspecific(__Unix_Thread_local_storage_key, local_storage);
     if (ret)
     {
         Err_set(ret);

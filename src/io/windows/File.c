@@ -108,7 +108,7 @@ __File_isFile(const TChar* path)
     return !__File_isDir(path);
 }
 
-XCL_EXPORT File* XCL_API
+File* XCL_API
 File_new(const TChar* path, int32_t mode)
 {
     File* file = malloc(sizeof(File));
@@ -140,11 +140,11 @@ File_new(const TChar* path, int32_t mode)
     {
         open_way = OPEN_ALWAYS;
     }
-    DWORD attr_and_flags
-        = __File_isDir(path) ? FILE_FLAG_BACKUP_SEMANTICS
-                             : FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH;
-    HANDLE h
-        = CreateFile(path, access, share_mode, 0, open_way, attr_and_flags, 0);
+    DWORD attr_and_flags =
+        __File_isDir(path) ? FILE_FLAG_BACKUP_SEMANTICS
+                           : FILE_FLAG_NO_BUFFERING | FILE_FLAG_WRITE_THROUGH;
+    HANDLE h =
+        CreateFile(path, access, share_mode, 0, open_way, attr_and_flags, 0);
     if (h != INVALID_HANDLE_VALUE)
     {
         if ((mode & F_APPEND))
@@ -164,7 +164,7 @@ File_new(const TChar* path, int32_t mode)
     return file;
 }
 
-XCL_EXPORT void XCL_API
+void XCL_API
 File_delete(File* file)
 {
     if (file->fd != (uintptr_t)INVALID_HANDLE_VALUE)
@@ -176,13 +176,13 @@ File_delete(File* file)
     free(file);
 }
 
-XCL_EXPORT int32_t XCL_API
+int32_t XCL_API
 File_flush(File* file)
 {
     return -1;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 File_isPathExists(const TChar* path)
 {
 #ifndef _UNICODE
@@ -192,13 +192,13 @@ File_isPathExists(const TChar* path)
 #endif
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 File_exists(const File* file)
 {
     return File_isPathExists(__File_path(file));
 }
 
-XCL_EXPORT int32_t XCL_API
+int32_t XCL_API
 File_path(const File* file, TChar* path, int32_t* len)
 {
     int32_t file_path_len = _tcslen(__File_path(file));
@@ -227,7 +227,7 @@ __FileIter_initialized(const FileIter* file_iter)
     return file_iter->find_handle != INVALID_HANDLE_VALUE;
 }
 
-XCL_EXPORT FileIter* XCL_API
+FileIter* XCL_API
 File_iter(File* file)
 {
     if (!__File_isDir(__File_path(file)))
@@ -244,7 +244,7 @@ File_iter(File* file)
     return iter;
 }
 
-XCL_EXPORT FileIter* XCL_API
+FileIter* XCL_API
 File_pathIter(const TChar* path)
 {
     if (!__File_isDir(path))
@@ -261,7 +261,7 @@ File_pathIter(const TChar* path)
     return iter;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 File_listDir(const TChar* path,
              void (*callback)(void*, const TChar*),
              void* obj)
@@ -298,8 +298,8 @@ File_listDir(const TChar* path,
     }
     do
     {
-        if (strcmp(find_data.cFileName, "..") == 0
-            || strcmp(find_data.cFileName, ".") == 0)
+        if (strcmp(find_data.cFileName, "..") == 0 ||
+            strcmp(find_data.cFileName, ".") == 0)
         {
         }
         else if (callback)
@@ -314,7 +314,7 @@ end:
     return success;
 }
 
-XCL_EXPORT int32_t XCL_API
+int32_t XCL_API
 FileIter_next(FileIter* file_iter, TChar* file_name, int32_t* len)
 {
     for (;;)
@@ -357,8 +357,8 @@ FileIter_next(FileIter* file_iter, TChar* file_name, int32_t* len)
                 }
             }
         }
-        if (_tcscmp(file_iter->find_data.cFileName, __TCSTR(".")) != 0
-            && _tcscmp(file_iter->find_data.cFileName, __TCSTR("..")) != 0)
+        if (_tcscmp(file_iter->find_data.cFileName, __TCSTR(".")) != 0 &&
+            _tcscmp(file_iter->find_data.cFileName, __TCSTR("..")) != 0)
         {
             TChar* p = file_iter->find_data.cFileName;
             size_t name_len = _tcslen(p);
@@ -378,7 +378,7 @@ FileIter_next(FileIter* file_iter, TChar* file_name, int32_t* len)
     return 1;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 FileIter_current(FileIter* file_iter, TChar* file_name, int32_t* len)
 {
     if (!__FileIter_initialized(file_iter))
@@ -399,7 +399,7 @@ FileIter_current(FileIter* file_iter, TChar* file_name, int32_t* len)
     return true;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 FileIter_cwd(FileIter* file_iter, TChar* dir, int32_t* len)
 {
     if (!__FileIter_initialized(file_iter))
@@ -420,7 +420,7 @@ FileIter_cwd(FileIter* file_iter, TChar* dir, int32_t* len)
     return true;
 }
 
-XCL_EXPORT void XCL_API
+void XCL_API
 FileIter_delete(FileIter* file_iter)
 {
     if (file_iter->find_handle != INVALID_HANDLE_VALUE)
@@ -436,37 +436,37 @@ FileIter_delete(FileIter* file_iter)
     free(file_iter);
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 File_isDir(File* file)
 {
     return __File_isDir(__File_path(file));
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 File_isFile(File* file)
 {
     return __File_isFile(__File_path(file));
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 File_isPathDir(const TChar* path)
 {
     return __File_isDir(path);
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 File_isPathFile(const TChar* path)
 {
     return __File_isFile(path);
 }
 
-XCL_EXPORT char XCL_API
+char XCL_API
 File_sep()
 {
     return '\\';
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 File_joinPath(TChar* out, int32_t out_len, unsigned n, ...)
 {
     if (!out)
@@ -488,7 +488,7 @@ File_joinPath(TChar* out, int32_t out_len, unsigned n, ...)
     return true;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 File_joinPath2(TChar* out, int32_t out_len, unsigned n, va_list names)
 {
     if (!out)
@@ -528,7 +528,7 @@ File_joinPath2(TChar* out, int32_t out_len, unsigned n, va_list names)
     return true;
 }
 
-XCL_EXPORT bool XCL_API
+bool XCL_API
 File_deletePath(const TChar* path)
 {
     if (!File_isPathExists(path))
@@ -567,8 +567,8 @@ File_deletePath(const TChar* path)
     }
     do
     {
-        if (strcmp(find_data.cFileName, "..") == 0
-            || strcmp(find_data.cFileName, ".") == 0)
+        if (strcmp(find_data.cFileName, "..") == 0 ||
+            strcmp(find_data.cFileName, ".") == 0)
         {
         }
         else

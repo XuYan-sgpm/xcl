@@ -6,7 +6,7 @@
 #include "concurrent/Lock.h"
 
 extern "C" bool
-__Win32_wait(HANDLE handle, DWORD timeout);
+__waitHandle(HANDLE handle, DWORD timeout);
 
 namespace
 {
@@ -86,7 +86,7 @@ namespace
     void
     InternalTimedMutex::lock()
     {
-        __Win32_wait(handle_, INFINITE);
+        __waitHandle(handle_, INFINITE);
     }
 
     void
@@ -98,13 +98,13 @@ namespace
     bool
     InternalTimedMutex::tryLock()
     {
-        return __Win32_wait(handle_, 0);
+        return __waitHandle(handle_, 0);
     }
 
     bool
     InternalTimedMutex::tryLock(int32_t millis)
     {
-        return __Win32_wait(handle_, millis);
+        return __waitHandle(handle_, millis);
     }
 
     InternalTimedMutex::InternalTimedMutex() : handle_(nullptr)

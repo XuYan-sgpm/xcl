@@ -10,12 +10,12 @@ extern "C" {
 #undef __TCSTR
 
 #ifdef _UNICODE
-#define __str_dispatch__(name) wcs##name
-#define __TCSTR(x)             L##x
+#  define __str_dispatch__(name) wcs##name
+#  define __TCSTR(x)             L##x
 typedef wchar_t TChar;
 #else
-#define __str_dispatch__(name) str##name
-#define __TCSTR(x)             x
+#  define __str_dispatch__(name) str##name
+#  define __TCSTR(x)             x
 typedef char TChar;
 #endif
 

@@ -26,8 +26,8 @@ __LocalStorage_reserve(LocalStorage* local_storage, int n)
     if (n > local_storage->cap)
     {
         int32_t new_cap = __LocalStorage_grow(local_storage, n);
-        StorageBlock* new_blocks = (StorageBlock*)Pool_reapply(
-            Pool_def(),
+        StorageBlock* new_blocks = (StorageBlock*)Pool_reallocate(
+            Pool_global(),
             local_storage->blocks,
             local_storage->cap * sizeof(StorageBlock),
             new_cap * sizeof(StorageBlock));
@@ -72,7 +72,8 @@ __LocalStorage_checkMemory(LocalStorage* local_storage, int idx)
 LocalStorage*
 LocalStorage_new()
 {
-    LocalStorage* local_storage = Pool_alloc(Pool_def(), sizeof(LocalStorage));
+    LocalStorage* local_storage =
+        Pool_alloc(Pool_global(), sizeof(LocalStorage));
     if (local_storage)
     {
         memset(local_storage, 0, sizeof(LocalStorage));
@@ -99,10 +100,10 @@ void
 LocalStorage_delete(LocalStorage* local_storage)
 {
     if (local_storage->blocks)
-        Pool_dealloc(Pool_def(),
+        Pool_dealloc(Pool_global(),
                      local_storage->blocks,
                      sizeof(StorageBlock) * local_storage->cap);
-    Pool_dealloc(Pool_def(), local_storage, sizeof(LocalStorage));
+    Pool_dealloc(Pool_global(), local_storage, sizeof(LocalStorage));
 }
 
 bool
