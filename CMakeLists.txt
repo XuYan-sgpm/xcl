@@ -1,58 +1,46 @@
-cmake_minimum_required(VERSION 3.15)
-
+cmake_minimum_required(VERSION 3.10)
 project(xcl C CXX)
 
-set(project_dir ${CMAKE_CURRENT_LIST_DIR})
+include(${PROJECT_SOURCE_DIR}/cmake/util.cmake)
+include(${PROJECT_SOURCE_DIR}/cmake/platform.cmake)
 
-include_directories(inc_pub inc_pri inc_pub/xcl inc_pri/xcl)
-
-include(cmake/common.cmake)
-set(xcl_lib_name xcl)
-set(exclude_dirs)
-set(link_libs)
-
-message(STATUS "build type:${CMAKE_BUILD_TYPE}")
-function(make_xcl_lib)
-    set(opt_str)
-    if(ENABLE_CXX_COMPILE)
-        set(opt_str ENABLE_CXX)
-    endif()
-    compile_library2(
-        ${xcl_lib_name}
-        ${BUILD_LIB_TYPE}
-        ${opt_str}
-        ${project_dir}/src
-        ${project_dir}/inc_pub
-        ${project_dir}/inc_pri
-        EXCLUDE
-        ${exclude_dirs})
-    target_link_libraries(${xcl_lib_name} ${link_libs})
-endfunction()
-
-if(WIN32)
-    set(platform win32)
-elseif(APPLE)
-    set(platform apple)
-elseif(UNIX)
-    set(platform unix)
+if(NOT CMAKE_BUILD_TYPE)
+    set(CMAKE_BUILD_TYPE Debug)
 endif()
 
-include(cmake/${platform}/build.cmake)
-message(STATUS ${LIBRARY_OUTPUT_PATH})
+if(CMAKE_GENERATOR STREQUAL "Unix Makefiles")
+    set(CMAKE_VERBOSE_MAKEFILE ON)
+endif()
 
-add_custom_command(
-    TARGET ${xcl_lib_name}
-    PRE_BUILD
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${LIBRARY_OUTPUT_PATH}
-    COMMAND ${CMAKE_COMMAND} -E echo
-            "make library directories ${LIBRARY_OUTPUT_PATH}"
-    VERBATIM)
+if(ANDROID OR IOS OR NOT CMAKE_SYSTEM_NAME STREQUAL ${CMAKE_HOST_SYSTEM_NAME})
+    set(BUILD_TEST OFF)
+endif()
 
-add_custom_command(
-    TARGET ${xcl_lib_name}
-    POST_BUILD
-    COMMAND echo "xcl lib path:$<TARGET_FILE:${xcl_lib_name}>")
+set(BUILD_SHARED_LIBS OFF)
+set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-install(
-    CODE "execute_process(COMMAND python -u ${CMAKE_CURRENT_LIST_DIR}/install.py ${CMAKE_INSTALL_PREFIX} ${CMAKE_BUILD_TYPE} ${architecture} ${BUILD_LIB_TYPE} ${CMAKE_CURRENT_LIST_DIR})"
-)
+if(CMAKE_VERSION VERSION_GREATER_EQUAL 3.13)
+    set(CMAKE_POLICY_DEFAULT_CMP0077 NEW)
+endif()
+
+# 设置compiler到缓存变量，否则vscode没有高亮，这个问题在低版本cmake发现
+set(CMAKE_C_COMPILER ${CMAKE_C_COMPILER} CACHE STRING "" FORCE)
+set(CMAKE_CXX_COMPILER ${CMAKE_CXX_COMPILER} CACHE STRING "" FORCE)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+set(target xcl)
+set(CMAKE_C_STANDARD 99)
+set(CMAKE_CXX_STANDARD 11)
+set(SDK_STD 202501)
+set(SDK_VERSION 2.2.2)
+
+add_xcl(${target})
+xcl_build(${target})
+
+if(CMAKE_INSTALL_PREFIX)
+    xcl_install(${target})
+endif()
+
+if(BUILD_TEST)
+    add_subdirectory(tests)
+endif()
